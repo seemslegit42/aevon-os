@@ -5,11 +5,17 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { MessageSquare, Search, Bell, Settings, Briefcase, Shield, ShoppingCart, Bot } from 'lucide-react';
+import { MessageSquare, Search, Bell, Settings, Briefcase, Shield, ShoppingCart, Bot, Home, ChevronDown, Settings2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { generatePersonalizedBriefing, GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-personalized-briefings';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const TopBar: React.FC = () => {
   const [beepInput, setBeepInput] = useState('');
@@ -19,10 +25,11 @@ const TopBar: React.FC = () => {
   const [currentTime, setCurrentTime] = useState<string | null>(null);
 
   useEffect(() => {
-    setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    const updateTime = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' UTC';
+    setCurrentTime(updateTime());
     const timer = setInterval(() => {
-      setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-    }, 60000);
+      setCurrentTime(updateTime());
+    }, 1000); // Update every second for seconds
     return () => clearInterval(timer);
   }, []);
 
@@ -34,18 +41,14 @@ const TopBar: React.FC = () => {
     setBeepResponse(null);
 
     try {
-      // For demo, using fixed values for other inputs to generatePersonalizedBriefing
       const input: GeneratePersonalizedBriefingInput = {
         userName: "Valued User",
-        operationalMetrics: "Sales are up 15% this quarter. Customer satisfaction is at 92%.",
-        relevantInformation: `Query: "${beepInput}". System status is optimal. No critical alerts.`,
+        operationalMetrics: "System status normal.",
+        relevantInformation: `User query: "${beepInput}". Provide a concise and helpful response.`,
       };
       const result = await generatePersonalizedBriefing(input);
       setBeepResponse(result.briefing);
-      toast({
-        title: "BEEP Assistant",
-        description: <p className="text-sm">{result.briefing.substring(0,150)}...</p>,
-      });
+      // Do not show toast for BEEP, response shown in popover
     } catch (error) {
       console.error("Error calling BEEP AI:", error);
       toast({
@@ -56,58 +59,96 @@ const TopBar: React.FC = () => {
       setBeepResponse("Sorry, I couldn't process that request.");
     } finally {
       setIsBeepLoading(false);
-      setBeepInput('');
+      // setBeepInput(''); // Keep input for now, as per screenshot design (input is not cleared)
     }
   };
 
   const navItems = [
-    { href: "/", label: "Dashboard", icon: Briefcase },
+    // { href: "/", label: "Dashboard", icon: Briefcase }, // Dashboard is the current page, handled by dropdown
     { href: "/loom-studio", label: "Loom Studio", icon: Settings },
     { href: "/aegis-security", label: "Aegis Security", icon: Shield },
     { href: "/armory", label: "ΛΞVON Λrmory", icon: ShoppingCart },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full glassmorphism-panel shadow-lg font-headline">
-      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-        <Link href="/" className="text-2xl font-bold text-primary flex items-center animate-subtle-pulse">
-          <Bot className="w-8 h-8 mr-2 text-primary" />
-           ΛΞVON OS
-        </Link>
+    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border/50 font-headline">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <Link href="/" className="text-2xl font-bold text-primary flex items-center">
+            <Bot className="w-7 h-7 mr-2 text-primary" />
+             ΛΞVON OS
+          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="text-sm text-foreground hover:bg-accent/10 hover:text-accent-foreground px-3">
+                <Home className="w-4 h-4 mr-2" />
+                Home Dashboard
+                <ChevronDown className="w-4 h-4 ml-1 opacity-70" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-popover text-popover-foreground border-border">
+              <DropdownMenuItem>Home Dashboard</DropdownMenuItem>
+              {/* Add other dashboard views here if needed */}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
-        <nav className="hidden md:flex items-center space-x-2">
-          {navItems.map((item) => (
-            <Button key={item.label} variant="ghost" asChild className="text-foreground hover:text-accent hover:bg-accent/10">
-              <Link href={item.href} className="flex items-center space-x-2 px-3 py-2">
-                <item.icon className="w-4 h-4" />
-                <span>{item.label}</span>
+        <div className="flex-1 flex justify-center px-8 lg:px-16">
+          <div className="relative w-full max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Command or Search (Ctrl+K)..."
+              className="w-full h-9 pl-10 pr-16 bg-input border-border text-sm"
+              aria-label="Command or search input"
+            />
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
+              <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                ⌘K
+              </kbd>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex items-center space-x-2">
+           {/* BEEP icon button next to search - as per design */}
+          {/* <Popover>
+            <PopoverTrigger asChild>
+               <Button type="submit" size="icon" variant="ghost" className="text-primary hover:text-accent" disabled={isBeepLoading} aria-label="Submit to BEEP">
+                <MessageSquare className={`w-5 h-5 ${isBeepLoading ? 'animate-spin' : ''}`} />
+              </Button>
+            </PopoverTrigger>
+             <PopoverContent className="w-80 glassmorphism-panel p-4">
+              <form onSubmit={handleBeepSubmit} className="space-y-2">
+                <Input
+                  placeholder="Ask BEEP anything..."
+                  value={beepInput}
+                  onChange={(e) => setBeepInput(e.target.value)}
+                  className="bg-input border-border"
+                />
+                <Button type="submit" className="w-full" disabled={isBeepLoading}>
+                  {isBeepLoading ? 'Thinking...' : 'Ask BEEP'}
+                </Button>
+              </form>
+              {beepResponse && (
+                <div className="mt-3 pt-3 border-t border-border">
+                  <p className="text-sm text-foreground">{beepResponse}</p>
+                </div>
+              )}
+            </PopoverContent>
+          </Popover> */}
+           {navItems.map((item) => (
+            <Button key={item.label} variant="ghost" size="icon" asChild className="text-muted-foreground hover:text-accent hover:bg-accent/10" title={item.label}>
+              <Link href={item.href}>
+                <item.icon className="w-5 h-5" />
               </Link>
             </Button>
           ))}
-        </nav>
 
-        <div className="flex items-center space-x-3">
-          <form onSubmit={handleBeepSubmit} className="hidden lg:flex items-center space-x-2">
-            <Input
-              type="text"
-              placeholder="Ask BEEP..."
-              value={beepInput}
-              onChange={(e) => setBeepInput(e.target.value)}
-              className="w-64 h-10 bg-background/50 border-primary/50 focus:ring-accent"
-              aria-label="BEEP command input"
-            />
-            <Button type="submit" size="icon" variant="ghost" className="text-primary hover:text-accent" disabled={isBeepLoading} aria-label="Submit to BEEP">
-              <MessageSquare className={`w-5 h-5 ${isBeepLoading ? 'animate-spin' : ''}`} />
-            </Button>
-          </form>
-
-          <Button variant="ghost" size="icon" className="text-foreground hover:text-accent" aria-label="Search">
-            <Search className="w-5 h-5" />
-          </Button>
 
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-foreground hover:text-accent" aria-label="Notifications">
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-accent hover:bg-accent/10" aria-label="Notifications">
                 <Bell className="w-5 h-5" />
               </Button>
             </PopoverTrigger>
@@ -119,22 +160,34 @@ const TopBar: React.FC = () => {
                     You have no new notifications.
                   </p>
                 </div>
-                {beepResponse && (
-                  <div className="mt-2 p-3 bg-accent/10 rounded-md">
-                    <h5 className="font-semibold text-accent font-headline">BEEP Response:</h5>
-                    <p className="text-sm text-foreground">{beepResponse}</p>
-                  </div>
-                )}
               </div>
             </PopoverContent>
           </Popover>
-          
-          <div className="text-sm text-muted-foreground hidden sm:block">{currentTime}</div>
 
-          <Avatar>
-            <AvatarImage src="https://placehold.co/40x40.png" alt="User Avatar" data-ai-hint="user avatar" />
-            <AvatarFallback>ΛΟ</AvatarFallback>
-          </Avatar>
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-accent hover:bg-accent/10" aria-label="Settings">
+            <Settings2 className="w-5 h-5" />
+          </Button>
+          
+          <div className="text-xs text-muted-foreground hidden sm:block w-24 text-center">{currentTime}</div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="p-0 h-auto">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src="https://placehold.co/40x40.png" alt="User Avatar" data-ai-hint="user avatar purple" />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xs">AU</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="bg-popover text-popover-foreground border-border">
+              <DropdownMenuItem className="flex flex-col items-start !text-muted-foreground">
+                <span className="font-semibold text-foreground">Admin User</span>
+                <span className="text-xs">Session: Active</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem>Logout</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
