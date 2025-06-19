@@ -104,7 +104,7 @@
 }
 
 .glassmorphism-panel {
-  @apply bg-card/70 dark:bg-card/70 backdrop-blur-lg border border-border/30 shadow-2xl;
+  @apply bg-card/85 dark:bg-card/85 backdrop-blur-lg border border-border/30 shadow-2xl;
   border-radius: var(--radius);
 }
 
@@ -133,3 +133,4 @@
 .btn-gradient-primary-accent:disabled {
   @apply opacity-50 cursor-not-allowed;
 }
+

@@ -4,12 +4,11 @@ import React, { useState, useEffect, FormEvent } from 'react';
 import Image from 'next/image';
 import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Sparkles, Blocks, Cpu, LayoutGrid, Users, HardDrive, ArrowUpFromLine, ArrowDownToLine, Timer, Rocket, GitFork, AppWindow, LoaderCircle, CircleDot, AlertCircle, XCircle, CheckCircle, MoreHorizontal, Mic, Minus } from 'lucide-react';
+import { Sparkles, Blocks, Cpu, LayoutGrid, Users, HardDrive, ArrowUpFromLine, ArrowDownToLine, Timer, AppWindow, LoaderCircle, CircleDot, AlertCircle, XCircle, CheckCircle, MoreHorizontal, Mic, Minus, BarChartBig, Settings2, Shield as ShieldIcon, GitFork } from 'lucide-react';
 import { generatePersonalizedBriefing, GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-personalized-briefings';
 import { useToast } from "@/hooks/use-toast";
 
@@ -61,6 +60,9 @@ export default function HomePage() {
   const { toast } = useToast();
   
   const [systemUptime, setSystemUptime] = useState("0d 0h 0m 0s");
+  const [cpuLoad, setCpuLoad] = useState(35);
+  const [memoryUsage, setMemoryUsage] = useState(62);
+
 
   useEffect(() => {
     const startTime = Date.now();
@@ -71,6 +73,10 @@ export default function HomePage() {
       const m = Math.floor((uptime % (1000 * 60 * 60)) / (1000 * 60));
       const s = Math.floor((uptime % (1000 * 60)) / 1000);
       setSystemUptime(`${d}d ${h}h ${m}m ${s}s`);
+      
+      // Simulate dynamic CPU and Memory
+      setCpuLoad(Math.floor(Math.random() * (70 - 20 + 1)) + 20); // Random between 20-70%
+      setMemoryUsage(Math.floor(Math.random() * (80 - 40 + 1)) + 40); // Random between 40-80%
     }, 1000);
     return () => clearInterval(interval);
   }, []);
@@ -87,7 +93,7 @@ export default function HomePage() {
     try {
       const input: GeneratePersonalizedBriefingInput = {
         userName: "Dashboard User",
-        operationalMetrics: "System status normal. Key metrics are available in the System Snapshot.",
+        operationalMetrics: `CPU: ${cpuLoad}%, Memory: ${memoryUsage}%. System status normal. Key metrics are available in the System Snapshot.`,
         relevantInformation: `User asked: "${aiPrompt}". Provide a concise, helpful response based on general knowledge or simulate an action if appropriate for a demo.`,
       };
       const result = await generatePersonalizedBriefing(input);
@@ -102,13 +108,19 @@ export default function HomePage() {
   };
   
   const systemMetrics = [
-    { id: 'cpu', icon: Cpu, label: 'CPU Load', value: 35, progressMax: 100, unit: '%' },
-    { id: 'memory', icon: HardDrive, label: 'Memory Usage', value: 62, progressMax: 100, unit: '%' },
+    { id: 'cpu', icon: Cpu, label: 'CPU Load', value: cpuLoad, progressMax: 100, unit: '%' },
+    { id: 'memory', icon: HardDrive, label: 'Memory Usage', value: memoryUsage, progressMax: 100, unit: '%' },
     { id: 'agents', icon: Users, label: 'Active Agents', value: 5, unit: '' },
     { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: 450, progressMax: 1000, unit: 'GB / 1TB' },
     { id: 'sent', icon: ArrowUpFromLine, label: 'Network Sent', value: 1.2, unit: 'GB' },
     { id: 'received', icon: ArrowDownToLine, label: 'Network Received', value: 8.5, unit: 'GB' },
     { id: 'uptime', icon: Timer, label: 'System Uptime', value: systemUptime, unit: '' },
+  ];
+
+  const microAppLaunchers = [
+    { id: 'app1', icon: BarChartBig, label: 'Launch' },
+    { id: 'app2', icon: Settings2, label: 'Launch' },
+    { id: 'app3', icon: ShieldIcon, label: 'Launch' },
   ];
 
 
@@ -180,10 +192,10 @@ export default function HomePage() {
 
         <MicroAppCard title="Micro-Apps" icon={Blocks} actions={<CardActions/>} className="min-h-[150px]">
           <div className="flex space-x-3 p-4 justify-around">
-            {[1,2,3].map(i => (
-              <Button key={i} variant="outline" className="flex flex-col items-center justify-center h-20 w-20 border-dashed border-primary/50 hover:border-primary hover:bg-primary/10 group">
-                <Rocket className="w-6 h-6 mb-1 text-primary/70 group-hover:text-primary"/>
-                <span className="text-xs text-muted-foreground group-hover:text-primary">Launch</span>
+            {microAppLaunchers.map(app => (
+              <Button key={app.id} variant="outline" className="flex flex-col items-center justify-center h-20 w-20 border-dashed border-primary/50 hover:border-primary hover:bg-primary/10 group">
+                <app.icon className="w-6 h-6 mb-1 text-primary/70 group-hover:text-primary"/>
+                <span className="text-xs text-muted-foreground group-hover:text-primary">{app.label}</span>
               </Button>
             ))}
           </div>
@@ -194,7 +206,7 @@ export default function HomePage() {
         <MicroAppCard title="Agent Presence" icon={Cpu} actions={<CardActions/>} className="min-h-[300px]">
           <ul className="space-y-3 p-1 max-h-[350px] overflow-y-auto">
             {initialAgents.map(agent => (
-              <li key={agent.id} className="p-2.5 rounded-md bg-background/50 dark:bg-card hover:bg-muted/30 transition-colors">
+              <li key={agent.id} className="p-2.5 rounded-md bg-primary/5 dark:bg-black/20 hover:bg-muted/30 transition-colors">
                 <div className="flex items-center justify-between mb-0.5">
                   <span className="font-semibold text-foreground text-sm">{agent.name}</span>
                   <div className="flex items-center text-xs">
@@ -221,12 +233,11 @@ export default function HomePage() {
                       <p className="text-xs text-muted-foreground">{task.time}</p>
                     </div>
                   </div>
-                   <Badge variant={task.status === 'success' ? 'default' : 'destructive'} 
-                    className={`capitalize text-xs px-2 py-0.5 
-                    ${task.status === 'success' ? 'bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/30' 
-                                                : 'bg-red-500/20 text-red-400 border-red-500/30 hover:bg-red-500/30'}`}>
+                   <span 
+                    className={`capitalize text-xs px-2 py-1 rounded-sm font-medium
+                    ${task.status === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
                     {task.status}
-                  </Badge>
+                  </span>
                 </AccordionTrigger>
                 <AccordionContent className="text-xs text-muted-foreground p-3 mt-0.5 mb-1 bg-muted/10 dark:bg-muted/20 rounded-b-md">
                   {task.details || "No further details available."}
@@ -242,3 +253,4 @@ export default function HomePage() {
     </div>
   );
 }
+

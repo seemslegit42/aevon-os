@@ -13,8 +13,8 @@ interface MicroAppCardProps {
 
 const MicroAppCard: React.FC<MicroAppCardProps> = ({ title, description, icon: Icon, children, className, actions }) => {
   return (
-    <Card className={`glassmorphism-panel overflow-hidden flex flex-col bg-card/60 dark:bg-card/60 ${className}`}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b border-border/20 dark:border-border/30">
+    <Card className={`glassmorphism-panel overflow-hidden flex flex-col ${className}`}>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b border-border/20 dark:border-border/30 bg-white/5 dark:bg-black/10">
         <div className="flex items-center">
           {Icon && <Icon className="h-5 w-5 text-primary mr-2.5" />}
           <CardTitle className="text-base font-headline text-primary">{title}</CardTitle>
