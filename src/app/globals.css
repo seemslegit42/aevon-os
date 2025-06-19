@@ -133,4 +133,3 @@
 .btn-gradient-primary-accent:disabled {
   @apply opacity-50 cursor-not-allowed;
 }
-
