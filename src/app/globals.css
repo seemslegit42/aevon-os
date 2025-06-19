@@ -64,8 +64,8 @@
     --muted: 223 13% 25%; /* Darker Conchoidal Gray */
     --muted-foreground: 223 13% 65%; /* Lighter Conchoidal Gray */
 
-    --accent: 177 68% 55%; /* Lighter Roman Aqua */
-    --accent-foreground: 150 100% 98%; /* Vitreous White */
+    --accent: 177 75% 70%; /* Incandescent Roman Aqua Glow */
+    --accent-foreground: 248 37% 10%; /* Obsidian Black for contrast on bright accent */
 
     --destructive: 0 62.8% 50.6%; 
     --destructive-foreground: 0 0% 98%; 
