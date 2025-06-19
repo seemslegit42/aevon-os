@@ -118,21 +118,21 @@ export default function HomePage() {
       <div className="lg:col-span-1 space-y-6 flex flex-col">
         <MicroAppCard title="AI Assistant" icon={Bot} actions={<CardActions/>} className="flex-grow flex flex-col min-h-[300px] lg:min-h-[400px]">
           <div className="flex flex-col items-center justify-center text-center p-6 flex-grow">
-            <Image src="https://placehold.co/150x150.png" alt="AI Assistant Orb" width={120} height={120} className="rounded-full mb-4" data-ai-hint="abstract orb" />
+            <Image src="https://placehold.co/120x120.png" alt="AI Assistant Orb" width={120} height={120} className="rounded-full mb-4" data-ai-hint="abstract orb" />
             <p className="text-sm text-muted-foreground mb-4">
               Analyze product sales, compare revenue, or ask for insights.
             </p>
-            {aiResponse && <p className="text-sm text-primary-foreground p-3 bg-primary/20 rounded-md mb-4">{aiResponse}</p>}
+            {aiResponse && <p className="text-sm text-foreground bg-primary/10 dark:bg-primary/20 rounded-md p-3 mb-4">{aiResponse}</p>}
           </div>
-          <form onSubmit={handleAiSubmit} className="p-4 border-t border-border/50">
+          <form onSubmit={handleAiSubmit} className="p-4 border-t border-border/30 dark:border-border/50">
             <Textarea
               placeholder="Ask the AI assistant..."
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
               rows={2}
-              className="bg-input border-border focus:ring-primary mb-2"
+              className="bg-background/70 dark:bg-input border-border/50 focus:ring-primary mb-2"
             />
-            <Button type="submit" className="w-full bg-gradient-to-r from-primary to-secondary text-primary-foreground" disabled={isAiLoading}>
+            <Button type="submit" className="w-full bg-gradient-to-r from-primary to-accent text-primary-foreground" disabled={isAiLoading}>
               {isAiLoading ? <LoaderCircle className="animate-spin mr-2"/> : <Send className="mr-2 h-4 w-4" />}
               Send Prompt
             </Button>
@@ -158,7 +158,7 @@ export default function HomePage() {
                   <span className="font-medium text-foreground">
                     {metric.progressMax ? `${metric.value}${metric.unit.startsWith('%') ? '%' : ''}` : metric.value}
                     {!metric.progressMax && metric.unit && !metric.unit.startsWith('%') && ` ${metric.unit}`}
-                    {metric.progressMax && metric.unit.includes('/') && ` ${metric.unit.substring(metric.unit.indexOf('/'))}`}
+                    {metric.progressMax && metric.unit.includes('/') && !metric.unit.startsWith('%') && ` ${metric.unit.substring(metric.unit.indexOf('/'))}`}
                   </span>
                 </div>
                 {metric.progressMax && (
@@ -180,7 +180,7 @@ export default function HomePage() {
           <div className="flex space-x-3 p-4 justify-around">
             {[1,2,3].map(i => (
               <Button key={i} variant="outline" className="flex flex-col items-center justify-center h-20 w-20 border-dashed border-primary/50 hover:border-primary hover:bg-primary/10 group">
-                <ArrowRightSquare className="w-6 h-6 mb-1 text-primary/70 group-hover:text-primary"/>
+                <Rocket className="w-6 h-6 mb-1 text-primary/70 group-hover:text-primary"/> {/* Changed icon */}
                 <span className="text-xs text-muted-foreground group-hover:text-primary">Launch</span>
               </Button>
             ))}
@@ -193,7 +193,7 @@ export default function HomePage() {
         <MicroAppCard title="Agent Presence" icon={Cpu} actions={<CardActions/>} className="min-h-[300px]">
           <ul className="space-y-3 p-1 max-h-[350px] overflow-y-auto">
             {initialAgents.map(agent => (
-              <li key={agent.id} className="p-2.5 rounded-md bg-card hover:bg-muted/30 transition-colors">
+              <li key={agent.id} className="p-2.5 rounded-md bg-background/50 dark:bg-card hover:bg-muted/30 transition-colors">
                 <div className="flex items-center justify-between mb-0.5">
                   <span className="font-semibold text-foreground text-sm">{agent.name}</span>
                   <div className="flex items-center text-xs">
@@ -211,8 +211,8 @@ export default function HomePage() {
         <MicroAppCard title="Live Orchestration Feed" icon={GitFork} actions={<CardActions/>} className="min-h-[300px] flex flex-col">
           <Accordion type="single" collapsible className="w-full p-1 flex-grow max-h-[350px] overflow-y-auto">
             {initialTasks.map(task => (
-              <AccordionItem value={task.id} key={task.id} className="border-b-0 mb-1"> {/* Removed border-b for cleaner look */}
-                 <AccordionTrigger className="p-2.5 rounded-md bg-card hover:bg-muted/30 transition-colors hover:no-underline text-sm flex justify-between items-center w-full">
+              <AccordionItem value={task.id} key={task.id} className="border-b-0 mb-1">
+                 <AccordionTrigger className="p-2.5 rounded-md bg-background/50 dark:bg-card hover:bg-muted/30 transition-colors hover:no-underline text-sm flex justify-between items-center w-full">
                   <div className="flex items-center text-left">
                      {task.status === 'success' ? <CheckCircle className="w-4 h-4 mr-2 text-green-500 shrink-0"/> : <XCircle className="w-4 h-4 mr-2 text-red-500 shrink-0"/>}
                     <div>
@@ -220,17 +220,20 @@ export default function HomePage() {
                       <p className="text-xs text-muted-foreground">{task.time}</p>
                     </div>
                   </div>
-                   <Badge variant={task.status === 'success' ? 'secondary' : 'destructive'} className={`capitalize text-xs px-2 py-0.5 ${task.status === 'success' ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}`}>
+                   <Badge variant={task.status === 'success' ? 'default' : 'destructive'} 
+                    className={`capitalize text-xs px-2 py-0.5 
+                    ${task.status === 'success' ? 'bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/30' 
+                                                : 'bg-red-500/20 text-red-400 border-red-500/30 hover:bg-red-500/30'}`}>
                     {task.status}
                   </Badge>
                 </AccordionTrigger>
-                <AccordionContent className="text-xs text-muted-foreground p-3 mt-0.5 mb-1 bg-muted/20 rounded-b-md">
+                <AccordionContent className="text-xs text-muted-foreground p-3 mt-0.5 mb-1 bg-muted/10 dark:bg-muted/20 rounded-b-md">
                   {task.details || "No further details available."}
                 </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
-          <div className="p-2 text-right text-xs text-muted-foreground/70 border-t border-border/50 mt-auto">
+          <div className="p-2 text-right text-xs text-muted-foreground/70 border-t border-border/30 dark:border-border/50 mt-auto">
             ΛΞVON OS v1.0 <span className="font-semibold">SILENT AUTOMATION</span>
           </div>
         </MicroAppCard>

@@ -4,81 +4,81 @@
 
 @layer base {
   :root {
-    --background: 150 100% 98%; /* Vitreous White - Light mode base */
-    --foreground: 247 37% 15%; /* Obsidian Black - Light mode base */
+    --background: 150 100% 98%; /* Vitreous White */
+    --foreground: 248 37% 15%; /* Obsidian Black */
 
-    --card: 150 100% 98%; 
-    --card-foreground: 247 37% 15%;
+    --card: 150 100% 98%; /* Vitreous White */
+    --card-foreground: 248 37% 15%; /* Obsidian Black */
 
-    --popover: 150 100% 98%;
-    --popover-foreground: 247 37% 15%;
+    --popover: 150 100% 98%; /* Vitreous White */
+    --popover-foreground: 248 37% 15%; /* Obsidian Black */
 
-    --primary: 275 80% 55%; /* Vibrant Purple - Light mode primary */
-    --primary-foreground: 150 100% 98%; 
+    --primary: 283 54% 42%; /* Imperial Purple */
+    --primary-foreground: 150 100% 98%; /* Vitreous White */
 
-    --secondary: 300 70% 60%; /* Magenta/Pinkish - Light mode secondary */
-    --secondary-foreground: 247 37% 15%;
+    --secondary: 157 49% 55%; /* Patina Green */
+    --secondary-foreground: 248 37% 15%; /* Obsidian Black for contrast */
 
-    --muted: 223 13% 60%; 
-    --muted-foreground: 247 37% 15%; 
+    --muted: 223 13% 60%; /* Conchoidal Gray */
+    --muted-foreground: 248 37% 15%; /* Obsidian Black */
 
-    --accent: 250 80% 60%; /* Electric Blue/Purple - Light mode accent */
-    --accent-foreground: 150 100% 98%; 
+    --accent: 177 68% 41%; /* Roman Aqua */
+    --accent-foreground: 150 100% 98%; /* Vitreous White */
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 150 100% 98%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 223 13% 80%; 
-    --input: 223 13% 70%; 
-    --ring: 275 80% 55%; 
+    --border: 223 13% 55%; /* Conchoidal Gray (slightly darker than muted for borders) */
+    --input: 223 13% 65%;  /* Conchoidal Gray (lighter than muted for input backgrounds) */
+    --ring: 283 54% 42%;   /* Imperial Purple (for focus rings) */
 
     --radius: 0.5rem;
-
-    --chart-1: 275 80% 55%;
-    --chart-2: 300 70% 60%;
-    --chart-3: 250 80% 60%;
-    --chart-4: 220 75% 55%; 
-    --chart-5: 330 75% 60%; 
-
-    --iridescent-aurora-start: 275 80% 55%; 
-    --iridescent-aurora-mid: 300 70% 60%; 
-    --iridescent-aurora-end: 250 80% 60%; 
-  }
-
-  .dark {
-    --background: 265 40% 12%; /* Deepest Purple */
-    --foreground: 265 25% 92%; /* Pale Lavender */
-
-    --card: 265 40% 18%; /* Dark Purple Card */
-    --card-foreground: 265 25% 92%;
-
-    --popover: 265 40% 15%;
-    --popover-foreground: 265 25% 92%;
-
-    --primary: 275 80% 65%; /* Vibrant Purple (like buttons, highlights) */
-    --primary-foreground: 265 10% 95%; /* Very light, almost white */
-
-    --secondary: 300 70% 70%; /* Magenta/Pinkish accent */
-    --secondary-foreground: 265 10% 95%;
-
-    --muted: 265 30% 30%; /* Muted Purple */
-    --muted-foreground: 265 25% 75%; /* Greyish Lavender */
-
-    --accent: 250 80% 70%; /* Electric Blue/Purple accent */
-    --accent-foreground: 265 10% 95%;
-
-    --destructive: 0 75% 60%; /* Bright Red */
-    --destructive-foreground: 0 0% 100%; /* White */
-
-    --border: 265 40% 28%; /* Subtle Purple Border */
-    --input: 265 40% 22%; /* Dark Purple Input BG */
-    --ring: 275 80% 65%; /* Primary color for focus rings */
 
     --chart-1: hsl(var(--primary));
     --chart-2: hsl(var(--secondary));
     --chart-3: hsl(var(--accent));
-    --chart-4: 220 75% 65%; /* A contrasting cool blue for charts */
-    --chart-5: 330 75% 70%; /* A contrasting warm pink for charts */
+    --chart-4: 283 54% 62%; /* Lighter Imperial Purple */
+    --chart-5: 157 49% 75%; /* Lighter Patina Green */
+
+    --iridescent-aurora-start: 283 54% 42%; /* Imperial Purple */
+    --iridescent-aurora-mid: 157 49% 55%;   /* Patina Green */
+    --iridescent-aurora-end: 177 68% 41%;   /* Roman Aqua */
+  }
+
+  .dark {
+    --background: 248 37% 10%; /* Darker Obsidian Black for background */
+    --foreground: 150 100% 95%; /* Lighter Vitreous White for text */
+
+    --card: 248 37% 13%; /* Slightly lighter Obsidian Black for card background */
+    --card-foreground: 150 100% 95%;
+
+    --popover: 248 37% 8%; /* Darkest Obsidian for popover */
+    --popover-foreground: 150 100% 95%;
+
+    --primary: 283 54% 60%; /* Lighter Imperial Purple */
+    --primary-foreground: 150 100% 98%; /* Vitreous White (for contrast on lighter purple) */
+
+    --secondary: 157 49% 70%; /* Lighter Patina Green */
+    --secondary-foreground: 248 37% 10%; /* Dark Obsidian Black */
+
+    --muted: 223 13% 25%; /* Darker Conchoidal Gray */
+    --muted-foreground: 223 13% 65%; /* Lighter Conchoidal Gray */
+
+    --accent: 177 68% 55%; /* Lighter Roman Aqua */
+    --accent-foreground: 150 100% 98%; /* Vitreous White */
+
+    --destructive: 0 62.8% 50.6%; 
+    --destructive-foreground: 0 0% 98%; 
+
+    --border: 223 13% 20%; /* Darker Conchoidal Gray for border */
+    --input: 223 13% 18%;  /* Even darker Conchoidal Gray for input background */
+    --ring: 283 54% 60%;   /* Lighter Imperial Purple (for focus rings) */
+
+    --chart-1: hsl(var(--primary));
+    --chart-2: hsl(var(--secondary));
+    --chart-3: hsl(var(--accent));
+    --chart-4: 283 54% 75%; /* Even Lighter Imperial Purple */
+    --chart-5: 157 49% 85%; /* Even Lighter Patina Green */
 
     --iridescent-aurora-start: hsl(var(--primary));
     --iridescent-aurora-mid: hsl(var(--secondary));

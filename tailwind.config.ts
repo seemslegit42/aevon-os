@@ -62,7 +62,7 @@ export default {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))',
         },
-        sidebar: { // Updated sidebar colors to match new theme
+        sidebar: { 
           DEFAULT: 'hsl(var(--card))', 
           foreground: 'hsl(var(--card-foreground))',
           primary: 'hsl(var(--primary))',
