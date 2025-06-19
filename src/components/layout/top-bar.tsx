@@ -94,7 +94,7 @@ const TopBar: React.FC = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Command or Search (Ctrl+K)..."
+              placeholder="Q Command or Search (Ctrl+K)..."
               className="w-full h-9 pl-10 pr-16 bg-background/70 dark:bg-input border-border/50 text-sm"
               aria-label="Command or search input"
             />

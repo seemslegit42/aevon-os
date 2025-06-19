@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Bot, Cpu, LayoutGrid, Users, HardDrive, ArrowUpFromLine, ArrowDownToLine, Timer, Rocket, GitFork, AppWindow, Send, LoaderCircle, CircleDot, AlertCircle, XCircle, CheckCircle, ArrowRightSquare, MoreHorizontal, Mic, Minus } from 'lucide-react';
+import { Sparkles, Blocks, Cpu, LayoutGrid, Users, HardDrive, ArrowUpFromLine, ArrowDownToLine, Timer, Rocket, GitFork, AppWindow, LoaderCircle, CircleDot, AlertCircle, XCircle, CheckCircle, MoreHorizontal, Mic, Minus } from 'lucide-react';
 import { generatePersonalizedBriefing, GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-personalized-briefings';
 import { useToast } from "@/hooks/use-toast";
 
@@ -113,10 +113,9 @@ export default function HomePage() {
 
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-0 md:p-0"> {/* Adjusted padding to 0 for page, handled by canvas wrapper */}
-      {/* Column 1: AI Assistant & Application View */}
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-0 md:p-0">
       <div className="lg:col-span-1 space-y-6 flex flex-col">
-        <MicroAppCard title="AI Assistant" icon={Bot} actions={<CardActions/>} className="flex-grow flex flex-col min-h-[300px] lg:min-h-[400px]">
+        <MicroAppCard title="AI Assistant" icon={Sparkles} actions={<CardActions/>} className="flex-grow flex flex-col min-h-[300px] lg:min-h-[400px]">
           <div className="flex flex-col items-center justify-center text-center p-6 flex-grow">
             <Image src="https://placehold.co/120x120.png" alt="AI Assistant Orb" width={120} height={120} className="rounded-full mb-4" data-ai-hint="abstract orb" />
             <p className="text-sm text-muted-foreground mb-4">
@@ -132,10 +131,14 @@ export default function HomePage() {
               rows={2}
               className="bg-background/70 dark:bg-input border-border/50 focus:ring-primary mb-2"
             />
-            <Button type="submit" className="w-full bg-gradient-to-r from-primary to-accent text-primary-foreground" disabled={isAiLoading}>
-              {isAiLoading ? <LoaderCircle className="animate-spin mr-2"/> : <Send className="mr-2 h-4 w-4" />}
+            <button 
+              type="submit" 
+              className="w-full btn-gradient-primary-accent h-10 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center" 
+              disabled={isAiLoading}
+            >
+              {isAiLoading ? <LoaderCircle className="animate-spin mr-2 h-4 w-4"/> : null}
               Send Prompt
-            </Button>
+            </button>
           </form>
         </MicroAppCard>
 
@@ -144,7 +147,6 @@ export default function HomePage() {
         </MicroAppCard>
       </div>
 
-      {/* Column 2: System Snapshot & Micro-Apps */}
       <div className="lg:col-span-1 space-y-6">
         <MicroAppCard title="System Snapshot" icon={LayoutGrid} actions={<CardActions/>} className="min-h-[300px]">
           <ul className="space-y-3 p-1">
@@ -176,11 +178,11 @@ export default function HomePage() {
           </ul>
         </MicroAppCard>
 
-        <MicroAppCard title="Micro-Apps" icon={Rocket} actions={<CardActions/>} className="min-h-[150px]">
+        <MicroAppCard title="Micro-Apps" icon={Blocks} actions={<CardActions/>} className="min-h-[150px]">
           <div className="flex space-x-3 p-4 justify-around">
             {[1,2,3].map(i => (
               <Button key={i} variant="outline" className="flex flex-col items-center justify-center h-20 w-20 border-dashed border-primary/50 hover:border-primary hover:bg-primary/10 group">
-                <Rocket className="w-6 h-6 mb-1 text-primary/70 group-hover:text-primary"/> {/* Changed icon */}
+                <Rocket className="w-6 h-6 mb-1 text-primary/70 group-hover:text-primary"/>
                 <span className="text-xs text-muted-foreground group-hover:text-primary">Launch</span>
               </Button>
             ))}
@@ -188,7 +190,6 @@ export default function HomePage() {
         </MicroAppCard>
       </div>
 
-      {/* Column 3: Agent Presence & Live Orchestration Feed */}
       <div className="lg:col-span-1 space-y-6">
         <MicroAppCard title="Agent Presence" icon={Cpu} actions={<CardActions/>} className="min-h-[300px]">
           <ul className="space-y-3 p-1 max-h-[350px] overflow-y-auto">

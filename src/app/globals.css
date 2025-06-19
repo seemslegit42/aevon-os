@@ -56,7 +56,7 @@
     --popover-foreground: 150 100% 95%;
 
     --primary: 283 54% 60%; /* Lighter Imperial Purple */
-    --primary-foreground: 150 100% 98%; /* Vitreous White (for contrast on lighter purple) */
+    --primary-foreground: 150 100% 98%; 
 
     --secondary: 157 49% 70%; /* Lighter Patina Green */
     --secondary-foreground: 248 37% 10%; /* Dark Obsidian Black */
@@ -92,7 +92,6 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* Subtle noise texture - can be adjusted or removed if it clashes with new theme */
     background-image: linear-gradient(45deg, hsla(var(--foreground) / 0.01) 25%, transparent 25%, transparent 75%, hsla(var(--foreground) / 0.01) 75%, hsla(var(--foreground) / 0.01)),
                       linear-gradient(45deg, hsla(var(--foreground) / 0.01) 25%, transparent 25%, transparent 75%, hsla(var(--foreground) / 0.01) 75%, hsla(var(--foreground) / 0.01));
     background-size: 4px 4px;
@@ -109,7 +108,6 @@
   border-radius: var(--radius);
 }
 
-/* Forcing scrollbar styles to be more modern */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -124,4 +122,14 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted));
+}
+
+.btn-gradient-primary-accent {
+  @apply bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-primary-foreground;
+}
+.btn-gradient-primary-accent:hover {
+  @apply brightness-110;
+}
+.btn-gradient-primary-accent:disabled {
+  @apply opacity-50 cursor-not-allowed;
 }
