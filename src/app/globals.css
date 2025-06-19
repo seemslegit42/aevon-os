@@ -2,79 +2,87 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+    --background: 150 100% 98%; /* Vitreous White */
+    --foreground: 247 37% 15%; /* Obsidian Black */
+
+    --card: 150 100% 98%; /* Vitreous White for card base */
+    --card-foreground: 247 37% 15%; /* Obsidian Black */
+
+    --popover: 150 100% 98%;
+    --popover-foreground: 247 37% 15%;
+
+    --primary: 283 84% 42%; /* Imperial Purple */
+    --primary-foreground: 150 100% 98%; /* Vitreous White */
+
+    --secondary: 158 51% 54%; /* Patina Green */
+    --secondary-foreground: 247 37% 15%; /* Obsidian Black for contrast */
+
+    --muted: 223 13% 60%; /* Conchoidal Gray */
+    --muted-foreground: 247 37% 15%; /* Obsidian Black */
+
+    --accent: 177 70% 40%; /* Roman Aqua */
+    --accent-foreground: 150 100% 98%; /* Vitreous White */
+
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
+    --destructive-foreground: 150 100% 98%;
+
+    --border: 223 13% 80%; /* Lighter Conchoidal Gray */
+    --input: 223 13% 70%; /* Conchoidal Gray for input */
+    --ring: 283 84% 42%; /* Imperial Purple for focus rings */
+
+    --radius: 0.5rem;
+
+    --chart-1: 283 84% 42%;
+    --chart-2: 158 51% 54%;
+    --chart-3: 177 70% 40%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --iridescent-aurora-start: 283 84% 42%; /* Imperial Purple */
+    --iridescent-aurora-mid: 158 51% 54%; /* Patina Green */
+    --iridescent-aurora-end: 177 70% 40%; /* Roman Aqua */
   }
+
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: 247 37% 15%; /* Obsidian Black */
+    --foreground: 150 100% 98%; /* Vitreous White */
+
+    --card: 247 37% 15%; /* Obsidian Black for card base */
+    --card-foreground: 150 100% 98%; /* Vitreous White */
+
+    --popover: 247 37% 15%;
+    --popover-foreground: 150 100% 98%;
+
+    --primary: 283 84% 52%; /* Slightly lighter Imperial Purple for dark mode */
+    --primary-foreground: 150 100% 98%;
+
+    --secondary: 158 51% 64%; /* Slightly lighter Patina Green */
+    --secondary-foreground: 150 100% 98%;
+
+    --muted: 223 13% 30%; /* Darker Conchoidal Gray */
+    --muted-foreground: 150 100% 98%;
+
+    --accent: 177 70% 50%; /* Slightly lighter Roman Aqua */
+    --accent-foreground: 247 37% 10%; /* Darker for contrast */
+
+    --destructive: 0 72.2% 50.6%;
+    --destructive-foreground: 150 100% 98%;
+
+    --border: 223 13% 40%; /* Darker Conchoidal Gray for border */
+    --input: 223 13% 35%; /* Darker Conchoidal Gray for input */
+    --ring: 283 84% 52%;
+
+    --chart-1: 283 84% 52%;
+    --chart-2: 158 51% 64%;
+    --chart-3: 177 70% 50%;
+    --chart-4: 43 74% 76%;
+    --chart-5: 27 87% 77%;
+
+    --iridescent-aurora-start: 283 84% 52%;
+    --iridescent-aurora-mid: 158 51% 64%;
+    --iridescent-aurora-end: 177 70% 50%;
   }
 }
 
@@ -84,5 +92,36 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    /* Subtle noise texture */
+    background-image: linear-gradient(45deg, rgba(0,0,0,0.01) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.01) 75%, rgba(0,0,0,0.01)),
+                      linear-gradient(45deg, rgba(0,0,0,0.01) 25%, transparent 25%, transparent 75%, rgba(0,0,0,0.01) 75%, rgba(0,0,0,0.01));
+    background-size: 4px 4px;
+    background-position: 0 0, 2px 2px;
   }
+}
+
+.iridescent-aurora-bg {
+  background: linear-gradient(120deg, hsl(var(--iridescent-aurora-start)), hsl(var(--iridescent-aurora-mid)), hsl(var(--iridescent-aurora-end)));
+}
+
+.glassmorphism-panel {
+  @apply bg-card/70 dark:bg-card/70 backdrop-blur-lg border border-border/30 shadow-2xl;
+  border-radius: var(--radius);
+}
+
+/* Forcing scrollbar styles to be more modern */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--background) / 0.5);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted) / 0.7);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted));
 }
