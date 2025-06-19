@@ -8,7 +8,7 @@ type CanvasWrapperProps = {
 
 const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
   return (
-    <main className="flex-grow w-full p-4 md:p-8 overflow-y-auto iridescent-aurora-bg animate-aurora-glow relative">
+    <main className="flex-grow w-full p-4 md:p-8 overflow-y-auto iridescent-aurora-bg relative">
       {/* This pseudo-element creates the subtle flowing gradient lines texture */}
       <div
         className="absolute inset-0 z-0 opacity-20 dark:opacity-10"
