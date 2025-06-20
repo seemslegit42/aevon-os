@@ -60,7 +60,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] p-0 max-h-[80vh] flex flex-col glassmorphism-panel">
+      <DialogContent className="sm:max-w-[600px] p-0 max-h-[80vh] flex flex-col">
         <DialogHeader className="p-4 border-b border-border/30">
           <DialogTitle className="font-headline text-primary">Manage Dashboard Zones</DialogTitle>
           <DialogDescription>Add, remove, or rearrange dashboard zones.</DialogDescription>
@@ -142,5 +142,3 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
 };
 
 export default CommandPalette;
-
-    

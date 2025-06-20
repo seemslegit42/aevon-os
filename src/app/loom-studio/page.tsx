@@ -1,7 +1,6 @@
 
 import MicroAppCard from '@/components/micro-app-card';
 import { Settings, Zap, GitBranch, Eye } from 'lucide-react';
-// Image import removed
 
 export default function LoomStudioPage() {
   return (
@@ -11,8 +10,7 @@ export default function LoomStudioPage() {
         icon={Settings}
         description="Loom Studio is your AI-native micro-environment for crafting, debugging, and orchestrating complex AI workflows and prompt chains. Visually build, test, and deploy intelligent agents with unprecedented control and transparency."
       >
-        <div className="my-6 p-6 glassmorphism-panel bg-background/30 dark:bg-background/30 rounded-lg">
-          {/* Image component removed */}
+        <div className="my-6 p-6 glassmorphism-panel">
           <div className="w-full h-[200px] md:h-[300px] lg:h-[400px] bg-muted/30 rounded-md flex items-center justify-center">
             <p className="text-muted-foreground">Conceptual Diagram Area</p>
           </div>

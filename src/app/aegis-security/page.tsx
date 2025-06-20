@@ -58,7 +58,7 @@ export default function AegisSecurityPage() {
         </Button>
 
         {analysisResult && (
-          <Card className="mt-6 glassmorphism-panel bg-background/30 dark:bg-background/30 shadow-lg">
+          <Card className="mt-6 glassmorphism-panel">
             <CardHeader>
               <CardTitle className="text-xl font-headline text-primary flex items-center">
                 <CheckCircle className="w-6 h-6 mr-2 text-secondary" /> AI Analysis Summary

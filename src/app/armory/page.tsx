@@ -20,7 +20,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-// Image import removed as per "no placeholder" rule
 
 const formSchema = z.object({
   microAppName: z.string().min(3, "App name must be at least 3 characters"),
@@ -37,11 +36,10 @@ interface ArmoryApp {
   icon: LucideIcon;
   shortDesc: string;
   aiGeneratedDesc?: string;
-  // imageUrl and dataAiHint removed
   tags: string[];
 }
 
-const initialApps: ArmoryApp[] = []; // No placeholder data
+const initialApps: ArmoryApp[] = []; 
 
 export default function ArmoryPage() {
   const [apps, setApps] = useState<ArmoryApp[]>(initialApps);
@@ -80,9 +78,7 @@ export default function ArmoryPage() {
   };
   
   useEffect(() => {
-    // This effect would previously fetch descriptions for initialApps.
-    // Since initialApps is now empty, this effect will do nothing, which is correct.
-    if (apps.length > 0) { // Only run if there are apps, which there won't be initially
+    if (apps.length > 0) { 
         const fetchInitialDescriptions = async () => {
           const updatedApps = await Promise.all(apps.map(async (app) => {
             if (!app.aiGeneratedDesc) {
@@ -128,7 +124,6 @@ export default function ArmoryPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {apps.map((app) => (
             <Card key={app.id} className="glassmorphism-panel flex flex-col overflow-hidden">
-              {/* Image removed */}
               <CardHeader>
                 <CardTitle className="font-headline text-xl text-primary flex items-center">
                   <app.icon className="w-6 h-6 mr-2 text-primary" /> {app.name}
@@ -218,7 +213,7 @@ export default function ArmoryPage() {
         </Form>
 
         {generatedDescription && (
-          <Card className="mt-6 glassmorphism-panel bg-background/30 dark:bg-background/30">
+          <Card className="mt-6 glassmorphism-panel">
             <CardHeader>
               <CardTitle className="text-xl font-headline text-primary">AI-Generated Description:</CardTitle>
             </CardHeader>
