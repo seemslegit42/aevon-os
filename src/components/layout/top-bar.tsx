@@ -92,7 +92,7 @@ const TopBar: React.FC = () => {
             </Link>
             <nav className="hidden md:flex items-center space-x-1">
               {mainNavItems.map((item) => (
-                <Link key={item.href} href={item.href} passHref legacyBehavior>
+                <Link key={item.href} href={item.href}>
                   <Button
                     variant="ghost"
                     size="sm"
