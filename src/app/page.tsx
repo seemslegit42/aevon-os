@@ -322,15 +322,14 @@ export default function DashboardPage() {
         onResetLayout={handleResetLayout}
       />
       <Button
-        variant="outline"
         size="icon"
-        className="fixed bottom-6 left-6 z-50 rounded-full shadow-xl bg-accent hover:bg-accent/90 text-accent-foreground w-12 h-12"
+        className="fixed bottom-6 left-6 z-50 rounded-full shadow-xl bg-accent hover:bg-accent/80 text-accent-foreground w-12 h-12 backdrop-blur-sm flex items-center justify-center"
         onClick={() => setIsCommandPaletteOpen(true)}
       >
         <LayoutDashboard className="h-6 w-6" />
         <span className="sr-only">Manage Dashboard Zones</span>
       </Button>
-       <div className="fixed bottom-4 right-4 text-xs text-foreground/80 dark:text-foreground/80 font-code z-[45] bg-background/40 dark:bg-black/40 backdrop-blur-sm px-2 py-1 rounded-md shadow-lg">
+       <div className="fixed bottom-4 right-4 text-xs text-foreground/90 dark:text-foreground/80 font-code z-[45] bg-background/50 dark:bg-black/50 backdrop-blur-sm px-2 py-1 rounded-md shadow-lg">
         <span>ΛΞVON OS v1.2 </span>
         <span className="font-semibold">ZUSTAND</span>
       </div>
