@@ -32,7 +32,7 @@ export interface CardConfig {
   title: string;
   icon: React.ElementType;
   content: React.LazyExoticComponent<React.FC<any>>;
-  contentProps?: any; 
+  contentProps?: any;
   defaultLayout: { x: number; y: number; width: number; height: number; zIndex: number };
   minWidth: number;
   minHeight: number;
@@ -45,7 +45,7 @@ const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, isDismissible: true,
     content: AiAssistantCardContent,
-    contentProps: { 
+    contentProps: {
       placeholderInsight: "Analyze product sales, compare revenue, or ask for insights."
     },
     defaultLayout: { x: 20, y: 20, width: 580, height: 300, zIndex: 1 },
@@ -72,7 +72,7 @@ export default function DashboardPage() {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    const savedLayouts = localStorage.getItem('dashboardCardLayouts_v4_minimal'); 
+    const savedLayouts = localStorage.getItem('dashboardCardLayouts_v4_minimal');
     const savedActiveIds = localStorage.getItem('dashboardActiveCardIds_v4_minimal');
 
     let currentActiveIds = DEFAULT_ACTIVE_CARD_IDS;
@@ -81,7 +81,7 @@ export default function DashboardPage() {
         const parsedActiveIds = JSON.parse(savedActiveIds);
         currentActiveIds = parsedActiveIds.filter((id: string) => ALL_CARD_CONFIGS.some(c => c.id === id));
         if (currentActiveIds.length === 0 && ALL_CARD_CONFIGS.length > 0) {
-             currentActiveIds = DEFAULT_ACTIVE_CARD_IDS; 
+             currentActiveIds = DEFAULT_ACTIVE_CARD_IDS;
         }
       } catch (e) {
         console.error("Failed to parse active card IDs from localStorage", e);
@@ -157,7 +157,7 @@ export default function DashboardPage() {
     setActiveCardIds(prev => prev.filter(id => id !== cardId));
     toast({ title: "Zone Removed", description: `The zone has been removed from your dashboard.`});
   }, [toast]);
-  
+
   const handleAddCard = useCallback((cardId: string) => {
     if (!activeCardIds.includes(cardId)) {
       setActiveCardIds(prev => [...prev, cardId]);
@@ -207,13 +207,13 @@ export default function DashboardPage() {
       </div>
     </TooltipProvider>
   );
-  
+
   const cardsToRender = ALL_CARD_CONFIGS.filter(card => activeCardIds.includes(card.id));
 
   const getMergedContentProps = (cardConfig: CardConfig) => {
     return {
       ...cardConfig.contentProps,
-      eventBusInstance: eventBus, 
+      eventBusInstance: eventBus,
     };
   };
 
@@ -258,12 +258,12 @@ export default function DashboardPage() {
       ) : (
         cardsToRender.map(cardConfig => {
           const currentLayout = cardLayouts.find(l => l.id === cardConfig.id);
-          const layoutToUse = currentLayout || 
+          const layoutToUse = currentLayout ||
                              ALL_CARD_CONFIGS.find(c => c.id === cardConfig.id)?.defaultLayout;
 
           if (!layoutToUse) {
              console.warn(`No layout or default layout found for card ${cardConfig.id}. Skipping render.`);
-             return null; 
+             return null;
           }
           const finalLayout = {...layoutToUse, id: cardConfig.id, zIndex: layoutToUse.zIndex || (getMaxZIndex() + 1) };
 
@@ -292,7 +292,7 @@ export default function DashboardPage() {
               }}
               style={{ zIndex: finalLayout.zIndex }}
               className={cn(
-                "border-transparent hover:border-primary/30 focus-within:border-primary",
+                "border-transparent hover:border-primary/20 focus-within:border-primary/40",
               )}
               dragGrid={[10, 10]}
               resizeGrid={[10, 10]}
@@ -324,17 +324,16 @@ export default function DashboardPage() {
       <Button
         variant="outline"
         size="icon"
-        className="fixed bottom-4 left-4 z-50 rounded-full shadow-xl bg-background/80 backdrop-blur-sm hover:bg-primary/20"
+        className="fixed bottom-6 left-6 z-50 rounded-full shadow-xl bg-accent hover:bg-accent/80 text-accent-foreground w-12 h-12"
         onClick={() => setIsCommandPaletteOpen(true)}
       >
-        <LayoutDashboard className="h-5 w-5 text-primary" />
+        <LayoutDashboard className="h-6 w-6" />
         <span className="sr-only">Manage Dashboard Zones</span>
       </Button>
        <div className="fixed bottom-4 right-4 text-xs text-muted-foreground/70 font-code z-[9999]">
-        <span>ΛΞVON OS v1.2 </span> 
+        <span>ΛΞVON OS v1.2 </span>
         <span className="font-semibold">ZUSTAND</span>
       </div>
     </div>
   );
 }
-

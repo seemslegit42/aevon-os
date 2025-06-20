@@ -10,34 +10,29 @@ import eventBus from '@/lib/event-bus'; // Assuming eventBus is the default expo
 
 interface AiAssistantCardContentProps {
   placeholderInsight?: string;
-  eventBusInstance?: Emitter<any>; 
+  eventBusInstance?: Emitter<any>;
 }
 
 const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
   placeholderInsight,
-  eventBusInstance // Keep eventBusInstance prop for potential agent interactions
+  eventBusInstance
 }) => {
-  const { 
-    aiPrompt, 
-    setAiPrompt, 
-    aiResponse, 
-    isAiLoading, 
-    submitPrompt 
+  const {
+    aiPrompt,
+    setAiPrompt,
+    aiResponse,
+    isAiLoading,
+    submitPrompt
   } = useAiAssistantStore();
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    // Potentially get system snapshot data from another store or via event bus
-    // For now, passing undefined or a placeholder
-    let systemData = "System metrics: Active Agents (from AgentPresence), Disk Usage, etc. (from SystemSnapshot)"; 
-    // This data would ideally be dynamically fetched from other stores via the event bus or direct store access if architected that way.
-    // For simplicity, the AI flow already includes example static data, so we can pass a generic trigger.
+    let systemData = "System metrics: Active Agents (from AgentPresence), Disk Usage, etc. (from SystemSnapshot)";
     submitPrompt(systemData);
   };
-  
+
   useEffect(() => {
     const handleRequestSystemData = (callback: (data: string) => void) => {
-      // In a real scenario, this would fetch data from system snapshot store
       const data = "Operational Metrics: Active Agents (5), Disk Usage (450GB/1000GB)";
       callback(data);
     };
@@ -53,24 +48,24 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
     <>
       <div className="flex flex-col items-start justify-start text-left p-4 pt-2 flex-grow">
         {placeholderInsight && !aiResponse && !isAiLoading && (
-          <p className="text-sm text-foreground/90 dark:text-white mb-4 mt-2">
+          <p className="text-sm text-foreground/90 dark:text-neutral-300 mb-4 mt-2">
             {placeholderInsight}
           </p>
         )}
-        {aiResponse && <ScrollArea className="h-[80px] w-full"><p className="text-sm text-foreground dark:text-white bg-primary/10 dark:bg-primary/20 rounded-md p-3 mb-4 text-left whitespace-pre-wrap">{aiResponse}</p></ScrollArea>}
+        {aiResponse && <ScrollArea className="h-[80px] w-full"><div className="text-sm text-foreground dark:text-white bg-primary/5 dark:bg-black/20 rounded-md p-3 mb-4 text-left whitespace-pre-wrap">{aiResponse}</div></ScrollArea>}
         {isAiLoading && !aiResponse && (
             <div className="flex items-center justify-center w-full h-[80px]">
                 <LoaderCircle className="animate-spin h-6 w-6 text-primary" />
             </div>
         )}
       </div>
-      <form onSubmit={handleSubmit} className="p-4 border-t border-border/20 dark:border-white/10 mt-auto">
+      <form onSubmit={handleSubmit} className="p-4 border-t border-border/10 dark:border-white/5 mt-auto">
         <Textarea
           placeholder="Ask the AI assistant..."
           value={aiPrompt}
           onChange={(e) => setAiPrompt(e.target.value)}
           rows={2}
-          className="bg-input border-border/50 dark:border-white/20 focus:ring-primary mb-2 text-foreground dark:text-white placeholder-muted-foreground dark:placeholder-neutral-300 text-sm"
+          className="bg-input border-border/50 dark:border-white/20 focus:ring-accent mb-2 text-foreground dark:text-white placeholder-muted-foreground dark:placeholder-neutral-400 text-sm"
           disabled={isAiLoading}
         />
         <button

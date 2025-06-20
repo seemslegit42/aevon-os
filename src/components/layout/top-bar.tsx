@@ -6,20 +6,20 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { 
-  Search, 
-  Home, 
-  Settings, 
-  Shield, 
-  ShoppingCart, 
-  Bell, 
-  Settings2, 
-  Clock, 
-  ChevronDown, 
+import {
+  Search,
+  Home,
+  Settings,
+  Shield,
+  ShoppingCart,
+  Bell,
+  Settings2,
+  Clock,
+  ChevronDown,
   BrainCircuit,
-  type LucideIcon 
+  type LucideIcon
 } from 'lucide-react';
-import { 
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -91,11 +91,11 @@ const TopBar: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     className={cn(
-                      "hover:bg-primary/20 dark:hover:bg-white/10",
+                      "hover:bg-primary/10 dark:hover:bg-white/5",
                       "text-gray-700 dark:text-white",
-                      "hover:text-gray-900 dark:hover:text-neutral-200",
-                      (pathname === item.href || (item.href === '/' && pathname.startsWith('/dashboard') && pathname.length <=1 ) || (item.href !== '/' && pathname.startsWith(item.href)) ) && 
-                        "active-nav-link-dark font-semibold" 
+                      "hover:text-gray-900 dark:hover:text-neutral-100",
+                      (pathname === item.href || (item.href === '/' && pathname.startsWith('/dashboard') && pathname.length <=1 ) || (item.href !== '/' && pathname.startsWith(item.href)) ) &&
+                        "active-nav-link-dark font-semibold"
                     )}
                   >
                     <item.icon className="w-4 h-4 mr-2" />
@@ -109,26 +109,26 @@ const TopBar: React.FC = () => {
           {/* Center: Search Bar */}
           <div className="flex-1 flex justify-center px-8 lg:px-16">
             <div className="relative w-full max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-neutral-300" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-neutral-400" />
               <Input
                 type="search"
                 placeholder="Command or Search (Ctrl+K)..."
                 className={cn(
-                  "w-full h-9 pl-10 pr-4 border-border/50 focus:ring-primary focus:border-primary",
-                  "bg-background/50 dark:bg-white/5 ",
+                  "w-full h-9 pl-10 pr-4 border-border/30 dark:border-white/10 focus:ring-accent focus:border-accent",
+                  "bg-background/30 dark:bg-black/20 ",
                   "text-sm text-gray-900 dark:text-white",
-                  "placeholder-muted-foreground dark:placeholder-neutral-400"
+                  "placeholder-muted-foreground dark:placeholder-neutral-500"
                 )}
                 aria-label="Command or search input"
               />
             </div>
           </div>
-          
+
           {/* Right Side: Controls & User Menu */}
           <div className="flex items-center space-x-1.5">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-gray-700 dark:text-neutral-200 hover:bg-primary/20 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white w-9 h-9">
+                <Button variant="ghost" size="icon" className="text-gray-700 dark:text-neutral-200 hover:bg-primary/10 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white w-9 h-9">
                   <Bell className="h-5 w-5" />
                   <span className="sr-only">Notifications</span>
                 </Button>
@@ -138,7 +138,7 @@ const TopBar: React.FC = () => {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-gray-700 dark:text-neutral-200 hover:bg-primary/20 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white w-9 h-9">
+                <Button variant="ghost" size="icon" className="text-gray-700 dark:text-neutral-200 hover:bg-primary/10 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white w-9 h-9">
                   <Settings2 className="h-5 w-5" />
                   <span className="sr-only">Settings</span>
                 </Button>
@@ -153,7 +153,7 @@ const TopBar: React.FC = () => {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2 h-9 px-2.5 text-gray-700 dark:text-neutral-200 hover:bg-primary/20 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white">
+                <Button variant="ghost" className="flex items-center space-x-2 h-9 px-2.5 text-gray-700 dark:text-neutral-200 hover:bg-primary/10 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white">
                   <Avatar className="h-6 w-6">
                     <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
                     <AvatarFallback className="text-xs bg-primary/30 text-primary-foreground">U</AvatarFallback>
@@ -161,14 +161,14 @@ const TopBar: React.FC = () => {
                   <ChevronDown className="h-4 w-4 opacity-80" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 glassmorphism-panel border-border/50">
-                <DropdownMenuLabel className="font-headline text-primary">My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-border/30"/>
-                <DropdownMenuItem>Profile</DropdownMenuItem>
-                <DropdownMenuItem>Billing</DropdownMenuItem>
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-border/30"/>
-                <DropdownMenuItem>Log out</DropdownMenuItem>
+              <DropdownMenuContent align="end" className="w-56 glassmorphism-panel border-border/30 dark:border-white/10">
+                <DropdownMenuLabel className="font-headline text-primary dark:text-primary">My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-border/20 dark:bg-white/5"/>
+                <DropdownMenuItem className="hover:!bg-primary/10 dark:hover:!bg-white/5">Profile</DropdownMenuItem>
+                <DropdownMenuItem className="hover:!bg-primary/10 dark:hover:!bg-white/5">Billing</DropdownMenuItem>
+                <DropdownMenuItem className="hover:!bg-primary/10 dark:hover:!bg-white/5">Settings</DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-border/20 dark:bg-white/5"/>
+                <DropdownMenuItem className="hover:!bg-primary/10 dark:hover:!bg-white/5">Log out</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -179,4 +179,3 @@ const TopBar: React.FC = () => {
 };
 
 export default TopBar;
-    
