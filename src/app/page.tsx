@@ -1,19 +1,26 @@
 
 "use client";
-import React, { useState, useEffect, FormEvent, Suspense, useCallback, lazy } from 'react';
+import React, { useState, useEffect, Suspense, useCallback, lazy } from 'react';
 import { Rnd, type Position, type Size } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Cpu, AppWindow, Users, HardDrive, Timer, Blocks, Mic, MoreHorizontal, X, CheckCircle, AlertCircle, LoaderCircle, CircleDot, BarChartBig, Settings2, Shield, Server, Network, Clock, Info, LayoutDashboard, Palette } from 'lucide-react';
+import { Sparkles, Cpu, AppWindow, Users, Server, Blocks, CheckCircle, Mic, MoreHorizontal, X, LoaderCircle, LayoutDashboard } from 'lucide-react'; // Adjusted icons
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from '@/hooks/use-mobile';
-import type { GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-personalized-briefings';
-import { generatePersonalizedBriefing } from '@/ai/flows/generate-personalized-briefings';
 import eventBus from '@/lib/event-bus';
 import CommandPalette from '@/components/command-palette';
+
+// Initial Data (could come from API or be part of store initialization if more complex)
+import type { Agent as AgentPresenceAgentType } from '@/components/dashboard/agent-presence-card-content';
+import { CircleDot, LoaderCircle as ProcessingIcon, AlertCircle as ErrorIcon } from 'lucide-react'; // For agent status
+
+import type { FeedItem as LiveFeedItemType } from '@/components/dashboard/live-orchestration-feed-card-content';
+import type { SystemMetric as SystemMetricType, AgentTask as AgentTaskType } from '@/components/dashboard/system-snapshot-card-content';
+import { HardDrive, Network, Clock } from 'lucide-react'; // For system snapshot icons
+
 
 // Async load card content components
 const AiAssistantCardContent = lazy(() => import('@/components/dashboard/ai-assistant-card-content'));
@@ -23,31 +30,27 @@ const ApplicationViewCardContent = lazy(() => import('@/components/dashboard/app
 const MicroAppsCardContent = lazy(() => import('@/components/dashboard/micro-apps-card-content'));
 const LiveOrchestrationFeedCardContent = lazy(() => import('@/components/dashboard/live-orchestration-feed-card-content'));
 
-// Data (can be moved to a separate file)
-const initialAgentsData: AgentPresenceAgent[] = [
+
+const initialAgentsData: AgentPresenceAgentType[] = [
   { id: '1', name: 'NexusGuard_Alpha', description: 'Actively monitoring inbound/outbound netwo...', status: 'Idle', statusColor: 'text-yellow-400 dark:text-yellow-400', statusIcon: CircleDot, time: '2m ago' },
-  { id: '2', name: 'Helios_Stream_Processor', description: 'Continuously analyzing high-volume sen...', status: 'Processing', statusColor: 'text-blue-400 dark:text-cyan-400', statusIcon: LoaderCircle, time: 'Now' },
+  { id: '2', name: 'Helios_Stream_Processor', description: 'Continuously analyzing high-volume sen...', status: 'Processing', statusColor: 'text-blue-400 dark:text-cyan-400', statusIcon: ProcessingIcon, time: 'Now' },
   { id: '3', name: 'NovaSys_QueryEngine', description: 'Awaiting complex user queries and data retri...', status: 'Idle', statusColor: 'text-yellow-400 dark:text-yellow-400', statusIcon: CircleDot, time: '10s ago' },
-  { id: '4', name: 'Cygnus_BackupAgent', description: 'Scheduled integrity check failed on target...', status: 'Error', statusColor: 'text-red-500 dark:text-red-500', statusIcon: AlertCircle, time: '5m ago' },
+  { id: '4', name: 'Cygnus_BackupAgent', description: 'Scheduled integrity check failed on target...', status: 'Error', statusColor: 'text-red-500 dark:text-red-500', statusIcon: ErrorIcon, time: '5m ago' },
 ];
-type AgentPresenceAgent = import('@/components/dashboard/agent-presence-card-content').Agent;
 
-
-const initialFeedItems: LiveFeedItem[] = [
+const initialFeedItemsData: LiveFeedItemType[] = [
   { task: 'Agent Task: Analyze User Sentiment', time: '0 seconds ago', status: 'failure', details: 'Analysis failed due to invalid input schema.' },
   { task: 'Agent Task: Deploy Microservice v1.2', time: '3 minutes ago', status: 'success', details: 'Deployment to staging successful.' },
   { task: 'Agent Task: Backup Database Cluster', time: '15 minutes ago', status: 'success', details: 'Full backup completed.' },
 ];
-type LiveFeedItem = import('@/components/dashboard/live-orchestration-feed-card-content').FeedItem;
 
-const systemMetricsConfigData: SystemMetricConfig[] = [
+const systemMetricsConfigData: SystemMetricType[] = [
   { id: 'agents', icon: Users, label: 'Active Agents', value: 5, unit: '' },
   { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: 450, progressMax: 1000, unit: 'GB' },
   { id: 'networkSent', icon: Network, label: 'Network Sent', value: '1.2 GB', unit: '' },
   { id: 'networkReceived', icon: Network, label: 'Network Received', value: '8.5 GB', unit: '' },
   { id: 'uptime', icon: Clock, label: 'System Uptime', value: '12d 4h 32m', unit: '' },
 ];
-type SystemMetricConfig = import('@/components/dashboard/system-snapshot-card-content').SystemMetric;
 
 
 export interface CardLayoutInfo {
@@ -64,7 +67,7 @@ export interface CardConfig {
   title: string;
   icon: React.ElementType;
   content: React.LazyExoticComponent<React.FC<any>>;
-  contentProps?: any;
+  contentProps?: any; // Props passed to the lazy loaded component, now includes initial data for stores
   defaultLayout: { x: number; y: number; width: number; height: number; zIndex: number };
   minWidth: number;
   minHeight: number;
@@ -77,7 +80,7 @@ const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, isDismissible: true,
     content: AiAssistantCardContent,
-    contentProps: {
+    contentProps: { // No direct state props, placeholder can be static or from a config store later
       placeholderInsight: "Analyze product sales, compare revenue, or ask for insights."
     },
     defaultLayout: { x: 20, y: 20, width: 580, height: 300, zIndex: 1 },
@@ -86,45 +89,47 @@ const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'agentPresence', title: 'Agent Presence', icon: Cpu, isDismissible: true,
     content: AgentPresenceCardContent,
-    contentProps: { agents: initialAgentsData },
+    contentProps: { initialAgents: initialAgentsData }, // Pass initial data for the store
     defaultLayout: { x: 620, y: 20, width: 450, height: 230, zIndex: 1 },
     minWidth: 300, minHeight: 200,
   },
   {
     id: 'systemSnapshot', title: 'System Snapshot', icon: Server, isDismissible: true,
     content: SystemSnapshotCardContent,
-    contentProps: { systemMetricsConfig: systemMetricsConfigData, agentTask: undefined },
+    contentProps: { 
+        initialSystemMetricsConfig: systemMetricsConfigData, 
+        initialAgentTask: undefined // Or some initial task if needed
+    },
     defaultLayout: { x: 620, y: 270, width: 450, height: 250, zIndex: 1 },
     minWidth: 320, minHeight: 240,
   },
   {
     id: 'microApps', title: 'Micro-Apps', icon: Blocks, isDismissible: true,
     content: MicroAppsCardContent,
+    // contentProps: { initialAppItems: hardcodedAppItems } // If apps list was dynamic and passed here
     defaultLayout: { x: 620, y: 540, width: 450, height: 130, zIndex: 1 },
     minWidth: 280, minHeight: 120,
   },
   {
     id: 'applicationView', title: 'Application View', icon: AppWindow, isDismissible: true,
     content: ApplicationViewCardContent,
+    // contentProps: { initialAppId: null } // Or some default app
     defaultLayout: { x: 20, y: 340, width: 580, height: 330, zIndex: 1 },
     minWidth: 400, minHeight: 200,
   },
   {
     id: 'liveOrchestration', title: 'Live Orchestration Feed', icon: CheckCircle, isDismissible: true,
     content: LiveOrchestrationFeedCardContent,
-    contentProps: { feedItems: initialFeedItems },
+    contentProps: { initialFeedItems: initialFeedItemsData },
     defaultLayout: { x: 1090, y: 20, width: 400, height: 650, zIndex: 1 },
     minWidth: 320, minHeight: 250, cardClassName: "flex-grow flex flex-col",
   },
 ];
 
-const DEFAULT_ACTIVE_CARD_IDS = ['aiAssistant', 'agentPresence', 'systemSnapshot', 'applicationView', 'liveOrchestration'];
+const DEFAULT_ACTIVE_CARD_IDS = ['aiAssistant', 'agentPresence', 'systemSnapshot', 'applicationView', 'liveOrchestration', 'microApps'];
 
 
 export default function DashboardPage() {
-  const [aiPrompt, setAiPrompt] = useState('');
-  const [aiResponse, setAiResponse] = useState<string | null>(null);
-  const [isAiLoading, setIsAiLoading] = useState(false);
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
@@ -133,10 +138,9 @@ export default function DashboardPage() {
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Load layout and active cards from localStorage
   useEffect(() => {
-    const savedLayouts = localStorage.getItem('dashboardCardLayouts_v1');
-    const savedActiveIds = localStorage.getItem('dashboardActiveCardIds_v1');
+    const savedLayouts = localStorage.getItem('dashboardCardLayouts_v2_zustand');
+    const savedActiveIds = localStorage.getItem('dashboardActiveCardIds_v2_zustand');
 
     let currentActiveIds = DEFAULT_ACTIVE_CARD_IDS;
     if (savedActiveIds) {
@@ -151,7 +155,6 @@ export default function DashboardPage() {
     if (savedLayouts) {
       try {
         const parsedLayouts = JSON.parse(savedLayouts);
-        // Ensure all active cards have layout info; add default if missing
         const layoutsWithDefaults = currentActiveIds.map(id => {
           const existing = parsedLayouts.find((l: CardLayoutInfo) => l.id === id);
           if (existing) return existing;
@@ -170,42 +173,15 @@ export default function DashboardPage() {
     setIsInitialized(true);
   }, []);
 
-  // Save layout and active cards to localStorage
   useEffect(() => {
     if (!isInitialized) return;
-    localStorage.setItem('dashboardCardLayouts_v1', JSON.stringify(cardLayouts));
+    localStorage.setItem('dashboardCardLayouts_v2_zustand', JSON.stringify(cardLayouts));
   }, [cardLayouts, isInitialized]);
 
   useEffect(() => {
     if (!isInitialized) return;
-     localStorage.setItem('dashboardActiveCardIds_v1', JSON.stringify(activeCardIds));
+     localStorage.setItem('dashboardActiveCardIds_v2_zustand', JSON.stringify(activeCardIds));
   }, [activeCardIds, isInitialized]);
-
-
-  const handleAiSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!aiPrompt.trim()) {
-      toast({ variant: "destructive", title: "Input Error", description: "Please enter a prompt for the AI assistant." });
-      return;
-    }
-    setIsAiLoading(true);
-    setAiResponse(null);
-    try {
-      const input: GeneratePersonalizedBriefingInput = {
-        userName: "Dashboard User",
-        operationalMetrics: "System metrics: Active Agents (5), Disk Usage (450GB/1000GB), Network Sent (1.2GB), Network Received (8.5GB), System Uptime (12d 4h 32m).",
-        relevantInformation: `User asked: "${aiPrompt}". Provide a concise, helpful response.`,
-      };
-      const result = await generatePersonalizedBriefing(input);
-      setAiResponse(result.briefing);
-    } catch (error) {
-      console.error("Error with AI Assistant:", error);
-      setAiResponse("Sorry, I encountered an error trying to respond. Please try again.");
-      toast({ variant: "destructive", title: "AI Assistant Error", description: "Could not process your request." });
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
 
   const getMaxZIndex = useCallback(() => {
     if (cardLayouts.length === 0) return 0;
@@ -241,34 +217,29 @@ export default function DashboardPage() {
 
   const handleRemoveCard = useCallback((cardId: string) => {
     setActiveCardIds(prev => prev.filter(id => id !== cardId));
-    // Optionally remove from layouts as well, or keep it if user might re-add
-    // setCardLayouts(prev => prev.filter(l => l.id !== cardId));
     toast({ title: "Zone Removed", description: `The zone has been removed from your dashboard.`});
-  }, []);
+  }, [toast]);
   
   const handleAddCard = useCallback((cardId: string) => {
     if (!activeCardIds.includes(cardId)) {
       setActiveCardIds(prev => [...prev, cardId]);
-      // Add to layouts if not already there, or use default
       if (!cardLayouts.find(l => l.id === cardId)) {
         const defaultConfig = ALL_CARD_CONFIGS.find(c => c.id === cardId);
         if (defaultConfig) {
           setCardLayouts(prev => [...prev, { ...defaultConfig.defaultLayout, id: cardId, zIndex: getMaxZIndex() + 1 }]);
         }
       } else {
-        // If layout exists (e.g. card was removed then re-added), bring to front
         handleBringToFront(cardId);
       }
       toast({ title: "Zone Added", description: `The zone has been added to your dashboard.`});
     }
-  }, [activeCardIds, cardLayouts, getMaxZIndex, handleBringToFront]);
+  }, [activeCardIds, cardLayouts, getMaxZIndex, handleBringToFront, toast]);
 
   const handleResetLayout = useCallback(() => {
     setActiveCardIds(DEFAULT_ACTIVE_CARD_IDS);
     setCardLayouts(ALL_CARD_CONFIGS.filter(c => DEFAULT_ACTIVE_CARD_IDS.includes(c.id)).map(c => ({ ...c.defaultLayout, id: c.id })));
     toast({ title: "Layout Reset", description: "Dashboard layout has been reset to default."});
-  }, []);
-
+  }, [toast]);
 
   const CardActions = (cardId: string, isDismissible?: boolean) => (
     <TooltipProvider delayDuration={0}>
@@ -302,23 +273,13 @@ export default function DashboardPage() {
   const cardsToRender = ALL_CARD_CONFIGS.filter(card => activeCardIds.includes(card.id));
 
   const getMergedContentProps = (cardConfig: CardConfig) => {
-    let specificProps = {};
-    if (cardConfig.id === 'aiAssistant') {
-      specificProps = {
-        aiPrompt,
-        setAiPrompt,
-        handleAiSubmit,
-        isAiLoading,
-        aiResponse,
-      };
-    }
+    // Props related to AI assistant are now managed by its Zustand store.
+    // We only pass initial data or event bus instance.
     return {
-      ...cardConfig.contentProps,
-      ...specificProps,
-      eventBusInstance: eventBus, // Pass event bus to all cards
+      ...cardConfig.contentProps, // This now primarily includes initial data for stores
+      eventBusInstance: eventBus, 
     };
   };
-
 
   const cardLoadingFallback = (
     <div className="p-4 h-full flex flex-col">
@@ -329,7 +290,6 @@ export default function DashboardPage() {
   );
 
   if (!isInitialized) {
-    // Render a full-page skeleton or loader while initializing from localStorage
     return (
       <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
         <LoaderCircle className="w-12 h-12 text-primary animate-spin" />
@@ -362,19 +322,14 @@ export default function DashboardPage() {
       ) : (
         cardsToRender.map(cardConfig => {
           const currentLayout = cardLayouts.find(l => l.id === cardConfig.id);
-          // If a card is in activeCardIds but somehow not in cardLayouts, use its default.
-          // This can happen if localStorage gets into an inconsistent state or during development.
           const layoutToUse = currentLayout || 
                              ALL_CARD_CONFIGS.find(c => c.id === cardConfig.id)?.defaultLayout;
 
           if (!layoutToUse) {
-             // This should ideally not happen if activeCardIds and ALL_CARD_CONFIGS are consistent
              console.warn(`No layout or default layout found for card ${cardConfig.id}. Skipping render.`);
              return null; 
           }
-          // Ensure layoutToUse has id, which currentLayout would, but defaultLayout might not if simply spread.
           const finalLayout = {...layoutToUse, id: cardConfig.id, zIndex: layoutToUse.zIndex || (getMaxZIndex() + 1) };
-
 
           const CardSpecificContent = cardConfig.content;
 
@@ -440,11 +395,9 @@ export default function DashboardPage() {
         <span className="sr-only">Manage Dashboard Zones</span>
       </Button>
        <div className="fixed bottom-4 right-4 text-xs text-muted-foreground/70 font-code z-[9999]">
-        <span>ΛΞVON OS v1.1 </span>
-        <span className="font-semibold">DYNAMIC GRID</span>
+        <span>ΛΞVON OS v1.2 </span> 
+        <span className="font-semibold">ZUSTAND</span>
       </div>
     </div>
   );
 }
-
-    

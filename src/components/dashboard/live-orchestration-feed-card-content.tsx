@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CheckCircle, X, ChevronDown } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import type { Emitter } from 'mitt';
+import { useLiveFeedStore } from '@/stores/live-feed.store';
 
 export interface FeedItem {
   task: string;
@@ -13,11 +14,31 @@ export interface FeedItem {
 }
 
 interface LiveOrchestrationFeedCardContentProps {
-  feedItems: FeedItem[];
+  initialFeedItems: FeedItem[];
   eventBusInstance?: Emitter<any>;
 }
 
-const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardContentProps> = ({ feedItems, eventBusInstance }) => {
+const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardContentProps> = ({ initialFeedItems, eventBusInstance }) => {
+  const feedItems = useLiveFeedStore((state) => state.feedItems);
+  const initializeFeedItems = useLiveFeedStore((state) => state.initializeFeedItems);
+  // const addFeedItem = useLiveFeedStore((state) => state.addFeedItem); // Example for agent interaction
+
+  useEffect(() => {
+    initializeFeedItems(initialFeedItems);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialFeedItems]);
+  
+  // Example of agent interaction via event bus to add a new feed item
+  // useEffect(() => {
+  //   const handleNewItem = (item: FeedItem) => {
+  //     addFeedItem(item);
+  //   };
+  //   eventBusInstance?.on('livefeed:addItem', handleNewItem as any);
+  //   return () => {
+  //     eventBusInstance?.off('livefeed:addItem', handleNewItem as any);
+  //   };
+  // }, [eventBusInstance, addFeedItem]);
+
   if (!feedItems || feedItems.length === 0) {
     return (
       <div className="flex items-center justify-center h-full p-4">
