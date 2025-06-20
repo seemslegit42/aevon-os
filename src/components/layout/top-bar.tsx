@@ -25,7 +25,18 @@ const TopBar: React.FC = () => {
   const [currentTime, setCurrentTime] = useState<string | null>(null);
 
   useEffect(() => {
-    const updateTime = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' UTC';
+    const updateTime = () => {
+      const now = new Date();
+      // Format to hh:mm:ss AM/PM UTC
+      // This requires a bit more logic than toLocaleTimeString for specific "AM/PM UTC"
+      const hours = now.getUTCHours();
+      const minutes = now.getUTCMinutes();
+      const seconds = now.getUTCSeconds();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const displayHours = hours % 12 || 12; // Convert 0 to 12 for 12 AM/PM
+      
+      return `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm} UTC`;
+    };
     setCurrentTime(updateTime());
     const timer = setInterval(() => {
       setCurrentTime(updateTime());
@@ -33,33 +44,6 @@ const TopBar: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const handleBeepSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!beepInput.trim()) return;
-
-    setIsBeepLoading(true);
-    setBeepResponse(null);
-
-    try {
-      const input: GeneratePersonalizedBriefingInput = {
-        userName: "Valued User",
-        operationalMetrics: "System status normal.",
-        relevantInformation: `User query: "${beepInput}". Provide a concise and helpful response.`,
-      };
-      const result = await generatePersonalizedBriefing(input);
-      setBeepResponse(result.briefing);
-    } catch (error) {
-      console.error("Error calling BEEP AI:", error);
-      toast({
-        variant: "destructive",
-        title: "BEEP Error",
-        description: "Could not process your request.",
-      });
-      setBeepResponse("Sorry, I couldn't process that request.");
-    } finally {
-      setIsBeepLoading(false);
-    }
-  };
 
   const navItems = [
     { href: "/loom-studio", label: "Loom Studio", icon: Settings },
@@ -77,14 +61,17 @@ const TopBar: React.FC = () => {
           </Link>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="text-sm text-foreground hover:bg-accent/10 hover:text-accent-foreground px-3">
+              <Button 
+                variant="default" // Changed variant
+                className="text-sm bg-primary/80 text-primary-foreground hover:bg-primary/70 px-3 h-9" // Updated class for styling
+              >
                 <Home className="w-4 h-4 mr-2" />
                 Home Dashboard
                 <ChevronDown className="w-4 h-4 ml-1 opacity-70" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-popover text-popover-foreground border-border/50">
-              <DropdownMenuItem>Home Dashboard</DropdownMenuItem>
+              <DropdownMenuItem>Home Dashboard</DropdownMenuItem> {/* Assuming this is the only item for now */}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -137,7 +124,7 @@ const TopBar: React.FC = () => {
             <Settings2 className="w-5 h-5" />
           </Button>
           
-          <div className="text-xs text-muted-foreground hidden sm:block w-24 text-center">{currentTime}</div>
+          <div className="text-xs text-muted-foreground hidden sm:block w-28 text-center">{currentTime}</div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -164,3 +151,5 @@ const TopBar: React.FC = () => {
 };
 
 export default TopBar;
+
+    

@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Sparkles, Blocks, Cpu, LayoutGrid, Users, HardDrive, ArrowUpFromLine, ArrowDownToLine, Timer, AppWindow, LoaderCircle, CircleDot, AlertCircle, XCircle, CheckCircle, MoreHorizontal, Mic, Minus, BarChartBig, Settings2, Shield as ShieldIcon, GitFork, X } from 'lucide-react';
+import { Sparkles, Cpu, LayoutGrid, AppWindow, Users, HardDrive, ArrowUpFromLine, ArrowDownToLine, Timer, LoaderCircle, CircleDot, AlertCircle, XCircle, CheckCircle, MoreHorizontal, Mic, X, Blocks } from 'lucide-react';
 import { generatePersonalizedBriefing, GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-personalized-briefings';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -38,12 +38,6 @@ const initialAgentsData: Agent[] = [
   { id: '3', name: 'Helios_Stream_Processor', description: 'Continuously analyzing high-volume sen...', status: 'Processing', statusColor: 'text-accent', statusIcon: LoaderCircle, time: 'Now' },
   { id: '4', name: 'NovaSys_QueryEngine', description: 'Awaiting complex user queries and data retri...', status: 'Idle', statusColor: 'text-secondary', statusIcon: CircleDot, time: '10s ago' },
   { id: '5', name: 'Cygnus_BackupAgent', description: 'Scheduled integrity check failed on target ...', status: 'Error', statusColor: 'text-destructive', statusIcon: AlertCircle, time: '5m ago' },
-];
-
-const initialTasksData: OrchestrationTask[] = [
-  { id: '1', title: 'Agent Task: Analyze User Sentiment', time: '0 seconds ago', status: 'failure', details: 'Sentiment analysis model returned low confidence score due to ambiguous input language.' },
-  { id: '2', title: 'Agent Task: Deploy Microservice v1.2', time: '3 minutes ago', status: 'success', details: 'Deployment to staging environment successful. Health checks passing.' },
-  { id: '3', title: 'Agent Task: Backup Database Cluster', time: '15 minutes ago', status: 'success', details: 'Full backup of primary and replica databases completed without errors.' },
 ];
 
 interface CardLayoutInfo {
@@ -77,25 +71,23 @@ export default function HomePage() {
   const [cpuLoad, setCpuLoad] = useState(35);
   const [memoryUsage, setMemoryUsage] = useState(62);
   const [diskUsageValue, setDiskUsageValue] = useState(450);
-  const [networkSent, setNetworkSent] = useState(1.2);
-  const [networkReceived, setNetworkReceived] = useState(8.5);
-  const [activeAgentsCount, setActiveAgentsCount] = useState(5);
+  const [networkSent, setNetworkSent] = useState(1.2); // Not in screenshot, can be kept or removed
+  const [networkReceived, setNetworkReceived] = useState(8.5); // Not in screenshot, can be kept or removed
+  const [activeAgentsCount, setActiveAgentsCount] = useState(initialAgentsData.filter(agent => agent.status === 'Processing' || agent.status === 'Idle').length);
+
 
   const [agents, setAgents] = useState<Agent[]>(initialAgentsData);
-  const [tasks, setTasks] = useState<OrchestrationTask[]>(initialTasksData);
   const [dismissedCardIds, setDismissedCardIds] = useState<string[]>([]);
 
   const handleDismissCardAttempt = (id: string) => {
     setCardLayouts(prevLayouts =>
       prevLayouts.map(layout =>
-        layout.id === id ? { ...layout, isDismissing: true, zIndex: getMaxZIndex() +1 } : layout // Ensure it's on top during dismissal
+        layout.id === id ? { ...layout, isDismissing: true, zIndex: getMaxZIndex() +1 } : layout
       )
     );
     setTimeout(() => {
       setDismissedCardIds(prevIds => [...prevIds, id]);
-      // Card will visually disappear due to animation and then be unmounted by filter
-      // No need to remove from cardLayouts here as it's filtered out by dismissedCardIds
-    }, 300); // Match animation duration
+    }, 300); 
   };
 
   const CardActions = (cardId: string, onDismiss: (id: string) => void, isDismissible?: boolean) => (
@@ -125,8 +117,8 @@ export default function HomePage() {
       setDiskUsageValue(prev => Math.min(1000, Math.max(0, prev + Math.floor(Math.random() * 20) - 10)));
       setNetworkSent(prev => parseFloat((prev + Math.random() * 0.1).toFixed(1)));
       setNetworkReceived(prev => parseFloat((prev + Math.random() * 0.5).toFixed(1)));
-      setActiveAgentsCount(initialAgentsData.filter(agent => agent.status === 'Processing' || agent.status === 'Idle').length);
-
+      // Active agents count is based on initialAgentsData, which is static in this setup.
+      // For dynamic updates, agent state management would need to be more complex.
     }, 2000);
     return () => clearInterval(interval);
   }, []);
@@ -160,23 +152,14 @@ export default function HomePage() {
   const systemMetricsConfig = [
     { id: 'cpu', icon: Cpu, label: 'CPU Load', value: cpuLoad, progressMax: 100, unit: '%' },
     { id: 'memory', icon: HardDrive, label: 'Memory Usage', value: memoryUsage, progressMax: 100, unit: '%' },
-    { id: 'agents', icon: Users, label: 'Active Agents', value: activeAgentsCount, unit: '' },
+    { id: 'agents', icon: Users, label: 'Active Agents', value: activeAgentsCount, unit: '' }, 
     { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: diskUsageValue, progressMax: 1000, unit: 'GB / 1TB' },
-    { id: 'sent', icon: ArrowUpFromLine, label: 'Network Sent', value: networkSent, unit: 'GB' },
-    { id: 'received', icon: ArrowDownToLine, label: 'Network Received', value: networkReceived, unit: 'GB' },
-    { id: 'uptime', icon: Timer, label: 'System Uptime', value: systemUptime, unit: '' },
-  ];
-
-  const microAppLaunchersConfig = [
-    { id: 'app1', icon: BarChartBig, label: 'Launch Analytics' },
-    { id: 'app2', icon: Settings2, label: 'Launch Configurator' },
-    { id: 'app3', icon: ShieldIcon, label: 'Launch Security' },
   ];
 
   const initialCardsData: CardConfig[] = [
     {
       id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, isDismissible: true,
-      x: 20, y: 20, width: 400, height: 520, zIndex: 1, minWidth: 320, minHeight: 400,
+      x: 40, y: 40, width: 420, height: 500, zIndex: 1, minWidth: 320, minHeight: 400,
       cardClassName: "flex-grow flex flex-col",
       content: () => (
         <>
@@ -209,7 +192,7 @@ export default function HomePage() {
     },
     {
       id: 'appView', title: 'Application View', icon: AppWindow, isDismissible: true,
-      x: 20, y: 560, width: 400, height: 230, zIndex: 1, minWidth: 250, minHeight: 180,
+      x: 40, y: 560, width: 420, height: 240, zIndex: 1, minWidth: 250, minHeight: 180,
       content: () => (
           <div className="flex flex-col items-center justify-center h-full text-center p-4">
             <Blocks className="w-16 h-16 text-muted-foreground/50 mb-3" />
@@ -220,7 +203,7 @@ export default function HomePage() {
     },
     {
       id: 'systemSnapshot', title: 'System Snapshot', icon: LayoutGrid, isDismissible: true,
-      x: 440, y: 20, width: 380, height: 420, zIndex: 1, minWidth: 300, minHeight: 350,
+      x: 480, y: 230, width: 380, height: 350, zIndex: 1, minWidth: 300, minHeight: 300, 
       content: () => (
         <ul className="space-y-3 p-1">
           {systemMetricsConfig.map(metric => (
@@ -236,42 +219,37 @@ export default function HomePage() {
                   {metric.progressMax && metric.unit.includes('/') && !metric.unit.startsWith('%') && ` ${metric.unit.substring(metric.unit.indexOf('/'))}`}
                 </span>
               </div>
-              {metric.progressMax && (
+              {metric.progressMax ? (
                 <>
                   <Progress value={(metric.value / metric.progressMax) * 100} className="h-2 [&>div]:bg-primary" />
                   {metric.unit.includes('/') && !metric.unit.startsWith('%') && (
                     <span className="text-xs text-muted-foreground/70 float-right mt-0.5">
-                      {metric.value}{metric.unit.substring(0, metric.unit.indexOf('/'))} of {metric.unit.substring(metric.unit.indexOf('/') + 1)}
+                      {metric.value}{metric.unit.substring(0, metric.unit.indexOf('/'))} of {metric.unit.substring(metric.unit.indexOf('/') + 1).trim()}
                     </span>
                   )}
                 </>
-              )}
+              ) : null}
             </li>
           ))}
+           <li className="text-sm">
+             <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center text-muted-foreground">
+                  <Timer className="w-4 h-4 mr-2 text-primary" />
+                  <span>System Uptime</span>
+                </div>
+                <span className="font-medium text-foreground">{systemUptime}</span>
+              </div>
+            </li>
         </ul>
       )
     },
     {
-      id: 'microApps', title: 'Micro-Apps', icon: Blocks, isDismissible: true,
-      x: 440, y: 460, width: 380, height: 180, zIndex: 1, minWidth: 300, minHeight: 150,
-      content: () => (
-        <div className="flex space-x-3 p-4 justify-around items-center h-full">
-          {microAppLaunchersConfig.map(app => (
-            <Button key={app.id} variant="outline" className="flex flex-col items-center justify-center h-24 w-24 border-dashed border-primary/50 hover:border-primary hover:bg-primary/10 group">
-              <app.icon className="w-8 h-8 mb-1.5 text-primary/70 group-hover:text-primary"/>
-              <span className="text-xs text-center text-muted-foreground group-hover:text-primary">{app.label}</span>
-            </Button>
-          ))}
-        </div>
-      )
-    },
-    {
       id: 'agentPresence', title: 'Agent Presence', icon: Cpu, isDismissible: true,
-      x: 840, y: 20, width: 400, height: 350, zIndex: 1, minWidth: 300, minHeight: 250,
+      x: 480, y: 40, width: 380, height: 170, zIndex: 1, minWidth: 300, minHeight: 150,
       content: () => (
         <ScrollArea className="h-full pr-1">
           <ul className="space-y-2 p-1">
-            {agents.map(agent => (
+            {agents.slice(0,3).map(agent => ( 
               <li key={agent.id} className="p-2.5 rounded-md bg-primary/5 dark:bg-black/20 hover:bg-muted/30 transition-colors">
                 <div className="flex items-center justify-between mb-0.5">
                   <span className="font-semibold text-foreground text-sm">{agent.name}</span>
@@ -286,44 +264,6 @@ export default function HomePage() {
             ))}
           </ul>
         </ScrollArea>
-      )
-    },
-    {
-      id: 'orchestrationFeed', title: 'Live Orchestration Feed', icon: GitFork, isDismissible: true,
-      x: 840, y: 390, width: 400, height: 350, zIndex: 1, minWidth: 300, minHeight: 250,
-      cardClassName: "flex flex-col",
-      content: () => (
-        <>
-        <ScrollArea className="flex-grow pr-1">
-          <Accordion type="single" collapsible className="w-full p-1">
-            {tasks.map(task => (
-              <AccordionItem value={task.id} key={task.id} className="border-b-0 mb-1">
-                 <AccordionTrigger className="p-2.5 rounded-md bg-background/50 dark:bg-card hover:bg-muted/30 transition-colors hover:no-underline text-sm flex justify-between items-center w-full">
-                  <div className="flex items-center text-left">
-                     {task.status === 'success' ? <CheckCircle className="w-4 h-4 mr-2 text-secondary shrink-0"/> : <XCircle className="w-4 h-4 mr-2 text-destructive shrink-0"/>}
-                    <div className="overflow-hidden">
-                      <span className="font-medium text-foreground truncate block">{task.title}</span>
-                      <p className="text-xs text-muted-foreground">{task.time}</p>
-                    </div>
-                  </div>
-                   <span 
-                    className={cn('capitalize text-xs px-2 py-0.5 rounded-sm font-medium ml-2 shrink-0', 
-                        task.status === 'success' ? 'bg-secondary text-primary-foreground' : 'bg-destructive text-destructive-foreground'
-                    )}>
-                    {task.status}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="text-xs text-muted-foreground p-3 mt-0.5 mb-1 bg-muted/10 dark:bg-muted/20 rounded-b-md">
-                  {task.details || "No further details available."}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-          </ScrollArea>
-          <div className="p-2 text-right text-xs text-muted-foreground/70 border-t border-border/30 dark:border-border/50 mt-auto shrink-0">
-            ΛΞVON OS v1.0 <span className="font-semibold">SILENT AUTOMATION</span>
-          </div>
-        </>
       )
     },
   ];
@@ -372,7 +312,7 @@ export default function HomePage() {
   const cardsToRender = initialCardsData.filter(card => !dismissedCardIds.includes(card.id));
 
   return (
-    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden">
+    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden iridescent-aurora-bg">
       {cardsToRender.map(cardConfig => {
         const currentLayout = cardLayouts.find(l => l.id === cardConfig.id);
         if (!currentLayout) return null;
@@ -403,8 +343,8 @@ export default function HomePage() {
             style={{ zIndex: currentLayout.zIndex }}
             className={cn(
               "border border-transparent hover:border-primary/30 rounded-lg focus-within:border-primary",
-              "card-enter-animation", // Apply open animation
-              currentLayout.isDismissing && "card-exit-animation" // Apply close animation
+              "card-enter-animation", 
+              currentLayout.isDismissing && "card-exit-animation" 
             )}
             dragGrid={[20, 20]}
             resizeGrid={[20, 20]}
@@ -420,6 +360,12 @@ export default function HomePage() {
           </Rnd>
         );
       })}
+       <div className="fixed bottom-4 right-4 text-xs text-muted-foreground/70 font-code z-[9999]">
+        <span>ΛΞVON OS v1.0 </span>
+        <span className="font-semibold">SILENT AUTOMATION</span>
+      </div>
     </div>
   );
 }
+
+    
