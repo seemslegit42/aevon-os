@@ -83,7 +83,7 @@ const TopBar: React.FC = () => {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <header className="sticky top-0 z-50 w-full topbar-custom-bg font-headline">
+      <header className="sticky top-0 z-50 w-full topbar-custom-bg font-headline text-foreground">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           {/* Left Side: Logo and Navigation */}
           <div className="flex items-center space-x-4">
@@ -119,7 +119,7 @@ const TopBar: React.FC = () => {
                 placeholder="Search or ask 'show my tasks'..."
                 className={cn(
                   "w-full h-9 pl-10 pr-4 bg-input border-input focus:ring-accent focus:border-accent",
-                  "text-sm text-foreground",
+                  "text-sm text-foreground", // Ensures input text itself is also theme-aware
                   "placeholder:text-muted-foreground"
                 )}
                 aria-label="Command or search input"
