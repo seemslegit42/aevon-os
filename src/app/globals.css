@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --background: 283 30% 97%; /* Very Light Imperial Purple - Light Mode (Kept for completeness) */
+    --background: 283 30% 97%; /* Very Light Imperial Purple - Light Mode */
     --foreground: 248 37% 15%; /* Obsidian Black - Light Mode */
 
     --card: 150 100% 98%; /* Vitreous White - Light Mode */
@@ -18,13 +18,13 @@
     --primary-foreground: 150 100% 98%; /* Vitreous White - Light Mode */
     --primary-gradient-start: 283 50% 35%; /* Darker Imperial Purple for gradient start - Light Mode */
 
-    --secondary: 157 49% 55%; /* Patina Green - Light Mode (Success status) */
+    --secondary: 157 49% 55%; /* Patina Green - Light Mode (Used for success status by default) */
     --secondary-foreground: 248 37% 15%; /* Obsidian Black for contrast - Light Mode */
 
     --muted: 223 13% 92%; /* Lighter Conchoidal Gray - Light Mode */
     --muted-foreground: 248 37% 40%; /* Darker Gray - Light Mode */
 
-    --accent: 45 100% 60%; /* Gold/Yellow for badges - Light Mode */
+    --accent: 45 100% 60%; /* Gold/Yellow for badges/warnings - Light Mode */
     --accent-foreground: 248 37% 15%; /* Obsidian Black - Light Mode */
 
     --destructive: 0 84.2% 60.2%; /* Red for failure/destructive */
@@ -36,11 +36,11 @@
 
     --radius: 0.5rem;
 
-    /* Chart/Progress Bar Colors */
-    --chart-1: 283 60% 65%; /* Light Purple/Magenta for card titles/icons */
-    --chart-2: 190 70% 60%; /* Light Blue/Cyan for progress bars */
+    /* Chart/Progress Bar Colors - Light Theme */
+    --chart-1: 283 60% 65%; /* Light Purple/Magenta for card titles/icons - Analogous to dark theme's primary */
+    --chart-2: 190 70% 60%; /* Light Blue/Cyan for progress bars - Consistent with dark theme for data viz */
     --chart-3: hsl(var(--accent)); /* Gold/Yellow */
-    --chart-4: 157 60% 50%; /* Green for success */
+    --chart-4: 157 60% 50%; /* Green for success status */
     --chart-5: hsl(var(--destructive)); /* Red for failure */
   }
 
@@ -58,29 +58,28 @@
     --primary-foreground: 0 0% 98%; 
     --primary-gradient-start: 283 50% 55%; /* Darker Purple/Magenta for gradient start - Dark Mode */
 
-
     --secondary: 190 70% 60%; /* Light Blue/Cyan for progress bars (Matches reference image) */
-    --secondary-foreground: 248 37% 10%; 
+    --secondary-foreground: 248 37% 10%; /* Dark contrast for text on secondary elements */
 
-    --muted: 270 15% 35%;      /* Muted Purple Gray */
-    --muted-foreground: 270 10% 70%; /* Lighter Muted Purple Gray for text */
+    --muted: 270 15% 35%;      /* Muted Purple Gray for less important backgrounds */
+    --muted-foreground: 270 10% 70%; /* Lighter Muted Purple Gray for text (e.g., timestamps) */
 
     --accent: 45 100% 60%;     /* Gold/Yellow (for "Active Agents" badge - Matches reference image) */
-    --accent-foreground: 270 30% 10%; /* Dark purple for contrast on accent */
+    --accent-foreground: 270 30% 10%; /* Dark purple for contrast on accent badge text */
 
-    --destructive: 0 70% 55%; 
+    --destructive: 0 70% 55%; /* Red for failure/destructive */
     --destructive-foreground: 0 0% 98%; 
 
     --border: 270 25% 25%;     /* Subtle Purple Border (Matches reference image card edges) */
     --input: 270 25% 22%;      /* Dark Purple Input Background */
-    --ring: 283 60% 70%;       /* Light Purple/Magenta for focus rings */
+    --ring: 283 60% 70%;       /* Light Purple/Magenta for focus rings (Matches primary) */
 
-    /* Chart/Progress Bar Colors */
-    --chart-1: hsl(var(--primary));
-    --chart-2: hsl(var(--secondary)); /* Progress bar color */
-    --chart-3: hsl(var(--accent));
-    --chart-4: 130 60% 55%; /* Brighter Green for success status */
-    --chart-5: hsl(var(--destructive));
+    /* Chart/Progress Bar Colors - Dark Theme (Matches reference image) */
+    --chart-1: hsl(var(--primary)); /* Light Purple/Magenta for titles/icons */
+    --chart-2: hsl(var(--secondary)); /* Light Blue/Cyan for progress bars */
+    --chart-3: hsl(var(--accent)); /* Gold/Yellow */
+    --chart-4: 130 60% 55%; /* Brighter Green for success status badges */
+    --chart-5: hsl(var(--destructive)); /* Red for failure status badges */
   }
 }
 
@@ -92,14 +91,15 @@
     @apply bg-background text-foreground;
   }
   .dark body {
-    background-color: hsl(var(--background)); /* Ensure body takes the deep purple */
+    background-color: hsl(var(--background)); /* Ensure body takes the deep purple in dark mode */
   }
 }
 
 .glassmorphism-panel {
-  background-color: hsl(var(--card) / 0.85); 
-  border: 1px solid hsl(var(--border) / 0.5); 
+  background-color: hsl(var(--card)); 
+  border: 1px solid hsl(var(--border)); 
   border-radius: var(--radius);
+  /* Removed backdrop-filter and strong shadows to match reference image */
 }
 
 
@@ -138,12 +138,12 @@
 
 /* TopBar specific background */
 .topbar-custom-bg {
-  background-color: hsl(0 0% 10%); /* Very dark gray / near black for TopBar */
+  background-color: hsl(0 0% 10%); /* Very dark gray / near black for TopBar (Matches reference) */
 }
 
 /* Active Nav Link in TopBar */
 .active-nav-link-dark {
-  background-color: hsl(270 40% 35%) !important; /* Lighter purple for active nav item background */
+  background-color: hsl(270 40% 35%) !important; /* Lighter purple for active nav item background (Matches reference) */
   color: hsl(0 0% 98%) !important; /* White text */
 }
 .active-nav-link-dark:hover {
@@ -152,24 +152,25 @@
 
 /* Progress bar custom color */
 .progress-custom {
-  background-color: hsl(var(--chart-2)) !important; /* Light Blue/Cyan */
+  background-color: hsl(var(--chart-2)) !important; /* Light Blue/Cyan (Matches reference) */
 }
 
 /* Success and Failure badges for Live Orchestration Feed */
 .badge-success {
-  background-color: hsl(var(--chart-4)) !important; /* Green */
-  color: hsl(var(--primary-foreground)) !important;
+  background-color: hsl(var(--chart-4)) !important; /* Green (Matches reference) */
+  color: hsl(var(--primary-foreground)) !important; /* Ensure contrast */
 }
 .badge-failure {
-  background-color: hsl(var(--chart-5)) !important; /* Red */
-  color: hsl(var(--destructive-foreground)) !important;
+  background-color: hsl(var(--chart-5)) !important; /* Red (Matches reference) */
+  color: hsl(var(--destructive-foreground)) !important; /* Ensure contrast */
 }
 .details-link-success {
-  color: hsl(var(--chart-4)) !important;
+  color: hsl(var(--chart-4)) !important; /* Green text for link */
 }
 .details-link-failure {
-  color: hsl(var(--chart-5)) !important;
+  color: hsl(var(--chart-5)) !important; /* Red text for link */
 }
     
 
     
+
