@@ -105,18 +105,18 @@ const TopBar: React.FC = () => {
                   className={cn(
                     "font-body", 
                     isActive(item.href) 
-                      ? "bg-white/10 dark:bg-white/5 text-foreground font-semibold" 
+                      ? "bg-white/10 dark:bg-white/5 text-primary-foreground font-semibold" 
                       : "text-foreground/70 dark:text-foreground/60 hover:text-foreground dark:hover:text-foreground/90"
                   )}
                 >
-                  <item.icon className="aevos-icon-styling-override w-4 h-4 mr-2" />
+                  <item.icon className="w-4 h-4 mr-2" /> {/* Icon drop shadow applied by aevos-icon-styling-override, gradient by SVG def */}
                   {item.label}
                 </Button>
               </Link>
             ))}
           </nav>
           <div className="relative w-full max-w-md">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 aevos-icon-styling-override" />
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" /> {/* Icon drop shadow applied by aevos-icon-styling-override, gradient by SVG def */}
             <Input
               type="search"
               placeholder="Search or ask 'show my tasks'..."
@@ -138,8 +138,8 @@ const TopBar: React.FC = () => {
                 aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
               >
                 {isMounted && theme === 'dark' ? 
-                  <SunIcon className="h-5 w-5 aevos-icon-styling-override" /> : 
-                  <MoonIcon className="h-5 w-5 aevos-icon-styling-override" />}
+                  <SunIcon className="h-5 w-5" /> :  /* Icon drop shadow applied by aevos-icon-styling-override, gradient by SVG def */
+                  <MoonIcon className="h-5 w-5" />} /* Icon drop shadow applied by aevos-icon-styling-override, gradient by SVG def */
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom"><p>Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode</p></TooltipContent>
@@ -148,7 +148,7 @@ const TopBar: React.FC = () => {
           <Tooltip>
             <TooltipTrigger asChild>
                <Button variant="ghost" size="icon" className="w-9 h-9">
-                <BellIcon className="h-5 w-5 aevos-icon-styling-override" />
+                <BellIcon className="h-5 w-5" /> {/* Icon drop shadow applied by aevos-icon-styling-override, gradient by SVG def */}
                 <span className="sr-only">Notifications</span>
               </Button>
             </TooltipTrigger>
@@ -158,18 +158,18 @@ const TopBar: React.FC = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" className="w-9 h-9">
-                <Settings2Icon className="h-5 w-5 aevos-icon-styling-override" />
+                <Settings2Icon className="h-5 w-5" /> {/* Icon drop shadow applied by aevos-icon-styling-override, gradient by SVG def */}
                 <span className="sr-only">Settings</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom"><p>Settings</p></TooltipContent>
           </Tooltip>
 
-          <div className="flex items-center text-xs text-foreground/80 dark:text-foreground/70 px-2 h-9 font-body">
-            <ClockIcon className="h-4 w-4 mr-1.5 aevos-icon-styling-override" />
+          <div className="flex items-center text-xs px-2 h-9 font-body"> {/* Font inherited from header (Lexend) */}
+            <ClockIcon className="h-4 w-4 mr-1.5" /> {/* Icon drop shadow applied by aevos-icon-styling-override, gradient by SVG def */}
             {isMounted ? currentTime : "--:--"}
           </div>
-           <div className="hidden md:flex items-center text-xs text-foreground/80 dark:text-foreground/70 px-1 h-9 border-l border-white/20 dark:border-white/10 ml-1 pl-2.5 font-body">
+           <div className="hidden md:flex items-center text-xs px-1 h-9 border-l border-white/20 dark:border-white/10 ml-1 pl-2.5 font-body"> {/* Font inherited from header (Lexend) */}
               Admin User <span className="mx-1">|</span> Session: <span className="text-accent dark:text-accent font-medium ml-1">Active</span>
           </div>
 
@@ -180,7 +180,7 @@ const TopBar: React.FC = () => {
                   <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
                   <AvatarFallback className="text-xs bg-primary/30 text-primary-foreground">AU</AvatarFallback>
                 </Avatar>
-                <ChevronDownIcon className="h-4 w-4 opacity-80 aevos-icon-styling-override" />
+                <ChevronDownIcon className="h-4 w-4 opacity-80" /> {/* Icon drop shadow applied by aevos-icon-styling-override, gradient by SVG def */}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 glassmorphism-panel mt-2">
@@ -200,5 +200,4 @@ const TopBar: React.FC = () => {
 };
 
 export default TopBar;
-
     

@@ -8,7 +8,7 @@ export const MoonIcon: React.FC<IconProps> = ({ className, size = 20, style }) =
     width={size}
     height={size}
     viewBox="0 0 256 256"
-    className={className} 
+    className={`aevos-icon-styling-override ${className || ''}`}
     style={style}
     xmlns="http://www.w3.org/2000/svg"
   >
