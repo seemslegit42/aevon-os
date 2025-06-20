@@ -1,11 +1,10 @@
 
 "use client";
 import React, { useState, useEffect, FormEvent } from 'react';
-import Image from 'next/image';
 import { Rnd, type Position, type Size } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Cpu, LayoutGrid, AppWindow, Users, HardDrive, Timer, LoaderCircle, CircleDot, AlertCircle, X, Blocks, Mic, MoreHorizontal, CheckCircle, ChevronDown, BarChartBig, Settings2, Shield } from 'lucide-react';
+import { Sparkles, Cpu, LayoutGrid, AppWindow, Users, HardDrive, Timer, Blocks, Mic, MoreHorizontal, X, CheckCircle, AlertCircle, LoaderCircle, CircleDot, BarChartBig, Settings2, Shield } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -20,29 +19,9 @@ import type { GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-pers
 import { generatePersonalizedBriefing } from '@/ai/flows/generate-personalized-briefings';
 
 
-const initialAgentsData: Agent[] = [
-  { id: '1', name: 'OrionCore_7B', description: 'Optimizing dynamic resource allocation...', status: 'Processing', statusColor: 'text-accent', statusIcon: LoaderCircle, time: 'Now' },
-  { id: '2', name: 'NexusGuard_Alpha', description: 'Actively monitoring inbound/outbound netwo...', status: 'Idle', statusColor: 'text-secondary', statusIcon: CircleDot, time: '2m ago' },
-  { id: '3', name: 'Helios_Stream_Processor', description: 'Continuously analyzing high-volume sen...', status: 'Processing', statusColor: 'text-accent', statusIcon: LoaderCircle, time: 'Now' },
-  { id: '4', name: 'NovaSys_QueryEngine', description: 'Awaiting complex user queries and data retri...', status: 'Idle', statusColor: 'text-secondary', statusIcon: CircleDot, time: '10s ago' },
-  { id: '5', name: 'Cygnus_BackupAgent', description: 'Scheduled integrity check failed on target ...', status: 'Error', statusColor: 'text-destructive', statusIcon: AlertCircle, time: '5m ago' },
-];
+const initialAgentsData: Agent[] = [];
 
-const initialFeedItems: FeedItem[] = [
-    { task: "Agent Task: Analyze User Sentiment", time: "0 seconds ago", status: "failure", details: "Model output flagged for review due to policy violation on harmful content." },
-    { task: "Agent Task: Deploy Microservice v1.2", time: "3 minutes ago", status: "success", details: "Deployment to staging environment successful. Health checks passing." },
-    { task: "Agent Task: Backup Database Cluster", time: "15 minutes ago", status: "success", details: "Full backup of 'production-db-cluster' completed and verified." },
-];
-
-const agentTaskData: AgentTask = {
-  icon: CheckCircle,
-  task: "Agent Task: Backup Database Cluster",
-  time: "15 minutes ago",
-  status: "success",
-  statusText: "Success",
-  detailsLinkText: "Success Details",
-};
-
+const initialFeedItems: FeedItem[] = [];
 
 interface CardLayoutInfo {
   id: string;
@@ -128,7 +107,7 @@ export default function DashboardPage() {
     try {
       const input: GeneratePersonalizedBriefingInput = {
         userName: "Dashboard User",
-        operationalMetrics: `System status is nominal. Key metrics are displayed in the System Snapshot. Active agents: ${initialAgentsData.filter(agent => agent.status === 'Processing' || agent.status === 'Idle').length}.`,
+        operationalMetrics: "System status nominal. Real-time metrics feed pending integration.",
         relevantInformation: `User asked: "${aiPrompt}". Provide a concise, helpful response based on general knowledge or simulate an action if appropriate for a demo.`,
       };
       const result = await generatePersonalizedBriefing(input);
@@ -142,15 +121,7 @@ export default function DashboardPage() {
     }
   };
 
-  const systemMetricsConfig: SystemMetric[] = [
-    { id: 'cpu', icon: Cpu, label: 'CPU Load', value: "--", progressMax: 100, unit: '%' },
-    { id: 'memory', icon: HardDrive, label: 'Memory Usage', value: "--", progressMax: 100, unit: '%' },
-    { id: 'agents', icon: Users, label: 'Active Agents', value: initialAgentsData.filter(agent => agent.status === 'Processing' || agent.status === 'Idle').length, unit: '' }, // Still useful to count agents
-    { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: "--", progressMax: 1000, unit: 'GB' },
-    { id: 'sent', icon: Cpu, label: 'Network Sent', value: "--", unit: 'GB' },
-    { id: 'received', icon: HardDrive, label: 'Network Received', value: "--", unit: 'GB' },
-    { id: 'uptime', icon: Timer, label: 'System Uptime', value: "N/A", unit: '' },
-  ];
+  const systemMetricsConfig: SystemMetric[] = []; // No placeholder data
 
   const initialCardsData: CardConfig[] = [
     {
@@ -168,15 +139,15 @@ export default function DashboardPage() {
     },
     {
       id: 'agentPresence', title: 'Agent Presence', icon: Cpu, isDismissible: true,
-      x: 470, y: 50, width: 380, height: 230, zIndex: 1, minWidth: 300, minHeight: 200,
+      x: 470, y: 50, width: 380, height: 230, zIndex: 1, minWidth: 300, minHeight: 180,
       content: AgentPresenceCardContent,
       contentProps: { agents }
     },
     {
       id: 'systemSnapshot', title: 'System Snapshot', icon: LayoutGrid, isDismissible: true,
-      x: 470, y: 300, width: 380, height: 380, zIndex: 1, minWidth: 320, minHeight: 350,
+      x: 470, y: 300, width: 380, height: 380, zIndex: 1, minWidth: 320, minHeight: 200,
       content: SystemSnapshotCardContent,
-      contentProps: { systemMetricsConfig, agentTask: agentTaskData }
+      contentProps: { systemMetricsConfig: systemMetricsConfig, agentTask: undefined }
     },
     {
       id: 'applicationView', title: 'Application View', icon: AppWindow, isDismissible: true,
@@ -190,7 +161,7 @@ export default function DashboardPage() {
     },
     {
       id: 'liveOrchestration', title: 'Live Orchestration Feed', icon: CheckCircle, isDismissible: true,
-      x: 870, y: 50, width: 380, height: 390, zIndex: 1, minWidth: 320, minHeight: 300,
+      x: 870, y: 50, width: 380, height: 390, zIndex: 1, minWidth: 320, minHeight: 250,
       cardClassName: "flex-grow flex flex-col",
       content: LiveOrchestrationFeedCardContent,
       contentProps: { feedItems }

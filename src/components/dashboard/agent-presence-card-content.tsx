@@ -18,6 +18,14 @@ interface AgentPresenceCardContentProps {
 }
 
 const AgentPresenceCardContent: React.FC<AgentPresenceCardContentProps> = ({ agents }) => {
+  if (!agents || agents.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="text-sm text-muted-foreground">No active agents.</p>
+      </div>
+    );
+  }
+
   return (
     <ScrollArea className="h-full pr-1">
       <ul className="space-y-2 p-1">
@@ -40,5 +48,3 @@ const AgentPresenceCardContent: React.FC<AgentPresenceCardContentProps> = ({ age
 };
 
 export default AgentPresenceCardContent;
-
-    

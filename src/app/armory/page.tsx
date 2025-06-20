@@ -5,7 +5,7 @@ import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { ShoppingCart, PackagePlus, Sparkles, Download, Wand2 } from 'lucide-react';
+import { ShoppingCart, PackagePlus, Sparkles, Download, Wand2, Shield, type LucideIcon } from 'lucide-react'; // Added LucideIcon
 import { generateMicroAppDescription, GenerateMicroAppDescriptionInput } from '@/ai/flows/generate-micro-app-description';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardFooter, CardTitle } from '@/components/ui/card';
@@ -20,7 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import Image from 'next/image';
+// Image import removed as per "no placeholder" rule
 
 const formSchema = z.object({
   microAppName: z.string().min(3, "App name must be at least 3 characters"),
@@ -37,17 +37,11 @@ interface ArmoryApp {
   icon: LucideIcon;
   shortDesc: string;
   aiGeneratedDesc?: string;
-  imageUrl?: string;
-  dataAiHint?: string;
+  // imageUrl and dataAiHint removed
   tags: string[];
 }
 
-const initialApps: ArmoryApp[] = [
-  { id: '1', name: 'Auto-Scheduler X', icon: Sparkles, shortDesc: 'Intelligently schedules meetings and tasks.', tags: ['Productivity', 'Automation'], imageUrl: 'https://placehold.co/400x200.png', dataAiHint: 'calendar schedule' },
-  { id: '2', name: 'Insight Engine Pro', icon: Wand2, shortDesc: 'Generates actionable business insights from data.', tags: ['Analytics', 'AI'], imageUrl: 'https://placehold.co/400x200.png', dataAiHint: 'data charts' },
-  { id: '3', name: 'Security Auditor Lite', icon: Shield, shortDesc: 'Performs quick security checks.', tags: ['Security', 'Tools'], imageUrl: 'https://placehold.co/400x200.png', dataAiHint: 'security shield' },
-];
-
+const initialApps: ArmoryApp[] = []; // No placeholder data
 
 export default function ArmoryPage() {
   const [apps, setApps] = useState<ArmoryApp[]>(initialApps);
@@ -86,30 +80,34 @@ export default function ArmoryPage() {
   };
   
   useEffect(() => {
-    const fetchInitialDescriptions = async () => {
-      const updatedApps = await Promise.all(apps.map(async (app) => {
-        if (!app.aiGeneratedDesc) {
-          try {
-            const input: GenerateMicroAppDescriptionInput = {
-              microAppName: app.name,
-              microAppFunctionality: `${app.shortDesc} This app is designed to integrate seamlessly with ΛΞVON OS.`,
-              targetAudience: "Small to Medium-sized Businesses using ΛΞVON OS.",
-              keyFeatures: ["Easy Integration", "AI-Powered", ...app.tags],
-            };
-            const result = await generateMicroAppDescription(input);
-            return { ...app, aiGeneratedDesc: result.description };
-          } catch (error) {
-            console.warn(`Failed to generate description for ${app.name}`, error);
-            return { ...app, aiGeneratedDesc: "Explore this app to boost your productivity and streamline operations within ΛΞVON OS. Discover its unique features and benefits today!" }; // Fallback
-          }
-        }
-        return app;
-      }));
-      setApps(updatedApps);
-    };
-    fetchInitialDescriptions();
+    // This effect would previously fetch descriptions for initialApps.
+    // Since initialApps is now empty, this effect will do nothing, which is correct.
+    if (apps.length > 0) { // Only run if there are apps, which there won't be initially
+        const fetchInitialDescriptions = async () => {
+          const updatedApps = await Promise.all(apps.map(async (app) => {
+            if (!app.aiGeneratedDesc) {
+              try {
+                const input: GenerateMicroAppDescriptionInput = {
+                  microAppName: app.name,
+                  microAppFunctionality: `${app.shortDesc} This app is designed to integrate seamlessly with ΛΞVON OS.`,
+                  targetAudience: "Small to Medium-sized Businesses using ΛΞVON OS.",
+                  keyFeatures: ["Easy Integration", "AI-Powered", ...app.tags],
+                };
+                const result = await generateMicroAppDescription(input);
+                return { ...app, aiGeneratedDesc: result.description };
+              } catch (error) {
+                console.warn(`Failed to generate description for ${app.name}`, error);
+                return { ...app, aiGeneratedDesc: "Description generation pending or failed." }; 
+              }
+            }
+            return app;
+          }));
+          setApps(updatedApps);
+        };
+        fetchInitialDescriptions();
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run once on mount
+  }, []); 
 
   return (
     <div className="space-y-8">
@@ -120,35 +118,39 @@ export default function ArmoryPage() {
       />
 
       <h2 className="font-headline text-2xl text-primary mt-10 mb-6">Featured Micro-Apps</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {apps.map((app) => (
-          <Card key={app.id} className="glassmorphism-panel flex flex-col overflow-hidden">
-            {app.imageUrl && (
-                <div className="w-full h-40 overflow-hidden">
-                    <Image src={app.imageUrl} alt={app.name} width={400} height={200} className="object-cover w-full h-full" data-ai-hint={app.dataAiHint || "abstract technology"}/>
+      {apps.length === 0 ? (
+        <Card className="glassmorphism-panel">
+          <CardContent className="pt-6">
+            <p className="text-muted-foreground text-center">No micro-apps currently available in the Armory.</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {apps.map((app) => (
+            <Card key={app.id} className="glassmorphism-panel flex flex-col overflow-hidden">
+              {/* Image removed */}
+              <CardHeader>
+                <CardTitle className="font-headline text-xl text-primary flex items-center">
+                  <app.icon className="w-6 h-6 mr-2 text-primary" /> {app.name}
+                </CardTitle>
+                <CardDescription className="text-foreground/80 h-12 overflow-hidden text-ellipsis">
+                  {app.aiGeneratedDesc ? app.aiGeneratedDesc.substring(0,100)+'...' : 'Loading description...'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex-grow">
+                <div className="space-x-2 mb-3">
+                  {app.tags.map(tag => <span key={tag} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">{tag}</span>)}
                 </div>
-            )}
-            <CardHeader>
-              <CardTitle className="font-headline text-xl text-primary flex items-center">
-                <app.icon className="w-6 h-6 mr-2 text-primary" /> {app.name}
-              </CardTitle>
-              <CardDescription className="text-foreground/80 h-12 overflow-hidden text-ellipsis">
-                {app.aiGeneratedDesc ? app.aiGeneratedDesc.substring(0,100)+'...' : 'Loading description...'}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex-grow">
-              <div className="space-x-2 mb-3">
-                {app.tags.map(tag => <span key={tag} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">{tag}</span>)}
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button className="w-full bg-accent hover:bg-accent/80 text-accent-foreground">
-                <Download className="w-4 h-4 mr-2" /> Get App
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+              <CardFooter>
+                <Button className="w-full bg-accent hover:bg-accent/80 text-accent-foreground">
+                  <Download className="w-4 h-4 mr-2" /> Get App
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      )}
 
       <MicroAppCard title="Publish Your Micro-App" icon={PackagePlus}>
         <p className="text-foreground/80 mb-6">
@@ -229,4 +231,3 @@ export default function ArmoryPage() {
     </div>
   );
 }
-

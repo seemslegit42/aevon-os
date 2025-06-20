@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Bell, Bot, Home, Settings, Shield, ShoppingCart, Settings2, LucideIcon } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'; // AvatarImage removed
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,16 +45,16 @@ const TopBar: React.FC = () => {
       const seconds = now.getUTCSeconds();
       const ampm = hours >= 12 ? 'PM' : 'AM';
       hours = hours % 12;
-      hours = hours ? hours : 12; // the hour '0' should be '12'
+      hours = hours ? hours : 12; 
       
       return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm} UTC`;
     };
     
-    setCurrentTime(updateTime()); // Set initial time
+    setCurrentTime(updateTime()); 
     const timer = setInterval(() => {
       setCurrentTime(updateTime());
-    }, 1000); // Update every second
-    return () => clearInterval(timer); // Cleanup on unmount
+    }, 1000); 
+    return () => clearInterval(timer); 
   }, []);
 
   return (
@@ -116,7 +116,7 @@ const TopBar: React.FC = () => {
                       <div className="space-y-2">
                         <h4 className="font-medium leading-none font-headline text-primary">Notifications</h4>
                         <p className="text-sm text-muted-foreground">
-                          You have no new notifications.
+                          No new notifications.
                         </p>
                       </div>
                     </div>
@@ -147,7 +147,7 @@ const TopBar: React.FC = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="p-0 h-auto" aria-label="User Menu">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src="https://placehold.co/40x40.png" alt="User Avatar" data-ai-hint="user avatar purple" />
+                        {/* AvatarImage removed */}
                         <AvatarFallback className="bg-primary text-primary-foreground text-xs">AU</AvatarFallback>
                       </Avatar>
                     </Button>

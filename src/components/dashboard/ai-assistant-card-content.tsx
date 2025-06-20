@@ -1,6 +1,5 @@
 
 import React, { FormEvent } from 'react';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -24,8 +23,8 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
   return (
     <>
       <div className="flex flex-col items-center justify-center text-center p-6 flex-grow">
-        <Image src="https://placehold.co/120x120.png" alt="AI Assistant Orb" width={120} height={120} className="rounded-full mb-4" data-ai-hint="orb gradient" />
-        <p className="text-sm text-muted-foreground mb-4">
+        {/* Placeholder Image removed */}
+        <p className="text-sm text-muted-foreground mb-4 mt-4"> {/* Added mt-4 for spacing */}
           Analyze product sales, compare revenue, or ask for insights.
         </p>
         {aiResponse && <ScrollArea className="h-[120px] w-full"><p className="text-sm text-foreground bg-primary/10 dark:bg-primary/20 rounded-md p-3 mb-4 text-left whitespace-pre-wrap">{aiResponse}</p></ScrollArea>}

@@ -15,6 +15,14 @@ interface LiveOrchestrationFeedCardContentProps {
 }
 
 const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardContentProps> = ({ feedItems }) => {
+  if (!feedItems || feedItems.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="text-sm text-muted-foreground">No feed items available.</p>
+      </div>
+    );
+  }
+
   return (
     <ScrollArea className="h-full pr-2">
       <ul className="space-y-3 p-1">
@@ -43,5 +51,3 @@ const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardConten
 };
 
 export default LiveOrchestrationFeedCardContent;
-
-    
