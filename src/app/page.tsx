@@ -23,6 +23,8 @@ import { useDashboardLayout } from '@/hooks/use-dashboard-layout';
 
 export default function DashboardPage() {
   const isMobile = useIsMobile();
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  
   const {
     activeCardIds,
     cardLayouts,
@@ -35,7 +37,6 @@ export default function DashboardPage() {
     getMaxZIndex,
   } = useDashboardLayout(ALL_CARD_CONFIGS, DEFAULT_ACTIVE_CARD_IDS);
 
-  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
   const CardActions = useCallback((cardId: string, isDismissible?: boolean) => (
     <TooltipProvider delayDuration={0}>
@@ -68,12 +69,20 @@ export default function DashboardPage() {
 
   const cardsToRender = ALL_CARD_CONFIGS.filter(card => activeCardIds.includes(card.id));
 
-  const getMergedContentProps = (cardConfig: CardConfig) => {
-    return {
+  const getMergedContentProps = useCallback((cardConfig: CardConfig) => {
+    const baseProps = {
       ...cardConfig.contentProps,
       eventBusInstance: eventBus,
     };
-  };
+    if (cardConfig.id === 'applicationView') {
+      return {
+        ...baseProps,
+        setIsCommandPaletteOpen,
+      };
+    }
+    return baseProps;
+  }, [setIsCommandPaletteOpen]);
+
 
   const cardLoadingFallback = (
     <div className="p-4 h-full flex flex-col">
@@ -139,7 +148,7 @@ export default function DashboardPage() {
             dragAxis={isMobile ? 'y' : 'both'}
             style={{ zIndex: finalLayout.zIndex }}
             className={cn(
-              "border-transparent hover:border-primary/20 focus-within:border-primary/40",
+              "border-transparent hover:border-primary/20 focus-within:border-primary/40 react-draggable-dragging",
             )}
             dragGrid={[10, 10]}
             resizeGrid={[10, 10]}

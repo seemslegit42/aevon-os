@@ -64,8 +64,9 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     minWidth: 300, minHeight: 240, cardClassName: "flex-grow flex flex-col",
   },
   {
-    id: 'applicationView', title: 'Application View', icon: AppWindowIcon, isDismissible: true,
+    id: 'applicationView', title: 'Active Micro-App', icon: AppWindowIcon, isDismissible: true,
     content: ApplicationViewCardContent,
+    // Content props for ApplicationViewCardContent will be augmented in page.tsx to include setIsCommandPaletteOpen
     defaultLayout: { x: 20, y: 290, width: 420, height: 260, zIndex: 2 },
     minWidth: 300, minHeight: 180,
   },

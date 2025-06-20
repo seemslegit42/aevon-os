@@ -116,7 +116,7 @@ const TopBar: React.FC = () => {
               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Command or Search..."
+                placeholder="Search or ask 'show my tasks'..."
                 className={cn(
                   "w-full h-9 pl-10 pr-4 bg-input border-input focus:ring-accent focus:border-accent",
                   "text-sm text-foreground",
