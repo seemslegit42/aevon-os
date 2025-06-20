@@ -106,8 +106,6 @@ export default function ArmoryPage() {
     }
   };
   
-  // Initial descriptions for existing apps are not fetched via AI in this version to simplify.
-  // They would show their 'shortDesc' or a placeholder.
   useEffect(() => {
     if (apps.length > 0) {
         const updatedApps = apps.map(app => ({
@@ -132,8 +130,10 @@ export default function ArmoryPage() {
       {apps.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
-            <p className="text-muted-foreground text-center">No micro-apps currently available in the Armory.</p>
-            <p className="text-muted-foreground text-center text-sm mt-2">Use the form below to define and describe a new micro-app.</p>
+            <div className="text-center py-10">
+              <p className="text-muted-foreground">No micro-apps currently available in the Armory.</p>
+              <p className="text-muted-foreground text-sm mt-2">Use the form below to define and describe a new micro-app.</p>
+            </div>
           </CardContent>
         </Card>
       ) : (
@@ -176,7 +176,7 @@ export default function ArmoryPage() {
                 <FormItem>
                   <FormLabel className="text-primary/80">Micro-App Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Sales Forecaster AI" {...field} className="bg-background/50 dark:bg-background/50 border-primary/30 focus:ring-accent"/>
+                    <Input placeholder="e.g., Sales Forecaster AI" {...field} className="focus:ring-accent"/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -189,7 +189,7 @@ export default function ArmoryPage() {
                 <FormItem>
                   <FormLabel className="text-primary/80">Functionality</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Describe what your app does..." {...field} rows={3} className="bg-background/50 dark:bg-background/50 border-primary/30 focus:ring-accent"/>
+                    <Textarea placeholder="Describe what your app does..." {...field} rows={3} className="focus:ring-accent"/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -202,7 +202,7 @@ export default function ArmoryPage() {
                 <FormItem>
                   <FormLabel className="text-primary/80">Target Audience</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Sales teams in SMBs" {...field} className="bg-background/50 dark:bg-background/50 border-primary/30 focus:ring-accent"/>
+                    <Input placeholder="e.g., Sales teams in SMBs" {...field} className="focus:ring-accent"/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -215,13 +215,13 @@ export default function ArmoryPage() {
                 <FormItem>
                   <FormLabel className="text-primary/80">Key Features (comma-separated)</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., AI predictions, Data visualization, Report generation" {...field} className="bg-background/50 dark:bg-background/50 border-primary/30 focus:ring-accent"/>
+                    <Input placeholder="e.g., AI predictions, Data visualization, Report generation" {...field} className="focus:ring-accent"/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={isGenerating} className="w-full md:w-auto bg-primary hover:bg-primary/80 text-primary-foreground">
+            <Button type="submit" disabled={isGenerating} className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
               {isGenerating ? 'Generating...' : 'Generate Description'}
               <SparklesIcon className="w-4 h-4 ml-2" />
             </Button>

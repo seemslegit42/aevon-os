@@ -11,7 +11,7 @@ export default function LoomStudioPage() {
         description="Loom Studio is your AI-native micro-environment for crafting, debugging, and orchestrating complex AI workflows and prompt chains. Visually build, test, and deploy intelligent agents with unprecedented control and transparency."
       >
         <div className="my-6 p-6">
-          <div className="w-full h-[200px] md:h-[300px] lg:h-[400px] bg-muted/30 rounded-md flex items-center justify-center">
+          <div className="w-full h-[200px] md:h-[300px] lg:h-[400px] border border-dashed border-border rounded-lg bg-muted/50 flex items-center justify-center">
             <p className="text-muted-foreground">Conceptual Diagram Area</p>
           </div>
         </div>

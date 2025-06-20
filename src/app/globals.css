@@ -94,11 +94,11 @@
     /* Foreground: Light Gray/Off-White */
     --foreground-h: 210; --foreground-s: 30%; --foreground-l: 96%;
 
-    /* Card: Darker, slightly desaturated Purple base for cards (rgba(40, 30, 60, 0.5)) */
-    --card-h: 275; --card-s: 35%; --card-l: 16%; --card-a: 0.35;
+    /* Card: Darker, slightly desaturated Purple base for cards */
+    --card-h: 275; --card-s: 30%; --card-l: 14%; --card-a: 0.85; /* More solid, slightly lighter */
     --card-foreground-h: var(--foreground-h); --card-foreground-s: var(--foreground-s); --card-foreground-l: var(--foreground-l);
 
-    --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l); --popover-a: var(--card-a);
+    --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l); --popover-a: var(--card-a); /* Popover to match card solidity */
     --popover-foreground-h: var(--card-foreground-h); --popover-foreground-s: var(--card-foreground-s); --popover-foreground-l: var(--card-foreground-l);
 
     /* Primary: Vibrant Magenta/Pink (#e0359e / #6A0DAD) */
@@ -155,9 +155,6 @@
   }
 }
 
-/* Removed .iridescent-purple-bg-light and .dark .iridescent-purple-bg-dark */
-/* Removed @keyframes aurora-glow and @keyframes aurora-glow-dark */
-
 
 /* Glassmorphism Panel Style */
 .glassmorphism-panel {
@@ -165,7 +162,7 @@
   background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
   backdrop-filter: blur(12px) saturate(1.05);
   -webkit-backdrop-filter: blur(12px) saturate(1.05);
-  border: 1px solid hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 25%), 0.2);
+  border: 1px solid hsla(var(--border-h), var(--border-s), calc(var(--border-l) - 10%), 0.4); /* Use theme border, slightly darker, medium opacity */
   border-radius: var(--radius);
   box-shadow: 0 6px 24px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) + 70%), 0.08),
               0 2px 8px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) + 70%), 0.04);
@@ -173,10 +170,10 @@
 
 .dark .glassmorphism-panel {
   /* Dark Theme Glass */
-  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a)); /* card-a is 0.35 */
+  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a)); /* card-a is 0.85 */
   backdrop-filter: blur(14px) saturate(1.1);
   -webkit-backdrop-filter: blur(14px) saturate(1.1);
-  border: 1px solid hsla(var(--border-h), var(--border-s), calc(var(--border-l) + 10%), 0.35); /* Slightly lighter border, bit more opacity */
+  border: 1px solid hsla(var(--border-h), var(--border-s), calc(var(--border-l) + 15%), 0.5); /* Use theme border, slightly lighter, more opacity */
   border-radius: var(--radius);
   box-shadow: 0 6px 24px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 2%), 0.2),
               0 2px 8px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 2%), 0.15);
@@ -307,7 +304,7 @@
   color: hsl(var(--chart-5-h), var(--chart-5-s), calc(var(--chart-5-l) - 10%)) !important;
 }
 .dark .details-link-failure {
-  color: hsl(var(--chart-5-h), var(--chart-5-s), calc(var(--chart-5-l) + 10%)) !important;
+  color: hsl(var(--chart-5-h), var(--chart-s), calc(var(--chart-5-l) + 10%)) !important;
 }
 
     

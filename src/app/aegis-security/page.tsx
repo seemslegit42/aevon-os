@@ -69,10 +69,10 @@ export default function AegisSecurityPage() {
           value={alertDetails}
           onChange={(e) => setAlertDetails(e.target.value)}
           rows={8}
-          className="bg-background/50 dark:bg-background/50 border-primary/30 focus:ring-accent text-sm"
+          className="focus:ring-accent text-sm"
           aria-label="Security alert details input"
         />
-        <Button onClick={handleAnalyze} disabled={isLoading} className="mt-4 w-full md:w-auto bg-primary hover:bg-primary/80 text-primary-foreground">
+        <Button onClick={handleAnalyze} disabled={isLoading} className="mt-4 w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
           {isLoading ? 'Analyzing...' : 'Analyze Alerts'}
           <AlertTriangleIcon className="w-4 h-4 ml-2" />
         </Button>
