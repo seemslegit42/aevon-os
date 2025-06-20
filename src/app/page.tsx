@@ -5,11 +5,11 @@ import { Rnd, type Position, type Size } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
 import { 
-  BroadcastIcon as MicIcon, // Changed imports, MicIcon replaced by BroadcastIcon as placeholder
+  BroadcastIcon as MicIcon,
   MoreHorizontalIcon, 
   XIcon, 
-  RefreshCwIcon as LoaderCircleIcon, // LoaderCircleIcon replaced by RefreshCwIcon as static placeholder
-  LayoutGridIcon as LayoutDashboardIcon // LayoutDashboardIcon replaced by LayoutGridIcon
+  RefreshCwIcon as LoaderCircleIcon,
+  LayoutGridIcon as LayoutDashboardIcon
 } from '@/components/icons';
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -86,7 +86,7 @@ export default function DashboardPage() {
   if (!isInitialized) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
-        <LoaderCircleIcon className="w-12 h-12 text-primary animate-spin" /> {/* Note: Custom RefreshCwIcon won't animate by default */}
+        <LoaderCircleIcon className="w-12 h-12 text-primary animate-spin" />
       </div>
     );
   }
@@ -175,7 +175,7 @@ export default function DashboardPage() {
         <LayoutDashboardIcon className="h-6 w-6" />
         <span className="sr-only">Manage Dashboard Zones</span>
       </Button>
-      <div className="fixed bottom-4 right-4 text-xs text-foreground/90 dark:text-white backdrop-blur-sm bg-background/50 dark:bg-black/50 px-2 py-1 rounded-md shadow-lg z-[45]">
+      <div className="fixed bottom-4 right-4 text-xs z-[45] text-foreground/70 dark:text-neutral-400">
         <span>ΛΞVON OS v1.2 </span>
         <span className="font-semibold">ZUSTAND</span>
       </div>
