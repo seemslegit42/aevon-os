@@ -89,9 +89,9 @@ const TopBar: React.FC = () => {
               <Image
                 src="/aevon-logo.png"
                 alt="Aevon OS Logo"
-                width={112} // Adjust width as needed, e.g., 4 * 28px if 28 is base unit
-                height={28} // h-7 equivalent
-                className="h-7 w-auto" // Tailwind class for height, auto width
+                width={112} 
+                height={28} 
+                className="h-7 w-auto" 
                 priority
               />
             </Link>
@@ -106,10 +106,10 @@ const TopBar: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     className={cn(
-                      "font-body hover:bg-primary/10 dark:hover:bg-white/10",
+                      "font-body hover:bg-primary/10 dark:hover:bg-primary/20", // Adjusted dark hover
                       isActive(item.href) 
-                        ? "bg-primary/15 dark:bg-white/15 text-primary dark:text-primary-foreground font-semibold" // Updated active style
-                        : "text-muted-foreground dark:text-neutral-300 hover:text-primary dark:hover:text-white"
+                        ? "bg-primary/15 dark:bg-primary/25 text-primary dark:text-primary-foreground font-semibold" 
+                        : "text-muted-foreground dark:text-muted-foreground hover:text-primary dark:hover:text-primary-foreground" // Use muted-foreground for dark inactive
                     )}
                   >
                     <item.icon className="w-4 h-4 mr-2 aevos-icon-style" />
@@ -119,13 +119,13 @@ const TopBar: React.FC = () => {
               ))}
             </nav>
             <div className="relative w-full max-w-md">
-               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground dark:text-neutral-400 aevos-icon-style" />
+               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground aevos-icon-style" />
               <Input
                 type="search"
                 placeholder="Search or ask 'show my tasks'..."
                 className={cn(
                   "w-full h-9 pl-10 pr-4 command-bar-input-aevos font-body",
-                  "text-sm placeholder:text-muted-foreground" // Simplified placeholder color
+                  "text-sm placeholder:text-muted-foreground" 
                 )}
                 aria-label="Command or search input"
               />
@@ -140,7 +140,7 @@ const TopBar: React.FC = () => {
                   variant="ghost"
                   size="icon"
                   onClick={toggleTheme}
-                  className="w-9 h-9 hover:bg-primary/10 dark:hover:bg-white/10"
+                  className="w-9 h-9"
                   aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
                 >
                   {isMounted && theme === 'dark' ? <SunIcon className="h-5 w-5 aevos-icon-style" /> : <MoonIcon className="h-5 w-5 aevos-icon-style" />}
@@ -151,7 +151,7 @@ const TopBar: React.FC = () => {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                 <Button variant="ghost" size="icon" className="w-9 h-9 hover:bg-primary/10 dark:hover:bg-white/10">
+                 <Button variant="ghost" size="icon" className="w-9 h-9">
                   <BellIcon className="h-5 w-5 aevos-icon-style" />
                   <span className="sr-only">Notifications</span>
                 </Button>
@@ -161,7 +161,7 @@ const TopBar: React.FC = () => {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="w-9 h-9 hover:bg-primary/10 dark:hover:bg-white/10">
+                <Button variant="ghost" size="icon" className="w-9 h-9">
                   <Settings2Icon className="h-5 w-5 aevos-icon-style" />
                   <span className="sr-only">Settings</span>
                 </Button>
@@ -173,14 +173,14 @@ const TopBar: React.FC = () => {
               <ClockIcon className="h-4 w-4 mr-1.5 aevos-icon-style" />
               {isMounted ? currentTime : "--:--"}
             </div>
-             <div className="hidden md:flex items-center text-xs text-muted-foreground px-1 h-9 border-l border-border/20 dark:border-neutral-700/50 ml-1 pl-2.5">
+             <div className="hidden md:flex items-center text-xs text-muted-foreground px-1 h-9 border-l border-border/20 dark:border-border/30 ml-1 pl-2.5">
                 Admin User <span className="mx-1">|</span> Session: <span className="text-accent font-medium ml-1">Active</span>
             </div>
 
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2 h-9 px-2.5 hover:bg-primary/10 dark:hover:bg-white/10">
+                <Button variant="ghost" className="flex items-center space-x-2 h-9 px-2.5">
                   <Avatar className="h-6 w-6">
                     <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
                     <AvatarFallback className="text-xs bg-primary/30 text-primary-foreground">AU</AvatarFallback>
@@ -188,14 +188,14 @@ const TopBar: React.FC = () => {
                   <ChevronDownIcon className="h-4 w-4 opacity-80 aevos-icon-style" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 glassmorphism-panel border-border/30 dark:border-white/10">
+              <DropdownMenuContent align="end" className="w-56 glassmorphism-panel border-border/30 dark:border-border/50">
                 <DropdownMenuLabel className="font-headline text-primary dark:text-primary-foreground">My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-border/20 dark:bg-white/5"/>
-                <DropdownMenuItem className="font-body hover:!bg-primary/10 dark:hover:!bg-white/5 focus:bg-accent focus:text-accent-foreground">Profile</DropdownMenuItem>
-                <DropdownMenuItem className="font-body hover:!bg-primary/10 dark:hover:!bg-white/5 focus:bg-accent focus:text-accent-foreground">Billing</DropdownMenuItem>
-                <DropdownMenuItem className="font-body hover:!bg-primary/10 dark:hover:!bg-white/5 focus:bg-accent focus:text-accent-foreground">Settings</DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-border/20 dark:bg-white/5"/>
-                <DropdownMenuItem className="font-body hover:!bg-primary/10 dark:hover:!bg-white/5 focus:bg-accent focus:text-accent-foreground">Log out</DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-border/20 dark:bg-border/30"/>
+                <DropdownMenuItem className="font-body hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Profile</DropdownMenuItem>
+                <DropdownMenuItem className="font-body hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Billing</DropdownMenuItem>
+                <DropdownMenuItem className="font-body hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Settings</DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-border/20 dark:bg-border/30"/>
+                <DropdownMenuItem className="font-body hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Log out</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -206,3 +206,6 @@ const TopBar: React.FC = () => {
 };
 
 export default TopBar;
+
+
+    
