@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Bell, Bot, Home, ChevronDown, Settings2 } from 'lucide-react'; // Removed unused: MessageSquare, Briefcase, Shield, ShoppingCart
+import { Search, Bell, Bot, Home, ChevronDown, Settings2 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -136,4 +136,3 @@ const TopBar: React.FC = () => {
 
 export default TopBar;
 
-    
