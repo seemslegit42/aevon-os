@@ -13,8 +13,8 @@
     /* Foreground TEXT Colors: ENSURE ALL ARE PURE WHITE */
     --foreground-h: 0; --foreground-s: 0%; --foreground-l: 100%; /* White */
     --card-foreground-h: 0; --card-foreground-s: 0%; --card-foreground-l: 100%; /* White */
-    --popover-foreground-h: 0; --popover-s: 0%; --popover-foreground-l: 100%; /* White */
-    --primary-foreground-h: 0; --primary-s: 0%; --primary-foreground-l: 100%; /* White (already correct) */
+    --popover-foreground-h: 0; --popover-foreground-s: 0%; --popover-foreground-l: 100%; /* White - CORRECTED from --popover-s */
+    --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 100%; /* White - CORRECTED from --primary-s */
     --secondary-foreground-h: 0; --secondary-foreground-s: 0%; --secondary-foreground-l: 100%; /* White */
     --muted-foreground-h: 0; --muted-foreground-s: 0%; --muted-foreground-l: 100%;  /* White */
     --accent-foreground-h: 0; --accent-foreground-s: 0%; --accent-foreground-l: 100%; /* White for text on accent backgrounds */
@@ -63,15 +63,14 @@
     --popover-foreground: hsl(var(--popover-foreground-h), var(--popover-foreground-s), var(--popover-foreground-l));
     --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
     --primary-foreground: hsl(var(--primary-foreground-h), var(--primary-foreground-s), var(--primary-foreground-l));
-    --primary-gradient-start: hsl(var(--primary-gradient-start-h), var(--primary-gradient-start-s), var(--primary-gradient-start-l));
     --secondary: hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l));
-    --secondary-foreground: hsl(var(--secondary-foreground-h), var(--secondary-foreground-s), var(--secondary-foreground-l)); /* CORRECTED */
+    --secondary-foreground: hsl(var(--secondary-foreground-h), var(--secondary-foreground-s), var(--secondary-foreground-l));
     --muted: hsl(var(--muted-h), var(--muted-s), var(--muted-l));
-    --muted-foreground: hsl(var(--muted-foreground-h), var(--muted-foreground-s), var(--muted-foreground-l)); /* CORRECTED */
+    --muted-foreground: hsl(var(--muted-foreground-h), var(--muted-foreground-s), var(--muted-foreground-l));
     --accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
-    --accent-foreground: hsl(var(--accent-foreground-h), var(--accent-foreground-s), var(--accent-foreground-l)); /* CORRECTED */
+    --accent-foreground: hsl(var(--accent-foreground-h), var(--accent-foreground-s), var(--accent-foreground-l));
     --destructive: hsl(var(--destructive-h), var(--destructive-s), var(--destructive-l));
-    --destructive-foreground: hsl(var(--destructive-foreground-h), var(--destructive-foreground-s), var(--destructive-foreground-l)); /* CORRECTED */
+    --destructive-foreground: hsl(var(--destructive-foreground-h), var(--destructive-foreground-s), var(--destructive-foreground-l));
     --border: hsl(var(--border-h), var(--border-s), var(--border-l));
     --input: hsl(var(--input-h), var(--input-s), var(--input-l));
     --ring: hsl(var(--ring-h), var(--ring-s), var(--ring-l));
