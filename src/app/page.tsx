@@ -184,20 +184,20 @@ export default function DashboardPage() {
       <div className="flex items-center space-x-1">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-primary"> <Mic className="w-3 h-3"/> </Button>
+            <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground dark:text-neutral-200 hover:text-primary dark:hover:text-white"> <Mic className="w-3 h-3"/> </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom"><p>Voice Command</p></TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-primary"> <MoreHorizontal className="w-3 h-3"/> </Button>
+            <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground dark:text-neutral-200 hover:text-primary dark:hover:text-white"> <MoreHorizontal className="w-3 h-3"/> </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom"><p>More Options</p></TooltipContent>
         </Tooltip>
         {isDismissible && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-destructive" onClick={() => handleRemoveCard(cardId)}>
+              <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground dark:text-neutral-200 hover:text-destructive dark:hover:text-red-400" onClick={() => handleRemoveCard(cardId)}>
                 <X className="w-4 h-4"/>
               </Button>
             </TooltipTrigger>
@@ -234,9 +234,9 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="relative w-full h-full"> {/* Changed from min-h-[calc(100vh-4rem)] overflow-auto p-4 */}
+    <div className="relative w-full h-full">
       {isMobile ? (
-        <div className="flex flex-col space-y-4 p-4"> {/* Added p-4 here for mobile consistency */}
+        <div className="flex flex-col space-y-4 p-4">
           {cardsToRender.map(cardConfig => {
             const CardSpecificContent = cardConfig.content;
             return (
@@ -324,7 +324,7 @@ export default function DashboardPage() {
       <Button
         variant="outline"
         size="icon"
-        className="fixed bottom-6 left-6 z-50 rounded-full shadow-xl bg-accent hover:bg-accent/80 text-accent-foreground w-12 h-12"
+        className="fixed bottom-6 left-6 z-50 rounded-full shadow-xl bg-accent hover:bg-accent/90 text-accent-foreground w-12 h-12"
         onClick={() => setIsCommandPaletteOpen(true)}
       >
         <LayoutDashboard className="h-6 w-6" />

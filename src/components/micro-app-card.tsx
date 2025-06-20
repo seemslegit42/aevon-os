@@ -27,7 +27,7 @@ const MicroAppCardComponent: React.FC<MicroAppCardProps> = ({ title, description
         {description && typeof description === 'string' ? (
           <CardDescription className="text-foreground/80 dark:text-neutral-200 mb-4 text-sm">{description}</CardDescription>
         ) : (
-          description // This allows ReactNode descriptions
+          description 
         )}
         {children}
       </CardContent>
