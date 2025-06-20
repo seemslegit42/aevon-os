@@ -15,7 +15,7 @@
     --foreground-h: 255; --foreground-s: 15%; --foreground-l: 12%;
 
     /* Card: Very Light Purple for cards */
-    --card-h: 275; --card-s: 52%; --card-l: 97%; --card-a: 0.5;
+    --card-h: 275; --card-s: 52%; --card-l: 97%; --card-a: 0.6; /* Adjusted alpha */
     --card-foreground-h: var(--foreground-h); --card-foreground-s: var(--foreground-s); --card-foreground-l: var(--foreground-l);
 
     --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l); --popover-a: var(--card-a);
@@ -53,7 +53,7 @@
     --chart-5-h: var(--destructive-h); --chart-5-s: var(--destructive-s); --chart-5-l: var(--destructive-l); /* Red for errors */
 
     /* TopBar Specific Colors - Light Theme */
-    --topbar-bg-h: 0; --topbar-bg-s: 0%; --topbar-bg-l: 97%; --topbar-bg-a: 0.50;
+    --topbar-bg-h: 0; --topbar-bg-s: 0%; --topbar-bg-l: 97%; --topbar-bg-a: 0.65; /* Adjusted alpha */
     --topbar-border-h: 220; --topbar-border-s: 20%; --topbar-border-l: 88%; --topbar-border-a: 0.35;
 
 
@@ -95,7 +95,7 @@
     --foreground-h: 210; --foreground-s: 30%; --foreground-l: 96%;
 
     /* Card: Darker, slightly desaturated Purple base for cards */
-    --card-h: 275; --card-s: 30%; --card-l: 14%; --card-a: 0.85; /* More solid, slightly lighter */
+    --card-h: 275; --card-s: 30%; --card-l: 14%; --card-a: 0.75; /* Adjusted alpha, more solid, slightly lighter */
     --card-foreground-h: var(--foreground-h); --card-foreground-s: var(--foreground-s); --card-foreground-l: var(--foreground-l);
 
     --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l); --popover-a: var(--card-a); /* Popover to match card solidity */
@@ -134,7 +134,7 @@
     --chart-5-h: var(--destructive-h); --chart-5-s: var(--destructive-s); --chart-5-l: var(--destructive-l);
 
     /* TopBar Specific Colors - Dark Theme */
-    --topbar-bg-h: 275; --topbar-bg-s: 30%; --topbar-bg-l: 12%; --topbar-bg-a: 0.45;
+    --topbar-bg-h: 275; --topbar-bg-s: 30%; --topbar-bg-l: 12%; --topbar-bg-a: 0.55; /* Adjusted alpha */
     --topbar-border-h: 275; --topbar-border-s: 20%; --topbar-border-l: 30%; --topbar-border-a: 0.35;
   }
 }
@@ -162,7 +162,7 @@
   background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
   backdrop-filter: blur(12px) saturate(1.05);
   -webkit-backdrop-filter: blur(12px) saturate(1.05);
-  border: 1px solid hsla(var(--border-h), var(--border-s), calc(var(--border-l) - 10%), 0.4); /* Use theme border, slightly darker, medium opacity */
+  border: 1px solid hsla(var(--border-h), var(--border-s), calc(var(--border-l) - 10%), 0.4); 
   border-radius: var(--radius);
   box-shadow: 0 6px 24px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) + 70%), 0.08),
               0 2px 8px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) + 70%), 0.04);
@@ -170,10 +170,10 @@
 
 .dark .glassmorphism-panel {
   /* Dark Theme Glass */
-  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a)); /* card-a is 0.85 */
+  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a)); 
   backdrop-filter: blur(14px) saturate(1.1);
   -webkit-backdrop-filter: blur(14px) saturate(1.1);
-  border: 1px solid hsla(var(--border-h), var(--border-s), calc(var(--border-l) + 15%), 0.5); /* Use theme border, slightly lighter, more opacity */
+  border: 1px solid hsla(var(--border-h), var(--border-s), calc(var(--border-l) + 15%), 0.5); 
   border-radius: var(--radius);
   box-shadow: 0 6px 24px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 2%), 0.2),
               0 2px 8px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 2%), 0.15);
@@ -304,7 +304,5 @@
   color: hsl(var(--chart-5-h), var(--chart-5-s), calc(var(--chart-5-l) - 10%)) !important;
 }
 .dark .details-link-failure {
-  color: hsl(var(--chart-5-h), var(--chart-s), calc(var(--chart-5-l) + 10%)) !important;
+  color: hsl(var(--chart-s), var(--chart-s), calc(var(--chart-5-l) + 10%)) !important; /* Corrected to use --chart-5-h for hue */
 }
-
-    

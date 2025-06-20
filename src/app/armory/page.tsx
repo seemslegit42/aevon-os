@@ -39,12 +39,11 @@ interface ArmoryApp {
   id: string;
   name: string;
   icon: ElementType;
-  shortDesc: string;
-  aiGeneratedDesc?: string;
+  aiGeneratedDesc?: string; // Changed from shortDesc to aiGeneratedDesc for consistency
   tags: string[];
 }
 
-const initialApps: ArmoryApp[] = []; // Example: add predefined apps if any
+const initialApps: ArmoryApp[] = []; 
 
 export default function ArmoryPage() {
   const [apps, setApps] = useState<ArmoryApp[]>(initialApps);
@@ -64,7 +63,7 @@ export default function ArmoryPage() {
 
   const handleGenerateDescription = async (values: AppDescriptionFormValues) => {
     setIsGenerating(true);
-    setGeneratedDescription(""); // Initialize for streaming
+    setGeneratedDescription(""); 
 
     try {
       const response = await fetch('/api/ai/app-description', {
@@ -99,24 +98,13 @@ export default function ArmoryPage() {
        if (error instanceof Error) {
           errorMessage = error.message;
       }
-      setGeneratedDescription(`Error: ${errorMessage}`);
+      setGeneratedDescription(null); // Clear on error
       toast({ variant: "destructive", title: "Generation Error", description: errorMessage });
     } finally {
       setIsGenerating(false);
     }
   };
   
-  useEffect(() => {
-    if (apps.length > 0) {
-        const updatedApps = apps.map(app => ({
-            ...app,
-            aiGeneratedDesc: app.shortDesc || "Description not available."
-        }));
-        setApps(updatedApps);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); 
-
 
   return (
     <div className="space-y-8">
@@ -145,7 +133,7 @@ export default function ArmoryPage() {
                   <app.icon className="w-6 h-6 mr-2 text-primary" /> {app.name}
                 </CardTitle>
                 <CardDescription className="text-foreground/80 h-12 overflow-hidden text-ellipsis">
-                  {app.aiGeneratedDesc ? app.aiGeneratedDesc.substring(0,100)+(app.aiGeneratedDesc.length > 100 ? '...' : '') : 'Loading description...'}
+                  {app.aiGeneratedDesc ? app.aiGeneratedDesc.substring(0,100)+(app.aiGeneratedDesc.length > 100 ? '...' : '') : 'Description not available.'}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
@@ -176,7 +164,7 @@ export default function ArmoryPage() {
                 <FormItem>
                   <FormLabel className="text-primary/80">Micro-App Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Sales Forecaster AI" {...field} className="focus:ring-accent"/>
+                    <Input placeholder="e.g., Sales Forecaster AI" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -189,7 +177,7 @@ export default function ArmoryPage() {
                 <FormItem>
                   <FormLabel className="text-primary/80">Functionality</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Describe what your app does..." {...field} rows={3} className="focus:ring-accent"/>
+                    <Textarea placeholder="Describe what your app does..." {...field} rows={3} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -202,7 +190,7 @@ export default function ArmoryPage() {
                 <FormItem>
                   <FormLabel className="text-primary/80">Target Audience</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Sales teams in SMBs" {...field} className="focus:ring-accent"/>
+                    <Input placeholder="e.g., Sales teams in SMBs" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -215,7 +203,7 @@ export default function ArmoryPage() {
                 <FormItem>
                   <FormLabel className="text-primary/80">Key Features (comma-separated)</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., AI predictions, Data visualization, Report generation" {...field} className="focus:ring-accent"/>
+                    <Input placeholder="e.g., AI predictions, Data visualization, Report generation" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -234,7 +222,7 @@ export default function ArmoryPage() {
               <CardTitle className="text-xl font-headline text-primary">AI-Generated Description:</CardTitle>
             </CardHeader>
             <CardContent>
-              <ScrollArea className="h-40"> {/* Added ScrollArea for potentially long descriptions */}
+              <ScrollArea className="h-40"> 
                 <p className="text-foreground whitespace-pre-wrap">{generatedDescription}</p>
               </ScrollArea>
             </CardContent>

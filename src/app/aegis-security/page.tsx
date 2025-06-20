@@ -50,7 +50,7 @@ export default function AegisSecurityPage() {
       if (error instanceof Error) {
           errorMessage = error.message;
       }
-      setAnalysisResult({ summary: `Error: ${errorMessage}`, potentialThreats: [], recommendedActions: [] });
+      setAnalysisResult(null); // Clear previous results on error
       toast({ variant: "destructive", title: "Analysis Error", description: errorMessage });
     } finally {
       setIsLoading(false);
@@ -69,7 +69,6 @@ export default function AegisSecurityPage() {
           value={alertDetails}
           onChange={(e) => setAlertDetails(e.target.value)}
           rows={8}
-          className="focus:ring-accent text-sm"
           aria-label="Security alert details input"
         />
         <Button onClick={handleAnalyze} disabled={isLoading} className="mt-4 w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
