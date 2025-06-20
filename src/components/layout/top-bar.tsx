@@ -60,7 +60,7 @@ const TopBar: React.FC = () => {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <header className="sticky top-0 z-50 w-full topbar-custom-bg font-headline">
+      <header className="sticky top-0 z-50 w-full topbar-custom-bg font-headline text-gray-800 dark:text-primary-foreground">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Link href="/" className="text-2xl font-bold flex items-center">
@@ -104,7 +104,7 @@ const TopBar: React.FC = () => {
             </div>
           </div>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2"> {/* All children here should inherit dark:text-primary-foreground or have specific light color styles */}
              <Tooltip>
                 <TooltipTrigger asChild>
                      <Button variant="ghost" size="icon" className="text-primary-foreground hover:text-primary-foreground hover:bg-primary/20 dark:hover:bg-white/10" aria-label="Grid/App Menu">
