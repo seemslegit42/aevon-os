@@ -169,9 +169,9 @@
 
 .dark .iridescent-purple-bg-dark {
   background: linear-gradient(160deg,
-    hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) - 10%)), /* Darker, richer Imperial Purple base */
-    hsl(var(--chart-4-h), var(--chart-4-s), calc(var(--chart-4-l) - 5%)), /* Darker Patina Green base */
-    hsl(var(--secondary-h), var(--secondary-s), calc(var(--secondary-l) - 8%)) /* Darker Roman Aqua base */
+    hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) - 15%)), /* Darker, richer Imperial Purple base */
+    hsl(var(--chart-4-h), var(--chart-4-s), calc(var(--chart-4-l) - 10%)), /* Darker Patina Green base */
+    hsl(var(--secondary-h), var(--secondary-s), calc(var(--secondary-l) - 10%)) /* Darker Roman Aqua base */
   );
   background-size: 200% 200%;
   animation: aurora-glow 20s ease-in-out infinite alternate;
