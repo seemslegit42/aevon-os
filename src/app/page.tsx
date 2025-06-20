@@ -16,7 +16,7 @@ import SystemSnapshotCardContent, { type SystemMetric } from '@/components/dashb
 import ApplicationViewCardContent from '@/components/dashboard/application-view-card-content';
 import MicroAppsCardContent from '@/components/dashboard/micro-apps-card-content';
 import LiveOrchestrationFeedCardContent, { type FeedItem } from '@/components/dashboard/live-orchestration-feed-card-content';
-import type { GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-personalized-briefings'; // Assuming this is needed by AiAssistantCardContent
+import type { GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-personalized-briefings'; 
 import { generatePersonalizedBriefing } from '@/ai/flows/generate-personalized-briefings';
 
 
@@ -52,8 +52,8 @@ interface CardConfig extends CardLayoutInfo {
   icon: React.ElementType;
   actions?: (cardId: string, onDismiss: (id: string) => void) => React.ReactNode;
   cardClassName?: string;
-  content: React.FC<any>; // Changed to React.FC<any> to accept component references
-  contentProps?: any; // Props to pass to the content component
+  content: React.FC<any>; 
+  contentProps?: any; 
   minWidth: number;
   minHeight: number;
   isDismissible?: boolean;
@@ -117,6 +117,7 @@ export default function HomePage() {
       setDiskUsageValue(prev => Math.min(1000, Math.max(0, prev + Math.floor(Math.random() * 20) - 10)));
       setNetworkSent(parseFloat((Math.random() * 5).toFixed(1)));
       setNetworkReceived(parseFloat((Math.random() * 15).toFixed(1)));
+      setActiveAgentsCount(initialAgentsData.filter(agent => Math.random() > 0.2 && (agent.status === 'Processing' || agent.status === 'Idle')).length); // Randomize active agents slightly
     }, 2000);
     return () => clearInterval(interval);
   }, []);
@@ -133,7 +134,7 @@ export default function HomePage() {
     try {
       const input: GeneratePersonalizedBriefingInput = {
         userName: "Dashboard User",
-        operationalMetrics: `CPU: ${cpuLoad}%, Memory: ${memoryUsage}%. System status normal. Key metrics are available in the System Snapshot.`,
+        operationalMetrics: `CPU: ${cpuLoad}%, Memory: ${memoryUsage}%. System status normal. Key metrics are available in the System Snapshot. Active agents: ${activeAgentsCount}.`,
         relevantInformation: `User asked: "${aiPrompt}". Provide a concise, helpful response based on general knowledge or simulate an action if appropriate for a demo.`,
       };
       const result = await generatePersonalizedBriefing(input);
@@ -151,7 +152,7 @@ export default function HomePage() {
     { id: 'cpu', icon: Cpu, label: 'CPU Load', value: cpuLoad, progressMax: 100, unit: '%' },
     { id: 'memory', icon: HardDrive, label: 'Memory Usage', value: memoryUsage, progressMax: 100, unit: '%' },
     { id: 'agents', icon: Users, label: 'Active Agents', value: activeAgentsCount, unit: '' }, 
-    { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: diskUsageValue, progressMax: 1000, unit: 'GB' }, // Unit corrected for GB / TB display
+    { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: diskUsageValue, progressMax: 1000, unit: 'GB' },
     { id: 'sent', icon: Cpu, label: 'Network Sent', value: networkSent, unit: 'GB' }, 
     { id: 'received', icon: HardDrive, label: 'Network Received', value: networkReceived, unit: 'GB' }, 
     { id: 'uptime', icon: Timer, label: 'System Uptime', value: systemUptime, unit: '' },
@@ -271,8 +272,8 @@ export default function HomePage() {
             bounds="parent"
             dragHandleClassName="drag-handle"
             enableResizing={{
-                top:false, right:true, bottom:true, left:false,
-                topRight:false, bottomRight:true, bottomLeft:false, topLeft:false
+                top:true, right:true, bottom:true, left:true,
+                topRight:true, bottomRight:true, bottomLeft:true, topLeft:true
             }}
             style={{ zIndex: currentLayout.zIndex }}
             className={cn(
@@ -301,5 +302,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-    
