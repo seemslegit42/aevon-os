@@ -27,7 +27,7 @@ const ApplicationViewCardContent: React.FC<ApplicationViewCardContentProps> = ({
   if (!currentAppId) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center p-4">
-        <Blocks className="w-16 h-16 text-primary/50 mb-4" />
+        <Blocks className="w-16 h-16 text-primary/50 dark:text-primary-foreground/60 mb-4" />
         <p className="text-sm text-foreground/90 dark:text-white font-medium">No micro-app launched.</p>
         <p className="text-xs text-muted-foreground dark:text-neutral-300 mt-1">Select an app from 'Micro-Apps' or Command Palette.</p>
       </div>
@@ -37,7 +37,7 @@ const ApplicationViewCardContent: React.FC<ApplicationViewCardContentProps> = ({
   return (
     <div className="flex flex-col items-center justify-center h-full text-center p-4">
       {/* This would be where the actual Micro-App UI for 'currentAppId' renders */}
-      <h3 className="text-lg font-semibold text-primary dark:text-primary">{currentAppId}</h3>
+      <h3 className="text-lg font-semibold text-primary dark:text-primary-foreground">{currentAppId}</h3>
       <p className="text-sm text-muted-foreground dark:text-neutral-300">Content for {currentAppId} would load here.</p>
       {/* Example: <SpecificAppUI appId={currentAppId} /> */}
     </div>
@@ -45,3 +45,4 @@ const ApplicationViewCardContent: React.FC<ApplicationViewCardContentProps> = ({
 };
 
 export default ApplicationViewCardContent;
+
