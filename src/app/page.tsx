@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Sparkles, Blocks, Cpu, LayoutGrid, Users, HardDrive, ArrowUpFromLine, ArrowDownToLine, Timer, AppWindow, LoaderCircle, CircleDot, AlertCircle, XCircle, CheckCircle, MoreHorizontal, Mic, Minus, BarChartBig, Settings2, Shield as ShieldIcon, GitFork } from 'lucide-react';
+import { Sparkles, Blocks, Cpu, LayoutGrid, Users, HardDrive, ArrowUpFromLine, ArrowDownToLine, Timer, AppWindow, LoaderCircle, CircleDot, AlertCircle, XCircle, CheckCircle, MoreHorizontal, Mic, Minus, BarChartBig, Settings2, Shield as ShieldIcon, GitFork, X } from 'lucide-react';
 import { generatePersonalizedBriefing, GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-personalized-briefings';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -46,14 +46,6 @@ const initialTasksData: OrchestrationTask[] = [
   { id: '3', title: 'Agent Task: Backup Database Cluster', time: '15 minutes ago', status: 'success', details: 'Full backup of primary and replica databases completed without errors.' },
 ];
 
-const CardActions = () => (
-  <div className="flex items-center space-x-1">
-    <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-primary"> <Mic className="w-3 h-3"/> </Button>
-    <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-primary"> <MoreHorizontal className="w-3 h-3"/> </Button>
-    <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-primary"> <Minus className="w-3 h-3"/> </Button>
-  </div>
-);
-
 interface CardLayoutInfo {
   id: string;
   x: number;
@@ -61,18 +53,19 @@ interface CardLayoutInfo {
   width: number;
   height: number;
   zIndex: number;
+  isDismissing?: boolean;
 }
 
 interface CardConfig extends CardLayoutInfo {
   title: string;
   icon: React.ElementType;
-  actions?: React.ReactNode;
+  actions?: (cardId: string, onDismiss: (id: string) => void) => React.ReactNode;
   cardClassName?: string;
   content: (props?: any) => React.ReactNode;
   minWidth: number;
   minHeight: number;
+  isDismissible?: boolean;
 }
-
 
 export default function HomePage() {
   const [aiPrompt, setAiPrompt] = useState('');
@@ -90,6 +83,32 @@ export default function HomePage() {
 
   const [agents, setAgents] = useState<Agent[]>(initialAgentsData);
   const [tasks, setTasks] = useState<OrchestrationTask[]>(initialTasksData);
+  const [dismissedCardIds, setDismissedCardIds] = useState<string[]>([]);
+
+  const handleDismissCardAttempt = (id: string) => {
+    setCardLayouts(prevLayouts =>
+      prevLayouts.map(layout =>
+        layout.id === id ? { ...layout, isDismissing: true, zIndex: getMaxZIndex() +1 } : layout // Ensure it's on top during dismissal
+      )
+    );
+    setTimeout(() => {
+      setDismissedCardIds(prevIds => [...prevIds, id]);
+      // Card will visually disappear due to animation and then be unmounted by filter
+      // No need to remove from cardLayouts here as it's filtered out by dismissedCardIds
+    }, 300); // Match animation duration
+  };
+
+  const CardActions = (cardId: string, onDismiss: (id: string) => void, isDismissible?: boolean) => (
+    <div className="flex items-center space-x-1">
+      <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-primary"> <Mic className="w-3 h-3"/> </Button>
+      <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-primary"> <MoreHorizontal className="w-3 h-3"/> </Button>
+      {isDismissible && (
+        <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-destructive" onClick={() => onDismiss(cardId)}>
+          <X className="w-4 h-4"/>
+        </Button>
+      )}
+    </div>
+  );
 
 
   useEffect(() => {
@@ -108,7 +127,7 @@ export default function HomePage() {
       setNetworkReceived(prev => parseFloat((prev + Math.random() * 0.5).toFixed(1)));
       setActiveAgentsCount(initialAgentsData.filter(agent => agent.status === 'Processing' || agent.status === 'Idle').length);
 
-    }, 2000); // Update a bit less frequently for performance
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
@@ -154,9 +173,9 @@ export default function HomePage() {
     { id: 'app3', icon: ShieldIcon, label: 'Launch Security' },
   ];
 
-  const initialCards: CardConfig[] = [
+  const initialCardsData: CardConfig[] = [
     {
-      id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, actions: <CardActions/>,
+      id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, isDismissible: true,
       x: 20, y: 20, width: 400, height: 520, zIndex: 1, minWidth: 320, minHeight: 400,
       cardClassName: "flex-grow flex flex-col",
       content: () => (
@@ -189,7 +208,7 @@ export default function HomePage() {
       )
     },
     {
-      id: 'appView', title: 'Application View', icon: AppWindow, actions: <CardActions/>,
+      id: 'appView', title: 'Application View', icon: AppWindow, isDismissible: true,
       x: 20, y: 560, width: 400, height: 230, zIndex: 1, minWidth: 250, minHeight: 180,
       content: () => (
           <div className="flex flex-col items-center justify-center h-full text-center p-4">
@@ -200,7 +219,7 @@ export default function HomePage() {
       )
     },
     {
-      id: 'systemSnapshot', title: 'System Snapshot', icon: LayoutGrid, actions: <CardActions/>,
+      id: 'systemSnapshot', title: 'System Snapshot', icon: LayoutGrid, isDismissible: true,
       x: 440, y: 20, width: 380, height: 420, zIndex: 1, minWidth: 300, minHeight: 350,
       content: () => (
         <ul className="space-y-3 p-1">
@@ -233,7 +252,7 @@ export default function HomePage() {
       )
     },
     {
-      id: 'microApps', title: 'Micro-Apps', icon: Blocks, actions: <CardActions/>,
+      id: 'microApps', title: 'Micro-Apps', icon: Blocks, isDismissible: true,
       x: 440, y: 460, width: 380, height: 180, zIndex: 1, minWidth: 300, minHeight: 150,
       content: () => (
         <div className="flex space-x-3 p-4 justify-around items-center h-full">
@@ -247,7 +266,7 @@ export default function HomePage() {
       )
     },
     {
-      id: 'agentPresence', title: 'Agent Presence', icon: Cpu, actions: <CardActions/>,
+      id: 'agentPresence', title: 'Agent Presence', icon: Cpu, isDismissible: true,
       x: 840, y: 20, width: 400, height: 350, zIndex: 1, minWidth: 300, minHeight: 250,
       content: () => (
         <ScrollArea className="h-full pr-1">
@@ -270,7 +289,7 @@ export default function HomePage() {
       )
     },
     {
-      id: 'orchestrationFeed', title: 'Live Orchestration Feed', icon: GitFork, actions: <CardActions/>,
+      id: 'orchestrationFeed', title: 'Live Orchestration Feed', icon: GitFork, isDismissible: true,
       x: 840, y: 390, width: 400, height: 350, zIndex: 1, minWidth: 300, minHeight: 250,
       cardClassName: "flex flex-col",
       content: () => (
@@ -308,9 +327,14 @@ export default function HomePage() {
       )
     },
   ];
+  
+  initialCardsData.forEach(card => {
+    card.actions = (cardId, onDismiss) => CardActions(cardId, onDismiss, card.isDismissible);
+  });
+
 
   const [cardLayouts, setCardLayouts] = useState<CardLayoutInfo[]>(
-    initialCards.map(({ id, x, y, width, height, zIndex }) => ({ id, x, y, width, height, zIndex }))
+    initialCardsData.map(({ id, x, y, width, height, zIndex }) => ({ id, x, y, width, height, zIndex, isDismissing: false }))
   );
 
   const getMaxZIndex = () => {
@@ -345,10 +369,11 @@ export default function HomePage() {
     );
   };
 
+  const cardsToRender = initialCardsData.filter(card => !dismissedCardIds.includes(card.id));
 
   return (
-    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden"> {/* Container for RND components */}
-      {initialCards.map(cardConfig => {
+    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden">
+      {cardsToRender.map(cardConfig => {
         const currentLayout = cardLayouts.find(l => l.id === cardConfig.id);
         if (!currentLayout) return null;
 
@@ -376,13 +401,19 @@ export default function HomePage() {
                 topRight:false, bottomRight:true, bottomLeft:false, topLeft:false
             }}
             style={{ zIndex: currentLayout.zIndex }}
-            className="border border-transparent hover:border-primary/30 rounded-lg focus-within:border-primary" // Visual cue for active/hover
+            className={cn(
+              "border border-transparent hover:border-primary/30 rounded-lg focus-within:border-primary",
+              "card-enter-animation", // Apply open animation
+              currentLayout.isDismissing && "card-exit-animation" // Apply close animation
+            )}
+            dragGrid={[20, 20]}
+            resizeGrid={[20, 20]}
           >
             <MicroAppCard
               title={cardConfig.title}
               icon={cardConfig.icon}
-              actions={cardConfig.actions}
-              className={cn("h-full w-full !rounded-lg", cardConfig.cardClassName)} // Ensure card fills Rnd, override radius if RND adds one
+              actions={cardConfig.actions ? cardConfig.actions(cardConfig.id, handleDismissCardAttempt) : undefined}
+              className={cn("h-full w-full !rounded-lg", cardConfig.cardClassName)}
             >
               <CardSpecificContent />
             </MicroAppCard>
