@@ -79,10 +79,9 @@ export default function DashboardPage() {
     if (savedActiveIds) {
       try {
         const parsedActiveIds = JSON.parse(savedActiveIds);
-        // Ensure only valid IDs from the current ALL_CARD_CONFIGS are loaded
         currentActiveIds = parsedActiveIds.filter((id: string) => ALL_CARD_CONFIGS.some(c => c.id === id));
         if (currentActiveIds.length === 0 && ALL_CARD_CONFIGS.length > 0) {
-             currentActiveIds = DEFAULT_ACTIVE_CARD_IDS; // Fallback if saved IDs are all invalid
+             currentActiveIds = DEFAULT_ACTIVE_CARD_IDS; 
         }
       } catch (e) {
         console.error("Failed to parse active card IDs from localStorage", e);
@@ -235,9 +234,9 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-auto p-4">
+    <div className="relative w-full h-full"> {/* Changed from min-h-[calc(100vh-4rem)] overflow-auto p-4 */}
       {isMobile ? (
-        <div className="flex flex-col space-y-4">
+        <div className="flex flex-col space-y-4 p-4"> {/* Added p-4 here for mobile consistency */}
           {cardsToRender.map(cardConfig => {
             const CardSpecificContent = cardConfig.content;
             return (
@@ -338,3 +337,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+

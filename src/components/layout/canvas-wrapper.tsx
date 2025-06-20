@@ -15,7 +15,7 @@ const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
         "iridescent-purple-bg-light dark:iridescent-purple-bg-dark"
       )}
     >
-      <div className="relative z-10">
+      <div className="relative z-10 h-full">
         {children}
       </div>
     </main>
@@ -23,3 +23,4 @@ const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
 };
 
 export default CanvasWrapper;
+
