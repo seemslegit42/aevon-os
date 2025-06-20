@@ -342,6 +342,7 @@
   background: linear-gradient(
     120deg,
     hsl(var(--primary-h), var(--primary-s), var(--primary-l)), /* Imperial Purple */
+    hsl(var(--primary-h), var(--primary-s), var(--primary-l)), /* Imperial Purple - MORE PURPLE */
     hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l)), /* Roman Aqua */
     hsl(var(--chart-4-h), var(--chart-4-s), var(--chart-4-l)) /* Patina Green */
   );
