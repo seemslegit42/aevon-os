@@ -75,9 +75,9 @@ export default function DashboardPage() {
   const [systemUptime, setSystemUptime] = useState("0d 0h 0m");
   const [cpuLoad, setCpuLoad] = useState(35);
   const [memoryUsage, setMemoryUsage] = useState(62);
-  const [diskUsageValue, setDiskUsageValue] = useState(450);
-  const [networkSent, setNetworkSent] = useState(1.2);
-  const [networkReceived, setNetworkReceived] = useState(8.5);
+  const [diskUsageValue, setDiskUsageValue] = useState(450); // GB
+  const [networkSent, setNetworkSent] = useState(1.2); // GB
+  const [networkReceived, setNetworkReceived] = useState(8.5); // GB
   const [activeAgentsCount, setActiveAgentsCount] = useState(initialAgentsData.filter(agent => agent.status === 'Processing' || agent.status === 'Idle').length);
 
 
@@ -128,29 +128,26 @@ export default function DashboardPage() {
 
 
   useEffect(() => {
-    const startTime = Date.now();
-    const interval = setInterval(() => {
-      const uptimeMillis = Date.now() - startTime;
-      const d = Math.floor(uptimeMillis / (1000 * 60 * 60 * 24));
-      const h = Math.floor((uptimeMillis % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const m = Math.floor((uptimeMillis % (1000 * 60 * 60)) / (1000 * 60));
-      setSystemUptime(`${d}d ${h}h ${m}m`);
+    // Initialize metrics and agent statuses once on mount
+    setCpuLoad(Math.floor(Math.random() * (70 - 20 + 1)) + 20);
+    setMemoryUsage(Math.floor(Math.random() * (80 - 40 + 1)) + 40);
+    setDiskUsageValue(Math.floor(Math.random() * (800 - 200 + 1)) + 200);
+    setNetworkSent(parseFloat((Math.random() * 5).toFixed(1)));
+    setNetworkReceived(parseFloat((Math.random() * 15).toFixed(1)));
 
-      setCpuLoad(Math.floor(Math.random() * (70 - 20 + 1)) + 20);
-      setMemoryUsage(Math.floor(Math.random() * (80 - 40 + 1)) + 40);
-      setDiskUsageValue(prev => Math.min(1000, Math.max(0, prev + Math.floor(Math.random() * 20) - 10))); // GB
-      setNetworkSent(parseFloat((Math.random() * 5).toFixed(1))); // GB
-      setNetworkReceived(parseFloat((Math.random() * 15).toFixed(1))); // GB
-      // Simulate agent status changes for activeAgentsCount
-      const updatedAgents = agents.map(agent => ({
-        ...agent,
-        status: Math.random() > 0.7 ? (agent.status === 'Error' ? 'Idle' : (Math.random() > 0.5 ? 'Processing' : 'Idle')) : agent.status,
-      }));
-      setAgents(updatedAgents); // This will trigger re-render of AgentPresenceCardContent if it depends on agents prop
-      setActiveAgentsCount(updatedAgents.filter(agent => agent.status === 'Processing' || agent.status === 'Idle').length);
+    const updatedInitialAgents = initialAgentsData.map(agent => ({
+      ...agent,
+      status: Math.random() > 0.3 ? agent.status : (Math.random() > 0.5 ? 'Processing' : 'Idle'), // More likely to retain initial status
+    }));
+    setAgents(updatedInitialAgents);
+    setActiveAgentsCount(updatedInitialAgents.filter(agent => agent.status === 'Processing' || agent.status === 'Idle').length);
 
-    }, 2000);
-    return () => clearInterval(interval);
+    // Set a randomized static uptime
+    const d = Math.floor(Math.random() * 2 + 1); // 1-2 days
+    const h = Math.floor(Math.random() * 24);
+    const m = Math.floor(Math.random() * 60);
+    setSystemUptime(`${d}d ${h}h ${m}m`);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -193,7 +190,7 @@ export default function DashboardPage() {
   const initialCardsData: CardConfig[] = [
     {
       id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, isDismissible: true,
-      x: 50, y: 50, width: 400, height: 480, zIndex: 1, minWidth: 320, minHeight: 380,
+      x: 50, y: 50, width: 400, height: 480, zIndex: 1, minWidth: 320, minHeight: 420, // Adjusted minHeight
       cardClassName: "flex-grow flex flex-col",
       content: AiAssistantCardContent,
       contentProps: {
@@ -212,7 +209,7 @@ export default function DashboardPage() {
     },
     {
       id: 'systemSnapshot', title: 'System Snapshot', icon: LayoutGrid, isDismissible: true,
-      x: 470, y: 300, width: 380, height: 380, zIndex: 1, minWidth: 300, minHeight: 350,
+      x: 470, y: 300, width: 380, height: 380, zIndex: 1, minWidth: 320, minHeight: 350, // Adjusted minWidth
       content: SystemSnapshotCardContent,
       contentProps: { systemMetricsConfig, agentTask: agentTaskData }
     },
@@ -279,7 +276,7 @@ export default function DashboardPage() {
   const cardsToRender = initialCardsData.filter(card => !dismissedCardIds.includes(card.id));
 
   return (
-    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent"> {/* Changed bg-background to bg-transparent so CanvasWrapper bg shows */}
+    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden">
       {cardsToRender.map(cardConfig => {
         const currentLayout = cardLayouts.find(l => l.id === cardConfig.id);
         if (!currentLayout) return null;
