@@ -70,6 +70,7 @@ export default function AegisSecurityPage() {
           onChange={(e) => setAlertDetails(e.target.value)}
           rows={8}
           aria-label="Security alert details input"
+          className="bg-input border-input placeholder:text-muted-foreground"
         />
         <Button onClick={handleAnalyze} disabled={isLoading} className="mt-4 w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
           {isLoading ? 'Analyzing...' : 'Analyze Alerts'}
@@ -77,7 +78,7 @@ export default function AegisSecurityPage() {
         </Button>
 
         {analysisResult && (
-          <Card className="mt-6">
+          <Card className="mt-6 glassmorphism-panel">
             <CardHeader>
               <CardTitle className="text-xl font-headline text-primary flex items-center">
                 <CheckCircleIcon className="w-6 h-6 mr-2 text-secondary" /> AI Analysis Result
@@ -92,7 +93,7 @@ export default function AegisSecurityPage() {
                 {analysisResult.potentialThreats && analysisResult.potentialThreats.length > 0 && (
                   <div>
                     <h4 className="font-semibold text-lg text-foreground mb-1">Potential Threats:</h4>
-                    <ul className="list-disc list-inside text-sm space-y-1">
+                    <ul className="list-disc list-inside text-sm space-y-1 text-foreground">
                       {analysisResult.potentialThreats.map((threat, index) => (
                         <li key={`threat-${index}`}>{threat}</li>
                       ))}
@@ -102,7 +103,7 @@ export default function AegisSecurityPage() {
                 {analysisResult.recommendedActions && analysisResult.recommendedActions.length > 0 && (
                   <div>
                     <h4 className="font-semibold text-lg text-foreground mb-1">Recommended Actions:</h4>
-                    <ul className="list-disc list-inside text-sm space-y-1">
+                    <ul className="list-disc list-inside text-sm space-y-1 text-foreground">
                       {analysisResult.recommendedActions.map((action, index) => (
                         <li key={`action-${index}`}>{action}</li>
                       ))}
@@ -115,7 +116,7 @@ export default function AegisSecurityPage() {
         )}
       </MicroAppCard>
 
-      <Card>
+      <Card className="glassmorphism-panel">
         <CardHeader>
           <CardTitle className="font-headline text-primary flex items-center"><ShieldIcon className="w-5 h-5 mr-2"/>Proactive Defense</CardTitle>
           <CardDescription className="text-muted-foreground">Aegis continuously monitors for anomalies and provides insights into user behavior baselines, making security management effortless.</CardDescription>

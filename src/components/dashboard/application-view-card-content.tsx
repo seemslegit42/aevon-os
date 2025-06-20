@@ -31,7 +31,7 @@ const ApplicationViewCardContent: React.FC<ApplicationViewCardContentProps> = ({
     return (
       <div className="flex flex-col items-center justify-center h-full text-center p-4">
         <BlocksIcon className="w-16 h-16 text-primary/50 mb-4" />
-        <p className="text-sm font-medium text-foreground">No micro-app launched.</p>
+        <p className="text-sm font-medium text-foreground/90">No micro-app launched.</p>
         <p className="text-xs text-muted-foreground mt-1 mb-3">Select an app from 'Micro-Apps' or the Command Palette.</p>
         {setIsCommandPaletteOpen && (
           <Button 

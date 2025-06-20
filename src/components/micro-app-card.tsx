@@ -17,8 +17,8 @@ const MicroAppCardComponent: React.FC<MicroAppCardProps> = ({ title, description
     <Card className={cn("glassmorphism-panel overflow-hidden flex flex-col", className)}>
       <CardHeader className="drag-handle flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b border-border/10 dark:border-white/5 bg-foreground/[.02] dark:bg-card/90 cursor-grab active:cursor-grabbing">
         <div className="flex items-center">
-          {Icon && <Icon className="h-5 w-5 text-primary dark:text-white mr-3" />}
-          <CardTitle className="text-base font-headline text-primary dark:text-white">{title}</CardTitle>
+          {Icon && <Icon className="h-5 w-5 text-primary dark:text-primary-foreground mr-3" />}
+          <CardTitle className="text-base font-headline text-primary dark:text-primary-foreground">{title}</CardTitle>
         </div>
         {actions && <div className="flex items-center space-x-1">{actions}</div>}
       </CardHeader>

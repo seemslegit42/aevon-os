@@ -14,8 +14,8 @@
     /* Foreground: Obsidian Black (darkened for text) */
     --foreground-h: 255; --foreground-s: 15%; --foreground-l: 12%;
 
-    /* Card: Cooler, less purple, slightly less transparent */
-    --card-h: 220; --card-s: 30%; --card-l: 98%; --card-a: 0.45; /* More translucent */
+    /* Card: Cooler, less purple, slightly more translucent */
+    --card-h: 220; --card-s: 30%; --card-l: 98%; --card-a: 0.45; 
     --card-foreground-h: var(--foreground-h); --card-foreground-s: var(--foreground-s); --card-foreground-l: var(--foreground-l);
 
     --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l); --popover-a: var(--card-a);
@@ -51,6 +51,11 @@
     --chart-3-h: var(--accent-h); --chart-3-s: var(--accent-s); --chart-3-l: var(--accent-l); /* Gold */
     --chart-4-h: 158; --chart-4-s: 55%; --chart-4-l: 58%; /* Patina Green for success */
     --chart-5-h: var(--destructive-h); --chart-5-s: var(--destructive-s); --chart-5-l: var(--destructive-l); /* Red for errors */
+
+    /* TopBar specific - Light Theme */
+    --topbar-bg-h: 0; --topbar-bg-s: 0%; --topbar-bg-l: 97%; --topbar-bg-a: 0.35; /* Vitreous White base, high translucency */
+    --topbar-border-h: 220; --topbar-border-s: 20%; --topbar-border-l: 88%; --topbar-border-a: 0.15; /* Very subtle border */
+
 
     /* Full HSL color definitions */
     --background: hsl(var(--background-h), var(--background-s), var(--background-l));
@@ -107,7 +112,7 @@
 
     /* Muted: Light Gray for "muted" text */
     --muted-h: 220; --muted-s: 18%; --muted-l: 65%;
-    --muted-foreground-h: 220; --muted-s: 15%; --muted-foreground-l: 75%; /* Lighter for dark mode */
+    /* --muted-foreground-h: 220; --muted-s: 15%; --muted-foreground-l: 75%;  Replaced by direct HSL below */
 
 
     /* Accent: Gold (#FFD700) */
@@ -121,6 +126,10 @@
     --border-h: 275; --border-s: 15%; --border-l: 25%;
     --input-h: 275; --input-s: 25%; --input-l: 20%;
     --ring-h: var(--accent-h); --ring-s: var(--accent-s); --ring-l: calc(var(--accent-l) + 5%);
+
+    /* TopBar specific - Dark Theme */
+    --topbar-bg-h: 275; --topbar-bg-s: 30%; --topbar-bg-l: 12%; --topbar-bg-a: 0.25; /* Darker, high translucency */
+    --topbar-border-h: 275; --topbar-border-s: 20%; --topbar-border-l: 30%; --topbar-border-a: 0.15; /* Very subtle border */
 
     /* Chart colors - Dark Theme specific adjustments */
     --chart-1-h: var(--primary-h); --chart-1-s: var(--primary-s); --chart-1-l: var(--primary-l);
@@ -178,20 +187,19 @@
 
 /* Glassmorphism Panel Style */
 .glassmorphism-panel {
-  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
+  background-color: rgba(245, 255, 250, 0.15); /* Vitreous White @ 15% */
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(200, 210, 230, 0.25); 
+  border: 1px solid rgba(245, 255, 250, 0.3); /* Vitreous White @ 30% border */
   border-radius: var(--radius);
-  box-shadow: 0 8px 32px 0 rgba(28, 25, 52, 0.08); 
+  box-shadow: 0 8px 32px 0 rgba(28, 25, 52, 0.1); /* Obsidian Black @ 10% shadow */
 }
 
 .dark .glassmorphism-panel {
-  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
+  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a)); /* Use dark theme card vars */
   backdrop-filter: blur(16px) saturate(1.2); 
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
   border: 1px solid hsla(var(--border-h), var(--border-s), calc(var(--border-l) + 20%), 0.35); 
-  border-radius: var(--radius);
   box-shadow: 0 8px 28px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 3%), 0.25),
               0 3px 10px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 3%), 0.2); 
 }
@@ -289,19 +297,6 @@
   transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out;
 }
 
-/* TopBar specific background - now glassmorphism */
-.topbar-custom-bg {
-  background-color: hsla(var(--topbar-bg-h, 0), var(--topbar-bg-s, 0%), var(--topbar-bg-l, 97%), var(--topbar-bg-a, 0.35)); /* Default to light theme values if vars not found */
-  backdrop-filter: blur(10px) saturate(1.05);
-  -webkit-backdrop-filter: blur(10px) saturate(1.05);
-  border-bottom: 1px solid hsla(var(--topbar-border-h, 220), var(--topbar-border-s, 20%), var(--topbar-border-l, 88%), var(--topbar-border-a, 0.15));
-  box-shadow: 0 1px 8px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 10%), 0.1);
-}
-.dark .topbar-custom-bg {
-    background-color: hsla(var(--topbar-bg-h, 275), var(--topbar-bg-s, 30%), var(--topbar-bg-l, 12%), var(--topbar-bg-a, 0.25));
-    border-bottom-color: hsla(var(--topbar-border-h, 275), var(--topbar-border-s, 20%), var(--topbar-border-l, 30%), var(--topbar-border-a, 0.15));
-}
-
 
 /* AEVOS TopBar Glass Effect */
 .topbar-aevos-glass {
@@ -311,10 +306,10 @@
   border-bottom: 1px solid rgba(245, 255, 250, 0.25);
   box-shadow: 0 4px 24px 0 rgba(28, 25, 52, 0.1); /* Obsidian Black @ 10% opacity */
 }
-.dark .topbar-aevos-glass { /* Dark mode adjustments if needed, for now same as light */
+.dark .topbar-aevos-glass { 
   background-color: rgba(28, 25, 52, 0.10); /* Obsidian Black @ 10% for dark theme */
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
+  backdrop-filter: blur(25px) saturate(1.1); /* Dark mode: slightly more saturation on blur */
+  -webkit-backdrop-filter: blur(25px) saturate(1.1);
   border-bottom: 1px solid rgba(245, 255, 250, 0.15); /* Lighter border for dark */
   box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.2); /* Slightly darker shadow for dark */
 }
@@ -332,7 +327,7 @@
   color: hsl(var(--foreground-h), var(--foreground-s), var(--foreground-l)) !important; /* Ensure text is light */
 }
 .dark .command-bar-input-aevos::placeholder {
-  color: hsla(var(--muted-foreground-h), var(--muted-foreground-s), var(--muted-foreground-l), 0.7) !important;
+  color: hsla(var(--muted-foreground-h), var(--muted-s), var(--muted-foreground-l), 0.7) !important;
 }
 
 
@@ -411,13 +406,13 @@
   inset: 0;
   background: linear-gradient(
     120deg,
-    hsl(var(--primary-h), var(--primary-s), var(--primary-l)), 
-    hsl(var(--primary-h), var(--primary-s), var(--primary-l)), 
-    hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l)), 
-    hsl(var(--chart-4-h), var(--chart-4-s), var(--chart-4-l)) 
+    hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) * 0.6)), /* Darker primary */
+    hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) * 0.4)), /* Even Darker primary */
+    hsl(var(--secondary-h), var(--secondary-s), calc(var(--secondary-l) * 0.5)), /* Darker secondary */
+    hsl(var(--chart-4-h), var(--chart-4-s), calc(var(--chart-4-l) * 0.5)) /* Darker chart color */
   );
-  background-size: 250% 250%;
-  animation: aurora-glow-subtle-dark 30s ease-in-out infinite alternate;
+  background-size: 300% 300%; /* Slower, larger movement */
+  animation: aurora-glow-subtle-dark 35s ease-in-out infinite alternate; /* Slower animation */
   z-index: 1;
 }
 
@@ -425,8 +420,6 @@
   content: "";
   position: absolute;
   inset: 0;
-  background-color: rgba(28, 25, 52, 0.35); /* Obsidian Black with 0.35 opacity */
+  background-color: rgba(28, 25, 52, 0.55); /* Slightly more opaque Obsidian Black overlay */
   z-index: 2; /* Overlay on top of gradient */
 }
-
-    
