@@ -7,9 +7,8 @@ import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Sparkles, Cpu, LayoutGrid, AppWindow, Users, HardDrive, ArrowUpFromLine, ArrowDownToLine, Timer, LoaderCircle, CircleDot, AlertCircle, XCircle, CheckCircle, MoreHorizontal, Mic, X, Blocks } from 'lucide-react';
+import { Sparkles, Cpu, LayoutGrid, AppWindow, Users, HardDrive, Timer, LoaderCircle, CircleDot, AlertCircle, X, Blocks, Mic, MoreHorizontal, CheckCircle, ChevronDown } from 'lucide-react';
 import { generatePersonalizedBriefing, GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-personalized-briefings';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -22,14 +21,6 @@ interface Agent {
   statusColor: string;
   statusIcon: React.ElementType;
   time: string;
-}
-
-interface OrchestrationTask {
-  id: string;
-  title: string;
-  time: string;
-  status: 'success' | 'failure';
-  details?: string;
 }
 
 const initialAgentsData: Agent[] = [
@@ -70,9 +61,7 @@ export default function HomePage() {
   const [systemUptime, setSystemUptime] = useState("0d 0h 0m");
   const [cpuLoad, setCpuLoad] = useState(35);
   const [memoryUsage, setMemoryUsage] = useState(62);
-  const [diskUsageValue, setDiskUsageValue] = useState(450);
-  const [networkSent, setNetworkSent] = useState(1.2); // Not in screenshot, can be kept or removed
-  const [networkReceived, setNetworkReceived] = useState(8.5); // Not in screenshot, can be kept or removed
+  const [diskUsageValue, setDiskUsageValue] = useState(450); // Example value
   const [activeAgentsCount, setActiveAgentsCount] = useState(initialAgentsData.filter(agent => agent.status === 'Processing' || agent.status === 'Idle').length);
 
 
@@ -110,15 +99,11 @@ export default function HomePage() {
       const d = Math.floor(uptimeMillis / (1000 * 60 * 60 * 24));
       const h = Math.floor((uptimeMillis % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const m = Math.floor((uptimeMillis % (1000 * 60 * 60)) / (1000 * 60));
-      setSystemUptime(`${d}d ${h}h ${m}m`);
+      setSystemUptime(`${d}d ${h}h ${m}m`); // Removed seconds
       
       setCpuLoad(Math.floor(Math.random() * (70 - 20 + 1)) + 20); 
       setMemoryUsage(Math.floor(Math.random() * (80 - 40 + 1)) + 40);
       setDiskUsageValue(prev => Math.min(1000, Math.max(0, prev + Math.floor(Math.random() * 20) - 10)));
-      setNetworkSent(prev => parseFloat((prev + Math.random() * 0.1).toFixed(1)));
-      setNetworkReceived(prev => parseFloat((prev + Math.random() * 0.5).toFixed(1)));
-      // Active agents count is based on initialAgentsData, which is static in this setup.
-      // For dynamic updates, agent state management would need to be more complex.
     }, 2000);
     return () => clearInterval(interval);
   }, []);
@@ -159,7 +144,7 @@ export default function HomePage() {
   const initialCardsData: CardConfig[] = [
     {
       id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, isDismissible: true,
-      x: 40, y: 40, width: 420, height: 500, zIndex: 1, minWidth: 320, minHeight: 400,
+      x: 50, y: 50, width: 400, height: 480, zIndex: 1, minWidth: 320, minHeight: 400,
       cardClassName: "flex-grow flex flex-col",
       content: () => (
         <>
@@ -191,61 +176,8 @@ export default function HomePage() {
       )
     },
     {
-      id: 'appView', title: 'Application View', icon: AppWindow, isDismissible: true,
-      x: 40, y: 560, width: 420, height: 240, zIndex: 1, minWidth: 250, minHeight: 180,
-      content: () => (
-          <div className="flex flex-col items-center justify-center h-full text-center p-4">
-            <Blocks className="w-16 h-16 text-muted-foreground/50 mb-3" />
-            <p className="text-sm text-muted-foreground">No micro-app launched.</p>
-            <p className="text-xs text-muted-foreground/80">Select an app from the 'Micro-Apps' launcher.</p>
-          </div>
-      )
-    },
-    {
-      id: 'systemSnapshot', title: 'System Snapshot', icon: LayoutGrid, isDismissible: true,
-      x: 480, y: 230, width: 380, height: 350, zIndex: 1, minWidth: 300, minHeight: 300, 
-      content: () => (
-        <ul className="space-y-3 p-1">
-          {systemMetricsConfig.map(metric => (
-            <li key={metric.id} className="text-sm">
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center text-muted-foreground">
-                  <metric.icon className="w-4 h-4 mr-2 text-primary" />
-                  <span>{metric.label}</span>
-                </div>
-                <span className="font-medium text-foreground">
-                  {metric.progressMax ? `${metric.value}${metric.unit.startsWith('%') ? '%' : ''}` : metric.value}
-                  {!metric.progressMax && metric.unit && !metric.unit.startsWith('%') && ` ${metric.unit}`}
-                  {metric.progressMax && metric.unit.includes('/') && !metric.unit.startsWith('%') && ` ${metric.unit.substring(metric.unit.indexOf('/'))}`}
-                </span>
-              </div>
-              {metric.progressMax ? (
-                <>
-                  <Progress value={(metric.value / metric.progressMax) * 100} className="h-2 [&>div]:bg-primary" />
-                  {metric.unit.includes('/') && !metric.unit.startsWith('%') && (
-                    <span className="text-xs text-muted-foreground/70 float-right mt-0.5">
-                      {metric.value}{metric.unit.substring(0, metric.unit.indexOf('/'))} of {metric.unit.substring(metric.unit.indexOf('/') + 1).trim()}
-                    </span>
-                  )}
-                </>
-              ) : null}
-            </li>
-          ))}
-           <li className="text-sm">
-             <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center text-muted-foreground">
-                  <Timer className="w-4 h-4 mr-2 text-primary" />
-                  <span>System Uptime</span>
-                </div>
-                <span className="font-medium text-foreground">{systemUptime}</span>
-              </div>
-            </li>
-        </ul>
-      )
-    },
-    {
       id: 'agentPresence', title: 'Agent Presence', icon: Cpu, isDismissible: true,
-      x: 480, y: 40, width: 380, height: 170, zIndex: 1, minWidth: 300, minHeight: 150,
+      x: 470, y: 50, width: 380, height: 230, zIndex: 1, minWidth: 300, minHeight: 150,
       content: () => (
         <ScrollArea className="h-full pr-1">
           <ul className="space-y-2 p-1">
@@ -264,6 +196,78 @@ export default function HomePage() {
             ))}
           </ul>
         </ScrollArea>
+      )
+    },
+    {
+      id: 'systemSnapshot', title: 'System Snapshot', icon: LayoutGrid, isDismissible: true,
+      x: 470, y: 300, width: 380, height: 300, zIndex: 1, minWidth: 300, minHeight: 280, 
+      content: () => (
+        <div className="space-y-3 p-1 flex flex-col h-full">
+          <ul className="space-y-3">
+            {systemMetricsConfig.map(metric => (
+              <li key={metric.id} className="text-sm">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center text-muted-foreground">
+                    <metric.icon className="w-4 h-4 mr-2 text-primary" />
+                    <span>{metric.label}</span>
+                  </div>
+                  <span className="font-medium text-foreground">
+                    {metric.progressMax ? `${metric.value}${metric.unit.startsWith('%') ? '%' : ''}` : metric.value}
+                    {!metric.progressMax && metric.unit && !metric.unit.startsWith('%') && ` ${metric.unit}`}
+                    {metric.progressMax && metric.unit.includes('/') && !metric.unit.startsWith('%') && ` ${metric.unit.substring(metric.unit.indexOf('/'))}`}
+                  </span>
+                </div>
+                {metric.progressMax ? (
+                  <>
+                    <Progress value={(metric.value / metric.progressMax) * 100} className="h-2 [&>div]:bg-primary" />
+                    {metric.unit.includes('/') && !metric.unit.startsWith('%') && (
+                      <span className="text-xs text-muted-foreground/70 float-right mt-0.5">
+                        {metric.value}{metric.unit.substring(0, metric.unit.indexOf('/'))} of {metric.unit.substring(metric.unit.indexOf('/') + 1).trim()}
+                      </span>
+                    )}
+                  </>
+                ) : null}
+              </li>
+            ))}
+            <li className="text-sm">
+               <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center text-muted-foreground">
+                    <Timer className="w-4 h-4 mr-2 text-primary" />
+                    <span>System Uptime</span>
+                  </div>
+                  <span className="font-medium text-foreground">{systemUptime}</span>
+                </div>
+              </li>
+          </ul>
+          <div className="mt-auto pt-3 border-t border-border/20 dark:border-border/30">
+            <div className="p-2.5 rounded-md bg-primary/5 dark:bg-black/20">
+              <div className="flex items-start justify-between mb-1">
+                <div className="flex items-center">
+                  <CheckCircle className="w-5 h-5 mr-2 text-secondary" />
+                  <div>
+                    <p className="font-semibold text-foreground text-sm">Agent Task: Backup Database Cluster</p>
+                    <p className="text-xs text-muted-foreground">15 minutes ago</p>
+                  </div>
+                </div>
+                <span className="text-xs font-medium bg-secondary text-primary-foreground px-2 py-0.5 rounded-full">SUCCESS</span>
+              </div>
+              <button className="text-xs text-secondary hover:underline flex items-center mt-1">
+                Success Details <ChevronDown className="w-3 h-3 ml-1" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'appView', title: 'Application View', icon: AppWindow, isDismissible: true,
+      x: 50, y: 550, width: 400, height: 220, zIndex: 1, minWidth: 250, minHeight: 180,
+      content: () => (
+          <div className="flex flex-col items-center justify-center h-full text-center p-4">
+            <Blocks className="w-16 h-16 text-muted-foreground/50 mb-3" />
+            <p className="text-sm text-muted-foreground">No micro-app launched.</p>
+            <p className="text-xs text-muted-foreground/80">Select an app from the 'Micro-Apps' launcher.</p>
+          </div>
       )
     },
   ];
@@ -367,5 +371,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-    
