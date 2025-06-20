@@ -8,24 +8,25 @@
     /* Imperial Purple (#6A0DAD), Patina Green (#3EB991), Roman Aqua (#20B2AA), Conchoidal Gray (#8C94A8), Vitreous White (#F5FFFA), Obsidian Black (#1C1934), Gold (#FFD700) */
 
     /* --- Light Theme --- */
-    --background-h: 220; --background-s: 30%; --background-l: 97%; /* Very Light Cool Gray / Vitreous White */
-    --foreground-h: 270; --foreground-s: 15%; --foreground-l: 10%; /* Obsidian Black (darkened for text) */
+    --background-h: 150; --background-s: 100%; --background-l: 97%; /* Vitreous White (using a light mint hue for base) */
+    --background-l-offset: 97%;
+    --foreground-h: 255; --foreground-s: 15%; --foreground-l: 10%; /* Obsidian Black (darkened for text) */
 
-    --card-h: 220; --card-s: 25%; --card-l: 95%; /* Lighter Vitreous White for cards */
+    --card-h: 275; --card-s: 52%; --card-l: 96%; /* Very Light Purple for cards */
     --card-foreground-h: var(--foreground-h); --card-foreground-s: var(--foreground-s); --card-foreground-l: var(--foreground-l);
 
     --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l);
     --popover-foreground-h: var(--card-foreground-h); --popover-foreground-s: var(--card-foreground-s); --popover-foreground-l: var(--card-foreground-l);
 
-    --primary-h: 275; --primary-s: 52%; --primary-l: 53%; /* Imperial Purple - lighter for light theme */
+    --primary-h: 275; --primary-s: 52%; --primary-l: 53%; /* Imperial Purple - main interactive color */
     --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 100%; /* White */
-    --primary-gradient-start-h: 275; --primary-gradient-start-s: 52%; --primary-gradient-start-l: 48%;
+    --primary-gradient-start-h: 275; --primary-gradient-start-s: 50%; --primary-gradient-start-l: 48%;
 
     --secondary-h: 177; --secondary-s: 65%; --secondary-l: 45%; /* Roman Aqua */
     --secondary-foreground-h: 0; --secondary-foreground-s: 0%; --secondary-foreground-l: 100%; /* White */
 
-    --muted-h: 220; --muted-s: 15%; --muted-l: 65%; /* Conchoidal Gray */
-    --muted-foreground-h: 220; --muted-foreground-s: 10%; --muted-foreground-l: 40%; /* Darker Conchoidal Gray */
+    --muted-h: 220; --muted-s: 20%; --muted-l: 65%; /* Conchoidal Gray - for less important text */
+    --muted-foreground-h: 220; --muted-foreground-s: 15%; --muted-foreground-l: 45%; /* Darker Conchoidal Gray */
 
     --accent-h: 51; --accent-s: 100%; --accent-l: 50%; /* Gold */
     --accent-foreground-h: 51; --accent-foreground-s: 100%; --accent-foreground-l: 15%; /* Dark Gold/Brown for text on accent */
@@ -33,7 +34,7 @@
     --destructive-h: 0; --destructive-s: 84%; --destructive-l: 60%;
     --destructive-foreground-h: 0; --destructive-foreground-s: 0%; --destructive-foreground-l: 98%;
 
-    --border-h: 220; --border-s: 20%; --border-l: 88%; /* Lighter Conchoidal Gray */
+    --border-h: 220; --border-s: 20%; --border-l: 88%; /* Lighter Conchoidal Gray - for general borders */
     --input-h: 220; --input-s: 25%; --input-l: 94%;
     --ring-h: var(--primary-h); --ring-s: var(--primary-s); --ring-l: var(--primary-l);
 
@@ -75,39 +76,40 @@
   .dark {
     /* --- Dark Theme --- */
     /* Imperial Purple (#6A0DAD), Patina Green (#3EB991), Roman Aqua (#20B2AA), Conchoidal Gray (#8C94A8), Vitreous White (#F5FFFA), Obsidian Black (#1C1934), Gold (#FFD700) */
-    --background-h: 270; --background-s: 20%; --background-l: 11%; /* Obsidian Black */
-    --foreground-h: 210; --foreground-s: 15%; --foreground-l: 95%; /* Vitreous White (slightly off-white) */
+    --background-h: 267; --background-s: 45%; --background-l: 12%; /* Deep Dark Purple, base for Obsidian Black */
+    --background-l-offset: 12%;
+    --foreground-h: 210; --foreground-s: 25%; --foreground-l: 95%; /* Vitreous White (slightly off-white, increased saturation for vibrancy) */
 
-    --card-h: 275; --card-s: 47%; --card-l: 18%; /* Darker Imperial Purple base for cards */
+    --card-h: 270; --card-s: 30%; --card-l: 18%; /* Darker, slightly desaturated Purple base for cards */
     --card-foreground-h: var(--foreground-h); --card-foreground-s: var(--foreground-s); --card-foreground-l: var(--foreground-l);
 
     --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l);
     --popover-foreground-h: var(--card-foreground-h); --popover-foreground-s: var(--card-foreground-s); --popover-foreground-l: var(--card-foreground-l);
 
-    --primary-h: 275; --primary-s: 47%; --primary-l: 40%; /* Imperial Purple */
+    --primary-h: 275; --primary-s: 65%; --primary-l: 60%; /* Imperial Purple - more vibrant */
     --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 100%; /* White */
-    --primary-gradient-start-h: 275; --primary-gradient-start-s: 50%; --primary-gradient-start-l: 35%; /* Darker shade for gradient start */
+    --primary-gradient-start-h: 275; --primary-gradient-start-s: 60%; --primary-gradient-start-l: 50%; /* Darker shade for gradient start */
 
-    --secondary-h: 177; --secondary-s: 69%; --secondary-l: 40%; /* Roman Aqua */
-    --secondary-foreground-h: 0; --secondary-foreground-s: 0%; --secondary-foreground-l: 100%; /* White */
+    --secondary-h: 177; --secondary-s: 70%; --secondary-l: 50%; /* Roman Aqua - more vibrant */
+    --secondary-foreground-h: 210; --secondary-foreground-s: 100%; --secondary-foreground-l: 15%; /* Dark text for contrast */
 
-    --muted-h: 220; --muted-s: 15%; --muted-l: 40%; /* Darker Conchoidal Gray */
+    --muted-h: 220; --muted-s: 15%; --muted-l: 60%; /* Conchoidal Gray - for less important text */
     --muted-foreground-h: 220; --muted-foreground-s: 13%; --muted-foreground-l: 75%; /* Lighter Conchoidal Gray from #8C94A8 */
 
-    --accent-h: 51; --accent-s: 100%; --accent-l: 50%; /* Gold */
+    --accent-h: 51; --accent-s: 100%; --accent-l: 60%; /* Gold - more vibrant */
     --accent-foreground-h: 51; --accent-foreground-s: 100%; --accent-foreground-l: 10%; /* Dark Brown/Black for text on gold */
 
     --destructive-h: 0; --destructive-s: 72%; --destructive-l: 51%;
     --destructive-foreground-h: 0; --destructive-foreground-s: 0%; --destructive-foreground-l: 98%;
 
     --border-h: 220; --border-s: 13%; --border-l: 30%; /* Muted Cool Gray for general borders (not glass panel border) */
-    --input-h: 270; --input-s: 15%; --input-l: 15%; /* Darker than card for inputs */
+    --input-h: 270; --input-s: 20%; --input-l: 22%; /* Darker than card for inputs */
     --ring-h: var(--primary-h); --ring-s: var(--primary-s); --ring-l: calc(var(--primary-l) + 10%); /* Brighter primary for ring */
 
     --chart-1-h: var(--primary-h); --chart-1-s: var(--primary-s); --chart-1-l: var(--primary-l); /* Imperial Purple */
-    --chart-2-h: var(--secondary-h); --chart-2-s: var(--secondary-s); --chart-2-l: var(--secondary-l); /* Roman Aqua */
+    --chart-2-h: 177; --chart-2-s: 70%; --chart-2-l: 50%; /* Roman Aqua (Consistent with secondary) */
     --chart-3-h: var(--accent-h); --chart-3-s: var(--accent-s); --chart-3-l: var(--accent-l); /* Gold */
-    --chart-4-h: 158; --chart-4-s: 49%; --chart-4-l: 56%; /* Patina Green */
+    --chart-4-h: 158; --chart-4-s: 60%; --chart-4-l: 50%; /* Patina Green - more vibrant */
     --chart-5-h: var(--destructive-h); --chart-5-s: var(--destructive-s); --chart-5-l: var(--destructive-l); /* Red for errors */
   }
 }
@@ -121,7 +123,7 @@
     font-family: 'Lexend', sans-serif;
   }
   .dark body {
-    background-color: hsl(var(--background-h), var(--background-s), var(--background-l));
+    background-color: hsl(var(--background-h), var(--background-s), var(--background-l-offset));
   }
   h1, h2, h3, h4, h5, h6, .font-headline {
     font-family: 'Comfortaa', sans-serif;
@@ -131,9 +133,9 @@
 /* Iridescent Aurora Background */
 .iridescent-purple-bg-light {
   background: linear-gradient(160deg, 
-    hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 5%)), 
-    hsl(var(--chart-4-h), var(--chart-4-s), calc(var(--chart-4-l) + 10%)), 
-    hsl(var(--secondary-h), var(--secondary-s), calc(var(--secondary-l) + 15%))
+    hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 5%)), /* Imperial Purple */
+    hsl(var(--chart-4-h), var(--chart-4-s), calc(var(--chart-4-l) + 10%)), /* Patina Green */
+    hsl(var(--secondary-h), var(--secondary-s), calc(var(--secondary-l) + 15%)) /* Roman Aqua */
   );
   background-size: 200% 200%;
   animation: aurora-glow 20s ease-in-out infinite alternate;
@@ -141,9 +143,9 @@
 
 .dark .iridescent-purple-bg-dark {
   background: linear-gradient(160deg, 
-    hsl(var(--primary-h), var(--primary-s), var(--primary-l)), 
-    hsl(var(--chart-4-h), var(--chart-4-s), var(--chart-4-l)), 
-    hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l))
+    hsl(var(--primary-h), var(--primary-s), var(--primary-l)), /* Imperial Purple */
+    hsl(var(--chart-4-h), var(--chart-4-s), var(--chart-4-l)), /* Patina Green */
+    hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l)) /* Roman Aqua */
   );
   background-size: 200% 200%;
   animation: aurora-glow 20s ease-in-out infinite alternate;
@@ -213,9 +215,9 @@
 
 /* TopBar specific background */
 .topbar-custom-bg {
-  background-color: hsl(var(--background-h), var(--background-s), calc(var(--background-l) - 5%)); /* Slightly darker than main bg for light */
+  background-color: hsl(0, 0%, 95%); /* Light gray for light mode */
   .dark & {
-    background-color: hsl(270, 30%, 8%); /* Very dark gray / near black for TopBar in dark mode */
+    background-color: hsl(0, 0%, 10%); /* Dark gray for dark mode */
   }
 }
 
@@ -270,3 +272,4 @@
     filter: hue-rotate(0deg) brightness(1);
   }
 }
+
