@@ -11,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Skeleton } from "@/components/ui/skeleton";
 import eventBus from '@/lib/event-bus';
 import CommandPalette from '@/components/command-palette';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // Async load card content components
 const AiAssistantCardContent = lazy(() => import('@/components/dashboard/ai-assistant-card-content'));
@@ -63,6 +64,7 @@ const DEFAULT_ACTIVE_CARD_IDS = ['aiAssistant', 'applicationView'];
 
 export default function DashboardPage() {
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const [activeCardIds, setActiveCardIds] = useState<string[]>([]);
   const [cardLayouts, setCardLayouts] = useState<CardLayoutInfo[]>([]);
@@ -232,7 +234,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="relative w-full h-full p-4 md:p-0"> {/* Added padding for mobile, removed md:p-0 if parent handles padding */}
+    <div className="relative w-full h-full p-4 md:p-0">
       {cardsToRender.map(cardConfig => {
         const currentLayout = cardLayouts.find(l => l.id === cardConfig.id);
         const layoutToUse = currentLayout ||
@@ -246,11 +248,8 @@ export default function DashboardPage() {
 
         const CardSpecificContent = cardConfig.content;
 
-        // For mobile, we might want to constrain initial card sizes or positions
-        // or use a different default. For now, we use the same.
-        // We also adjust minWidth/minHeight to be a bit more mobile friendly.
-        const effectiveMinWidth = Math.min(cardConfig.minWidth, 300);
-        const effectiveMinHeight = Math.min(cardConfig.minHeight, 150);
+        const effectiveMinWidth = Math.min(cardConfig.minWidth, isMobile ? 280 : 300);
+        const effectiveMinHeight = Math.min(cardConfig.minHeight, isMobile ? 120 : 150);
 
 
         return (
@@ -270,10 +269,14 @@ export default function DashboardPage() {
             minHeight={effectiveMinHeight}
             bounds="parent"
             dragHandleClassName="drag-handle"
-            enableResizing={{
+            enableResizing={isMobile ? {
+                top:false, right:false, bottom:false, left:false,
+                topRight:false, bottomRight:false, bottomLeft:false, topLeft:false
+            } : {
                 top:true, right:true, bottom:true, left:true,
                 topRight:true, bottomRight:true, bottomLeft:true, topLeft:true
             }}
+            dragAxis={isMobile ? 'y' : 'both'}
             style={{ zIndex: finalLayout.zIndex }}
             className={cn(
               "border-transparent hover:border-primary/20 focus-within:border-primary/40",
@@ -319,3 +322,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+
