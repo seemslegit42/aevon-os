@@ -5,9 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  PackagePlusIcon,
-  SparklesIcon,
-  DownloadIcon,
+  MagicWandIcon,
 } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardFooter, CardTitle } from '@/components/ui/card';
@@ -146,7 +144,7 @@ const ArmoryCardContent: React.FC = () => {
               )} />
               <Button type="submit" disabled={isGenerating} size="sm" className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
                 {isGenerating ? 'Generating...' : 'Generate Description'}
-                <SparklesIcon className="w-4 h-4 ml-2" />
+                <MagicWandIcon className="w-4 h-4 ml-2" />
               </Button>
             </form>
           </Form>

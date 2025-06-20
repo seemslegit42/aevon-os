@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { AlertTriangleIcon, CheckCircleIcon } from '@/components/icons';
+import { AlertTriangleIcon, CheckCircleIcon, ShieldCheckIcon, InfoIcon } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'; // Card for internal structure
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface AnalyzeSecurityAlertsOutput {
@@ -57,62 +57,63 @@ const AegisSecurityCardContent: React.FC = () => {
   };
 
   return (
-    <div className="space-y-4 h-full flex flex-col">
+    <div className="space-y-4 h-full flex flex-col p-2">
       <Textarea
         placeholder="Paste security alert details here... e.g., logs, error messages, SIEM output."
         value={alertDetails}
         onChange={(e) => setAlertDetails(e.target.value)}
-        rows={6}
+        rows={5}
         aria-label="Security alert details input"
-        className="bg-input border-input placeholder:text-muted-foreground text-sm"
+        className="bg-input border-input placeholder:text-muted-foreground text-sm flex-shrink-0"
       />
-      <Button onClick={handleAnalyze} disabled={isLoading} className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
+      <Button onClick={handleAnalyze} disabled={isLoading} className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground flex-shrink-0">
         {isLoading ? 'Analyzing...' : 'Analyze Alerts'}
-        <AlertTriangleIcon className="w-4 h-4 ml-2" />
+        <ShieldCheckIcon className="w-4 h-4 ml-2" />
       </Button>
 
-      {analysisResult && (
-        <Card className="mt-4 glassmorphism-panel flex-grow">
-          <CardHeader className="py-3">
-            <CardTitle className="text-lg font-headline text-primary flex items-center">
-              <CheckCircleIcon className="w-5 h-5 mr-2 text-secondary" /> AI Analysis
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-2 pb-4">
-            <ScrollArea className="h-[200px] pr-3 space-y-2 text-sm">
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Summary:</h4>
-                <p className="text-foreground whitespace-pre-wrap">{analysisResult.summary}</p>
-              </div>
-              {analysisResult.potentialThreats && analysisResult.potentialThreats.length > 0 && (
-                <div>
-                  <h4 className="font-semibold text-foreground mb-1">Potential Threats:</h4>
-                  <ul className="list-disc list-inside space-y-1 text-foreground">
-                    {analysisResult.potentialThreats.map((threat, index) => (
-                      <li key={`threat-${index}`}>{threat}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {analysisResult.recommendedActions && analysisResult.recommendedActions.length > 0 && (
-                <div>
-                  <h4 className="font-semibold text-foreground mb-1">Recommended Actions:</h4>
-                  <ul className="list-disc list-inside space-y-1 text-foreground">
-                    {analysisResult.recommendedActions.map((action, index) => (
-                      <li key={`action-${index}`}>{action}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </ScrollArea>
-          </CardContent>
-        </Card>
-      )}
-       {!analysisResult && !isLoading && (
-         <div className="flex-grow flex items-center justify-center text-muted-foreground">
-            <p>Analysis results will appear here.</p>
-         </div>
-       )}
+      <div className="flex-grow min-h-0">
+        {analysisResult ? (
+          <ScrollArea className="h-full pr-3">
+            <div className="space-y-3 text-sm">
+                <Alert variant="destructive">
+                  <AlertTriangleIcon className="h-4 w-4" />
+                  <AlertTitle>Potential Threats</AlertTitle>
+                  <AlertDescription>
+                     <ul className="list-disc list-inside space-y-1">
+                       {analysisResult.potentialThreats && analysisResult.potentialThreats.length > 0 
+                         ? analysisResult.potentialThreats.map((threat, index) => <li key={`threat-${index}`}>{threat}</li>)
+                         : <li>No specific threats identified.</li>
+                       }
+                      </ul>
+                  </AlertDescription>
+                </Alert>
+                <Alert>
+                   <InfoIcon className="h-4 w-4" />
+                   <AlertTitle>Summary</AlertTitle>
+                   <AlertDescription>
+                     {analysisResult.summary || "No summary provided."}
+                   </AlertDescription>
+                </Alert>
+                 <Alert>
+                  <CheckCircleIcon className="h-4 w-4" />
+                  <AlertTitle>Recommended Actions</AlertTitle>
+                  <AlertDescription>
+                      <ul className="list-disc list-inside space-y-1">
+                        {analysisResult.recommendedActions && analysisResult.recommendedActions.length > 0 
+                          ? analysisResult.recommendedActions.map((action, index) => <li key={`action-${index}`}>{action}</li>)
+                          : <li>No specific actions recommended.</li>
+                        }
+                      </ul>
+                  </AlertDescription>
+                </Alert>
+            </div>
+          </ScrollArea>
+        ) : (
+          <div className="flex-grow flex h-full items-center justify-center text-muted-foreground text-center">
+              <p className="text-sm">{isLoading ? "Aegis is analyzing..." : "Analysis results will appear here."}</p>
+          </div>
+        )}
+       </div>
     </div>
   );
 };

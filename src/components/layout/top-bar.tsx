@@ -50,7 +50,11 @@ const mainNavItems: NavItemConfig[] = [
   { href: '/armory', label: 'Λrmory', icon: ArmoryIcon },
 ];
 
-const TopBar: React.FC = () => {
+interface TopBarProps {
+  onSettingsClick?: () => void;
+}
+
+const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
   const pathname = usePathname();
   const [currentTime, setCurrentTime] = useState("--:--");
   const [isMounted, setIsMounted] = useState(false);
@@ -134,12 +138,12 @@ const TopBar: React.FC = () => {
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80">
+              <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80" onClick={onSettingsClick}>
                 <GearIcon className="h-5 w-5 aevos-icon-styling-override" />
                 <span className="sr-only">Settings</span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom"><p>Settings</p></TooltipContent>
+            <TooltipContent side="bottom"><p>Dashboard Settings</p></TooltipContent>
           </Tooltip>
 
           <div className="flex items-center text-xs px-2 h-9 font-body text-primary-foreground opacity-80">

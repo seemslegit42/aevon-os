@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { SendIcon, XCircleIcon, MagicWandIcon } from '@/components/icons';
 import { useBeepStore } from '@/stores/beep.store';
-import { useSystemSnapshotStore } from '@/stores/system-snapshot.store'; 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface BeepCardContentProps {
@@ -26,14 +25,9 @@ const BeepCardContent: React.FC<BeepCardContentProps> = ({
     clearResponse 
   } = useBeepStore();
 
-  // Attempt to get system snapshot data for context
-  // This is a simplified way; a more robust solution might involve explicit user action to include snapshot
-  const metrics = useSystemSnapshotStore(state => state.metrics);
-  const agents = useSystemSnapshotStore(state => state.agents);
-  
   const handleSubmit = () => {
-    const systemSnapshotData = JSON.stringify({ metrics, agents }); // Basic serialization
-    submitPrompt(systemSnapshotData);
+    // The backend API handles cases where system snapshot data isn't provided.
+    submitPrompt();
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -108,11 +102,3 @@ const BeepCardContent: React.FC<BeepCardContentProps> = ({
 };
 
 export default BeepCardContent;
-
-// Note: SystemSnapshotStore is still referenced for context.
-// If it's fully removed, the context data part for BEEP needs adjustment.
-// For now, this assumes it might still provide some data, even if card itself is prop-driven.
-// If SystemSnapshotStore is GONE, then remove imports and `systemSnapshotData` creation.
-// The prompt for Beep was: "BEEP learns from your interactions across ΛΞVON OS. Ask it to analyze system-wide data, automate complex workflows, or provide predictive insights."
-// This is now passed as `aiPromptPlaceholder` via `dashboard-cards.config.ts`
-
