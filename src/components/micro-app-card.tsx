@@ -25,7 +25,7 @@ const MicroAppCardComponent: React.FC<MicroAppCardProps> = ({ title, description
       </CardHeader>
       <CardContent className={cn("pt-4 px-4 pb-4 flex-grow overflow-y-auto text-foreground")}>
         {description && typeof description === 'string' ? (
-          <CardDescription className="text-foreground/80 dark:text-neutral-200 mb-4 text-sm">{description}</CardDescription>
+          <CardDescription className="text-muted-foreground mb-4 text-sm">{description}</CardDescription>
         ) : (
           description 
         )}
