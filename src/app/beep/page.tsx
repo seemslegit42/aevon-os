@@ -3,20 +3,20 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ShieldCheckIcon as AegisIcon } from '@/components/icons'; // Renamed for clarity
+import { MagicWandIcon } from '@/components/icons';
 
-export default function AegisSecurityPageStub() {
+export default function BeepPageStub() {
   return (
     <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-      <AegisIcon className="w-16 h-16 mb-6 text-primary" />
+      <MagicWandIcon className="w-16 h-16 mb-6 text-primary" />
       <h1 className="text-4xl font-bold mb-4 font-headline text-primary-foreground">
-        Λegis AI Security
+        BEEP Interface
       </h1>
       <p className="text-lg mb-8 text-muted-foreground">
-        This is the dedicated route for Aegis Security. Functionality is primarily accessed as a draggable panel within the main ΛΞVON OS dashboard.
+        This is the dedicated route for the BEEP Interface. Functionality is primarily accessed as a draggable panel within the main ΛΞVON OS dashboard.
       </p>
       <p className="text-sm text-muted-foreground mb-8">
-        Aegis offers AI-powered cybersecurity, analyzing alert data to provide summaries, identify threats, and recommend actions.
+        BEEP (Behavioral Event & Execution Processor) is your natural language interface for tasking, information retrieval, and personalized briefings.
       </p>
       <Button size="lg" asChild className="btn-gradient-primary-accent">
         <Link href="/">Go to Dashboard</Link>

@@ -3,29 +3,36 @@ import { lazy, type LazyExoticComponent, type FC, type ElementType } from 'react
 
 // Lazy loaded card content components
 const BeepCardContent = lazy(() => import('@/components/dashboard/beep-card-content'));
-const ApplicationViewCardContent = lazy(() => import('@/components/dashboard/application-view-card-content'));
+const ApplicationViewCardContent = lazy(() => import('@/components/dashboard/application-view-card-content')); // Kept for potential future use by command palette
 const AgentPresenceCardContent = lazy(() => import('@/components/dashboard/agent-presence-card-content'));
 const LiveOrchestrationFeedCardContent = lazy(() => import('@/components/dashboard/live-orchestration-feed-card-content'));
-const MicroAppsCardContent = lazy(() => import('@/components/dashboard/micro-apps-card-content'));
+const MicroAppsCardContent = lazy(() => import('@/components/dashboard/micro-apps-card-content')); // Palette for launching apps
 const SystemSnapshotCardContent = lazy(() => import('@/components/dashboard/system-snapshot-card-content'));
+
+// New core feature card contents
+const LoomStudioCardContent = lazy(() => import('@/components/dashboard/loom-studio-card-content'));
+const AegisSecurityCardContent = lazy(() => import('@/components/dashboard/aegis-security-card-content'));
+const ArmoryMarketplaceCardContent = lazy(() => import('@/components/dashboard/armory-card-content'));
+const AiInsightsCardContent = lazy(() => import('@/components/dashboard/ai-insights-card-content'));
 
 
 // Icons for card titles and content
 import {
-  MagicWandIcon,
-  AppWindowIcon,
-  UsersIcon,
-  ListChecksIcon,
-  LayoutGridIcon,
-  BarChartBigIcon,
+  MagicWandIcon, // BEEP
+  AppWindowIcon, // ApplicationView (generic)
+  UsersIcon, // AgentPresence, SystemSnapshot (agents part)
+  ListChecksIcon, // LiveOrchestrationFeed
+  LayoutGridIcon, // MicroApps (palette)
+  BarChartBigIcon, // SystemSnapshot (main icon)
   CpuIcon,
   DatabaseZapIcon,
   HardDriveIcon,
   ZapIcon,
   ChartBarIcon,
-  CreditCardIcon as ArmoryIcon,
-  Settings2Icon as LoomIcon,
-  ShieldCheckIcon as AegisIcon,
+  CreditCardIcon, // Armory
+  Settings2Icon, // Loom Studio
+  ShieldCheckIcon, // Aegis Security
+  BrainCircuitIcon, // AI Insights
   ClockIcon,
   RefreshCwIcon as LoaderCircleIcon,
   AlertTriangleIcon,
@@ -55,20 +62,11 @@ export interface CardConfig {
 
 export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
-    id: 'beep', title: 'BEEP (Behavioral Event & Execution Processor)', icon: MagicWandIcon, isDismissible: true,
+    id: 'beep', title: 'BEEP Interface', icon: MagicWandIcon, isDismissible: true,
     content: BeepCardContent,
-    contentProps: {
-      placeholderInsight: "Ask BEEP to analyze data, execute tasks, or provide operational intelligence."
-    },
-    defaultLayout: { x: 20, y: 20, width: 420, height: 260, zIndex: 1 },
+    contentProps: { placeholderInsight: "Ask BEEP to analyze data or execute tasks." },
+    defaultLayout: { x: 20, y: 20, width: 380, height: 280, zIndex: 1 },
     minWidth: 300, minHeight: 240, cardClassName: "flex-grow flex flex-col",
-  },
-  {
-    id: 'applicationView', title: 'Active Micro-App', icon: AppWindowIcon, isDismissible: true,
-    content: ApplicationViewCardContent,
-    // Content props for ApplicationViewCardContent will be augmented in page.tsx to include setIsCommandPaletteOpen
-    defaultLayout: { x: 20, y: 290, width: 420, height: 260, zIndex: 2 },
-    minWidth: 300, minHeight: 180,
   },
   {
     id: 'systemSnapshot', title: 'System Snapshot', icon: BarChartBigIcon, isDismissible: true,
@@ -78,26 +76,35 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
         { id: 'cpu', icon: CpuIcon, label: 'CPU Usage', value: 75, progressMax: 100, unit: '%' },
         { id: 'memory', icon: DatabaseZapIcon, label: 'Memory Usage', value: 60, progressMax: 100, unit: '%' },
         { id: 'disk', icon: HardDriveIcon, label: 'Disk Space', value: 250, progressMax: 500, unit: 'GB' },
-        { id: 'power', icon: ZapIcon, label: 'Power Draw', value: "120W", unit: '' },
         { id: 'agents', icon: UsersIcon, label: 'Active Agents', value: 5, unit: '' },
       ],
     },
-    defaultLayout: { x: 450, y: 20, width: 300, height: 260, zIndex: 3 },
+    defaultLayout: { x: 410, y: 20, width: 320, height: 280, zIndex: 2 },
     minWidth: 260, minHeight: 240, cardClassName: "flex-grow flex flex-col",
   },
   {
-    id: 'microApps', title: 'Micro-Apps', icon: LayoutGridIcon, isDismissible: true,
-    content: MicroAppsCardContent,
-    contentProps: {
-      availableApps: [
-        { id: 'app-analytics', icon: ChartBarIcon, label: 'Analytics' },
-        { id: 'app-armory', icon: ArmoryIcon, label: 'Armory' },
-        { id: 'app-loom', icon: LoomIcon, label: 'Loom' },
-        { id: 'app-aegis', icon: AegisIcon, label: 'Aegis' },
-      ]
-    },
-    defaultLayout: { x: 450, y: 290, width: 300, height: 150, zIndex: 4 },
-    minWidth: 200, minHeight: 120,
+    id: 'loomStudio', title: 'Loom Studio', icon: Settings2Icon, isDismissible: true,
+    content: LoomStudioCardContent,
+    defaultLayout: { x: 20, y: 310, width: 450, height: 350, zIndex: 3 },
+    minWidth: 320, minHeight: 300,
+  },
+  {
+    id: 'aegisSecurity', title: 'Aegis AI Security', icon: ShieldCheckIcon, isDismissible: true,
+    content: AegisSecurityCardContent,
+    defaultLayout: { x: 480, y: 310, width: 380, height: 350, zIndex: 4 },
+    minWidth: 300, minHeight: 280,
+  },
+  {
+    id: 'armoryMarketplace', title: 'ΛΞVON Λrmory', icon: CreditCardIcon, isDismissible: true,
+    content: ArmoryMarketplaceCardContent,
+    defaultLayout: { x: 740, y: 20, width: 400, height: 400, zIndex: 5 },
+    minWidth: 300, minHeight: 300,
+  },
+  {
+    id: 'aiInsights', title: 'AI Insights Engine', icon: BrainCircuitIcon, isDismissible: true,
+    content: AiInsightsCardContent,
+    defaultLayout: { x: 870, y: 310, width: 270, height: 200, zIndex: 6 },
+    minWidth: 250, minHeight: 180,
   },
   {
     id: 'agentPresence', title: 'Agent Presence', icon: UsersIcon, isDismissible: true,
@@ -106,10 +113,9 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
       agents: [
         { id: 'agent1', name: 'Data Harvester Alpha', description: 'Collecting market sentiment data for Q3 report.', status: 'Processing', statusColor: 'text-blue-500', statusIcon: LoaderCircleIcon, time: '2m ago' },
         { id: 'agent2', name: 'Insight Engine Gamma', description: 'Idle, awaiting new data stream.', status: 'Idle', statusColor: 'text-green-500', statusIcon: ClockIcon, time: '5m ago' },
-        { id: 'agent3', name: 'Anomaly Detector Zeta', description: 'Security scan flagged an issue.', status: 'Error', statusColor: 'text-red-500', statusIcon: AlertTriangleIcon, time: '10s ago' },
       ]
     },
-    defaultLayout: { x: 20, y: 560, width: 730, height: 200, zIndex: 5 },
+    defaultLayout: { x: 20, y: 670, width: 550, height: 180, zIndex: 7 },
     minWidth: 300, minHeight: 150,
   },
   {
@@ -117,21 +123,42 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     content: LiveOrchestrationFeedCardContent,
     contentProps: {
       feedItems: [
-        { task: 'User Login Success', time: '10:35 AM', status: 'success', details: 'User john.doe logged in from IP 192.168.1.100' },
-        { task: 'Automated Report Generation', time: '10:33 AM', status: 'success', details: 'Monthly sales report generated and emailed.' },
-        { task: 'Data Sync Failure', time: '10:30 AM', status: 'failure', details: 'Failed to sync with CRM API. Retrying in 5 mins.' },
+        { task: 'User Login Success', time: '10:35 AM', status: 'success', details: 'User john.doe logged in.' },
+        { task: 'Automated Report Generation', time: '10:33 AM', status: 'success', details: 'Monthly sales report generated.' },
+        { task: 'Data Sync Failure', time: '10:30 AM', status: 'failure', details: 'Failed to sync with CRM. Retrying.' },
       ]
     },
-    defaultLayout: { x: 450, y: 450, width: 300, height: 100, zIndex: 6 },
-    minWidth: 260, minHeight: 100,
+    defaultLayout: { x: 580, y: 670, width: 560, height: 180, zIndex: 8 },
+    minWidth: 260, minHeight: 150,
+  },
+  // Kept for command palette, not active by default
+  {
+    id: 'microApps', title: 'Micro-Apps Palette', icon: LayoutGridIcon, isDismissible: true,
+    content: MicroAppsCardContent,
+    contentProps: {
+      availableApps: [
+        { id: 'app-analytics', icon: ChartBarIcon, label: 'Analytics (Demo)' },
+        // Core apps are now directly in dashboard, but this could list others
+      ]
+    },
+    defaultLayout: { x: 800, y: 430, width: 340, height: 230, zIndex: 9 }, // Off to the side if added
+    minWidth: 200, minHeight: 120,
+  },
+  {
+    id: 'applicationView', title: 'Active Micro-App View', icon: AppWindowIcon, isDismissible: true,
+    content: ApplicationViewCardContent,
+    defaultLayout: { x: 800, y: 520, width: 340, height: 200, zIndex: 10 }, // Off to the side if added
+    minWidth: 300, minHeight: 180,
   },
 ];
 
 export const DEFAULT_ACTIVE_CARD_IDS = [
   'beep',
-  'applicationView',
   'systemSnapshot',
-  'microApps',
+  'loomStudio',
+  'aegisSecurity',
+  'armoryMarketplace',
+  'aiInsights',
   'agentPresence',
   'liveOrchestrationFeed',
 ];
