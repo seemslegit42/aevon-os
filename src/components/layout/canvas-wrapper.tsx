@@ -12,10 +12,13 @@ const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
     <main
       className={cn(
         "flex-grow w-full p-4 md:p-8 overflow-y-auto relative text-foreground"
-        // Removed iridescent background classes: "iridescent-purple-bg-light dark:iridescent-purple-bg-dark"
+        // Removed direct background classes from here
       )}
     >
-      <div className="relative z-10 h-full">
+      {/* This container will hold the gradient and the dark overlay for dark mode */}
+      <div className="canvas-aurora-background-dark-container"></div>
+      
+      <div className="relative z-10 h-full"> {/* Main content, z-index ensures it's on top */}
         {children}
       </div>
     </main>
