@@ -64,7 +64,7 @@
     --muted: 223 13% 25%; /* Darker Conchoidal Gray */
     --muted-foreground: 223 13% 65%; /* Lighter Conchoidal Gray */
 
-    --accent: 177 75% 70%; /* Incandescent Roman Aqua Glow */
+    --accent: 177 85% 60%; /* Made Roman Aqua brighter/more saturated for "incandescent glow" */
     --accent-foreground: 248 37% 10%; /* Obsidian Black for contrast on bright accent */
 
     --destructive: 0 62.8% 50.6%; 
@@ -104,7 +104,7 @@
 }
 
 .glassmorphism-panel {
-  @apply bg-card/85 dark:bg-card/85 backdrop-blur-lg border border-border/30 shadow-2xl;
+  @apply bg-card/50 dark:bg-card/50 backdrop-blur-lg border border-border/20 shadow-lg;
   border-radius: var(--radius);
 }
 
