@@ -330,7 +330,7 @@ export default function DashboardPage() {
         <LayoutDashboard className="h-6 w-6" />
         <span className="sr-only">Manage Dashboard Zones</span>
       </Button>
-       <div className="fixed bottom-4 right-4 text-xs text-muted-foreground/70 font-code z-[9999]">
+       <div className="fixed bottom-4 right-4 text-xs text-foreground/80 dark:text-foreground/80 font-code z-[45] bg-background/40 dark:bg-black/40 backdrop-blur-sm px-2 py-1 rounded-md shadow-lg">
         <span>ΛΞVON OS v1.2 </span>
         <span className="font-semibold">ZUSTAND</span>
       </div>
