@@ -11,6 +11,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Sparkles, Blocks, Cpu, LayoutGrid, Users, HardDrive, ArrowUpFromLine, ArrowDownToLine, Timer, AppWindow, LoaderCircle, CircleDot, AlertCircle, XCircle, CheckCircle, MoreHorizontal, Mic, Minus, BarChartBig, Settings2, Shield as ShieldIcon, GitFork } from 'lucide-react';
 import { generatePersonalizedBriefing, GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-personalized-briefings';
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 interface Agent {
   id: string;
@@ -31,11 +32,11 @@ interface OrchestrationTask {
 }
 
 const initialAgents: Agent[] = [
-  { id: '1', name: 'OrionCore_7B', description: 'Optimizing dynamic resource allocation...', status: 'Processing', statusColor: 'text-blue-400', statusIcon: LoaderCircle, time: 'Now' },
-  { id: '2', name: 'NexusGuard_Alpha', description: 'Actively monitoring inbound/outbound netwo...', status: 'Idle', statusColor: 'text-green-400', statusIcon: CircleDot, time: '2m ago' },
-  { id: '3', name: 'Helios_Stream_Processor', description: 'Continuously analyzing high-volume sen...', status: 'Processing', statusColor: 'text-blue-400', statusIcon: LoaderCircle, time: 'Now' },
-  { id: '4', name: 'NovaSys_QueryEngine', description: 'Awaiting complex user queries and data retri...', status: 'Idle', statusColor: 'text-green-400', statusIcon: CircleDot, time: '10s ago' },
-  { id: '5', name: 'Cygnus_BackupAgent', description: 'Scheduled integrity check failed on target ...', status: 'Error', statusColor: 'text-red-400', statusIcon: AlertCircle, time: '5m ago' },
+  { id: '1', name: 'OrionCore_7B', description: 'Optimizing dynamic resource allocation...', status: 'Processing', statusColor: 'text-accent', statusIcon: LoaderCircle, time: 'Now' },
+  { id: '2', name: 'NexusGuard_Alpha', description: 'Actively monitoring inbound/outbound netwo...', status: 'Idle', statusColor: 'text-secondary', statusIcon: CircleDot, time: '2m ago' },
+  { id: '3', name: 'Helios_Stream_Processor', description: 'Continuously analyzing high-volume sen...', status: 'Processing', statusColor: 'text-accent', statusIcon: LoaderCircle, time: 'Now' },
+  { id: '4', name: 'NovaSys_QueryEngine', description: 'Awaiting complex user queries and data retri...', status: 'Idle', statusColor: 'text-secondary', statusIcon: CircleDot, time: '10s ago' },
+  { id: '5', name: 'Cygnus_BackupAgent', description: 'Scheduled integrity check failed on target ...', status: 'Error', statusColor: 'text-destructive', statusIcon: AlertCircle, time: '5m ago' },
 ];
 
 const initialTasks: OrchestrationTask[] = [
@@ -59,7 +60,7 @@ export default function HomePage() {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const { toast } = useToast();
   
-  const [systemUptime, setSystemUptime] = useState("0d 0h 0m 0s");
+  const [systemUptime, setSystemUptime] = useState("0d 0h 0m");
   const [cpuLoad, setCpuLoad] = useState(35);
   const [memoryUsage, setMemoryUsage] = useState(62);
 
@@ -71,12 +72,10 @@ export default function HomePage() {
       const d = Math.floor(uptime / (1000 * 60 * 60 * 24));
       const h = Math.floor((uptime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const m = Math.floor((uptime % (1000 * 60 * 60)) / (1000 * 60));
-      const s = Math.floor((uptime % (1000 * 60)) / 1000);
-      setSystemUptime(`${d}d ${h}h ${m}m ${s}s`);
+      setSystemUptime(`${d}d ${h}h ${m}m`);
       
-      // Simulate dynamic CPU and Memory
-      setCpuLoad(Math.floor(Math.random() * (70 - 20 + 1)) + 20); // Random between 20-70%
-      setMemoryUsage(Math.floor(Math.random() * (80 - 40 + 1)) + 40); // Random between 40-80%
+      setCpuLoad(Math.floor(Math.random() * (70 - 20 + 1)) + 20); 
+      setMemoryUsage(Math.floor(Math.random() * (80 - 40 + 1)) + 40); 
     }, 1000);
     return () => clearInterval(interval);
   }, []);
@@ -129,7 +128,7 @@ export default function HomePage() {
       <div className="lg:col-span-1 space-y-6 flex flex-col">
         <MicroAppCard title="AI Assistant" icon={Sparkles} actions={<CardActions/>} className="flex-grow flex flex-col min-h-[300px] lg:min-h-[400px]">
           <div className="flex flex-col items-center justify-center text-center p-6 flex-grow">
-            <Image src="https://placehold.co/120x120.png" alt="AI Assistant Orb" width={120} height={120} className="rounded-full mb-4" data-ai-hint="abstract orb" />
+            <Image src="https://placehold.co/120x120.png" alt="AI Assistant Orb" width={120} height={120} className="rounded-full mb-4" data-ai-hint="orb gradient" />
             <p className="text-sm text-muted-foreground mb-4">
               Analyze product sales, compare revenue, or ask for insights.
             </p>
@@ -234,8 +233,9 @@ export default function HomePage() {
                     </div>
                   </div>
                    <span 
-                    className={`capitalize text-xs px-2 py-1 rounded-sm font-medium
-                    ${task.status === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}`}>
+                    className={cn('capitalize text-xs px-2 py-1 rounded-sm font-medium', 
+                        task.status === 'success' ? 'bg-secondary text-primary-foreground' : 'bg-destructive text-destructive-foreground'
+                    )}>
                     {task.status}
                   </span>
                 </AccordionTrigger>
