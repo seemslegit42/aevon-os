@@ -3,9 +3,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Bell, Bot, Home, ChevronDown, Settings2 } from 'lucide-react';
+import { Search, Bell, Bot, Home, Settings, Shield, ShoppingCart, Settings2, LucideIcon } from 'lucide-react'; // Added Settings, Shield, ShoppingCart
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -16,9 +17,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from '@/lib/utils';
+
+interface NavItem {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+}
+
+const navItems: NavItem[] = [
+  { href: '/', label: 'Dashboard', icon: Home },
+  { href: '/loom-studio', label: 'Loom Studio', icon: Settings },
+  { href: '/aegis-security', label: 'Aegis Security', icon: Shield },
+  { href: '/armory', label: 'Armory', icon: ShoppingCart },
+];
 
 const TopBar: React.FC = () => {
   const [currentTime, setCurrentTime] = useState<string | null>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     const updateTime = () => {
@@ -33,15 +49,10 @@ const TopBar: React.FC = () => {
       return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm} UTC`;
     };
     
-    // Set initial time
     setCurrentTime(updateTime());
-
-    // Update time every second
     const timer = setInterval(() => {
       setCurrentTime(updateTime());
     }, 1000); 
-
-    // Cleanup interval on component unmount
     return () => clearInterval(timer);
   }, []);
 
@@ -53,22 +64,23 @@ const TopBar: React.FC = () => {
             <Bot className="w-7 h-7 mr-2 text-primary" />
              ΛΞVON OS
           </Link>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="default"
-                className="text-sm bg-primary/10 hover:bg-primary/20 text-primary dark:bg-primary/80 dark:text-primary-foreground dark:hover:bg-primary/70 px-3 h-9"
-              >
-                <Home className="w-4 h-4 mr-2" />
-                Home Dashboard
-                <ChevronDown className="w-4 h-4 ml-1 opacity-70" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-popover text-popover-foreground border-border/20 dark:border-border/30">
-              <DropdownMenuItem>Home Dashboard</DropdownMenuItem>
-              {/* Add other dashboard links here if needed later */}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <nav className="hidden md:flex items-center space-x-1">
+            {navItems.map((item) => (
+              <Link key={item.href} href={item.href} passHref legacyBehavior>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "text-foreground/70 hover:text-primary hover:bg-primary/10 dark:text-muted-foreground dark:hover:text-primary dark:hover:bg-primary/10",
+                    pathname === item.href && "text-primary bg-primary/10 dark:text-primary dark:bg-primary/20 font-semibold"
+                  )}
+                >
+                  <item.icon className="w-4 h-4 mr-2" />
+                  {item.label}
+                </Button>
+              </Link>
+            ))}
+          </nav>
         </div>
 
         <div className="flex-1 flex justify-center px-8 lg:px-16">
@@ -141,4 +153,3 @@ const TopBar: React.FC = () => {
 };
 
 export default TopBar;
-
