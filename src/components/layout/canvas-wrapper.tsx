@@ -11,8 +11,8 @@ const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
   return (
     <main
       className={cn(
-        "flex-grow w-full p-4 md:p-8 overflow-y-auto relative text-foreground",
-        "iridescent-purple-bg-light dark:iridescent-purple-bg-dark" // Apply theme-specific backgrounds
+        "flex-grow w-full p-4 md:p-8 overflow-y-auto relative text-foreground"
+        // Removed iridescent background classes: "iridescent-purple-bg-light dark:iridescent-purple-bg-dark"
       )}
     >
       <div className="relative z-10 h-full">

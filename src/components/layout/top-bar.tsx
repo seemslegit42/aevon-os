@@ -11,16 +11,16 @@ import {
   SunIcon,
   SearchIcon,
   HomeIcon,
-  Settings2Icon as SettingsIcon, // Aliasing for consistency with previous usage
-  ShieldCheckIcon as ShieldIcon, // Aliasing
-  CreditCardIcon as ShoppingCartIcon, // Aliasing
+  Settings2Icon as SettingsIcon, 
+  ShieldCheckIcon as ShieldIcon, 
+  CreditCardIcon as ShoppingCartIcon, 
   BellIcon,
   Settings2Icon,
   ClockIcon,
   ChevronDownIcon,
-  LogoSymbol, // Changed from BrainCircuitIcon
+  CommandIcon, // Changed from LogoSymbol
   UserIcon
-} from '@/components/icons'; // Changed imports to custom icons
+} from '@/components/icons'; 
 import {
   Tooltip,
   TooltipContent,
@@ -46,7 +46,7 @@ import { useThemeStore } from '@/stores/theme.store';
 interface NavItemConfig {
   href: string;
   label: string;
-  icon: ElementType; // Changed from LucideIcon
+  icon: ElementType; 
 }
 
 const mainNavItems: NavItemConfig[] = [
@@ -88,7 +88,7 @@ const TopBar: React.FC = () => {
           {/* Left Side: Logo and Navigation */}
           <div className="flex items-center space-x-4">
             <Link href="/" className="text-2xl font-bold flex items-center">
-              <LogoSymbol className="w-7 h-7 text-primary dark:text-white" />
+              <CommandIcon className="w-7 h-7 text-primary dark:text-white" /> {/* Changed from LogoSymbol */}
             </Link>
             <nav className="hidden md:flex items-center space-x-1">
               {mainNavItems.map((item) => (
