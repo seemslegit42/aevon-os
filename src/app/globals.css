@@ -54,7 +54,7 @@
 
     /* TopBar Specific Colors - Light Theme */
     --topbar-bg-h: 0; --topbar-bg-s: 0%; --topbar-bg-l: 97%; --topbar-bg-a: 0.50; /* Softer glass, less alpha */
-    --topbar-border-h: 220; --topbar-border-s: 20%; --topbar-border-l: 88%; --topbar-border-a: 0.15; /* Lighter border */
+    --topbar-border-h: 220; --topbar-border-s: 20%; --topbar-border-l: 88%; --topbar-border-a: 0.2; /* Lighter border, increased alpha */
 
 
     /* Full HSL color definitions */
@@ -119,7 +119,7 @@
     --accent-foreground-h: 48; --accent-foreground-s: 100%; --accent-foreground-l: 8%; /* Dark Brown/Black for text on gold */
 
     --destructive-h: 0; --destructive-s: 75%; --destructive-l: 55%; /* #ff4d4f - adjusted */
-    --destructive-foreground-h: 0; --destructive-s: 0%; --destructive-foreground-l: 98%;
+    --destructive-foreground-h: 0; --destructive-foreground-s: 0%; --destructive-foreground-l: 98%;
 
     /* Border: Muted Cool Gray for general borders (#8C94A8 based) or specific glass border */
     --border-h: 275; --border-s: 15%; --border-l: 25%; /* Darker, more purple-tinted border for elements */
@@ -136,7 +136,7 @@
 
     /* TopBar Specific Colors - Dark Theme */
     --topbar-bg-h: 275; --topbar-bg-s: 30%; --topbar-bg-l: 12%; --topbar-bg-a: 0.45; /* Darker, more purple glass, less alpha */
-    --topbar-border-h: 275; --topbar-border-s: 20%; --topbar-border-l: 30%; --topbar-border-a: 0.15; /* Lighter border */
+    --topbar-border-h: 275; --topbar-border-s: 20%; --topbar-border-l: 30%; --topbar-border-a: 0.2; /* Lighter border, increased alpha */
   }
 }
 
@@ -195,7 +195,7 @@
   background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
   backdrop-filter: blur(14px) saturate(1.1); /* Slightly increased blur for dark */
   -webkit-backdrop-filter: blur(14px) saturate(1.1);
-  border: 1px solid hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 15%), 0.2); /* Softer, lighter primary-tinted border for dark */
+  border: 1px solid hsla(var(--border-h), var(--border-s), calc(var(--border-l) + 5%), 0.25); /* Refined: Use theme border color, slightly lighter, more opaque */
   border-radius: var(--radius);
   box-shadow: 0 6px 24px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 2%), 0.2), /* Shadow using a darker background shade */
               0 2px 8px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 2%), 0.15);
@@ -238,35 +238,35 @@
 
 .btn-wabi-sabi {
   @apply px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center transition-colors duration-150 ease-in-out;
-  background-color: hsl(177, 35%, 60%); /* Muted Roman Aqua (Light Theme) */
-  color: hsl(var(--foreground-h), var(--foreground-s), 15%); /* Dark text for light mode */
-  border: 1px solid hsl(177, 30%, 53%);
+  background-color: hsl(var(--secondary-h), 30%, 70%); /* Muted Secondary (Light Theme) */
+  color: hsl(var(--secondary-h), 25%, 20%); /* Darker text for light mode based on secondary */
+  border: 1px solid hsl(var(--secondary-h), 25%, 63%);
   box-shadow: 0 1px 2px hsla(var(--foreground-h), var(--foreground-s), var(--foreground-l), 0.05);
 }
 .btn-wabi-sabi:hover {
-  background-color: hsl(177, 35%, 55%);
-  border-color: hsl(177, 30%, 48%);
+  background-color: hsl(var(--secondary-h), 30%, 65%);
+  border-color: hsl(var(--secondary-h), 25%, 58%);
 }
 .btn-wabi-sabi:disabled {
   @apply opacity-60 cursor-not-allowed filter-none transform-none shadow-none;
-  background-color: hsl(177, 25%, 75%);
-  border-color: hsl(177, 20%, 70%);
-  color: hsl(var(--foreground-h), var(--foreground-s), 40%);
+  background-color: hsl(var(--secondary-h), 20%, 80%);
+  border-color: hsl(var(--secondary-h), 15%, 75%);
+  color: hsl(var(--secondary-h), 20%, 40%);
 }
 
 .dark .btn-wabi-sabi {
-  background-color: hsl(177, 25%, 38%); /* Dark Muted Roman Aqua */
-  color: hsl(var(--foreground-h), var(--foreground-s), 88%); /* Lighter text for dark mode */
-  border: 1px solid hsl(177, 20%, 33%);
+  background-color: hsl(var(--secondary-h), 20%, 30%); /* Dark Muted Secondary */
+  color: hsl(var(--secondary-h), 30%, 85%); /* Lighter text for dark mode based on secondary */
+  border: 1px solid hsl(var(--secondary-h), 15%, 25%);
 }
 .dark .btn-wabi-sabi:hover {
-  background-color: hsl(177, 25%, 43%);
-  border-color: hsl(177, 20%, 38%);
+  background-color: hsl(var(--secondary-h), 20%, 35%);
+  border-color: hsl(var(--secondary-h), 15%, 30%);
 }
 .dark .btn-wabi-sabi:disabled {
-  background-color: hsl(177, 15%, 28%);
-  border-color: hsl(177, 10%, 23%);
-  color: hsl(var(--foreground-h), var(--foreground-s), 55%);
+  background-color: hsl(var(--secondary-h), 10%, 20%);
+  border-color: hsl(var(--secondary-h), 5%, 15%);
+  color: hsl(var(--secondary-h), 15%, 50%);
 }
 
 .react-draggable-dragging {
