@@ -14,8 +14,8 @@
     /* Foreground: Obsidian Black (darkened for text) */
     --foreground-h: 255; --foreground-s: 15%; --foreground-l: 12%;
 
-    /* Card: Very Light Purple for cards */
-    --card-h: 275; --card-s: 52%; --card-l: 97%; --card-a: 0.40;
+    /* Card: Cooler, less purple, slightly less transparent */
+    --card-h: 220; --card-s: 30%; --card-l: 98%; --card-a: 0.55;
     --card-foreground-h: var(--foreground-h); --card-foreground-s: var(--foreground-s); --card-foreground-l: var(--foreground-l);
 
     --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l); --popover-a: var(--card-a);
@@ -42,8 +42,8 @@
     --destructive-foreground-h: 0; --destructive-foreground-s: 0%; --destructive-foreground-l: 98%;
 
     /* Border: Lighter Conchoidal Gray - for general borders */
-    --border-h: 220; --border-s: 25%; --border-l: 90%;
-    --input-h: 220; --input-s: 30%; --input-l: 95%;
+    --border-h: 220; --border-s: 25%; --border-l: 88%;
+    --input-h: 220; --input-s: 30%; --input-l: 94%;
     --ring-h: var(--accent-h); --ring-s: var(--accent-s); --ring-l: var(--accent-l);
 
     --chart-1-h: var(--primary-h); --chart-1-s: var(--primary-s); --chart-1-l: var(--primary-l);
@@ -95,11 +95,11 @@
     --foreground-h: 210; --foreground-s: 30%; --foreground-l: 96%;
 
     /* Card: Darker, slightly desaturated Purple base for cards */
-    --card-h: 275; --card-s: 30%; --card-l: 14%; --card-a: 0.55;
+    --card-h: 275; --card-s: 25%; --card-l: 15%; --card-a: 0.65;
     --card-foreground-h: var(--foreground-h); --card-foreground-s: var(--foreground-s); --card-foreground-l: var(--foreground-l);
 
     --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l); --popover-a: var(--card-a);
-    --popover-foreground-h: var(--card-foreground-h); --popover-foreground-s: var(--popover-foreground-s); --popover-foreground-l: var(--popover-foreground-l);
+    --popover-foreground-h: var(--card-foreground-h); --popover-foreground-s: var(--card-foreground-s); --popover-foreground-l: var(--popover-foreground-l);
 
     /* Primary: Vibrant Magenta/Pink (#e0359e / #6A0DAD) */
     --primary-h: 275; --primary-s: 75%; --primary-l: 60%;
@@ -110,9 +110,10 @@
     --secondary-h: 177; --secondary-s: 100%; --secondary-l: 45%;
     --secondary-foreground-h: 210; --secondary-foreground-s: 100%; --secondary-foreground-l: 10%;
 
-    /* Muted: Conchoidal Gray - for less important text, now white for TopBar */
+    /* Muted: Light Gray for "muted" text */
     --muted-h: 220; --muted-s: 18%; --muted-l: 65%;
-    --muted-foreground-h: 0; --muted-foreground-s: 0%; --muted-foreground-l: 100%;
+    --muted-foreground-h: 220; --muted-foreground-s: 15%; --muted-foreground-l: 75%;
+
 
     /* Accent: Gold (#FFD700) - using the warmer gold from light theme */
     --accent-h: 48; --accent-s: 100%; --accent-l: 55%;
@@ -123,7 +124,7 @@
 
     /* Border: Muted Cool Gray for general borders (#8C94A8 based) or specific glass border */
     --border-h: 275; --border-s: 15%; --border-l: 25%;
-    --input-h: 275; --input-s: 25%; --input-l: 18%;
+    --input-h: 275; --input-s: 25%; --input-l: 20%;
     --ring-h: var(--accent-h); --ring-s: var(--accent-s); --ring-l: calc(var(--accent-l) + 5%);
 
     /* Chart colors - Dark Theme specific adjustments */
@@ -159,7 +160,7 @@
 /* Glassmorphism Panel Style */
 .glassmorphism-panel {
   /* Updated Light Theme Glass */
-  background-color: rgba(245, 255, 250, 0.15); /* Vitreous White with 0.15 alpha */
+  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(245, 255, 250, 0.15); /* Vitreous White with 0.15 alpha */
@@ -168,7 +169,7 @@
 }
 
 .dark .glassmorphism-panel {
-  /* Dark Theme Glass - Unchanged from previous, uses theme variables */
+  /* Dark Theme Glass - Uses theme variables */
   background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
   backdrop-filter: blur(14px) saturate(1.1);
   -webkit-backdrop-filter: blur(14px) saturate(1.1);
@@ -191,7 +192,7 @@
   background: hsla(var(--background-h), var(--background-s), calc(var(--background-l) + 1%), 0.2);
 }
 ::-webkit-scrollbar-thumb {
-  background: hsla(var(--muted-h), var(--muted-s), calc(var(--muted-l) - 15%), 0.4);
+  background: hsla(var(--muted-h), var(--muted-s), calc(var(--muted-l) - 15%), 0.5);
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -278,16 +279,6 @@
   -webkit-backdrop-filter: blur(10px) saturate(1.05);
   border-bottom: 1px solid hsla(var(--topbar-border-h), var(--topbar-border-s), var(--topbar-border-l), var(--topbar-border-a));
   box-shadow: 0 1px 8px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 10%), 0.1);
-}
-
-/* Active Nav Link in TopBar */
-.active-nav-link-dark { /* For Dark theme */
-  background-color: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.8) !important;
-  color: hsl(var(--primary-foreground-h), var(--primary-foreground-s), var(--primary-foreground-l)) !important;
-  box-shadow: 0 0 12px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.25);
-}
-.active-nav-link-dark:hover { /* For Dark theme */
-  background-color: hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 3%), 0.9) !important;
 }
 
 /* Progress bar custom color (Roman Aqua / Cyan - Chart 2) */

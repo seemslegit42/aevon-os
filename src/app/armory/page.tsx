@@ -63,7 +63,7 @@ export default function ArmoryPage() {
 
   const handleGenerateDescription = async (values: AppDescriptionFormValues) => {
     setIsGenerating(true);
-    setGeneratedDescription(""); 
+    setGeneratedDescription(null); 
 
     try {
       const response = await fetch('/api/ai/app-description', {
@@ -83,13 +83,14 @@ export default function ArmoryPage() {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      
+      let currentDescription = "";
       // eslint-disable-next-line no-constant-condition
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         const chunk = decoder.decode(value, { stream: true });
-        setGeneratedDescription((prev) => (prev || "") + chunk);
+        currentDescription += chunk;
+        setGeneratedDescription(currentDescription);
       }
 
     } catch (error) {

@@ -17,7 +17,7 @@ export default function LoomStudioPage() {
         </div>
         
         <h3 className="font-headline text-xl text-primary mt-8 mb-4">Key Capabilities:</h3>
-        <ul className="list-disc list-inside space-y-3 text-foreground/90">
+        <ul className="list-disc list-inside space-y-3 text-foreground">
           <li className="flex items-start">
             <ZapIcon className="w-5 h-5 text-accent mr-2 mt-1 shrink-0" />
             <span><strong>Visual Workflow Builder:</strong> Drag-and-drop components to design sophisticated AI agent behaviors and interactions.</span>
@@ -35,7 +35,7 @@ export default function LoomStudioPage() {
             <span><strong>Agent DNA Viewer:</strong> Deep dive into the core logic and configuration of your AI agents for fine-grained control.</span>
           </li>
         </ul>
-        <p className="mt-6 text-foreground/80">
+        <p className="mt-6 text-muted-foreground">
           Loom Studio empowers both advanced users and AI agents themselves to collaborate in building the next generation of intelligent automation.
         </p>
       </MicroAppCard>

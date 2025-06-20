@@ -19,7 +19,6 @@ import {
   ClockIcon,
   ChevronDownIcon,
   UserIcon,
-  CommandIcon 
 } from '@/components/icons'; 
 import {
   Tooltip,
@@ -84,7 +83,7 @@ const TopBar: React.FC = () => {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <header className="sticky top-0 z-50 w-full topbar-custom-bg font-headline text-gray-800 dark:text-white">
+      <header className="sticky top-0 z-50 w-full topbar-custom-bg font-headline">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           {/* Left Side: Logo and Navigation */}
           <div className="flex items-center space-x-4">
@@ -98,11 +97,9 @@ const TopBar: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     className={cn(
-                      "hover:bg-primary/10 dark:hover:bg-white/5",
-                      "text-gray-700 dark:text-white",
-                      "hover:text-gray-900 dark:hover:text-neutral-100",
+                      "text-muted-foreground hover:text-foreground",
                       (pathname === item.href || (item.href === '/' && pathname.startsWith('/dashboard') && pathname.length <=1 ) || (item.href !== '/' && pathname.startsWith(item.href)) ) &&
-                        "active-nav-link-dark font-semibold" 
+                        "bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary-foreground font-semibold" 
                     )}
                   >
                     <item.icon className="w-4 h-4 mr-2" />

@@ -42,20 +42,20 @@ export default function DashboardPage() {
       <div className="flex items-center space-x-1">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground dark:text-neutral-200 hover:text-primary dark:hover:text-white"> <MicIcon className="w-3 h-3"/> </Button>
+            <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-primary"> <MicIcon className="w-3 h-3"/> </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom"><p>Voice Command</p></TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground dark:text-neutral-200 hover:text-primary dark:hover:text-white"> <MoreHorizontalIcon className="w-3 h-3"/> </Button>
+            <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-primary"> <MoreHorizontalIcon className="w-3 h-3"/> </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom"><p>More Options</p></TooltipContent>
         </Tooltip>
         {isDismissible && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground dark:text-neutral-200 hover:text-destructive dark:hover:text-red-400" onClick={() => handleRemoveCard(cardId)}>
+              <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-destructive" onClick={() => handleRemoveCard(cardId)}>
                 <XIcon className="w-4 h-4"/>
               </Button>
             </TooltipTrigger>

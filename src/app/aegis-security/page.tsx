@@ -73,7 +73,7 @@ export default function AegisSecurityPage() {
         />
         <Button onClick={handleAnalyze} disabled={isLoading} className="mt-4 w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
           {isLoading ? 'Analyzing...' : 'Analyze Alerts'}
-          <AlertTriangleIcon className="w-4 h-4 ml-2" />
+          <AlertTriangleIcon className="w-4 h-4" />
         </Button>
 
         {analysisResult && (
@@ -86,12 +86,12 @@ export default function AegisSecurityPage() {
             <CardContent>
               <ScrollArea className="h-[250px] pr-4 space-y-3">
                 <div>
-                  <h4 className="font-semibold text-md text-foreground mb-1">Summary:</h4>
+                  <h4 className="font-semibold text-lg text-foreground mb-1">Summary:</h4>
                   <p className="text-foreground whitespace-pre-wrap text-sm">{analysisResult.summary}</p>
                 </div>
                 {analysisResult.potentialThreats && analysisResult.potentialThreats.length > 0 && (
                   <div>
-                    <h4 className="font-semibold text-md text-foreground mb-1">Potential Threats:</h4>
+                    <h4 className="font-semibold text-lg text-foreground mb-1">Potential Threats:</h4>
                     <ul className="list-disc list-inside text-sm space-y-1">
                       {analysisResult.potentialThreats.map((threat, index) => (
                         <li key={`threat-${index}`}>{threat}</li>
@@ -101,7 +101,7 @@ export default function AegisSecurityPage() {
                 )}
                 {analysisResult.recommendedActions && analysisResult.recommendedActions.length > 0 && (
                   <div>
-                    <h4 className="font-semibold text-md text-foreground mb-1">Recommended Actions:</h4>
+                    <h4 className="font-semibold text-lg text-foreground mb-1">Recommended Actions:</h4>
                     <ul className="list-disc list-inside text-sm space-y-1">
                       {analysisResult.recommendedActions.map((action, index) => (
                         <li key={`action-${index}`}>{action}</li>
