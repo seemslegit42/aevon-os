@@ -135,7 +135,7 @@
 
     /* TopBar Specific Colors - Dark Theme */
     --topbar-bg-h: 275; --topbar-bg-s: 30%; --topbar-bg-l: 12%; --topbar-bg-a: 0.45;
-    --topbar-border-h: 275; --topbar-border-s: 20%; --topbar-border-l: 30%; --topbar-border-a: 0.30;
+    --topbar-border-h: 275; --topbar-border-s: 20%; --topbar-border-l: 30%; --topbar-border-a: 0.35;
   }
 }
 
@@ -167,12 +167,8 @@
 }
 
 .dark .iridescent-purple-bg-dark {
-  background: linear-gradient(160deg,
-    hsl(var(--background-h), var(--background-s), calc(var(--background-l) + 2%)), /* Slightly lighter than pure bg */
-    hsl(var(--background-h), var(--background-s), var(--background-l)) /* Pure bg */
-  );
-  background-size: 150% 150%;
-  animation: aurora-glow-dark 25s ease-in-out infinite alternate;
+  background-color: hsl(var(--background-h), var(--background-s), var(--background-l)); /* Solid, very dark color */
+  /* Removed gradient, animation, and background-size for dark mode to ensure maximum darkness */
 }
 
 
@@ -190,10 +186,10 @@
 
 .dark .glassmorphism-panel {
   /* Dark Theme Glass */
-  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
+  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a)); /* card-a is 0.35 */
   backdrop-filter: blur(14px) saturate(1.1);
   -webkit-backdrop-filter: blur(14px) saturate(1.1);
-  border: 1px solid hsla(var(--border-h), var(--border-s), calc(var(--border-l) + 5%), 0.25);
+  border: 1px solid hsla(var(--border-h), var(--border-s), calc(var(--border-l) + 10%), 0.35); /* Slightly lighter border, bit more opacity */
   border-radius: var(--radius);
   box-shadow: 0 6px 24px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 2%), 0.2),
               0 2px 8px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 2%), 0.15);
@@ -236,33 +232,36 @@
 
 .btn-wabi-sabi {
   @apply px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center transition-colors duration-150 ease-in-out;
-  background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.3), calc(var(--secondary-l) + 30%)); /* Light Theme: Lighter, more desaturated secondary */
-  color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.7), calc(var(--secondary-l) - 15%)); /* Light Theme: Darker, more saturated secondary text */
-  border: 1px solid hsl(var(--secondary-h), calc(var(--secondary-s) * 0.3), calc(var(--secondary-l) + 20%));
-  box-shadow: 0 1px 2px hsla(var(--foreground-h), var(--foreground-s), var(--foreground-l), 0.05);
+  /* Light Theme: Lighter, more desaturated secondary */
+  background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.25), calc(var(--secondary-l) + 45%));
+  color: hsl(var(--secondary-h), var(--secondary-s), calc(var(--secondary-l) - 18%));
+  border: 1px solid hsl(var(--secondary-h), calc(var(--secondary-s) * 0.3), calc(var(--secondary-l) + 30%));
+  box-shadow: 0 1px 2px hsla(var(--secondary-h), var(--secondary-s), var(--secondary-l), 0.05);
 }
 .btn-wabi-sabi:hover {
-  background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.35), calc(var(--secondary-l) + 25%));
-  border-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.35), calc(var(--secondary-l) + 15%));
+  background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.30), calc(var(--secondary-l) + 40%));
+  border-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.35), calc(var(--secondary-l) + 25%));
 }
 .dark .btn-wabi-sabi {
-  background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.25), calc(var(--secondary-l) - 20%)); /* Dark Theme: Darker, more desaturated secondary */
-  color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.6), calc(var(--secondary-l) + 30%)); /* Dark Theme: Lighter, more saturated secondary text */
-  border: 1px solid hsl(var(--secondary-h), calc(var(--secondary-s) * 0.25), calc(var(--secondary-l) - 25%));
+  /* Dark Theme: Darker, more desaturated secondary */
+  background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.35), calc(var(--secondary-l) - 15%));
+  color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.7), calc(var(--secondary-l) + 35%));
+  border: 1px solid hsl(var(--secondary-h), calc(var(--secondary-s) * 0.35), calc(var(--secondary-l) - 20%));
 }
 .dark .btn-wabi-sabi:hover {
-  background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.3), calc(var(--secondary-l) - 15%));
-  border-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.3), calc(var(--secondary-l) - 20%));
+  background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.40), calc(var(--secondary-l) - 10%));
+  border-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.40), calc(var(--secondary-l) - 15%));
 }
+
 .btn-wabi-sabi:disabled {
   @apply opacity-60 cursor-not-allowed filter-none transform-none shadow-none;
-  background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.2), calc(var(--secondary-l) + 40%)); /* Light disabled */
-  border-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.2), calc(var(--secondary-l) + 30%));
+  background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.2), calc(var(--secondary-l) + 50%)); /* Light disabled */
+  border-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.2), calc(var(--secondary-l) + 40%));
   color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.5), calc(var(--secondary-l) + 10%));
 }
 .dark .btn-wabi-sabi:disabled {
-  background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.15), calc(var(--secondary-l) - 30%)); /* Dark disabled */
-  border-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.15), calc(var(--secondary-l) - 35%));
+  background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.25), calc(var(--secondary-l) - 25%)); /* Dark disabled */
+  border-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.25), calc(var(--secondary-l) - 30%));
   color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.4), calc(var(--secondary-l) + 5%));
 }
 
