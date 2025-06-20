@@ -121,7 +121,7 @@ const TopBar: React.FC = () => {
                 type="search"
                 placeholder="Command or Search..."
                 className={cn(
-                  "w-full h-9 pl-10 pr-4 border-input bg-input focus:ring-accent focus:border-accent",
+                  "w-full h-9 pl-10 pr-4 bg-input border-input focus:ring-accent focus:border-accent",
                   "text-sm text-foreground",
                   "placeholder:text-muted-foreground"
                 )}
@@ -138,7 +138,7 @@ const TopBar: React.FC = () => {
                   variant="ghost"
                   size="icon"
                   onClick={toggleTheme}
-                  className="text-gray-700 dark:text-neutral-200 hover:bg-primary/10 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white w-9 h-9"
+                  className="w-9 h-9"
                   aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
                 >
                   {isMounted && theme === 'dark' ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
@@ -151,7 +151,7 @@ const TopBar: React.FC = () => {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-gray-700 dark:text-neutral-200 hover:bg-primary/10 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white w-9 h-9">
+                <Button variant="ghost" size="icon" className="w-9 h-9">
                   <BellIcon className="h-5 w-5" />
                   <span className="sr-only">Notifications</span>
                 </Button>
@@ -161,7 +161,7 @@ const TopBar: React.FC = () => {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-gray-700 dark:text-neutral-200 hover:bg-primary/10 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white w-9 h-9">
+                <Button variant="ghost" size="icon" className="w-9 h-9">
                   <Settings2Icon className="h-5 w-5" />
                   <span className="sr-only">Settings</span>
                 </Button>
@@ -176,7 +176,7 @@ const TopBar: React.FC = () => {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2 h-9 px-2.5 text-muted-foreground hover:bg-primary/10 dark:hover:bg-white/5 hover:text-foreground dark:hover:text-white">
+                <Button variant="ghost" className="flex items-center space-x-2 h-9 px-2.5">
                   <Avatar className="h-6 w-6">
                     <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
                     <AvatarFallback className="text-xs bg-primary/30 text-primary-foreground">U</AvatarFallback>

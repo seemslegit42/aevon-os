@@ -39,7 +39,7 @@ interface ArmoryApp {
   id: string;
   name: string;
   icon: ElementType;
-  aiGeneratedDesc?: string; // Changed from shortDesc to aiGeneratedDesc for consistency
+  aiGeneratedDesc?: string;
   tags: string[];
 }
 
@@ -98,7 +98,7 @@ export default function ArmoryPage() {
        if (error instanceof Error) {
           errorMessage = error.message;
       }
-      setGeneratedDescription(null); // Clear on error
+      setGeneratedDescription(null);
       toast({ variant: "destructive", title: "Generation Error", description: errorMessage });
     } finally {
       setIsGenerating(false);
@@ -132,7 +132,7 @@ export default function ArmoryPage() {
                 <CardTitle className="font-headline text-xl text-primary flex items-center">
                   <app.icon className="w-6 h-6 mr-2 text-primary" /> {app.name}
                 </CardTitle>
-                <CardDescription className="text-foreground/80 h-12 overflow-hidden text-ellipsis">
+                <CardDescription className="text-muted-foreground h-12 overflow-hidden text-ellipsis">
                   {app.aiGeneratedDesc ? app.aiGeneratedDesc.substring(0,100)+(app.aiGeneratedDesc.length > 100 ? '...' : '') : 'Description not available.'}
                 </CardDescription>
               </CardHeader>
@@ -152,7 +152,7 @@ export default function ArmoryPage() {
       )}
 
       <MicroAppCard title="Publish Your Micro-App" icon={PackagePlusIcon}>
-        <p className="text-foreground/80 mb-6">
+        <p className="text-muted-foreground mb-6">
           Have a micro-app idea? Use our AI to generate a compelling marketplace description.
         </p>
         <Form {...form}>
@@ -162,7 +162,7 @@ export default function ArmoryPage() {
               name="microAppName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-primary/80">Micro-App Name</FormLabel>
+                  <FormLabel className="text-primary">Micro-App Name</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g., Sales Forecaster AI" {...field} />
                   </FormControl>
@@ -175,7 +175,7 @@ export default function ArmoryPage() {
               name="microAppFunctionality"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-primary/80">Functionality</FormLabel>
+                  <FormLabel className="text-primary">Functionality</FormLabel>
                   <FormControl>
                     <Textarea placeholder="Describe what your app does..." {...field} rows={3} />
                   </FormControl>
@@ -188,7 +188,7 @@ export default function ArmoryPage() {
               name="targetAudience"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-primary/80">Target Audience</FormLabel>
+                  <FormLabel className="text-primary">Target Audience</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g., Sales teams in SMBs" {...field} />
                   </FormControl>
@@ -201,7 +201,7 @@ export default function ArmoryPage() {
               name="keyFeatures"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-primary/80">Key Features (comma-separated)</FormLabel>
+                  <FormLabel className="text-primary">Key Features (comma-separated)</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g., AI predictions, Data visualization, Report generation" {...field} />
                   </FormControl>

@@ -1,13 +1,12 @@
 
-import React, { type ElementType } from 'react'; // Added ElementType
+import React, { type ElementType } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
-// Removed LucideIcon import as it's no longer needed
 import { cn } from '@/lib/utils';
 
 interface MicroAppCardProps {
   title: string;
   description?: string | React.ReactNode;
-  icon?: ElementType; // Changed from LucideIcon to ElementType
+  icon?: ElementType;
   children?: React.ReactNode;
   className?: string;
   actions?: React.ReactNode;
@@ -16,7 +15,7 @@ interface MicroAppCardProps {
 const MicroAppCardComponent: React.FC<MicroAppCardProps> = ({ title, description, icon: Icon, children, className, actions }) => {
   return (
     <Card className={cn("glassmorphism-panel overflow-hidden flex flex-col", className)}>
-      <CardHeader className="drag-handle flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b border-border/10 dark:border-white/5 bg-foreground/[.02] dark:bg-black/10 cursor-grab active:cursor-grabbing">
+      <CardHeader className="drag-handle flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b border-border/10 dark:border-white/5 bg-foreground/[.02] dark:bg-card/90 cursor-grab active:cursor-grabbing">
         <div className="flex items-center">
           {Icon && <Icon className="h-5 w-5 text-primary dark:text-white mr-3" />}
           <CardTitle className="text-base font-headline text-primary dark:text-white">{title}</CardTitle>

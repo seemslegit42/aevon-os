@@ -12,16 +12,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlusCircleIcon, Trash2Icon, SearchIcon, XIcon } from '@/components/icons'; // Changed imports
-import type { CardConfig } from '@/config/dashboard-cards.config'; // Adjusted path and CardLayoutInfo if necessary
-import type { CardLayoutInfo } from '@/hooks/use-dashboard-layout'; // Assuming CardLayoutInfo is also needed from hook or config
+import { PlusCircleIcon, Trash2Icon, SearchIcon, XIcon } from '@/components/icons';
+import type { CardConfig } from '@/config/dashboard-cards.config';
+import type { CardLayoutInfo } from '@/hooks/use-dashboard-layout';
 
 interface CommandPaletteProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   allPossibleCards: CardConfig[];
   activeCardIds: string[];
-  cardLayouts: CardLayoutInfo[]; // Make sure this type is correctly imported or defined
+  cardLayouts: CardLayoutInfo[];
   onAddCard: (cardId: string) => void;
   onRemoveCard: (cardId: string) => void;
   onResetLayout: () => void;
@@ -75,7 +75,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
               placeholder="Search zones..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-background/50 dark:bg-black/30 border-primary/30"
+              className="pl-10 bg-input border-input"
             />
              {searchTerm && (
                 <Button
@@ -94,11 +94,11 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
           <div className="space-y-3">
             {filteredCards.map(card => {
               const isActive = activeCardIds.includes(card.id);
-              const Icon = card.icon as ElementType; // Cast to ElementType
+              const Icon = card.icon as ElementType;
               return (
                 <div
                   key={card.id}
-                  className="flex items-center justify-between p-3 rounded-md bg-card/70 dark:bg-black/20 hover:bg-primary/10 transition-colors"
+                  className="flex items-center justify-between p-3 rounded-md bg-card/70 dark:bg-card/80 hover:bg-primary/10 transition-colors"
                 >
                   <div className="flex items-center space-x-3">
                     <Icon className="w-5 h-5 text-primary" />

@@ -50,7 +50,7 @@ export default function AegisSecurityPage() {
       if (error instanceof Error) {
           errorMessage = error.message;
       }
-      setAnalysisResult(null); // Clear previous results on error
+      setAnalysisResult(null);
       toast({ variant: "destructive", title: "Analysis Error", description: errorMessage });
     } finally {
       setIsLoading(false);
@@ -86,12 +86,12 @@ export default function AegisSecurityPage() {
             <CardContent>
               <ScrollArea className="h-[250px] pr-4 space-y-3">
                 <div>
-                  <h4 className="font-semibold text-md text-foreground/90 mb-1">Summary:</h4>
+                  <h4 className="font-semibold text-md text-foreground mb-1">Summary:</h4>
                   <p className="text-foreground whitespace-pre-wrap text-sm">{analysisResult.summary}</p>
                 </div>
                 {analysisResult.potentialThreats && analysisResult.potentialThreats.length > 0 && (
                   <div>
-                    <h4 className="font-semibold text-md text-foreground/90 mb-1">Potential Threats:</h4>
+                    <h4 className="font-semibold text-md text-foreground mb-1">Potential Threats:</h4>
                     <ul className="list-disc list-inside text-sm space-y-1">
                       {analysisResult.potentialThreats.map((threat, index) => (
                         <li key={`threat-${index}`}>{threat}</li>
@@ -101,7 +101,7 @@ export default function AegisSecurityPage() {
                 )}
                 {analysisResult.recommendedActions && analysisResult.recommendedActions.length > 0 && (
                   <div>
-                    <h4 className="font-semibold text-md text-foreground/90 mb-1">Recommended Actions:</h4>
+                    <h4 className="font-semibold text-md text-foreground mb-1">Recommended Actions:</h4>
                     <ul className="list-disc list-inside text-sm space-y-1">
                       {analysisResult.recommendedActions.map((action, index) => (
                         <li key={`action-${index}`}>{action}</li>
@@ -118,10 +118,10 @@ export default function AegisSecurityPage() {
       <Card>
         <CardHeader>
           <CardTitle className="font-headline text-primary flex items-center"><ShieldIcon className="w-5 h-5 mr-2"/>Proactive Defense</CardTitle>
-          <CardDescription className="text-foreground/80">Aegis continuously monitors for anomalies and provides insights into user behavior baselines, making security management effortless.</CardDescription>
+          <CardDescription className="text-muted-foreground">Aegis continuously monitors for anomalies and provides insights into user behavior baselines, making security management effortless.</CardDescription>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-2 text-foreground/90">
+          <ul className="space-y-2 text-foreground">
             <li className="flex items-center"><CheckCircleIcon className="w-4 h-4 mr-2 text-secondary"/> Contextual alerts with plain English explanations.</li>
             <li className="flex items-center"><CheckCircleIcon className="w-4 h-4 mr-2 text-secondary"/> Proactive anomaly detection.</li>
             <li className="flex items-center"><CheckCircleIcon className="w-4 h-4 mr-2 text-secondary"/> User behavior baseline insights.</li>
