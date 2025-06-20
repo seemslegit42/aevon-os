@@ -4,12 +4,13 @@ import { Progress } from '@/components/ui/progress';
 import type { LucideIcon } from 'lucide-react';
 import { CheckCircle, ChevronDown, X } from 'lucide-react'; 
 import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 
 export interface SystemMetric {
   id: string;
   icon: LucideIcon;
   label: string;
-  value?: string | number; // Made optional, as real data might not be present
+  value?: string | number;
   progressMax?: number;
   unit: string;
 }
@@ -34,40 +35,44 @@ const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({ s
   return (
     <div className="space-y-3 p-1 flex flex-col h-full">
       {hasMetrics ? (
-        <ul className="space-y-3">
+        <ul className="space-y-3.5"> {/* Increased spacing slightly */}
           {systemMetricsConfig.map(metric => (
             <li key={metric.id} className="text-sm">
               <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center text-muted-foreground">
-                  <metric.icon className="w-4 h-4 mr-2 text-primary" />
-                  <span>{metric.label}</span>
+                <div className="flex items-center text-primary"> {/* Icon and label color changed to primary */}
+                  <metric.icon className="w-4 h-4 mr-2" />
+                  <span className="font-medium">{metric.label}</span>
                 </div>
                 {metric.value !== undefined ? (
                   metric.id === 'agents' ? (
-                    <span className="bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full text-xs font-medium">
+                    <span className="bg-accent text-accent-foreground px-2 py-0.5 rounded-full text-xs font-bold"> {/* Made badge bolder */}
                       {metric.value}
                     </span>
                   ) : (
                     <span className="font-medium text-foreground">
-                      {metric.progressMax && metric.unit === '%' ? `${metric.value}%` : ''}
-                      {metric.progressMax && metric.unit === 'GB' && metric.label === 'Disk Usage' ? `${metric.value}${metric.unit} / ${metric.progressMax && metric.progressMax >= 1000 ? (metric.progressMax / 1000) + 'TB' : metric.progressMax + 'GB'}` : ''}
-                      {metric.progressMax && metric.unit === 'GB' && metric.label !== 'Disk Usage' ? `${metric.value}${metric.unit} / ${metric.progressMax}GB` : ''}
-                      {!metric.progressMax && metric.unit.includes('GB')? `${metric.value} ${metric.unit}` : ''}
-                      {!metric.progressMax && metric.unit === '' ? metric.value : ''}
+                      {/* Logic to display GB/TB correctly as in image */}
+                      {metric.id === 'disk' && typeof metric.value === 'number' && metric.progressMax
+                        ? `${metric.value}${metric.unit} / ${metric.progressMax}${metric.unit}`
+                        : metric.value}
+                      {metric.id !== 'disk' && metric.id !== 'agents' && typeof metric.value === 'string' && metric.unit === '' 
+                        ? metric.value 
+                        : ''}
+                       {metric.id !== 'disk' && metric.id !== 'agents' && typeof metric.value === 'number' && metric.unit !== '%' && metric.unit !== ''
+                        ? `${metric.value} ${metric.unit}`
+                        : ''}
                     </span>
                   )
                 ) : (
                   <span className="font-medium text-muted-foreground">N/A</span>
                 )}
               </div>
-              {metric.progressMax && metric.value !== undefined && (
+              {metric.progressMax && metric.value !== undefined && metric.id === 'disk' && ( // Only show progress for disk usage as per image
                   <Progress 
-                      value={typeof metric.value === 'number' ? (metric.id === 'disk' ? (metric.value / metric.progressMax) * 100 : metric.value) : 0} 
-                      className="h-2 [&>div]:bg-primary" 
+                      value={typeof metric.value === 'number' ? (metric.value / metric.progressMax) * 100 : 0} 
+                      // className="h-2 [&>div]:bg-secondary" // Original
+                      className="h-2" // Remove default background, apply custom class to indicator
+                      indicatorClassName="progress-custom" // Custom class for blue/cyan indicator
                   />
-              )}
-              {metric.progressMax && metric.value === undefined && (
-                 <Progress value={0} className="h-2 [&>div]:bg-primary" />
               )}
             </li>
           ))}
@@ -78,7 +83,8 @@ const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({ s
         </div>
       )}
 
-      {agentTask && (
+      {/* Agent task section is not visible in the reference image's System Snapshot, so removing it */}
+      {/* {agentTask && (
         <>
           <Separator className="my-3 bg-border/50" />
           <div className="p-1 rounded-md bg-primary/5 dark:bg-black/20">
@@ -90,16 +96,22 @@ const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({ s
                   <p className="text-xs text-muted-foreground">{agentTask.time}</p>
                 </div>
               </div>
-              <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${agentTask.status === 'success' ? 'bg-secondary text-primary-foreground' : 'bg-destructive text-destructive-foreground'}`}>
+              <span className={cn(
+                `text-xs font-medium px-2.5 py-1 rounded-full`,
+                agentTask.status === 'success' ? 'badge-success' : 'badge-failure'
+              )}>
                 {agentTask.statusText}
               </span>
             </div>
-             <button className={`text-xs ${agentTask.status === 'success' ? 'text-secondary' : 'text-destructive'} hover:underline flex items-center mt-1`}>
+             <button className={cn(
+                `text-xs hover:underline flex items-center mt-1`,
+                agentTask.status === 'success' ? 'details-link-success' : 'details-link-failure'
+              )}>
               {agentTask.detailsLinkText} <ChevronDown className="w-3 h-3 ml-1" />
             </button>
           </div>
         </>
-      )}
+      )} */}
       {!agentTask && !hasMetrics && <div className="flex-grow"></div>} 
       {!agentTask && hasMetrics && <div className="mt-auto"></div>}
     </div>

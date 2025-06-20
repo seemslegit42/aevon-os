@@ -4,7 +4,7 @@ import React, { useState, useEffect, FormEvent } from 'react';
 import { Rnd, type Position, type Size } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Cpu, LayoutGrid, AppWindow, Users, HardDrive, Timer, Blocks, Mic, MoreHorizontal, X, CheckCircle, AlertCircle, LoaderCircle, CircleDot, BarChartBig, Settings2, Shield } from 'lucide-react';
+import { Sparkles, Cpu, LayoutGrid, AppWindow, Users, HardDrive, Timer, Blocks, Mic, MoreHorizontal, X, CheckCircle, AlertCircle, LoaderCircle, CircleDot, BarChartBig, Settings2, Shield, Server, Network, Clock } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -19,9 +19,29 @@ import type { GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-pers
 import { generatePersonalizedBriefing } from '@/ai/flows/generate-personalized-briefings';
 
 
-const initialAgentsData: Agent[] = [];
+// Re-introducing initial data to match the reference image's visual density
+const initialAgentsData: Agent[] = [
+  { id: '1', name: 'NexusGuard_Alpha', description: 'Actively monitoring inbound/outbound netwo...', status: 'Idle', statusColor: 'text-yellow-400', statusIcon: CircleDot, time: '2m ago' },
+  { id: '2', name: 'Helios_Stream_Processor', description: 'Continuously analyzing high-volume sen...', status: 'Processing', statusColor: 'text-blue-400', statusIcon: LoaderCircle, time: 'Now' },
+  { id: '3', name: 'NovaSys_QueryEngine', description: 'Awaiting complex user queries and data retri...', status: 'Idle', statusColor: 'text-yellow-400', statusIcon: CircleDot, time: '10s ago' },
+  { id: '4', name: 'Cygnus_BackupAgent', description: 'Scheduled integrity check failed on target...', status: 'Error', statusColor: 'text-red-500', statusIcon: AlertCircle, time: '5m ago' },
+];
 
-const initialFeedItems: FeedItem[] = [];
+const initialFeedItems: FeedItem[] = [
+  { task: 'Agent Task: Analyze User Sentiment', time: '0 seconds ago', status: 'failure', details: 'Analysis failed due to invalid input schema.' },
+  { task: 'Agent Task: Deploy Microservice v1.2', time: '3 minutes ago', status: 'success', details: 'Deployment to staging successful.' },
+  { task: 'Agent Task: Backup Database Cluster', time: '15 minutes ago', status: 'success', details: 'Full backup completed.' },
+];
+
+const systemMetricsConfigData: SystemMetric[] = [
+  { id: 'agents', icon: Users, label: 'Active Agents', value: 5, unit: '' }, // Value from image
+  { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: 450, progressMax: 1000, unit: 'GB' }, // Value from image
+  { id: 'networkSent', icon: Network, label: 'Network Sent', value: '1.2 GB', unit: '' }, // Value from image
+  { id: 'networkReceived', icon: Network, label: 'Network Received', value: '8.5 GB', unit: '' }, // Value from image
+  { id: 'uptime', icon: Clock, label: 'System Uptime', value: '12d 4h 32m', unit: '' }, // Value from image
+];
+
+const agentTaskExampleData: AgentTask | undefined = undefined; // No specific agent task in system snapshot in the image
 
 interface CardLayoutInfo {
   id: string;
@@ -53,6 +73,7 @@ export default function DashboardPage() {
   const [dismissedCardIds, setDismissedCardIds] = useState<string[]>([]);
 
   const handleDismissCardAttempt = (id: string) => {
+    // Instant dismissal
     setDismissedCardIds(prevIds => [...prevIds, id]);
   };
 
@@ -96,8 +117,9 @@ export default function DashboardPage() {
     try {
       const input: GeneratePersonalizedBriefingInput = {
         userName: "Dashboard User",
-        operationalMetrics: "System status nominal. Real-time metrics feed not currently displayed.",
-        relevantInformation: `User asked: "${aiPrompt}". Provide a concise, helpful response based on general knowledge or simulate an action if appropriate for a demo.`,
+        // Updated to reflect current data state
+        operationalMetrics: "System metrics displayed: Active Agents, Disk Usage, Network Sent/Received, System Uptime.",
+        relevantInformation: `User asked: "${aiPrompt}". Provide a concise, helpful response.`,
       };
       const result = await generatePersonalizedBriefing(input);
       setAiResponse(result.briefing);
@@ -110,14 +132,10 @@ export default function DashboardPage() {
     }
   };
 
-  const systemMetricsConfig: SystemMetric[] = [];
-  const agentTaskData: AgentTask | undefined = undefined;
-
-
   const initialCardsData: CardConfig[] = [
     {
       id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, isDismissible: true,
-      x: 50, y: 50, width: 400, height: 480, zIndex: 1, minWidth: 320, minHeight: 380,
+      x: 50, y: 50, width: 400, height: 380, zIndex: 1, minWidth: 320, minHeight: 300, // Adjusted height
       cardClassName: "flex-grow flex flex-col",
       content: AiAssistantCardContent,
       contentProps: {
@@ -125,34 +143,36 @@ export default function DashboardPage() {
         setAiPrompt,
         handleAiSubmit,
         isAiLoading,
-        aiResponse
+        aiResponse,
+        // Pass placeholder insight text from image
+        placeholderInsight: "Analyze product sales, compare revenue, or ask for insights."
       }
     },
     {
       id: 'agentPresence', title: 'Agent Presence', icon: Cpu, isDismissible: true,
-      x: 470, y: 50, width: 380, height: 230, zIndex: 1, minWidth: 300, minHeight: 150,
+      x: 470, y: 50, width: 420, height: 280, zIndex: 1, minWidth: 300, minHeight: 200, // Adjusted width/height
       content: AgentPresenceCardContent,
       contentProps: { agents: initialAgentsData }
     },
     {
       id: 'systemSnapshot', title: 'System Snapshot', icon: LayoutGrid, isDismissible: true,
-      x: 470, y: 300, width: 380, height: 380, zIndex: 1, minWidth: 320, minHeight: 200,
+      x: 470, y: 350, width: 420, height: 300, zIndex: 1, minWidth: 320, minHeight: 280, // Adjusted Y, width, height
       content: SystemSnapshotCardContent,
-      contentProps: { systemMetricsConfig: systemMetricsConfig, agentTask: agentTaskData }
+      contentProps: { systemMetricsConfig: systemMetricsConfigData, agentTask: agentTaskExampleData }
     },
     {
       id: 'applicationView', title: 'Application View', icon: AppWindow, isDismissible: true,
-      x: 50, y: 550, width: 400, height: 220, zIndex: 1, minWidth: 300, minHeight: 180,
+      x: 50, y: 450, width: 400, height: 200, zIndex: 1, minWidth: 300, minHeight: 180, // Adjusted Y
       content: ApplicationViewCardContent,
     },
     {
       id: 'microApps', title: 'Micro-Apps', icon: Blocks, isDismissible: true,
-      x: 870, y: 460, width: 380, height: 130, zIndex: 1, minWidth: 280, minHeight: 120,
+      x: 910, y: 350, width: 380, height: 130, zIndex: 1, minWidth: 280, minHeight: 120, // Adjusted X, Y
       content: MicroAppsCardContent,
     },
     {
       id: 'liveOrchestration', title: 'Live Orchestration Feed', icon: CheckCircle, isDismissible: true,
-      x: 870, y: 50, width: 380, height: 390, zIndex: 1, minWidth: 320, minHeight: 250,
+      x: 910, y: 50, width: 380, height: 280, zIndex: 1, minWidth: 320, minHeight: 250, // Adjusted X
       cardClassName: "flex-grow flex flex-col",
       content: LiveOrchestrationFeedCardContent,
       contentProps: { feedItems: initialFeedItems }
@@ -203,7 +223,7 @@ export default function DashboardPage() {
   const cardsToRender = initialCardsData.filter(card => !dismissedCardIds.includes(card.id));
 
   return (
-    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden">
+    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden p-4"> {/* Added padding to match image margins */}
       {cardsToRender.map(cardConfig => {
         const currentLayout = cardLayouts.find(l => l.id === cardConfig.id);
         if (!currentLayout) return null;
@@ -233,16 +253,16 @@ export default function DashboardPage() {
             }}
             style={{ zIndex: currentLayout.zIndex }}
             className={cn(
-              "border border-transparent hover:border-primary/30 rounded-lg focus-within:border-primary"
+              "border-transparent hover:border-primary/30 focus-within:border-primary", // Removed rounded-lg, MicroAppCard handles it
             )}
-            dragGrid={[20, 20]}
-            resizeGrid={[20, 20]}
+            dragGrid={[10, 10]} // Finer grid for positioning
+            resizeGrid={[10, 10]}
           >
             <MicroAppCard
               title={cardConfig.title}
               icon={cardConfig.icon}
               actions={cardConfig.actions ? cardConfig.actions(cardConfig.id, handleDismissCardAttempt) : undefined}
-              className={cn("h-full w-full !rounded-lg", cardConfig.cardClassName)}
+              className={cn("h-full w-full !rounded-lg", cardConfig.cardClassName)} // Ensure MicroAppCard applies radius
             >
               <CardSpecificContent {...cardConfig.contentProps} />
             </MicroAppCard>

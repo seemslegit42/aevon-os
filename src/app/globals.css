@@ -5,86 +5,79 @@
 
 @layer base {
   :root {
-    --background: 283 30% 97%; /* Very Light Imperial Purple */
-    --foreground: 248 37% 15%; /* Obsidian Black */
+    --background: 283 30% 97%; /* Very Light Imperial Purple - Light Mode (Kept for completeness) */
+    --foreground: 248 37% 15%; /* Obsidian Black - Light Mode */
 
-    --card: 150 100% 98%; /* Vitreous White */
-    --card-foreground: 248 37% 15%; /* Obsidian Black */
+    --card: 150 100% 98%; /* Vitreous White - Light Mode */
+    --card-foreground: 248 37% 15%; /* Obsidian Black - Light Mode */
 
-    --popover: 150 100% 98%; /* Vitreous White */
-    --popover-foreground: 248 37% 15%; /* Obsidian Black */
+    --popover: 150 100% 98%; /* Vitreous White - Light Mode */
+    --popover-foreground: 248 37% 15%; /* Obsidian Black - Light Mode */
 
-    --primary: 283 54% 42%; /* Imperial Purple */
-    --primary-foreground: 150 100% 98%; /* Vitreous White */
+    --primary: 283 54% 42%; /* Imperial Purple - Light Mode */
+    --primary-foreground: 150 100% 98%; /* Vitreous White - Light Mode */
 
-    --secondary: 157 49% 55%; /* Patina Green */
-    --secondary-foreground: 248 37% 15%; /* Obsidian Black for contrast */
+    --secondary: 157 49% 55%; /* Patina Green - Light Mode (Success status) */
+    --secondary-foreground: 248 37% 15%; /* Obsidian Black for contrast - Light Mode */
 
-    --muted: 223 13% 92%; /* Lighter Conchoidal Gray */
-    --muted-foreground: 248 37% 40%; /* Darker Gray */
+    --muted: 223 13% 92%; /* Lighter Conchoidal Gray - Light Mode */
+    --muted-foreground: 248 37% 40%; /* Darker Gray - Light Mode */
 
-    --accent: 177 68% 41%; /* Roman Aqua */
-    --accent-foreground: 150 100% 98%; /* Vitreous White */
+    --accent: 45 100% 60%; /* Gold/Yellow for badges - Light Mode */
+    --accent-foreground: 248 37% 15%; /* Obsidian Black - Light Mode */
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84.2% 60.2%; /* Red for failure/destructive */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 223 13% 85%; /* Lighter Conchoidal Gray for borders */
-    --input: 223 13% 95%;  /* Lighter Conchoidal Gray for input backgrounds */
-    --ring: 283 54% 42%;   /* Imperial Purple (for focus rings) */
+    --border: 223 13% 85%; /* Lighter Conchoidal Gray for borders - Light Mode */
+    --input: 223 13% 95%;  /* Lighter Conchoidal Gray for input backgrounds - Light Mode */
+    --ring: 283 54% 42%;   /* Imperial Purple (for focus rings) - Light Mode */
 
     --radius: 0.5rem;
 
-    --chart-1: hsl(var(--primary));
-    --chart-2: hsl(var(--secondary));
-    --chart-3: hsl(var(--accent));
-    --chart-4: 283 54% 62%; /* Lighter Imperial Purple */
-    --chart-5: 157 49% 75%; /* Lighter Patina Green */
-
-    --iridescent-aurora-start: 283 54% 42%; /* Imperial Purple */
-    --iridescent-aurora-mid: 157 49% 55%;   /* Patina Green */
-    --iridescent-aurora-end: 177 68% 41%;   /* Roman Aqua */
+    /* Chart/Progress Bar Colors */
+    --chart-1: 283 60% 65%; /* Light Purple/Magenta for card titles/icons */
+    --chart-2: 190 70% 60%; /* Light Blue/Cyan for progress bars */
+    --chart-3: hsl(var(--accent)); /* Gold/Yellow */
+    --chart-4: 157 60% 50%; /* Green for success */
+    --chart-5: hsl(var(--destructive)); /* Red for failure */
   }
 
   .dark {
-    --background: 248 37% 10%; /* Darker Obsidian Black for background */
-    --foreground: 150 100% 95%; /* Lighter Vitreous White for text */
+    --background: 270 35% 12%; /* Deep Dark Purple (Matches reference image) */
+    --foreground: 0 0% 95%;    /* White/Very Light Gray (Matches reference image) */
 
-    --card: 248 37% 13%; /* Slightly lighter Obsidian Black for card background */
-    --card-foreground: 150 100% 95%;
+    --card: 270 30% 18%;       /* Darker Purple for cards (Matches reference image) */
+    --card-foreground: 0 0% 95%; /* White/Very Light Gray */
 
-    --popover: 248 37% 8%; /* Darkest Obsidian for popover */
-    --popover-foreground: 150 100% 95%;
+    --popover: 270 25% 15%;    /* Darker Popover Purple */
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 283 54% 60%; /* Lighter Imperial Purple */
-    --primary-foreground: 150 100% 98%; 
+    --primary: 283 60% 70%;    /* Light Purple/Magenta (for card titles, icons - Matches reference image) */
+    --primary-foreground: 0 0% 98%; 
 
-    --secondary: 157 49% 70%; /* Lighter Patina Green */
-    --secondary-foreground: 248 37% 10%; /* Dark Obsidian Black */
+    --secondary: 190 70% 60%; /* Light Blue/Cyan for progress bars (Matches reference image) */
+    --secondary-foreground: 248 37% 10%; 
 
-    --muted: 223 13% 25%; /* Darker Conchoidal Gray */
-    --muted-foreground: 223 13% 75%; /* Lighter Conchoidal Gray (was 65%) */
+    --muted: 270 15% 35%;      /* Muted Purple Gray */
+    --muted-foreground: 270 10% 70%; /* Lighter Muted Purple Gray for text */
 
-    --accent: 177 85% 60%; /* Made Roman Aqua brighter/more saturated for "incandescent glow" */
-    --accent-foreground: 248 37% 10%; /* Obsidian Black for contrast on bright accent */
+    --accent: 45 100% 60%;     /* Gold/Yellow (for "Active Agents" badge - Matches reference image) */
+    --accent-foreground: 270 30% 10%; /* Dark purple for contrast on accent */
 
-    --destructive: 0 62.8% 50.6%; 
+    --destructive: 0 70% 55%; 
     --destructive-foreground: 0 0% 98%; 
 
-    --border: 223 13% 20%; /* Darker Conchoidal Gray for border */
-    --input: 223 13% 18%;  /* Even darker Conchoidal Gray for input background */
-    --ring: 283 54% 60%;   /* Lighter Imperial Purple (for focus rings) */
+    --border: 270 25% 25%;     /* Subtle Purple Border (Matches reference image card edges) */
+    --input: 270 25% 22%;      /* Dark Purple Input Background */
+    --ring: 283 60% 70%;       /* Light Purple/Magenta for focus rings */
 
+    /* Chart/Progress Bar Colors */
     --chart-1: hsl(var(--primary));
-    --chart-2: hsl(var(--secondary));
+    --chart-2: hsl(var(--secondary)); /* Progress bar color */
     --chart-3: hsl(var(--accent));
-    --chart-4: 283 54% 75%; /* Even Lighter Imperial Purple */
-    --chart-5: 157 49% 85%; /* Even Lighter Patina Green */
-
-    /* Enhanced lightness for a more vibrant Aurora in dark mode */
-    --iridescent-aurora-start: 283 54% 65%; /* Was 60% (from primary: 283 54% 60%) */
-    --iridescent-aurora-mid: 157 49% 75%;   /* Was 70% (from secondary: 157 49% 70%) */
-    --iridescent-aurora-end: 177 85% 65%;   /* Was 60% (from accent: 177 85% 60%) */
+    --chart-4: 130 60% 55%; /* Brighter Green for success status */
+    --chart-5: hsl(var(--destructive));
   }
 }
 
@@ -95,16 +88,26 @@
   body {
     @apply bg-background text-foreground;
   }
+  .dark body {
+    background-color: hsl(var(--background)); /* Ensure body takes the deep purple */
+  }
 }
 
+/* Remove Aurora, keep subtle grid for now if desired, or remove if not in image */
 .iridescent-aurora-bg {
-  background: linear-gradient(120deg, hsl(var(--iridescent-aurora-start)), hsl(var(--iridescent-aurora-mid)), hsl(var(--iridescent-aurora-end)));
+  /* background: linear-gradient(120deg, hsl(var(--iridescent-aurora-start)), hsl(var(--iridescent-aurora-mid)), hsl(var(--iridescent-aurora-end))); */
+  background-color: hsl(var(--background)); /* Ensures it takes the new dark purple */
 }
 
 .glassmorphism-panel {
-  @apply bg-card/50 dark:bg-card/50 backdrop-blur-lg border border-border/20 shadow-lg;
+  /* Adjusted to match reference image: solid translucent purple, subtle border, no blur/strong shadow */
+  background-color: hsl(var(--card) / 0.85); /* Translucent card background */
+  border: 1px solid hsl(var(--border) / 0.5); /* Subtle border */
+  /* box-shadow: 0 1px 2px 0 hsl(var(--border) / 0.1); */ /* Very subtle shadow if any */
   border-radius: var(--radius);
+  /* Removed backdrop-blur-lg and shadow-lg */
 }
+
 
 ::-webkit-scrollbar {
   width: 8px;
@@ -123,18 +126,55 @@
 }
 
 .btn-gradient-primary-accent {
-  @apply bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-primary-foreground;
+  /* Updated to reflect new theme, matches "Send Prompt" button in image */
+  background: linear-gradient(to right, hsl(var(--primary) / 0.8), hsl(var(--primary)));
+  color: hsl(var(--primary-foreground));
 }
 .btn-gradient-primary-accent:hover {
-  @apply brightness-110;
+  filter: brightness(1.1);
 }
 .btn-gradient-primary-accent:disabled {
   @apply opacity-50 cursor-not-allowed;
 }
 
-/* Visual feedback for react-rnd dragging */
 .react-draggable-dragging {
   border: 2px dashed hsl(var(--primary) / 0.7) !important;
   box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
   transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out;
 }
+
+/* TopBar specific background */
+.topbar-custom-bg {
+  background-color: hsl(0 0% 10%); /* Very dark gray / near black for TopBar */
+}
+
+/* Active Nav Link in TopBar */
+.active-nav-link-dark {
+  background-color: hsl(270 40% 35%) !important; /* Lighter purple for active nav item background */
+  color: hsl(0 0% 98%) !important; /* White text */
+}
+.active-nav-link-dark:hover {
+  background-color: hsl(270 40% 40%) !important;
+}
+
+/* Progress bar custom color */
+.progress-custom {
+  background-color: hsl(var(--chart-2)) !important; /* Light Blue/Cyan */
+}
+
+/* Success and Failure badges for Live Orchestration Feed */
+.badge-success {
+  background-color: hsl(var(--chart-4)) !important; /* Green */
+  color: hsl(var(--primary-foreground)) !important;
+}
+.badge-failure {
+  background-color: hsl(var(--chart-5)) !important; /* Red */
+  color: hsl(var(--destructive-foreground)) !important;
+}
+.details-link-success {
+  color: hsl(var(--chart-4)) !important;
+}
+.details-link-failure {
+  color: hsl(var(--chart-5)) !important;
+}
+    

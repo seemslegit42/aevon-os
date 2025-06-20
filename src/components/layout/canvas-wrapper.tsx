@@ -8,25 +8,9 @@ type CanvasWrapperProps = {
 
 const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
   return (
-    <main className="flex-grow w-full p-4 md:p-8 overflow-y-auto relative iridescent-aurora-bg">
-      {/* This pseudo-element creates the subtle flowing gradient lines texture ON TOP of the aurora */}
-      <div
-        className="absolute inset-0 z-0 opacity-20 dark:opacity-10"
-        style={{
-          backgroundImage: `
-            repeating-linear-gradient(0deg, transparent, transparent 29px, hsl(var(--primary) / 0.07) 30px, hsl(var(--primary) / 0.07) 31px),
-            repeating-linear-gradient(90deg, transparent, transparent 29px, hsl(var(--primary) / 0.07) 30px, hsl(var(--primary) / 0.07) 31px)
-          `,
-          backgroundSize: '30px 30px',
-          animation: 'subtle-flow 20s linear infinite'
-        }}
-      />
-      <style jsx global>{`
-        @keyframes subtle-flow {
-          0% { background-position: 0 0; }
-          100% { background-position: 600px 600px; }
-        }
-      `}</style>
+    // Removed iridescent-aurora-bg, main background is now controlled by body styles
+    // Also removed the inner div with the grid pattern to match the solid background of the reference image
+    <main className="flex-grow w-full p-4 md:p-8 overflow-y-auto relative">
       <div className="relative z-10">
         {children}
       </div>
@@ -35,3 +19,4 @@ const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
 };
 
 export default CanvasWrapper;
+

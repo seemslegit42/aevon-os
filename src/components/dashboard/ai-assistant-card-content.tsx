@@ -11,6 +11,7 @@ interface AiAssistantCardContentProps {
   handleAiSubmit: (e: FormEvent) => Promise<void>;
   isAiLoading: boolean;
   aiResponse: string | null;
+  placeholderInsight?: string; // Added to match reference image text
 }
 
 const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
@@ -19,14 +20,16 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
   handleAiSubmit,
   isAiLoading,
   aiResponse,
+  placeholderInsight
 }) => {
   return (
     <>
       <div className="flex flex-col items-center justify-center text-center p-6 flex-grow">
-        {/* Placeholder Image removed */}
-        <p className="text-sm text-muted-foreground mb-4 mt-4"> {/* Added mt-4 for spacing */}
-          Analyze product sales, compare revenue, or ask for insights.
-        </p>
+        {placeholderInsight && (
+          <p className="text-sm text-foreground mb-4 mt-4"> {/* Changed to text-foreground to match image */}
+            {placeholderInsight}
+          </p>
+        )}
         {aiResponse && <ScrollArea className="h-[120px] w-full"><p className="text-sm text-foreground bg-primary/10 dark:bg-primary/20 rounded-md p-3 mb-4 text-left whitespace-pre-wrap">{aiResponse}</p></ScrollArea>}
       </div>
       <form onSubmit={handleAiSubmit} className="p-4 border-t border-border/30 dark:border-border/50 mt-auto">
@@ -35,7 +38,7 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
           value={aiPrompt}
           onChange={(e) => setAiPrompt(e.target.value)}
           rows={2}
-          className="bg-background/70 dark:bg-input border-border/50 focus:ring-primary mb-2"
+          className="bg-input border-border/50 focus:ring-primary mb-2 text-foreground placeholder-muted-foreground" // Ensuring input text color matches
         />
         <button
           type="submit"

@@ -40,14 +40,15 @@ const TopBar: React.FC = () => {
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      let hours = now.getUTCHours();
+      let hours = now.getUTCHours(); // Use UTC as per previous design
       const minutes = now.getUTCMinutes();
-      const seconds = now.getUTCSeconds();
+      // const seconds = now.getUTCSeconds(); // Seconds removed for cleaner look like in image
       const ampm = hours >= 12 ? 'PM' : 'AM';
       hours = hours % 12;
       hours = hours ? hours : 12; 
       
-      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm} UTC`;
+      // return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm} UTC`;
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${ampm} UTC`; // No seconds
     };
     
     setCurrentTime(updateTime()); 
@@ -59,11 +60,12 @@ const TopBar: React.FC = () => {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border/20 dark:border-border/30 font-headline">
+      {/* Added topbar-custom-bg for the very dark gray/black background */}
+      <header className="sticky top-0 z-50 w-full topbar-custom-bg border-b border-border/20 dark:border-border/30 font-headline">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Link href="/" className="text-2xl font-bold text-primary flex items-center">
-              <Bot className="w-7 h-7 mr-2 text-primary" />
+            <Link href="/" className="text-2xl font-bold text-primary-foreground flex items-center"> {/* Changed to primary-foreground for white text */}
+              <Bot className="w-7 h-7 mr-2 text-primary-foreground" /> {/* Changed to primary-foreground for white icon */}
                ΛΞVON OS
             </Link>
             <nav className="hidden md:flex items-center space-x-1">
@@ -73,8 +75,8 @@ const TopBar: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     className={cn(
-                      "text-foreground/70 hover:text-primary hover:bg-primary/10 dark:text-muted-foreground dark:hover:text-primary dark:hover:bg-primary/10",
-                      pathname === item.href && "text-primary bg-primary/10 dark:bg-primary dark:text-primary-foreground font-semibold"
+                      "text-muted-foreground hover:text-primary-foreground hover:bg-white/10", // Adjusted for dark TopBar
+                      pathname === item.href && "active-nav-link-dark font-semibold" // Custom class for active link styling
                     )}
                   >
                     <item.icon className="w-4 h-4 mr-2" />
@@ -91,11 +93,12 @@ const TopBar: React.FC = () => {
               <Input
                 type="search"
                 placeholder="Q Command or Search (Ctrl+K)..."
-                className="w-full h-9 pl-10 pr-16 bg-background/70 dark:bg-input border-border/20 dark:border-border/30 text-sm"
+                // Adjusted input style for very dark TopBar
+                className="w-full h-9 pl-10 pr-16 bg-white/5 dark:bg-white/5 border-white/10 dark:border-white/20 text-sm text-primary-foreground placeholder-muted-foreground"
                 aria-label="Command or search input"
               />
               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
-                <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-muted/50 bg-muted/20 px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
                   ⌘K
                 </kbd>
               </div>
@@ -107,7 +110,8 @@ const TopBar: React.FC = () => {
               <TooltipTrigger asChild>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon" className="text-foreground/70 hover:text-primary hover:bg-primary/10 dark:text-muted-foreground dark:hover:text-primary dark:hover:bg-primary/10" aria-label="Notifications">
+                    {/* Icons should be light colored on dark TopBar */}
+                    <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary-foreground hover:bg-white/10" aria-label="Notifications">
                       <Bell className="w-5 h-5" />
                     </Button>
                   </PopoverTrigger>
@@ -123,23 +127,20 @@ const TopBar: React.FC = () => {
                   </PopoverContent>
                 </Popover>
               </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>Notifications</p>
-              </TooltipContent>
+              <TooltipContent side="bottom"><p>Notifications</p></TooltipContent>
             </Tooltip>
 
             <Tooltip>
               <TooltipTrigger asChild>
-                 <Button variant="ghost" size="icon" className="text-foreground/70 hover:text-primary hover:bg-primary/10 dark:text-muted-foreground dark:hover:text-primary dark:hover:bg-primary/10" aria-label="Settings">
+                 <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary-foreground hover:bg-white/10" aria-label="Settings">
                   <Settings2 className="w-5 h-5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>Core Settings</p>
-              </TooltipContent>
+              <TooltipContent side="bottom"><p>Core Settings</p></TooltipContent>
             </Tooltip>
             
-            <div className="text-xs text-muted-foreground hidden sm:block w-28 text-center">{currentTime}</div>
+            {/* Time display text color should be light */}
+            <div className="text-xs text-muted-foreground hidden sm:block w-24 text-center">{currentTime}</div>
 
             <Tooltip>
               <TooltipTrigger asChild>
@@ -147,13 +148,16 @@ const TopBar: React.FC = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="p-0 h-auto" aria-label="User Menu">
                       <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-primary text-primary-foreground text-xs">ΛΞ</AvatarFallback>
+                        {/* Avatar fallback on dark TopBar should have contrasting text/bg */}
+                        <AvatarFallback className="bg-primary/80 text-primary-foreground text-xs">ΛΞ</AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-popover text-popover-foreground border-border/20 dark:border-border/30 w-56">
+                  {/* Dropdown content uses glassmorphism to match card style */}
+                  <DropdownMenuContent align="end" className="glassmorphism-panel w-56">
                     <DropdownMenuLabel className="font-normal">
-                      <p className="text-sm font-medium leading-none text-foreground">ΛΞVON User</p>
+                      <p className="text-sm font-medium leading-none text-foreground">Admin User</p> {/* Text changed as per image */}
+                      <p className="text-xs text-muted-foreground">Session: Active</p> {/* Added as per image */}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>View Profile</DropdownMenuItem>
@@ -161,9 +165,7 @@ const TopBar: React.FC = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>User Menu</p>
-              </TooltipContent>
+              <TooltipContent side="bottom"><p>User Menu</p></TooltipContent>
             </Tooltip>
           </div>
         </div>
