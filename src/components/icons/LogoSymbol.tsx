@@ -10,11 +10,11 @@ interface LogoSymbolProps {
 
 export const LogoSymbol: React.FC<LogoSymbolProps> = ({
   className,
-  width = 28, // Default width, similar to previous CommandIcon
-  height = 28, // Default height, similar to previous CommandIcon
+  width = 28, // Default width
+  height = 28, // Default height
 }) => (
   <Image
-    src="/aevon-logo.svg" // Assumes 'aevon-logo.svg' is in the 'public' directory
+    src="/aevon-logo.png" // Updated to use .png
     alt="Aevon OS Logo"
     width={width}
     height={height}
