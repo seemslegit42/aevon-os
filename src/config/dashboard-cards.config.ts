@@ -12,7 +12,7 @@ const SystemSnapshotCardContent = (() => import('@/components/dashboard/system-s
 
 // Icons for card titles and content
 import {
-  SparklesIcon, // Changed from Sparkles
+  MagicWandIcon, // Changed from SparklesIcon
   AppWindowIcon, // Changed from AppWindow
   UsersIcon, // Changed from Users
   ListChecksIcon, // Changed from ListChecks
@@ -55,7 +55,7 @@ export interface CardConfig {
 
 export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
-    id: 'beep', title: 'BEEP (Behavioral Event & Execution Processor)', icon: SparklesIcon, isDismissible: true,
+    id: 'beep', title: 'BEEP (Behavioral Event & Execution Processor)', icon: MagicWandIcon, isDismissible: true,
     content: BeepCardContent,
     contentProps: {
       placeholderInsight: "Ask BEEP to analyze data, execute tasks, or provide operational intelligence."

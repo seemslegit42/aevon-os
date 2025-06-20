@@ -8,7 +8,7 @@
  * - AnalyzeSecurityAlertsOutput - The return type for the analyzeSecurityAlerts function.
  */
 
-import { günstigerLLM, createOpenAI } from 'ai';
+import { createOpenAI } from '@ai-sdk/openai';
 import { generateText } from 'ai';
 
 // Ensure you have GROQ_API_KEY in your .env file
