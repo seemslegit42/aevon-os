@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Bell, Bot, Home, Settings, Shield, ShoppingCart, Settings2, LucideIcon } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'; // AvatarImage removed
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -58,7 +58,7 @@ const TopBar: React.FC = () => {
   }, []);
 
   return (
-    <TooltipProvider delayDuration={300}>
+    <TooltipProvider delayDuration={0}>
       <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border/20 dark:border-border/30 font-headline">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -147,7 +147,6 @@ const TopBar: React.FC = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="p-0 h-auto" aria-label="User Menu">
                       <Avatar className="h-8 w-8">
-                        {/* AvatarImage removed */}
                         <AvatarFallback className="bg-primary text-primary-foreground text-xs">AU</AvatarFallback>
                       </Avatar>
                     </Button>

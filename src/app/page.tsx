@@ -30,7 +30,6 @@ interface CardLayoutInfo {
   width: number;
   height: number;
   zIndex: number;
-  isDismissing?: boolean;
 }
 
 interface CardConfig extends CardLayoutInfo {
@@ -51,24 +50,14 @@ export default function DashboardPage() {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const { toast } = useToast();
 
-  const [agents, setAgents] = useState<Agent[]>(initialAgentsData);
-  const [feedItems, setFeedItems] = useState<FeedItem[]>(initialFeedItems);
   const [dismissedCardIds, setDismissedCardIds] = useState<string[]>([]);
 
   const handleDismissCardAttempt = (id: string) => {
-    setCardLayouts(prevLayouts =>
-      prevLayouts.map(layout =>
-        layout.id === id ? { ...layout, isDismissing: true, zIndex: getMaxZIndex() +1 } : layout
-      )
-    );
-    setTimeout(() => {
-      setDismissedCardIds(prevIds => [...prevIds, id]);
-      setCardLayouts(prevLayouts => prevLayouts.filter(layout => layout.id !== id));
-    }, 300);
+    setDismissedCardIds(prevIds => [...prevIds, id]);
   };
 
   const CardActions = (cardId: string, onDismiss: (id: string) => void, isDismissible?: boolean) => (
-    <TooltipProvider delayDuration={300}>
+    <TooltipProvider delayDuration={0}>
       <div className="flex items-center space-x-1">
         <Tooltip>
           <TooltipTrigger asChild>
@@ -107,7 +96,7 @@ export default function DashboardPage() {
     try {
       const input: GeneratePersonalizedBriefingInput = {
         userName: "Dashboard User",
-        operationalMetrics: "System status nominal. Real-time metrics feed pending integration.",
+        operationalMetrics: "System status nominal. Real-time metrics feed not currently displayed.",
         relevantInformation: `User asked: "${aiPrompt}". Provide a concise, helpful response based on general knowledge or simulate an action if appropriate for a demo.`,
       };
       const result = await generatePersonalizedBriefing(input);
@@ -121,12 +110,14 @@ export default function DashboardPage() {
     }
   };
 
-  const systemMetricsConfig: SystemMetric[] = []; // No placeholder data
+  const systemMetricsConfig: SystemMetric[] = [];
+  const agentTaskData: AgentTask | undefined = undefined;
+
 
   const initialCardsData: CardConfig[] = [
     {
       id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, isDismissible: true,
-      x: 50, y: 50, width: 400, height: 480, zIndex: 1, minWidth: 320, minHeight: 420,
+      x: 50, y: 50, width: 400, height: 480, zIndex: 1, minWidth: 320, minHeight: 380,
       cardClassName: "flex-grow flex flex-col",
       content: AiAssistantCardContent,
       contentProps: {
@@ -139,15 +130,15 @@ export default function DashboardPage() {
     },
     {
       id: 'agentPresence', title: 'Agent Presence', icon: Cpu, isDismissible: true,
-      x: 470, y: 50, width: 380, height: 230, zIndex: 1, minWidth: 300, minHeight: 180,
+      x: 470, y: 50, width: 380, height: 230, zIndex: 1, minWidth: 300, minHeight: 150,
       content: AgentPresenceCardContent,
-      contentProps: { agents }
+      contentProps: { agents: initialAgentsData }
     },
     {
       id: 'systemSnapshot', title: 'System Snapshot', icon: LayoutGrid, isDismissible: true,
       x: 470, y: 300, width: 380, height: 380, zIndex: 1, minWidth: 320, minHeight: 200,
       content: SystemSnapshotCardContent,
-      contentProps: { systemMetricsConfig: systemMetricsConfig, agentTask: undefined }
+      contentProps: { systemMetricsConfig: systemMetricsConfig, agentTask: agentTaskData }
     },
     {
       id: 'applicationView', title: 'Application View', icon: AppWindow, isDismissible: true,
@@ -164,7 +155,7 @@ export default function DashboardPage() {
       x: 870, y: 50, width: 380, height: 390, zIndex: 1, minWidth: 320, minHeight: 250,
       cardClassName: "flex-grow flex flex-col",
       content: LiveOrchestrationFeedCardContent,
-      contentProps: { feedItems }
+      contentProps: { feedItems: initialFeedItems }
     },
   ];
 
@@ -174,12 +165,12 @@ export default function DashboardPage() {
 
 
   const [cardLayouts, setCardLayouts] = useState<CardLayoutInfo[]>(
-    initialCardsData.map(({ id, x, y, width, height, zIndex }) => ({ id, x, y, width, height, zIndex, isDismissing: false }))
+    initialCardsData.map(({ id, x, y, width, height, zIndex }) => ({ id, x, y, width, height, zIndex }))
   );
 
   const getMaxZIndex = () => {
     if (cardLayouts.length === 0) return 0;
-    return Math.max(...cardLayouts.map(card => card.zIndex));
+    return Math.max(...cardLayouts.map(card => card.zIndex).filter(z => typeof z === 'number'));
   };
 
   const updateCardLayout = (id: string, newPos: Position, newSize?: Size) => {
@@ -242,9 +233,7 @@ export default function DashboardPage() {
             }}
             style={{ zIndex: currentLayout.zIndex }}
             className={cn(
-              "border border-transparent hover:border-primary/30 rounded-lg focus-within:border-primary",
-              "card-enter-animation",
-              currentLayout.isDismissing && "card-exit-animation"
+              "border border-transparent hover:border-primary/30 rounded-lg focus-within:border-primary"
             )}
             dragGrid={[20, 20]}
             resizeGrid={[20, 20]}
