@@ -2,7 +2,7 @@
 import type { LazyExoticComponent, FC, ElementType } from 'react';
 
 // Lazy loaded card content components
-const AiAssistantCardContent = (() => import('@/components/dashboard/ai-assistant-card-content')) as unknown as LazyExoticComponent<FC<any>>;
+const BeepCardContent = (() => import('@/components/dashboard/beep-card-content')) as unknown as LazyExoticComponent<FC<any>>;
 const ApplicationViewCardContent = (() => import('@/components/dashboard/application-view-card-content')) as unknown as LazyExoticComponent<FC<any>>;
 const AgentPresenceCardContent = (() => import('@/components/dashboard/agent-presence-card-content')) as unknown as LazyExoticComponent<FC<any>>;
 const LiveOrchestrationFeedCardContent = (() => import('@/components/dashboard/live-orchestration-feed-card-content')) as unknown as LazyExoticComponent<FC<any>>;
@@ -55,10 +55,10 @@ export interface CardConfig {
 
 export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
-    id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, isDismissible: true,
-    content: AiAssistantCardContent,
+    id: 'beep', title: 'BEEP (Behavioral Event & Execution Processor)', icon: Sparkles, isDismissible: true,
+    content: BeepCardContent,
     contentProps: {
-      placeholderInsight: "Analyze product sales, compare revenue, or ask for insights."
+      placeholderInsight: "Ask BEEP to analyze data, execute tasks, or provide operational intelligence."
     },
     defaultLayout: { x: 20, y: 20, width: 420, height: 260, zIndex: 1 }, // Adjusted width/height
     minWidth: 300, minHeight: 240, cardClassName: "flex-grow flex flex-col",
@@ -127,10 +127,11 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
 ];
 
 export const DEFAULT_ACTIVE_CARD_IDS = [
-  'aiAssistant',
+  'beep',
   'applicationView',
   'systemSnapshot',
   'microApps',
   'agentPresence',
   'liveOrchestrationFeed',
 ];
+

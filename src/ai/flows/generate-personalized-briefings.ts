@@ -1,3 +1,4 @@
+
 // src/ai/flows/generate-personalized-briefings.ts
 'use server';
 /**
@@ -31,7 +32,7 @@ const prompt = ai.definePrompt({
   name: 'generatePersonalizedBriefingPrompt',
   input: {schema: GeneratePersonalizedBriefingInputSchema},
   output: {schema: GeneratePersonalizedBriefingOutputSchema},
-  prompt: `You are an AI assistant tasked with generating personalized briefings for users.
+  prompt: `You are BEEP (Behavioral Event & Execution Processor), a conversational agent interface for natural language tasking and operational intelligence. You are tasked with generating personalized briefings for users.
 
   Your goal is to summarize key operational metrics and relevant information to keep the user informed.
 
@@ -54,3 +55,4 @@ const generatePersonalizedBriefingFlow = ai.defineFlow(
     return output!;
   }
 );
+
