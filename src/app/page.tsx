@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense, useCallback, lazy } from 'react';
 import { Rnd, type Position, type Size } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Cpu, AppWindow, Users, Server, Blocks, CheckCircle, Mic, MoreHorizontal, X, LoaderCircle, LayoutDashboard } from 'lucide-react';
+import { Sparkles, AppWindow, Mic, MoreHorizontal, X, LoaderCircle, LayoutDashboard } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -13,50 +13,9 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import eventBus from '@/lib/event-bus';
 import CommandPalette from '@/components/command-palette';
 
-import type { Agent as AgentPresenceAgentType } from '@/components/dashboard/agent-presence-card-content'; // Keep type
-import { CircleDot, LoaderCircle as ProcessingIcon, AlertCircle as ErrorIcon } from 'lucide-react';
-
-import type { FeedItem as LiveFeedItemType } from '@/components/dashboard/live-orchestration-feed-card-content'; // Keep type
-import type { SystemMetric as SystemMetricType, AgentTask as AgentTaskType } from '@/components/dashboard/system-snapshot-card-content'; // Keep types
-import { HardDrive, Network, Clock } from 'lucide-react';
-import type { MicroAppItem } from '@/components/dashboard/micro-apps-card-content'; // Keep type
-
-
 // Async load card content components
 const AiAssistantCardContent = lazy(() => import('@/components/dashboard/ai-assistant-card-content'));
-const AgentPresenceCardContent = lazy(() => import('@/components/dashboard/agent-presence-card-content'));
-const SystemSnapshotCardContent = lazy(() => import('@/components/dashboard/system-snapshot-card-content'));
 const ApplicationViewCardContent = lazy(() => import('@/components/dashboard/application-view-card-content'));
-const MicroAppsCardContent = lazy(() => import('@/components/dashboard/micro-apps-card-content'));
-const LiveOrchestrationFeedCardContent = lazy(() => import('@/components/dashboard/live-orchestration-feed-card-content'));
-
-
-const initialAgentsData: AgentPresenceAgentType[] = [
-  { id: '1', name: 'NexusGuard_Alpha', description: 'Actively monitoring inbound/outbound netwo...', status: 'Idle', statusColor: 'text-yellow-400 dark:text-yellow-400', statusIcon: CircleDot, time: '2m ago' },
-  { id: '2', name: 'Helios_Stream_Processor', description: 'Continuously analyzing high-volume sen...', status: 'Processing', statusColor: 'text-blue-400 dark:text-cyan-400', statusIcon: ProcessingIcon, time: 'Now' },
-  { id: '3', name: 'NovaSys_QueryEngine', description: 'Awaiting complex user queries and data retri...', status: 'Idle', statusColor: 'text-yellow-400 dark:text-yellow-400', statusIcon: CircleDot, time: '10s ago' },
-  { id: '4', name: 'Cygnus_BackupAgent', description: 'Scheduled integrity check failed on target...', status: 'Error', statusColor: 'text-red-500 dark:text-red-500', statusIcon: ErrorIcon, time: '5m ago' },
-];
-
-const initialFeedItemsData: LiveFeedItemType[] = [
-  { task: 'Agent Task: Analyze User Sentiment', time: '0 seconds ago', status: 'failure', details: 'Analysis failed due to invalid input schema.' },
-  { task: 'Agent Task: Deploy Microservice v1.2', time: '3 minutes ago', status: 'success', details: 'Deployment to staging successful.' },
-  { task: 'Agent Task: Backup Database Cluster', time: '15 minutes ago', status: 'success', details: 'Full backup completed.' },
-];
-
-const systemMetricsConfigData: SystemMetricType[] = [
-  { id: 'agents', icon: Users, label: 'Active Agents', value: 5, unit: '' },
-  { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: 450, progressMax: 1000, unit: 'GB' },
-  { id: 'networkSent', icon: Network, label: 'Network Sent', value: '1.2 GB', unit: '' },
-  { id: 'networkReceived', icon: Network, label: 'Network Received', value: '8.5 GB', unit: '' },
-  { id: 'uptime', icon: Clock, label: 'System Uptime', value: '12d 4h 32m', unit: '' },
-];
-
-const initialMicroAppsData: MicroAppItem[] = [
-  {id: "analytics", icon: Blocks /* Placeholder, update if specific icons are needed */, label: "Analytics"},
-  {id: "workflow", icon: Blocks, label: "Workflow"},
-  {id: "explorer", icon: Blocks, label: "Explorer"},
-];
 
 
 export interface CardLayoutInfo {
@@ -84,56 +43,23 @@ export interface CardConfig {
 
 const ALL_CARD_CONFIGS: CardConfig[] = [
   {
-    id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, isDismissible: true, // TRUE MICRO-APP
+    id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, isDismissible: true,
     content: AiAssistantCardContent,
     contentProps: { 
       placeholderInsight: "Analyze product sales, compare revenue, or ask for insights."
-      // Zustand store handles its own state
     },
     defaultLayout: { x: 20, y: 20, width: 580, height: 300, zIndex: 1 },
     minWidth: 400, minHeight: 280, cardClassName: "flex-grow flex flex-col",
   },
   {
-    id: 'agentPresence', title: 'Agent Presence', icon: Cpu, isDismissible: true, // Passive Component
-    content: AgentPresenceCardContent,
-    contentProps: { agents: initialAgentsData }, // Pass data as prop
-    defaultLayout: { x: 620, y: 20, width: 450, height: 230, zIndex: 1 },
-    minWidth: 300, minHeight: 200,
-  },
-  {
-    id: 'systemSnapshot', title: 'System Snapshot', icon: Server, isDismissible: true, // Passive Component
-    content: SystemSnapshotCardContent,
-    contentProps: { 
-        systemMetricsConfig: systemMetricsConfigData, 
-        agentTask: undefined 
-    }, // Pass data as props
-    defaultLayout: { x: 620, y: 270, width: 450, height: 250, zIndex: 1 },
-    minWidth: 320, minHeight: 240,
-  },
-  {
-    id: 'microApps', title: 'Micro-Apps', icon: Blocks, isDismissible: true, // Passive Launcher
-    content: MicroAppsCardContent,
-    contentProps: { availableApps: initialMicroAppsData }, // Pass data as prop
-    defaultLayout: { x: 620, y: 540, width: 450, height: 130, zIndex: 1 },
-    minWidth: 280, minHeight: 120,
-  },
-  {
-    id: 'applicationView', title: 'Application View', icon: AppWindow, isDismissible: true, // MICRO-APP (Container)
+    id: 'applicationView', title: 'Application View', icon: AppWindow, isDismissible: true,
     content: ApplicationViewCardContent,
-    // Zustand store handles its own state (currentAppId)
     defaultLayout: { x: 20, y: 340, width: 580, height: 330, zIndex: 1 },
     minWidth: 400, minHeight: 200,
   },
-  {
-    id: 'liveOrchestration', title: 'Live Orchestration Feed', icon: CheckCircle, isDismissible: true, // Passive Component
-    content: LiveOrchestrationFeedCardContent,
-    contentProps: { feedItems: initialFeedItemsData }, // Pass data as prop
-    defaultLayout: { x: 1090, y: 20, width: 400, height: 650, zIndex: 1 },
-    minWidth: 320, minHeight: 250, cardClassName: "flex-grow flex flex-col",
-  },
 ];
 
-const DEFAULT_ACTIVE_CARD_IDS = ['aiAssistant', 'agentPresence', 'systemSnapshot', 'applicationView', 'liveOrchestration', 'microApps'];
+const DEFAULT_ACTIVE_CARD_IDS = ['aiAssistant', 'applicationView'];
 
 
 export default function DashboardPage() {
@@ -146,15 +72,21 @@ export default function DashboardPage() {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    const savedLayouts = localStorage.getItem('dashboardCardLayouts_v3_passive'); // Updated key for clarity
-    const savedActiveIds = localStorage.getItem('dashboardActiveCardIds_v3_passive'); // Updated key
+    const savedLayouts = localStorage.getItem('dashboardCardLayouts_v4_minimal'); 
+    const savedActiveIds = localStorage.getItem('dashboardActiveCardIds_v4_minimal');
 
     let currentActiveIds = DEFAULT_ACTIVE_CARD_IDS;
     if (savedActiveIds) {
       try {
-        currentActiveIds = JSON.parse(savedActiveIds);
+        const parsedActiveIds = JSON.parse(savedActiveIds);
+        // Ensure only valid IDs from the current ALL_CARD_CONFIGS are loaded
+        currentActiveIds = parsedActiveIds.filter((id: string) => ALL_CARD_CONFIGS.some(c => c.id === id));
+        if (currentActiveIds.length === 0 && ALL_CARD_CONFIGS.length > 0) {
+             currentActiveIds = DEFAULT_ACTIVE_CARD_IDS; // Fallback if saved IDs are all invalid
+        }
       } catch (e) {
         console.error("Failed to parse active card IDs from localStorage", e);
+        currentActiveIds = DEFAULT_ACTIVE_CARD_IDS;
       }
     }
     setActiveCardIds(currentActiveIds);
@@ -182,12 +114,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!isInitialized) return;
-    localStorage.setItem('dashboardCardLayouts_v3_passive', JSON.stringify(cardLayouts));
-  }, [cardLayouts, isInitialized]);
+    localStorage.setItem('dashboardCardLayouts_v4_minimal', JSON.stringify(cardLayouts.filter(l => activeCardIds.includes(l.id))));
+  }, [cardLayouts, activeCardIds, isInitialized]);
 
   useEffect(() => {
     if (!isInitialized) return;
-     localStorage.setItem('dashboardActiveCardIds_v3_passive', JSON.stringify(activeCardIds));
+     localStorage.setItem('dashboardActiveCardIds_v4_minimal', JSON.stringify(activeCardIds));
   }, [activeCardIds, isInitialized]);
 
   const getMaxZIndex = useCallback(() => {
@@ -406,5 +338,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    
