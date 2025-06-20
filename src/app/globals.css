@@ -15,7 +15,7 @@
     --foreground-h: 255; --foreground-s: 15%; --foreground-l: 12%; /* Slightly darker for more contrast */
 
     /* Card: Very Light Purple for cards */
-    --card-h: 275; --card-s: 52%; --card-l: 97%; --card-a: 0.6; /* Softer glass */
+    --card-h: 275; --card-s: 52%; --card-l: 97%; --card-a: 0.5; /* Softer glass, less alpha */
     --card-foreground-h: var(--foreground-h); --card-foreground-s: var(--foreground-s); --card-foreground-l: var(--foreground-l);
 
     --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l); --popover-a: var(--card-a);
@@ -53,8 +53,8 @@
     --chart-5-h: var(--destructive-h); --chart-5-s: var(--destructive-s); --chart-5-l: var(--destructive-l); /* Red for errors */
 
     /* TopBar Specific Colors - Light Theme */
-    --topbar-bg-h: 0; --topbar-bg-s: 0%; --topbar-bg-l: 97%; --topbar-bg-a: 0.60; /* Softer glass */
-    --topbar-border-h: 220; --topbar-border-s: 20%; --topbar-border-l: 88%; --topbar-border-a: 0.25;
+    --topbar-bg-h: 0; --topbar-bg-s: 0%; --topbar-bg-l: 97%; --topbar-bg-a: 0.50; /* Softer glass, less alpha */
+    --topbar-border-h: 220; --topbar-border-s: 20%; --topbar-border-l: 88%; --topbar-border-a: 0.15; /* Lighter border */
 
 
     /* Full HSL color definitions */
@@ -95,7 +95,7 @@
     --foreground-h: 210; --foreground-s: 30%; --foreground-l: 96%; /* Slightly brighter white */
 
     /* Card: Darker, slightly desaturated Purple base for cards (rgba(40, 30, 60, 0.5)) */
-    --card-h: 275; --card-s: 35%; --card-l: 16%; --card-a: 0.4; /* More transparent glass */
+    --card-h: 275; --card-s: 35%; --card-l: 16%; --card-a: 0.35; /* More transparent glass, less alpha */
     --card-foreground-h: var(--foreground-h); --card-foreground-s: var(--foreground-s); --card-foreground-l: var(--foreground-l);
 
     --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l); --popover-a: var(--card-a);
@@ -135,8 +135,8 @@
     --chart-5-h: var(--destructive-h); --chart-5-s: var(--destructive-s); --chart-5-l: var(--destructive-l); /* Red for errors */
 
     /* TopBar Specific Colors - Dark Theme */
-    --topbar-bg-h: 275; --topbar-bg-s: 30%; --topbar-bg-l: 12%; --topbar-bg-a: 0.55; /* Darker, more purple glass */
-    --topbar-border-h: 275; --topbar-border-s: 20%; --topbar-border-l: 30%; --topbar-border-a: 0.25;
+    --topbar-bg-h: 275; --topbar-bg-s: 30%; --topbar-bg-l: 12%; --topbar-bg-a: 0.45; /* Darker, more purple glass, less alpha */
+    --topbar-border-h: 275; --topbar-border-s: 20%; --topbar-border-l: 30%; --topbar-border-a: 0.15; /* Lighter border */
   }
 }
 
@@ -182,58 +182,91 @@
 .glassmorphism-panel {
   /* Light Theme Glass */
   background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
-  backdrop-filter: blur(16px) saturate(1.1); /* Increased blur */
-  -webkit-backdrop-filter: blur(16px) saturate(1.1);
-  border: 1px solid hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 20%), 0.3); /* Softer, more primary-tinted border */
+  backdrop-filter: blur(12px) saturate(1.05); /* Reduced blur slightly */
+  -webkit-backdrop-filter: blur(12px) saturate(1.05);
+  border: 1px solid hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 25%), 0.2); /* Softer, lighter primary-tinted border */
   border-radius: var(--radius);
-  box-shadow: 0 8px 32px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) + 60%), 0.1), /* Softer, more expansive shadow */
-              0 4px 12px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) + 60%), 0.05);
+  box-shadow: 0 6px 24px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) + 70%), 0.08), /* Softer, more subtle shadow */
+              0 2px 8px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) + 70%), 0.04);
 }
 
 .dark .glassmorphism-panel {
   /* Dark Theme Glass */
-  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a)); /* Semi-transparent card base for dark */
-  backdrop-filter: blur(18px) saturate(1.15); /* Increased blur for dark */
-  -webkit-backdrop-filter: blur(18px) saturate(1.15);
-  border: 1px solid hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 10%), 0.25); /* Softer, more primary-tinted border */
+  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
+  backdrop-filter: blur(14px) saturate(1.1); /* Slightly increased blur for dark */
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  border: 1px solid hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 15%), 0.2); /* Softer, lighter primary-tinted border for dark */
   border-radius: var(--radius);
-  box-shadow: 0 8px 32px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 3%), 0.25), /* Shadow using a darker background shade */
-              0 4px 12px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 3%), 0.2);
+  box-shadow: 0 6px 24px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 2%), 0.2), /* Shadow using a darker background shade */
+              0 2px 8px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 2%), 0.15);
 }
 
 
 ::-webkit-scrollbar {
-  width: 6px; /* Narrower scrollbar */
-  height: 6px;
+  width: 5px; /* Narrower scrollbar */
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: hsla(var(--background-h), var(--background-s), calc(var(--background-l) + 3%), 0.3); /* More transparent track */
+  background: hsla(var(--background-h), var(--background-s), calc(var(--background-l) + 2%), 0.2); /* More transparent track */
   border-radius: 10px;
 }
 .dark ::-webkit-scrollbar-track {
-  background: hsla(var(--background-h), var(--background-s), calc(var(--background-l) + 2%), 0.3);
+  background: hsla(var(--background-h), var(--background-s), calc(var(--background-l) + 1%), 0.2);
 }
 ::-webkit-scrollbar-thumb {
-  background: hsla(var(--muted-h), var(--muted-s), calc(var(--muted-l) - 10%), 0.5); /* Darker, more transparent thumb */
+  background: hsla(var(--muted-h), var(--muted-s), calc(var(--muted-l) - 15%), 0.4); /* Darker, more transparent thumb */
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-h), var(--muted-s), calc(var(--muted-l) - 5%));
+  background: hsl(var(--muted-h), var(--muted-s), calc(var(--muted-l) - 10%));
 }
 
 .btn-gradient-primary-accent {
   background: linear-gradient(to right, hsl(var(--primary-gradient-start-h), var(--primary-gradient-start-s), var(--primary-gradient-start-l)), hsl(var(--primary-h), var(--primary-s), var(--primary-l)));
   color: hsl(var(--primary-foreground-h), var(--primary-foreground-s), var(--primary-foreground-l));
-  transition: filter 0.3s ease, transform 0.2s ease-out;
-  box-shadow: 0 2px 8px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.3);
+  transition: filter 0.2s ease, transform 0.15s ease-out, box-shadow 0.2s ease;
+  box-shadow: 0 1px 4px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.25);
 }
 .btn-gradient-primary-accent:hover {
-  filter: brightness(1.15) saturate(1.05);
+  filter: brightness(1.1) saturate(1.03);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.4);
+  box-shadow: 0 2px 8px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.35);
 }
 .btn-gradient-primary-accent:disabled {
   @apply opacity-60 cursor-not-allowed filter-none transform-none shadow-none;
+}
+
+.btn-wabi-sabi {
+  @apply px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center transition-colors duration-150 ease-in-out;
+  background-color: hsl(177, 35%, 60%); /* Muted Roman Aqua (Light Theme) */
+  color: hsl(var(--foreground-h), var(--foreground-s), 15%); /* Dark text for light mode */
+  border: 1px solid hsl(177, 30%, 53%);
+  box-shadow: 0 1px 2px hsla(var(--foreground-h), var(--foreground-s), var(--foreground-l), 0.05);
+}
+.btn-wabi-sabi:hover {
+  background-color: hsl(177, 35%, 55%);
+  border-color: hsl(177, 30%, 48%);
+}
+.btn-wabi-sabi:disabled {
+  @apply opacity-60 cursor-not-allowed filter-none transform-none shadow-none;
+  background-color: hsl(177, 25%, 75%);
+  border-color: hsl(177, 20%, 70%);
+  color: hsl(var(--foreground-h), var(--foreground-s), 40%);
+}
+
+.dark .btn-wabi-sabi {
+  background-color: hsl(177, 25%, 38%); /* Dark Muted Roman Aqua */
+  color: hsl(var(--foreground-h), var(--foreground-s), 88%); /* Lighter text for dark mode */
+  border: 1px solid hsl(177, 20%, 33%);
+}
+.dark .btn-wabi-sabi:hover {
+  background-color: hsl(177, 25%, 43%);
+  border-color: hsl(177, 20%, 38%);
+}
+.dark .btn-wabi-sabi:disabled {
+  background-color: hsl(177, 15%, 28%);
+  border-color: hsl(177, 10%, 23%);
+  color: hsl(var(--foreground-h), var(--foreground-s), 55%);
 }
 
 .react-draggable-dragging {
@@ -245,15 +278,15 @@
 /* TopBar specific background - now glassmorphism */
 .topbar-custom-bg {
   background-color: hsla(var(--topbar-bg-h), var(--topbar-bg-s), var(--topbar-bg-l), var(--topbar-bg-a));
-  backdrop-filter: blur(14px) saturate(1.1); /* Adjusted blur */
-  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  backdrop-filter: blur(10px) saturate(1.05); /* Adjusted blur */
+  -webkit-backdrop-filter: blur(10px) saturate(1.05);
   border-bottom: 1px solid hsla(var(--topbar-border-h), var(--topbar-border-s), var(--topbar-border-l), var(--topbar-border-a));
-  box-shadow: 0 2px 12px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 10%), 0.15); /* Slightly enhanced shadow */
+  box-shadow: 0 1px 8px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 10%), 0.1); /* Subtle shadow */
 }
 
 /* Active Nav Link in TopBar */
 .active-nav-link-dark { /* For Dark theme */
-  background-color: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.8) !important; 
+  background-color: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.8) !important;
   color: hsl(var(--primary-foreground-h), var(--primary-foreground-s), var(--primary-foreground-l)) !important;
   box-shadow: 0 0 12px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.25);
 }
@@ -292,7 +325,6 @@
 .dark .details-link-failure {
   color: hsl(var(--chart-5-h), var(--chart-5-s), calc(var(--chart-5-l) + 10%)) !important;
 }
-
 @keyframes aurora-glow {
   0% {
     background-position: 0% 50%;

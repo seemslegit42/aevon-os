@@ -52,7 +52,7 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
             {placeholderInsight}
           </p>
         )}
-        {aiResponse && <ScrollArea className="h-[80px] w-full"><div className="text-sm text-foreground dark:text-white bg-primary/5 dark:bg-black/20 rounded-md p-3 mb-4 text-left whitespace-pre-wrap">{aiResponse}</div></ScrollArea>}
+        {aiResponse && <ScrollArea className="h-[80px] w-full"><div className="text-sm text-foreground dark:text-white bg-primary/10 dark:bg-primary/20 rounded-md p-3 mb-4 text-left whitespace-pre-wrap">{aiResponse}</div></ScrollArea>}
         {isAiLoading && !aiResponse && (
             <div className="flex items-center justify-center w-full h-[80px]">
                 <LoaderCircle className="animate-spin h-6 w-6 text-primary" />
@@ -70,7 +70,7 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
         />
         <button
           type="submit"
-          className="w-full btn-gradient-primary-accent h-10 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center"
+          className="w-full btn-wabi-sabi h-10 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center"
           disabled={isAiLoading}
         >
           {isAiLoading ? <LoaderCircle className="animate-spin mr-2 h-4 w-4"/> : null}
@@ -82,3 +82,4 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
 };
 
 export default AiAssistantCardContent;
+
