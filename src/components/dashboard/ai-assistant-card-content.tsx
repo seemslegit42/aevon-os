@@ -53,11 +53,11 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
     <>
       <div className="flex flex-col items-start justify-start text-left p-4 pt-2 flex-grow">
         {placeholderInsight && !aiResponse && !isAiLoading && (
-          <p className="text-sm text-foreground/90 mb-4 mt-2">
+          <p className="text-sm text-foreground/90 dark:text-white mb-4 mt-2">
             {placeholderInsight}
           </p>
         )}
-        {aiResponse && <ScrollArea className="h-[80px] w-full"><p className="text-sm text-foreground bg-primary/10 dark:bg-primary/20 rounded-md p-3 mb-4 text-left whitespace-pre-wrap">{aiResponse}</p></ScrollArea>}
+        {aiResponse && <ScrollArea className="h-[80px] w-full"><p className="text-sm text-foreground dark:text-white bg-primary/10 dark:bg-primary/20 rounded-md p-3 mb-4 text-left whitespace-pre-wrap">{aiResponse}</p></ScrollArea>}
         {isAiLoading && !aiResponse && (
             <div className="flex items-center justify-center w-full h-[80px]">
                 <LoaderCircle className="animate-spin h-6 w-6 text-primary" />
@@ -70,7 +70,7 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
           value={aiPrompt}
           onChange={(e) => setAiPrompt(e.target.value)}
           rows={2}
-          className="bg-input border-border/50 dark:border-white/20 focus:ring-primary mb-2 text-foreground placeholder-muted-foreground text-sm"
+          className="bg-input border-border/50 dark:border-white/20 focus:ring-primary mb-2 text-foreground dark:text-white placeholder-muted-foreground dark:placeholder-neutral-300 text-sm"
           disabled={isAiLoading}
         />
         <button
