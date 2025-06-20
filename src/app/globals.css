@@ -295,7 +295,7 @@
   background-color: rgba(245, 255, 250, 0.10) !important; /* Vitreous White with 10% opacity */
   backdrop-filter: blur(25px) !important;
   -webkit-backdrop-filter: blur(25px) !important;
-  border-bottom: 1px solid rgba(245, 255, 250, 0.25) !important;
+  border: 1px solid rgba(245, 255, 250, 0.25) !important; /* Full border */
   box-shadow: 0 4px 24px 0 rgba(28, 25, 52, 0.1) !important; /* Obsidian Black with 10% opacity */
   position: fixed !important;
   top: 0 !important;
@@ -308,9 +308,7 @@
 }
 
 .dark .topbar-aevos-glass-override {
-  /* Dark mode specifics can be added if needed, but base should be transparent */
-  /* Example: if border color needs to change slightly in dark mode for visibility */
-  /* border-bottom-color: rgba(60, 70, 90, 0.3) !important; */
+  /* Dark mode text color is handled by the 'color' property above using CSS variables */
    color: hsl(var(--foreground)) !important; /* Ensure foreground text color is applied */
 }
 
@@ -329,11 +327,12 @@
   border-color: rgba(245, 255, 250, 0.1) !important;
   color: hsl(var(--foreground)) !important; /* Ensure text is light in dark mode */
 }
-.dark .command-bar-input-aevos-override::placeholder {
-  color: hsla(var(--muted-foreground-h), var(--muted-s), var(--muted-foreground-l), 0.7) !important;
-}
 .command-bar-input-aevos-override::placeholder {
    font-family: 'Lexend', sans-serif !important;
+   /* Placeholder color is handled by Tailwind utilities in the component */
+}
+.dark .command-bar-input-aevos-override::placeholder {
+  color: hsla(var(--muted-foreground-h), var(--muted-s), var(--muted-foreground-l), 0.7) !important;
 }
 
 
@@ -429,4 +428,6 @@
   background-color: rgba(28, 25, 52, 0.55); /* Slightly more opaque Obsidian Black overlay */
   z-index: 2; /* Overlay on top of gradient */
 }
+    
+
     

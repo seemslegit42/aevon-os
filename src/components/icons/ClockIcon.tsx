@@ -8,7 +8,7 @@ export const ClockIcon: React.FC<IconProps> = ({ className, size = 20, style }) 
     width={size} 
     height={size} 
     viewBox="0 0 256 256" 
-    className={`aevos-icon-style ${className || ''}`}
+    className={className} 
     style={style}
     xmlns="http://www.w3.org/2000/svg"
   >
@@ -22,3 +22,5 @@ export const ClockIcon: React.FC<IconProps> = ({ className, size = 20, style }) 
     <polyline points="128 72 128 128 184 128" fill="none" stroke="url(#aevosIconGradient)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
   </svg>
 );
+
+    

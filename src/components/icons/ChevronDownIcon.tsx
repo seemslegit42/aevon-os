@@ -8,7 +8,7 @@ export const ChevronDownIcon: React.FC<IconProps> = ({ className, size = 16, sty
     width={size} 
     height={size} 
     viewBox="0 0 256 256" 
-    className={`aevos-icon-style ${className || ''} chevron-animated`}
+    className={className} 
     style={style}
     xmlns="http://www.w3.org/2000/svg"
   >
@@ -21,3 +21,5 @@ export const ChevronDownIcon: React.FC<IconProps> = ({ className, size = 16, sty
     <polyline points="208 96 128 176 48 96" fill="none" stroke="url(#aevosIconGradient)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
   </svg>
 );
+
+    

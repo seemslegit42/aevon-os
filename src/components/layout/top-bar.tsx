@@ -103,24 +103,24 @@ const TopBar: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   className={cn(
-                    "font-body", // Lexend is default via header
+                    "font-body", 
                     isActive(item.href) 
                       ? "bg-white/10 dark:bg-white/5 text-foreground font-semibold" 
                       : "text-foreground/70 dark:text-foreground/60 hover:text-foreground dark:hover:text-foreground/90"
                   )}
                 >
-                  <item.icon className="aevos-icon-styling-override text-[#20B2AA] dark:text-teal-400 w-4 h-4 mr-2" />
+                  <item.icon className="aevos-icon-styling-override w-4 h-4 mr-2" />
                   {item.label}
                 </Button>
               </Link>
             ))}
           </nav>
           <div className="relative w-full max-w-md">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 aevos-icon-styling-override text-[#20B2AA] dark:text-teal-400" />
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 aevos-icon-styling-override" />
             <Input
               type="search"
               placeholder="Search or ask 'show my tasks'..."
-              className="command-bar-input-aevos-override w-full h-9 pl-10 pr-4 font-body text-sm placeholder:text-muted-foreground dark:placeholder:text-muted-foreground/70"
+              className="command-bar-input-aevos-override w-full h-9 pl-10 pr-4 text-sm placeholder:text-muted-foreground dark:placeholder:text-muted-foreground/70"
               aria-label="Command or search input"
             />
           </div>
@@ -138,8 +138,8 @@ const TopBar: React.FC = () => {
                 aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
               >
                 {isMounted && theme === 'dark' ? 
-                  <SunIcon className="h-5 w-5 aevos-icon-styling-override text-[#20B2AA] dark:text-teal-400" /> : 
-                  <MoonIcon className="h-5 w-5 aevos-icon-styling-override text-[#20B2AA] dark:text-teal-400" />}
+                  <SunIcon className="h-5 w-5 aevos-icon-styling-override" /> : 
+                  <MoonIcon className="h-5 w-5 aevos-icon-styling-override" />}
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom"><p>Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode</p></TooltipContent>
@@ -148,7 +148,7 @@ const TopBar: React.FC = () => {
           <Tooltip>
             <TooltipTrigger asChild>
                <Button variant="ghost" size="icon" className="w-9 h-9">
-                <BellIcon className="h-5 w-5 aevos-icon-styling-override text-[#20B2AA] dark:text-teal-400" />
+                <BellIcon className="h-5 w-5 aevos-icon-styling-override" />
                 <span className="sr-only">Notifications</span>
               </Button>
             </TooltipTrigger>
@@ -158,7 +158,7 @@ const TopBar: React.FC = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" className="w-9 h-9">
-                <Settings2Icon className="h-5 w-5 aevos-icon-styling-override text-[#20B2AA] dark:text-teal-400" />
+                <Settings2Icon className="h-5 w-5 aevos-icon-styling-override" />
                 <span className="sr-only">Settings</span>
               </Button>
             </TooltipTrigger>
@@ -166,7 +166,7 @@ const TopBar: React.FC = () => {
           </Tooltip>
 
           <div className="flex items-center text-xs text-foreground/80 dark:text-foreground/70 px-2 h-9 font-body">
-            <ClockIcon className="h-4 w-4 mr-1.5 aevos-icon-styling-override text-[#20B2AA] dark:text-teal-400" />
+            <ClockIcon className="h-4 w-4 mr-1.5 aevos-icon-styling-override" />
             {isMounted ? currentTime : "--:--"}
           </div>
            <div className="hidden md:flex items-center text-xs text-foreground/80 dark:text-foreground/70 px-1 h-9 border-l border-white/20 dark:border-white/10 ml-1 pl-2.5 font-body">
@@ -180,7 +180,7 @@ const TopBar: React.FC = () => {
                   <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
                   <AvatarFallback className="text-xs bg-primary/30 text-primary-foreground">AU</AvatarFallback>
                 </Avatar>
-                <ChevronDownIcon className="h-4 w-4 opacity-80 aevos-icon-styling-override text-[#20B2AA] dark:text-teal-400" />
+                <ChevronDownIcon className="h-4 w-4 opacity-80 aevos-icon-styling-override" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 glassmorphism-panel mt-2">
@@ -200,3 +200,5 @@ const TopBar: React.FC = () => {
 };
 
 export default TopBar;
+
+    
