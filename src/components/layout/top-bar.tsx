@@ -19,7 +19,7 @@ import {
   ClockIcon,
   ChevronDownIcon,
   UserIcon,
-  LogoSymbol // Changed from CommandIcon
+  CommandIcon 
 } from '@/components/icons'; 
 import {
   Tooltip,
@@ -42,6 +42,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { cn } from '@/lib/utils';
 import { useThemeStore } from '@/stores/theme.store';
+import { LogoSymbol } from '@/components/icons/LogoSymbol';
 
 interface NavItemConfig {
   href: string;
@@ -88,7 +89,7 @@ const TopBar: React.FC = () => {
           {/* Left Side: Logo and Navigation */}
           <div className="flex items-center space-x-4">
             <Link href="/" className="text-2xl font-bold flex items-center">
-              <LogoSymbol className="text-primary dark:text-white" /> {/* Changed from CommandIcon */}
+              <LogoSymbol className="text-primary dark:text-white" />
             </Link>
             <nav className="hidden md:flex items-center space-x-1">
               {mainNavItems.map((item) => (
@@ -115,15 +116,14 @@ const TopBar: React.FC = () => {
           {/* Center: Search Bar */}
           <div className="flex-1 flex justify-center px-8 lg:px-16">
             <div className="relative w-full max-w-md">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-neutral-400" />
+              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
                 placeholder="Command or Search..."
                 className={cn(
-                  "w-full h-9 pl-10 pr-4 border-border/30 dark:border-white/10 focus:ring-accent focus:border-accent",
-                  "bg-background/50 dark:bg-black/30",
-                  "text-sm text-gray-900 dark:text-white",
-                  "placeholder-muted-foreground dark:placeholder-neutral-500"
+                  "w-full h-9 pl-10 pr-4 border-input bg-input focus:ring-accent focus:border-accent",
+                  "text-sm text-foreground",
+                  "placeholder:text-muted-foreground"
                 )}
                 aria-label="Command or search input"
               />
@@ -169,14 +169,14 @@ const TopBar: React.FC = () => {
               <TooltipContent side="bottom"><p>Settings</p></TooltipContent>
             </Tooltip>
 
-            <div className="flex items-center text-sm text-gray-700 dark:text-neutral-200 px-2 h-9">
+            <div className="flex items-center text-sm text-muted-foreground px-2 h-9">
               <ClockIcon className="h-4 w-4 mr-1.5" />
               {isMounted ? currentTime : "--:--"}
             </div>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2 h-9 px-2.5 text-gray-700 dark:text-neutral-200 hover:bg-primary/10 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white">
+                <Button variant="ghost" className="flex items-center space-x-2 h-9 px-2.5 text-muted-foreground hover:bg-primary/10 dark:hover:bg-white/5 hover:text-foreground dark:hover:text-white">
                   <Avatar className="h-6 w-6">
                     <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
                     <AvatarFallback className="text-xs bg-primary/30 text-primary-foreground">U</AvatarFallback>

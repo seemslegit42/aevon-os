@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CheckCircleIcon, XCircleIcon as XIcon, ChevronDownIcon } from '@/components/icons'; // Changed imports
+import { CheckCircleIcon, XCircleIcon as XIcon, ChevronDownIcon } from '@/components/icons'; 
 import { cn } from "@/lib/utils";
 import type { Emitter } from 'mitt';
 
@@ -30,7 +30,7 @@ const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardConten
     <ScrollArea className="h-full pr-2">
       <ul className="space-y-3 p-1">
         {feedItems.map((item, index) => (
-          <li key={index} className="p-3 rounded-md bg-card/50 hover:bg-primary/10 dark:bg-black/20 dark:hover:bg-primary/10">
+          <li key={index} className="p-3 rounded-md bg-card/50 hover:bg-primary/10 dark:bg-card/70 dark:hover:bg-primary/10">
             <div className="flex items-start justify-between mb-1">
               <div className="flex items-center">
                  {item.status === 'success' ? <CheckCircleIcon className="w-5 h-5 mr-2 text-green-500 shrink-0" /> : <XIcon className="w-5 h-5 mr-2 text-red-500 shrink-0" />}

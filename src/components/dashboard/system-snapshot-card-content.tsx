@@ -1,12 +1,12 @@
 
-import React, { type ElementType } from 'react'; // Added ElementType
+import React, { type ElementType } from 'react'; 
 import { Progress } from '@/components/ui/progress';
-// LucideIcon type is no longer needed directly here
+
 import type { Emitter } from 'mitt';
 
 export interface SystemMetric {
   id: string;
-  icon: ElementType; // Changed from LucideIcon
+  icon: ElementType; 
   label: string;
   value?: string | number;
   progressMax?: number;
@@ -14,7 +14,7 @@ export interface SystemMetric {
 }
 
 export interface AgentTask { 
-  icon: ElementType; // Changed from LucideIcon
+  icon: ElementType; 
   task: string;
   time: string;
   status: 'success' | 'failure';
@@ -40,13 +40,13 @@ const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({
       {hasMetrics ? (
         <ul className="space-y-3.5">
           {systemMetricsConfig.map(metric => {
-            const IconComponent = metric.icon; // Assign to capitalized variable for JSX
+            const IconComponent = metric.icon; 
             return (
               <li key={metric.id} className="text-sm">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center text-primary">
                     <IconComponent className="w-4 h-4 mr-2" />
-                    <span className="font-medium text-foreground/90">{metric.label}</span>
+                    <span className="font-medium text-foreground">{metric.label}</span>
                   </div>
                   {metric.value !== undefined ? (
                     metric.id === 'agents' ? (

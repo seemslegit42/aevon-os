@@ -6,7 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { LoaderCircle } from 'lucide-react';
 import type { Emitter } from 'mitt';
 import { useAiAssistantStore } from '@/stores/ai-assistant.store';
-import eventBus from '@/lib/event-bus'; // Assuming eventBus is the default export
+import eventBus from '@/lib/event-bus'; 
 
 interface AiAssistantCardContentProps {
   placeholderInsight?: string;
@@ -48,7 +48,7 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
     <>
       <div className="flex flex-col items-start justify-start text-left p-4 pt-2 flex-grow">
         {placeholderInsight && !aiResponse && !isAiLoading && (
-          <p className="text-sm text-foreground/90 dark:text-neutral-300 mb-4 mt-2">
+          <p className="text-sm text-muted-foreground mb-4 mt-2">
             {placeholderInsight}
           </p>
         )}
@@ -65,7 +65,7 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
           value={aiPrompt}
           onChange={(e) => setAiPrompt(e.target.value)}
           rows={2}
-          className="bg-input border-border/50 dark:border-white/20 mb-2 text-foreground dark:text-white placeholder-muted-foreground dark:placeholder-neutral-400 text-sm"
+          className="bg-input border-input mb-2 text-foreground dark:text-white placeholder:text-muted-foreground text-sm"
           disabled={isAiLoading}
         />
         <button
@@ -82,4 +82,3 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
 };
 
 export default AiAssistantCardContent;
-

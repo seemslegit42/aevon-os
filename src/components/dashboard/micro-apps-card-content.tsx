@@ -1,13 +1,13 @@
 
-import React, { type ElementType } from 'react'; // Added ElementType
+import React, { type ElementType } from 'react'; 
 import { Button } from '@/components/ui/button';
-// LucideIcon type is no longer needed directly here
+
 import type { Emitter } from 'mitt';
 
-// Define the structure for an app item
+
 export interface MicroAppItem {
   id: string; 
-  icon: ElementType; // Changed from LucideIcon
+  icon: ElementType; 
   label: string;
 }
 
@@ -32,12 +32,12 @@ const MicroAppsCardContent: React.FC<MicroAppsCardContentProps> = ({ availableAp
   return (
     <div className="grid grid-cols-3 gap-3 pt-1">
       {availableApps.map((app) => {
-        const IconComponent = app.icon; // Assign to a capitalized variable for JSX
+        const IconComponent = app.icon; 
         return (
           <Button
             key={app.id}
             variant="outline"
-            className="flex flex-col items-center justify-center h-[70px] p-2 border-primary/30 hover:bg-primary/10 text-primary focus:bg-primary/10 bg-card/30 dark:bg-black/20 dark:hover:bg-primary/20 rounded-md"
+            className="flex flex-col items-center justify-center h-[70px] p-2 border-primary/30 hover:bg-primary/10 text-primary focus:bg-primary/10 bg-card/50 dark:bg-card/50 dark:hover:bg-primary/20 rounded-md"
             onClick={() => handleAppLaunch(app.label)} 
           >
             <IconComponent className="w-6 h-6 mb-1 text-primary/80" />

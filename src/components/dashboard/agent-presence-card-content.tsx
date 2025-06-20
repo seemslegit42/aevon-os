@@ -1,7 +1,7 @@
 
-import React, { type ElementType } from 'react'; // Added ElementType
+import React, { type ElementType } from 'react'; 
 import { ScrollArea } from '@/components/ui/scroll-area';
-// LucideIcon is no longer used directly here, but ElementType from React for icon prop
+
 import { cn } from '@/lib/utils';
 import type { Emitter } from 'mitt';
 
@@ -11,7 +11,7 @@ export interface Agent {
   description: string;
   status: 'Processing' | 'Idle' | 'Error';
   statusColor: string;
-  statusIcon: ElementType; // Changed from LucideIcon
+  statusIcon: ElementType; 
   time: string;
 }
 
@@ -33,16 +33,16 @@ const AgentPresenceCardContent: React.FC<AgentPresenceCardContentProps> = ({ age
     <ScrollArea className="h-full pr-1">
       <ul className="space-y-2 p-1">
         {agents.map(agent => {
-          const StatusIconComponent = agent.statusIcon; // Assign to a capitalized variable for JSX
+          const StatusIconComponent = agent.statusIcon; 
           return (
-            <li key={agent.id} className="p-2.5 rounded-md bg-card/50 hover:bg-primary/10 dark:bg-black/20 dark:hover:bg-primary/10 transition-colors">
+            <li key={agent.id} className="p-2.5 rounded-md bg-card/50 hover:bg-primary/10 dark:bg-card/70 dark:hover:bg-primary/10 transition-colors">
               <div className="flex items-center justify-between mb-0.5">
                 <span className="font-semibold text-foreground text-sm">{agent.name}</span>
                 <div className="flex items-center text-xs">
-                  <StatusIconComponent className={cn( // Use the capitalized variable
+                  <StatusIconComponent className={cn( 
                       "w-3.5 h-3.5 mr-1.5 shrink-0",
                       agent.statusColor,
-                      agent.status === 'Processing' ? 'animate-spin' : '' // Note: custom static icons won't animate by default
+                      agent.status === 'Processing' ? 'animate-spin' : '' 
                     )}
                   />
                   <span className={cn("font-medium", agent.statusColor)}>{agent.status}</span>
