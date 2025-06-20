@@ -1,8 +1,9 @@
 
-import React, { useEffect, type ElementType } from 'react'; // Added ElementType
-import { LayersIcon as BlocksIcon } from '@/components/icons'; // Changed import, BlocksIcon replaced by LayersIcon
+import React, { useEffect, type ElementType } from 'react'; 
+import { LayersIcon as BlocksIcon } from '@/components/icons'; 
 import type { Emitter } from 'mitt';
 import { useApplicationViewStore } from '@/stores/application-view.store';
+import { cn } from "@/lib/utils";
 
 interface ApplicationViewCardContentProps {
   eventBusInstance?: Emitter<any>;
@@ -37,7 +38,7 @@ const ApplicationViewCardContent: React.FC<ApplicationViewCardContentProps> = ({
   return (
     <div className="flex flex-col items-center justify-center h-full text-center p-4">
       {/* This would be where the actual Micro-App UI for 'currentAppId' renders */}
-      <h3 className="text-lg font-semibold text-primary dark:text-white">{currentAppId}</h3>
+      <h3 className={cn("text-lg font-headline text-primary dark:text-white")}>{currentAppId}</h3>
       <p className="text-sm text-muted-foreground dark:text-neutral-300">Content for {currentAppId} would load here.</p>
       {/* Example: <SpecificAppUI appId={currentAppId} /> */}
     </div>
@@ -45,3 +46,4 @@ const ApplicationViewCardContent: React.FC<ApplicationViewCardContentProps> = ({
 };
 
 export default ApplicationViewCardContent;
+
