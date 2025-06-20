@@ -1,0 +1,154 @@
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.5.1",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0",
+    "recharts": "https://esm.sh/recharts@^2.15.3",
+    "zustand": "https://esm.sh/zustand@^5.0.5"
+  }
+}
+</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ΛΞVON OS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;700&family=Lexend:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Lexend', sans-serif; /* Default body font */
+        background-color: #1C1934; /* obsidian-black as base */
+        color: #F5FFFA; /* vitreous-white for default text */
+        overflow: hidden; /* Prevent scrollbars from layout shifts or absolute elements */
+      }
+      .font-comfortaa {
+        font-family: 'Comfortaa', 'sans-serif';
+      }
+      .font-lexend {
+        font-family: 'Lexend', 'sans-serif';
+      }
+      /* Ensure Recharts tooltips use Lexend font */
+      .tooltip-lexend .recharts-tooltip-item-list,
+      .tooltip-lexend .recharts-tooltip-label {
+        font-family: 'Lexend', 'sans-serif' !important;
+      }
+
+      /* Subtle Noise Texture for Cards */
+      .subtle-noise {
+        position: relative; /* Needed for ::before pseudo-element positioning */
+        overflow: hidden; /* Ensures ::before respects rounded corners and bounds */
+      }
+      .subtle-noise::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='1' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
+        pointer-events: none;
+        border-radius: inherit; /* Ensure noise respects parent's border-radius */
+        z-index: 0; /* Ensure it's behind content */
+      }
+
+      /* Custom Styling for Details/Summary */
+      details summary::-webkit-details-marker {
+        display: none; 
+      }
+      details summary {
+        list-style: none; 
+        outline: none; 
+      }
+      details summary::marker { 
+          display: none;
+      }
+      details[open] > summary .chevron-animated {
+        transform: rotate(180deg);
+      }
+      .chevron-animated {
+        transition: transform 0.2s ease-in-out;
+      }
+      
+      /* Style for resize handle */
+      .resize-handle {
+        touch-action: none; 
+      }
+
+      /* Custom Scrollbar for specific elements */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(245, 255, 250, 0.05); 
+        border-radius: 10px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(140, 148, 168, 0.4); 
+        border-radius: 10px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(140, 148, 168, 0.6); 
+      }
+      .custom-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(140, 148, 168, 0.4) rgba(245, 255, 250, 0.05);
+      }
+
+    </style>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'imperial-purple': '#6A0DAD',
+              'patina-green': '#3EB991',
+              'roman-aqua': '#20B2AA',
+              'vitreous-white': '#F5FFFA',
+              'conchoidal-gray': '#8C94A8',
+              'obsidian-black': '#1C1934',
+              'gilded-accent': '#FFD700',
+            },
+            fontFamily: {
+              comfortaa: ['Comfortaa', 'sans-serif'],
+              lexend: ['Lexend', 'sans-serif'],
+            },
+            boxShadow: {
+              'glass-DEFAULT': '0 4px 30px rgba(0, 0, 0, 0.1), inset 0 0 0 0.5px rgba(255, 255, 255, 0.15)',
+              'glass-sidebar': '0 8px 32px 0 rgba(106, 13, 173, 0.2), inset 0 0 0 0.5px rgba(255, 255, 255, 0.1)',
+              'glass-brutal-bright': '4px 4px 0px 0px rgba(62, 185, 145, 1)', 
+              'glass-brutal-dark': '4px 4px 0px 0px rgba(28, 25, 52, 1)', 
+              'inner-roman-aqua-soft': 'inset 0 1px 2px 0 rgba(32, 178, 170, 0.3)',
+            },
+            animation: {
+              'aurora-bg': 'aurora-bg 20s ease infinite',
+              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'pulse-medium': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            },
+            keyframes: {
+              'aurora-bg': {
+                '0%, 100%': { backgroundPosition: '0% 50%' },
+                '50%': { backgroundPosition: '100% 50%' },
+              },
+               pulse: { 
+                '0%, 100%': { opacity: 1 },
+                '50%': { opacity: .5 },
+              }
+            },
+          }
+        }
+      }
+    </script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+</body>
+</html>

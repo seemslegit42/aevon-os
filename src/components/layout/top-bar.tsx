@@ -8,14 +8,12 @@ import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-  MoonIcon,
-  SunIcon,
   SearchIcon,
-  Settings2Icon as LoomIcon, 
+  Settings2Icon as LoomIcon,
   ShieldCheckIcon as AegisIcon,
   CreditCardIcon as ArmoryIcon,
   BellIcon,
-  GearIcon, // Changed from Settings2Icon for general settings
+  GearIcon,
   ClockIcon,
   ChevronDownIcon,
 } from '@/components/icons';
@@ -39,7 +37,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from '@/lib/utils';
-import { useThemeStore } from '@/stores/theme.store';
 
 interface NavItemConfig {
   href: string;
@@ -57,9 +54,6 @@ const TopBar: React.FC = () => {
   const pathname = usePathname();
   const [currentTime, setCurrentTime] = useState("--:--");
   const [isMounted, setIsMounted] = useState(false);
-  const { theme, toggleTheme } = useThemeStore(
-    (state) => ({ theme: state.theme, toggleTheme: state.toggleTheme })
-  );
 
   useEffect(() => {
     setIsMounted(true);
@@ -105,18 +99,18 @@ const TopBar: React.FC = () => {
                   className={cn(
                     "font-body",
                     isActive(item.href)
-                      ? "bg-white/10 dark:bg-white/5 text-foreground dark:text-primary-foreground font-semibold"
-                      : "text-foreground/70 dark:text-primary-foreground dark:opacity-70 hover:text-foreground dark:hover:text-primary-foreground dark:hover:opacity-100"
+                      ? "bg-white/5 text-primary-foreground font-semibold" 
+                      : "text-primary-foreground opacity-70 hover:text-primary-foreground hover:opacity-100"
                   )}
                 >
                   <item.icon className="w-4 h-4 mr-2 aevos-icon-styling-override" />
-                  <span className={cn(isActive(item.href) ? "dark:text-primary-foreground" : "dark:text-primary-foreground dark:opacity-70")}>{item.label}</span>
+                  <span className={cn(isActive(item.href) ? "text-primary-foreground" : "text-primary-foreground opacity-70")}>{item.label}</span>
                 </Button>
               </Link>
             ))}
           </nav>
           <div className="relative w-full max-w-md">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 aevos-icon-styling-override dark:text-primary-foreground" />
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 aevos-icon-styling-override text-primary-foreground" />
             <Input
               type="search"
               placeholder="Search or ask 'show my tasks'..."
@@ -130,24 +124,7 @@ const TopBar: React.FC = () => {
         <div className="flex items-center space-x-1.5">
            <Tooltip>
             <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleTheme}
-                className="w-9 h-9 dark:text-primary-foreground dark:hover:text-primary-foreground/80"
-                aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
-              >
-                {isMounted && theme === 'dark' ?
-                  <SunIcon className="h-5 w-5 aevos-icon-styling-override" /> : 
-                  <MoonIcon className="h-5 w-5 aevos-icon-styling-override" />}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom"><p>Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode</p></TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-               <Button variant="ghost" size="icon" className="w-9 h-9 dark:text-primary-foreground dark:hover:text-primary-foreground/80">
+               <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80">
                 <BellIcon className="h-5 w-5 aevos-icon-styling-override" />
                 <span className="sr-only">Notifications</span>
               </Button>
@@ -157,20 +134,20 @@ const TopBar: React.FC = () => {
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="w-9 h-9 dark:text-primary-foreground dark:hover:text-primary-foreground/80">
-                <GearIcon className="h-5 w-5 aevos-icon-styling-override" /> 
+              <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80">
+                <GearIcon className="h-5 w-5 aevos-icon-styling-override" />
                 <span className="sr-only">Settings</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom"><p>Settings</p></TooltipContent>
           </Tooltip>
 
-          <div className="flex items-center text-xs px-2 h-9 font-body dark:text-primary-foreground dark:opacity-80">
-            <ClockIcon className="h-4 w-4 mr-1.5 aevos-icon-styling-override dark:text-primary-foreground" />
+          <div className="flex items-center text-xs px-2 h-9 font-body text-primary-foreground opacity-80">
+            <ClockIcon className="h-4 w-4 mr-1.5 aevos-icon-styling-override text-primary-foreground" />
             {isMounted ? currentTime : "--:--"}
           </div>
-           <div className="hidden md:flex items-center text-xs px-1 h-9 border-l border-white/20 dark:border-white/10 ml-1 pl-2.5 font-body dark:text-primary-foreground dark:opacity-80">
-              Admin User <span className="mx-1 dark:text-primary-foreground/70">|</span> Session: <span className="text-accent dark:text-accent font-medium ml-1">Active</span>
+           <div className="hidden md:flex items-center text-xs px-1 h-9 border-l border-white/10 ml-1 pl-2.5 font-body text-primary-foreground opacity-80">
+              Admin User <span className="mx-1 text-primary-foreground/70">|</span> Session: <span className="text-accent font-medium ml-1">Active</span>
           </div>
 
           <DropdownMenu>
@@ -178,19 +155,19 @@ const TopBar: React.FC = () => {
               <Button variant="ghost" className="flex items-center space-x-2 h-9 px-2.5">
                 <Avatar className="h-6 w-6">
                   <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
-                  <AvatarFallback className="text-xs bg-primary/30 text-primary-foreground dark:bg-primary/50 dark:text-primary-foreground">AU</AvatarFallback>
+                  <AvatarFallback className="text-xs bg-primary/50 text-primary-foreground">AU</AvatarFallback>
                 </Avatar>
-                <ChevronDownIcon className="h-4 w-4 opacity-80 aevos-icon-styling-override dark:text-muted-foreground" />
+                <ChevronDownIcon className="h-4 w-4 opacity-80 aevos-icon-styling-override text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 glassmorphism-panel mt-2">
-              <DropdownMenuLabel className="font-headline text-primary dark:text-primary-foreground">My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-border/20 dark:bg-border/30"/>
-              <DropdownMenuItem className="font-body dark:text-primary-foreground hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Profile</DropdownMenuItem>
-              <DropdownMenuItem className="font-body dark:text-primary-foreground hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Billing</DropdownMenuItem>
-              <DropdownMenuItem className="font-body dark:text-primary-foreground hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Settings</DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-border/20 dark:bg-border/30"/>
-              <DropdownMenuItem className="font-body dark:text-primary-foreground hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Log out</DropdownMenuItem>
+              <DropdownMenuLabel className="font-headline text-primary-foreground">My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-border/30"/>
+              <DropdownMenuItem className="font-body text-primary-foreground hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Profile</DropdownMenuItem>
+              <DropdownMenuItem className="font-body text-primary-foreground hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Billing</DropdownMenuItem>
+              <DropdownMenuItem className="font-body text-primary-foreground hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Settings</DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-border/30"/>
+              <DropdownMenuItem className="font-body text-primary-foreground hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Log out</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

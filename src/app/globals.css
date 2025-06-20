@@ -5,84 +5,7 @@
 
 @layer base {
   :root {
-    /* Imperial Purple (#6A0DAD), Patina Green (#3EB991), Roman Aqua (#20B2AA), Conchoidal Gray (#8C94A8), Vitreous White (#F5FFFA), Obsidian Black (#1C1934), Gold (#FFD700) */
-
-    /* --- Light Theme --- */
-    /* Background: Vitreous White (using a light mint hue for base) */
-    --background-h: 150; --background-s: 100%; --background-l: 98%;
-    --background-l-offset: 98%;
-    /* Foreground: Obsidian Black (darkened for text) */
-    --foreground-h: 255; --foreground-s: 15%; --foreground-l: 12%;
-
-    /* Card: Cooler, less purple, slightly more translucent */
-    --card-h: 220; --card-s: 30%; --card-l: 98%; --card-a: 0.45;
-    --card-foreground-h: var(--foreground-h); --card-foreground-s: var(--foreground-s); --card-foreground-l: var(--foreground-l);
-
-    --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l); --popover-a: var(--card-a);
-    --popover-foreground-h: var(--card-foreground-h); --popover-foreground-s: var(--card-foreground-s); --popover-foreground-l: var(--card-foreground-l);
-
-    /* Primary: Imperial Purple - adjusted for light theme */
-    --primary-h: 275; --primary-s: 55%; --primary-l: 50%;
-    --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 100%;
-    --primary-gradient-start-h: 275; --primary-gradient-start-s: 53%; --primary-gradient-start-l: 45%;
-
-    /* Secondary: Roman Aqua */
-    --secondary-h: 177; --secondary-s: 75%; --secondary-l: 42%;
-    --secondary-foreground-h: 0; --secondary-foreground-s: 0%; --secondary-foreground-l: 98%;
-
-    /* Muted: Conchoidal Gray - for less important text */
-    --muted-h: 220; --muted-s: 22%; --muted-l: 70%;
-    --muted-foreground-h: 220; --muted-s: 18%; --muted-foreground-l: 50%;
-
-    /* Accent: Gold */
-    --accent-h: 48; --accent-s: 100%; --accent-l: 50%; /* #FFD700 - slightly warmer gold */
-    --accent-foreground-h: 48; --accent-foreground-s: 100%; --accent-foreground-l: 12%;
-
-    --destructive-h: 0; --destructive-s: 86%; --destructive-l: 58%;
-    --destructive-foreground-h: 0; --destructive-s: 0%; --destructive-foreground-l: 98%;
-
-    /* Border: Lighter Conchoidal Gray - for general borders */
-    --border-h: 220; --border-s: 25%; --border-l: 88%;
-    --input-h: 220; --input-s: 30%; --input-l: 94%;
-    --ring-h: var(--accent-h); --ring-s: var(--accent-s); --ring-l: var(--accent-l);
-
-    --chart-1-h: var(--primary-h); --chart-1-s: var(--primary-s); --chart-1-l: var(--primary-l);
-    --chart-2-h: 177; --chart-2-s: 75%; --chart-2-l: 42%; /* Roman Aqua for progress/cyan */
-    --chart-3-h: var(--accent-h); --chart-3-s: var(--accent-s); --chart-3-l: var(--accent-l); /* Gold */
-    --chart-4-h: 158; --chart-4-s: 55%; --chart-4-l: 58%; /* Patina Green for success */
-    --chart-5-h: var(--destructive-h); --chart-5-s: var(--destructive-s); --chart-5-l: var(--destructive-l); /* Red for errors */
-
-    /* Full HSL color definitions */
-    --background: hsl(var(--background-h), var(--background-s), var(--background-l));
-    --foreground: hsl(var(--foreground-h), var(--foreground-s), var(--foreground-l));
-    --card: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
-    --card-foreground: hsl(var(--card-foreground-h), var(--card-foreground-s), var(--card-foreground-l));
-    --popover: hsla(var(--popover-h), var(--popover-s), var(--popover-l), var(--popover-a));
-    --popover-foreground: hsl(var(--popover-foreground-h), var(--popover-foreground-s), var(--popover-foreground-l));
-    --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
-    --primary-foreground: hsl(var(--primary-foreground-h), var(--primary-foreground-s), var(--primary-foreground-l));
-    --primary-gradient-start: hsl(var(--primary-gradient-start-h), var(--primary-gradient-start-s), var(--primary-gradient-start-l));
-    --secondary: hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l));
-    --secondary-foreground: hsl(var(--secondary-foreground-h), var(--secondary-foreground-s), var(--secondary-foreground-l));
-    --muted: hsl(var(--muted-h), var(--muted-s), var(--muted-l));
-    --muted-foreground: hsl(var(--muted-foreground-h), var(--muted-s), var(--muted-foreground-l));
-    --accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
-    --accent-foreground: hsl(var(--accent-foreground-h), var(--accent-foreground-s), var(--accent-foreground-l));
-    --destructive: hsl(var(--destructive-h), var(--destructive-s), var(--destructive-l));
-    --destructive-foreground: hsl(var(--destructive-foreground-h), var(--destructive-s), var(--destructive-foreground-l));
-    --border: hsl(var(--border-h), var(--border-s), var(--border-l));
-    --input: hsl(var(--input-h), var(--input-s), var(--input-l));
-    --ring: hsl(var(--ring-h), var(--ring-s), var(--ring-l));
-    --chart-1: hsl(var(--chart-1-h), var(--chart-1-s), var(--chart-1-l));
-    --chart-2: hsl(var(--chart-2-h), var(--chart-2-s), var(--chart-2-l));
-    --chart-3: hsl(var(--chart-3-h), var(--chart-3-s), var(--chart-3-l));
-    --chart-4: hsl(var(--chart-4-h), var(--chart-4-s), var(--chart-4-l));
-    --chart-5: hsl(var(--chart-5-h), var(--chart-5-s), var(--chart-5-l));
-    --radius: 0.75rem;
-  }
-
-  .dark {
-    /* --- Dark Theme --- */
+    /* --- Dark Theme Variables (Now Default) --- */
     /* Background: Deep Dark Purple (derived from #1a102c / #6A0DAD) */
     --background-h: 275; --background-s: 45%; --background-l: 8%;
     --background-l-offset: 8%;
@@ -94,7 +17,7 @@
     --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 100%; /* White */
     --secondary-foreground-h: 0; --secondary-foreground-s: 0%; --secondary-foreground-l: 98%; /* Almost White */
     --muted-foreground-h: 220; --muted-s: 10%; --muted-foreground-l: 95%;  /* Extremely Light Gray, almost white */
-    --accent-foreground-h: 0; --accent-s: 0%; --accent-l: 98%; /* Almost White for text on accent backgrounds */
+    --accent-foreground-h: 0; --accent-s: 0%; --accent-foreground-l: 98%; /* Almost White for text on accent backgrounds */
     --destructive-foreground-h: 0; --destructive-s: 0%; --destructive-foreground-l: 98%; /* Almost White */
 
 
@@ -111,7 +34,6 @@
     --secondary-h: 177; --secondary-s: 100%; --secondary-l: 45%;
 
     /* Muted: Light Gray for "muted" backgrounds/elements - this is for BACKGROUNDS, not text */
-    /* Ensure the HSL for muted text above (--muted-foreground-h,s,l) is used for text-muted-foreground */
     --muted-h: 220; --muted-s: 18%; --muted-l: 25%; /* Darker muted background */
 
 
@@ -143,7 +65,7 @@
     --primary-foreground: hsl(var(--primary-foreground-h), var(--primary-foreground-s), var(--primary-foreground-l));
     --primary-gradient-start: hsl(var(--primary-gradient-start-h), var(--primary-gradient-start-s), var(--primary-gradient-start-l));
     --secondary: hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l));
-    --secondary-foreground: hsl(var(--secondary-foreground-h), var(--secondary-foreground-s), var(--secondary-foreground-l));
+    --secondary-foreground: hsl(var(--secondary-foreground-h), var(--secondary-s), var(--secondary-foreground-l));
     --muted: hsl(var(--muted-h), var(--muted-s), var(--muted-l));
     --muted-foreground: hsl(var(--muted-foreground-h), var(--muted-s), var(--muted-foreground-l));
     --accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
@@ -158,6 +80,7 @@
     --chart-3: hsl(var(--chart-3-h), var(--chart-3-s), var(--chart-3-l));
     --chart-4: hsl(var(--chart-4-h), var(--chart-4-s), var(--chart-4-l));
     --chart-5: hsl(var(--chart-5-h), var(--chart-5-s), var(--chart-5-l));
+    --radius: 0.75rem;
   }
 }
 
@@ -168,8 +91,7 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Lexend', sans-serif;
-  }
-  .dark body {
+    /* background-color is now directly from dark theme variables */
     background-color: hsl(var(--background-h), var(--background-s), var(--background-l));
   }
   h1, h2, h3, h4, h5, h6, .font-headline {
@@ -178,23 +100,15 @@
 }
 
 
-/* Glassmorphism Panel Style */
+/* Glassmorphism Panel Style (Dark mode styles are now default) */
 .glassmorphism-panel {
-  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(200, 210, 230, 0.25); /* Neutral, highly translucent border */
-  border-radius: var(--radius);
-  box-shadow: 0 8px 32px 0 rgba(28, 25, 52, 0.08); /* Softer Obsidian Black shadow */
-}
-
-.dark .glassmorphism-panel {
   background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
   border: 1px solid hsla(var(--border-h), var(--border-s), calc(var(--border-l) + 20%), 0.3);
   box-shadow: 0 8px 28px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 3%), 0.25),
               0 3px 10px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 3%), 0.2);
+  border-radius: var(--radius);
 }
 
 
@@ -202,12 +116,9 @@
   width: 5px;
   height: 5px;
 }
-::-webkit-scrollbar-track {
-  background: hsla(var(--background-h), var(--background-s), calc(var(--background-l) + 2%), 0.2);
-  border-radius: 10px;
-}
-.dark ::-webkit-scrollbar-track {
+::-webkit-scrollbar-track { /* Dark mode style is now default */
   background: hsla(var(--background-h), var(--background-s), calc(var(--background-l) + 1%), 0.2);
+  border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb {
   background: hsla(var(--muted-h), var(--muted-s), calc(var(--muted-l) - 15%), 0.5);
@@ -248,37 +159,20 @@
 }
 
 
-.btn-wabi-sabi {
+.btn-wabi-sabi { /* Dark mode style is now default */
   @apply px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center transition-colors duration-150 ease-in-out;
-  /* Light Theme: Lighter, more desaturated secondary */
-  background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.25), calc(var(--secondary-l) + 45%));
-  color: hsl(var(--secondary-h), var(--secondary-s), calc(var(--secondary-l) - 18%));
-  border: 1px solid hsl(var(--secondary-h), calc(var(--secondary-s) * 0.3), calc(var(--secondary-l) + 30%));
-  box-shadow: 0 1px 2px hsla(var(--secondary-h), var(--secondary-s), var(--secondary-l), 0.05);
-}
-.btn-wabi-sabi:hover {
-  background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.30), calc(var(--secondary-l) + 40%));
-  border-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.35), calc(var(--secondary-l) + 25%));
-}
-.dark .btn-wabi-sabi {
-  /* Dark Theme: Darker, more desaturated secondary */
   background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.35), calc(var(--secondary-l) - 15%));
   color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.7), calc(var(--secondary-l) + 35%));
   border: 1px solid hsl(var(--secondary-h), calc(var(--secondary-s) * 0.35), calc(var(--secondary-l) - 20%));
+  box-shadow: 0 1px 2px hsla(var(--secondary-h), var(--secondary-s), var(--secondary-l), 0.05);
 }
-.dark .btn-wabi-sabi:hover {
+.btn-wabi-sabi:hover {
   background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.40), calc(var(--secondary-l) - 10%));
   border-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.40), calc(var(--secondary-l) - 15%));
 }
-
-.btn-wabi-sabi:disabled {
+.btn-wabi-sabi:disabled { /* Dark mode disabled style is now default */
   @apply opacity-60 cursor-not-allowed filter-none transform-none shadow-none;
-  background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.2), calc(var(--secondary-l) + 50%)); /* Light disabled */
-  border-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.2), calc(var(--secondary-l) + 40%));
-  color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.5), calc(var(--secondary-l) + 10%));
-}
-.dark .btn-wabi-sabi:disabled {
-  background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.25), calc(var(--secondary-l) - 25%)); /* Dark disabled */
+  background-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.25), calc(var(--secondary-l) - 25%));
   border-color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.25), calc(var(--secondary-l) - 30%));
   color: hsl(var(--secondary-h), calc(var(--secondary-s) * 0.4), calc(var(--secondary-l) + 5%));
 }
@@ -291,7 +185,7 @@
 }
 
 
-/* AEVOS TopBar Glass Effect - Critical Override */
+/* AEVOS TopBar Glass Effect - Critical Override (Dark mode styles are default) */
 .topbar-aevos-glass-override {
   background-color: rgba(245, 255, 250, 0.10) !important; /* Vitreous White with 10% opacity */
   backdrop-filter: blur(25px) !important;
@@ -305,43 +199,26 @@
   z-index: 1000 !important;
   padding: 1rem 2rem !important;
   font-family: 'Lexend', sans-serif !important; /* Default font: Lexend */
-  color: hsl(var(--foreground)) !important; /* Default text color, adapts to dark mode */
-}
-
-.dark .topbar-aevos-glass-override {
-  /* Dark mode text color is handled by the 'color' property above using CSS variables */
-   color: hsl(var(--foreground)) !important; /* Ensure foreground text color is applied */
+  color: hsl(var(--foreground)) !important; /* Default text color (now dark theme foreground) */
 }
 
 
-/* AEVOS Command Bar Input Style - Critical Override */
+/* AEVOS Command Bar Input Style - Critical Override (Dark mode styles are default) */
 .command-bar-input-aevos-override {
-  background-color: rgba(245, 255, 250, 0.2) !important;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.075) !important;
-  border: 1px solid rgba(245, 255, 250, 0.3) !important;
-  color: hsl(var(--foreground)) !important;
-  font-family: 'Lexend', sans-serif !important;
-}
-.dark .command-bar-input-aevos-override {
   background-color: rgba(40, 35, 60, 0.3) !important;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15) !important;
   border-color: rgba(245, 255, 250, 0.1) !important;
-  color: hsl(var(--foreground)) !important; /* Ensure text is light in dark mode */
+  color: hsl(var(--foreground)) !important; /* Ensure text is light */
+  font-family: 'Lexend', sans-serif !important;
 }
 .command-bar-input-aevos-override::placeholder {
    font-family: 'Lexend', sans-serif !important;
-   /* Placeholder color is handled by Tailwind utilities in the component */
-}
-.dark .command-bar-input-aevos-override::placeholder {
-  color: hsla(var(--muted-foreground-h), var(--muted-s), var(--muted-foreground-l), 0.7) !important;
+   color: hsla(var(--muted-foreground-h), var(--muted-s), var(--muted-foreground-l), 0.7) !important;
 }
 
 
-/* AEVOS Icon Style - Critical Override for Drop Shadow */
+/* AEVOS Icon Style - Critical Override for Drop Shadow (Dark mode style is default) */
 .aevos-icon-styling-override {
-  filter: drop-shadow(0px 0.5px 1px rgba(28, 25, 52, 0.2));
-}
-.dark .aevos-icon-styling-override {
   filter: drop-shadow(0px 0.5px 1px rgba(0, 0, 0, 0.3));
 }
 
@@ -351,34 +228,25 @@
   background-color: hsl(var(--chart-2-h), var(--chart-2-s), var(--chart-2-l)) !important;
 }
 
-/* Status badges for Live Orchestration Feed (using chart colors) */
+/* Status badges for Live Orchestration Feed (using chart colors - dark mode text colors are default) */
 .badge-success { /* Patina Green */
   background-color: hsl(var(--chart-4-h), var(--chart-4-s), var(--chart-4-l)) !important;
-  color: hsl(var(--foreground-h), var(--foreground-s), 5%) !important;
-}
-.dark .badge-success {
-  color: hsl(var(--background-h), var(--background-s), 95%) !important;
+  color: hsl(var(--background-h), var(--background-s), 95%) !important; /* Light text on dark badge */
 }
 
 .badge-failure { /* Red */
   background-color: hsl(var(--chart-5-h), var(--chart-5-s), var(--chart-5-l)) !important;
   color: hsl(var(--destructive-foreground-h), var(--destructive-s), var(--destructive-foreground-l)) !important;
 }
-.details-link-success { /* Patina Green based */
-  color: hsl(var(--chart-4-h), var(--chart-4-s), calc(var(--chart-4-l) - 15%)) !important;
-}
-.dark .details-link-success {
+.details-link-success { /* Patina Green based - dark mode style is default */
   color: hsl(var(--chart-4-h), var(--chart-4-s), calc(var(--chart-4-l) + 15%)) !important;
 }
 
-.details-link-failure { /* Red based */
-  color: hsl(var(--chart-5-h), var(--chart-5-s), calc(var(--chart-5-l) - 10%)) !important;
-}
-.dark .details-link-failure {
+.details-link-failure { /* Red based - dark mode style is default */
   color: hsl(var(--chart-5-h), var(--chart-5-s), calc(var(--chart-5-l) + 10%)) !important;
 }
 
-/* New Dark Mode Canvas Background Styling */
+/* New Dark Mode Canvas Background Styling (now default canvas styling) */
 @keyframes aurora-glow-subtle-dark {
   0% {
     background-position: 0% 50%;
@@ -399,14 +267,10 @@
   inset: 0;
   overflow: hidden;
   z-index: 0; /* Behind main content */
-  display: none; /* Hidden by default, enabled in dark mode */
+  display: block; /* Always show */
 }
 
-.dark .canvas-aurora-background-dark-container {
-  display: block; /* Show in dark mode */
-}
-
-.dark .canvas-aurora-background-dark-container::before { /* Gradient layer */
+.canvas-aurora-background-dark-container::before { /* Gradient layer */
   content: "";
   position: absolute;
   inset: 0;
@@ -422,7 +286,7 @@
   z-index: 1;
 }
 
-.dark .canvas-aurora-background-dark-container::after { /* Obsidian Black overlay on top of gradient */
+.canvas-aurora-background-dark-container::after { /* Obsidian Black overlay on top of gradient */
   content: "";
   position: absolute;
   inset: 0;
