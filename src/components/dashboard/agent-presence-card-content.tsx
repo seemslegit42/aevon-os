@@ -2,14 +2,14 @@
 import React from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { LucideIcon } from 'lucide-react';
-import { cn } from '@/lib/utils'; // For conditional class names
+import { cn } from '@/lib/utils';
 
 export interface Agent {
   id: string;
   name: string;
   description: string;
   status: 'Processing' | 'Idle' | 'Error';
-  statusColor: string; // e.g. text-green-400, text-yellow-400, text-red-400
+  statusColor: string; 
   statusIcon: LucideIcon;
   time: string;
 }
@@ -28,9 +28,8 @@ const AgentPresenceCardContent: React.FC<AgentPresenceCardContentProps> = ({ age
   }
 
   return (
-    // Reduced padding from p-1 to p-0 to minimize scrollbar appearance when not needed
     <ScrollArea className="h-full pr-1"> 
-      <ul className="space-y-2 p-1"> {/* Added p-1 back for item spacing */}
+      <ul className="space-y-2 p-1">
         {agents.map(agent => ( 
           <li key={agent.id} className="p-2.5 rounded-md bg-card hover:bg-primary/5 dark:bg-black/10 dark:hover:bg-primary/10 transition-colors">
             <div className="flex items-center justify-between mb-0.5">
@@ -55,3 +54,5 @@ const AgentPresenceCardContent: React.FC<AgentPresenceCardContentProps> = ({ age
 };
 
 export default AgentPresenceCardContent;
+
+    

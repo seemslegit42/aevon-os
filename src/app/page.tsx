@@ -4,7 +4,7 @@ import React, { useState, useEffect, FormEvent } from 'react';
 import { Rnd, type Position, type Size } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Cpu, LayoutGrid, AppWindow, Users, HardDrive, Timer, Blocks, Mic, MoreHorizontal, X, CheckCircle, AlertCircle, LoaderCircle, CircleDot, BarChartBig, Settings2, Shield, Server, Network, Clock } from 'lucide-react';
+import { Sparkles, Cpu, LayoutGrid, AppWindow, Users, HardDrive, Timer, Blocks, Mic, MoreHorizontal, X, CheckCircle, AlertCircle, LoaderCircle, CircleDot, BarChartBig, Settings2, Shield, Server, Network, Clock, Info } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -19,7 +19,6 @@ import type { GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-pers
 import { generatePersonalizedBriefing } from '@/ai/flows/generate-personalized-briefings';
 
 
-// Re-introducing initial data to match the reference image's visual density
 const initialAgentsData: Agent[] = [
   { id: '1', name: 'NexusGuard_Alpha', description: 'Actively monitoring inbound/outbound netwo...', status: 'Idle', statusColor: 'text-yellow-400', statusIcon: CircleDot, time: '2m ago' },
   { id: '2', name: 'Helios_Stream_Processor', description: 'Continuously analyzing high-volume sen...', status: 'Processing', statusColor: 'text-blue-400', statusIcon: LoaderCircle, time: 'Now' },
@@ -34,14 +33,14 @@ const initialFeedItems: FeedItem[] = [
 ];
 
 const systemMetricsConfigData: SystemMetric[] = [
-  { id: 'agents', icon: Users, label: 'Active Agents', value: 5, unit: '' }, // Value from image
-  { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: 450, progressMax: 1000, unit: 'GB' }, // Value from image
-  { id: 'networkSent', icon: Network, label: 'Network Sent', value: '1.2 GB', unit: '' }, // Value from image
-  { id: 'networkReceived', icon: Network, label: 'Network Received', value: '8.5 GB', unit: '' }, // Value from image
-  { id: 'uptime', icon: Clock, label: 'System Uptime', value: '12d 4h 32m', unit: '' }, // Value from image
+  { id: 'agents', icon: Users, label: 'Active Agents', value: 5, unit: '' },
+  { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: 450, progressMax: 1000, unit: 'GB' },
+  { id: 'networkSent', icon: Network, label: 'Network Sent', value: '1.2 GB', unit: '' },
+  { id: 'networkReceived', icon: Network, label: 'Network Received', value: '8.5 GB', unit: '' },
+  { id: 'uptime', icon: Clock, label: 'System Uptime', value: '12d 4h 32m', unit: '' },
 ];
 
-const agentTaskExampleData: AgentTask | undefined = undefined; // No specific agent task in system snapshot in the image
+const agentTaskExampleData: AgentTask | undefined = undefined; 
 
 interface CardLayoutInfo {
   id: string;
@@ -73,7 +72,6 @@ export default function DashboardPage() {
   const [dismissedCardIds, setDismissedCardIds] = useState<string[]>([]);
 
   const handleDismissCardAttempt = (id: string) => {
-    // Instant dismissal
     setDismissedCardIds(prevIds => [...prevIds, id]);
   };
 
@@ -117,8 +115,7 @@ export default function DashboardPage() {
     try {
       const input: GeneratePersonalizedBriefingInput = {
         userName: "Dashboard User",
-        // Updated to reflect current data state
-        operationalMetrics: "System metrics displayed: Active Agents, Disk Usage, Network Sent/Received, System Uptime.",
+        operationalMetrics: "System metrics displayed: Active Agents (5), Disk Usage (450GB/1000GB), Network Sent (1.2GB), Network Received (8.5GB), System Uptime (12d 4h 32m).",
         relevantInformation: `User asked: "${aiPrompt}". Provide a concise, helpful response.`,
       };
       const result = await generatePersonalizedBriefing(input);
@@ -135,7 +132,7 @@ export default function DashboardPage() {
   const initialCardsData: CardConfig[] = [
     {
       id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, isDismissible: true,
-      x: 50, y: 50, width: 400, height: 380, zIndex: 1, minWidth: 320, minHeight: 300, // Adjusted height
+      x: 50, y: 50, width: 400, height: 380, zIndex: 1, minWidth: 320, minHeight: 300,
       cardClassName: "flex-grow flex flex-col",
       content: AiAssistantCardContent,
       contentProps: {
@@ -144,35 +141,34 @@ export default function DashboardPage() {
         handleAiSubmit,
         isAiLoading,
         aiResponse,
-        // Pass placeholder insight text from image
         placeholderInsight: "Analyze product sales, compare revenue, or ask for insights."
       }
     },
     {
       id: 'agentPresence', title: 'Agent Presence', icon: Cpu, isDismissible: true,
-      x: 470, y: 50, width: 420, height: 280, zIndex: 1, minWidth: 300, minHeight: 200, // Adjusted width/height
+      x: 470, y: 50, width: 420, height: 280, zIndex: 1, minWidth: 300, minHeight: 200,
       content: AgentPresenceCardContent,
       contentProps: { agents: initialAgentsData }
     },
     {
       id: 'systemSnapshot', title: 'System Snapshot', icon: LayoutGrid, isDismissible: true,
-      x: 470, y: 350, width: 420, height: 300, zIndex: 1, minWidth: 320, minHeight: 280, // Adjusted Y, width, height
+      x: 470, y: 350, width: 420, height: 300, zIndex: 1, minWidth: 320, minHeight: 280,
       content: SystemSnapshotCardContent,
       contentProps: { systemMetricsConfig: systemMetricsConfigData, agentTask: agentTaskExampleData }
     },
     {
       id: 'applicationView', title: 'Application View', icon: AppWindow, isDismissible: true,
-      x: 50, y: 450, width: 400, height: 200, zIndex: 1, minWidth: 300, minHeight: 180, // Adjusted Y
+      x: 50, y: 450, width: 400, height: 200, zIndex: 1, minWidth: 300, minHeight: 180,
       content: ApplicationViewCardContent,
     },
     {
       id: 'microApps', title: 'Micro-Apps', icon: Blocks, isDismissible: true,
-      x: 910, y: 350, width: 380, height: 130, zIndex: 1, minWidth: 280, minHeight: 120, // Adjusted X, Y
+      x: 910, y: 350, width: 380, height: 130, zIndex: 1, minWidth: 280, minHeight: 120, 
       content: MicroAppsCardContent,
     },
     {
       id: 'liveOrchestration', title: 'Live Orchestration Feed', icon: CheckCircle, isDismissible: true,
-      x: 910, y: 50, width: 380, height: 280, zIndex: 1, minWidth: 320, minHeight: 250, // Adjusted X
+      x: 910, y: 50, width: 380, height: 280, zIndex: 1, minWidth: 320, minHeight: 250, 
       cardClassName: "flex-grow flex flex-col",
       content: LiveOrchestrationFeedCardContent,
       contentProps: { feedItems: initialFeedItems }
@@ -223,7 +219,7 @@ export default function DashboardPage() {
   const cardsToRender = initialCardsData.filter(card => !dismissedCardIds.includes(card.id));
 
   return (
-    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden p-4"> {/* Added padding to match image margins */}
+    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden p-4">
       {cardsToRender.map(cardConfig => {
         const currentLayout = cardLayouts.find(l => l.id === cardConfig.id);
         if (!currentLayout) return null;
@@ -253,16 +249,16 @@ export default function DashboardPage() {
             }}
             style={{ zIndex: currentLayout.zIndex }}
             className={cn(
-              "border-transparent hover:border-primary/30 focus-within:border-primary", // Removed rounded-lg, MicroAppCard handles it
+              "border-transparent hover:border-primary/30 focus-within:border-primary",
             )}
-            dragGrid={[10, 10]} // Finer grid for positioning
+            dragGrid={[10, 10]}
             resizeGrid={[10, 10]}
           >
             <MicroAppCard
               title={cardConfig.title}
               icon={cardConfig.icon}
               actions={cardConfig.actions ? cardConfig.actions(cardConfig.id, handleDismissCardAttempt) : undefined}
-              className={cn("h-full w-full !rounded-lg", cardConfig.cardClassName)} // Ensure MicroAppCard applies radius
+              className={cn("h-full w-full !rounded-lg", cardConfig.cardClassName)}
             >
               <CardSpecificContent {...cardConfig.contentProps} />
             </MicroAppCard>
@@ -276,3 +272,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    

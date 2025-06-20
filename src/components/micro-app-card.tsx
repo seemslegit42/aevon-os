@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import type { LucideIcon } from 'lucide-react';
@@ -35,3 +36,5 @@ const MicroAppCardComponent: React.FC<MicroAppCardProps> = ({ title, description
 
 const MicroAppCard = React.memo(MicroAppCardComponent);
 export default MicroAppCard;
+
+    

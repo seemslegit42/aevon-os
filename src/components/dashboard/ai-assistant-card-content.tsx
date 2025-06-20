@@ -11,7 +11,7 @@ interface AiAssistantCardContentProps {
   handleAiSubmit: (e: FormEvent) => Promise<void>;
   isAiLoading: boolean;
   aiResponse: string | null;
-  placeholderInsight?: string; // Added to match reference image text
+  placeholderInsight?: string;
 }
 
 const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
@@ -26,7 +26,7 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
     <>
       <div className="flex flex-col items-center justify-center text-center p-6 flex-grow">
         {placeholderInsight && (
-          <p className="text-sm text-foreground mb-4 mt-4"> {/* Changed to text-foreground to match image */}
+          <p className="text-sm text-foreground mb-4 mt-4">
             {placeholderInsight}
           </p>
         )}
@@ -38,7 +38,7 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
           value={aiPrompt}
           onChange={(e) => setAiPrompt(e.target.value)}
           rows={2}
-          className="bg-input border-border/50 focus:ring-primary mb-2 text-foreground placeholder-muted-foreground" // Ensuring input text color matches
+          className="bg-input border-border/50 focus:ring-primary mb-2 text-foreground placeholder-muted-foreground"
         />
         <button
           type="submit"
@@ -54,3 +54,5 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
 };
 
 export default AiAssistantCardContent;
+
+    

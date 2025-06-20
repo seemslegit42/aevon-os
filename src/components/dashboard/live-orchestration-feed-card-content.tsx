@@ -38,7 +38,7 @@ const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardConten
                 </div>
               </div>
               <span className={cn(
-                `text-xs font-medium px-2 py-0.5 rounded-full`, // Adjusted padding
+                `text-xs font-medium px-2 py-0.5 rounded-full`,
                  item.status === 'success' ? 'badge-success' : 'badge-failure'
                 )}>
                 {item.status}
@@ -58,3 +58,5 @@ const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardConten
 };
 
 export default LiveOrchestrationFeedCardContent;
+
+    
