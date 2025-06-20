@@ -1,24 +1,13 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Home, type LucideIcon, ChevronDown, BrainCircuit } from 'lucide-react'; // Removed LayoutGrid, Clock
-// Popover, Avatar, DropdownMenu related imports are no longer needed if the entire right section is removed.
-// import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-// import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuLabel,
-//   DropdownMenuSeparator,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu";
-import { TooltipProvider } from "@/components/ui/tooltip"; // Tooltip might still be used for left/center items
+import { Search, Home, type LucideIcon, ChevronDown, BrainCircuit } from 'lucide-react';
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from '@/lib/utils';
 
 interface NavItem {
@@ -36,28 +25,7 @@ const navItems: NavItem[] = [
 ];
 
 const TopBar: React.FC = () => {
-  // currentTime and its useEffect are no longer needed if the time display is removed.
-  // const [currentTime, setCurrentTime] = useState<string | null>(null);
   const pathname = usePathname();
-
-  // useEffect(() => {
-  //   const updateTime = () => {
-  //     const now = new Date();
-  //     let hours = now.getUTCHours();
-  //     const minutes = now.getUTCMinutes();
-  //     const seconds = now.getUTCSeconds();
-  //     const ampm = hours >= 12 ? 'PM' : 'AM';
-  //     hours = hours % 12;
-  //     hours = hours ? hours : 12; 
-  //     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm} UTC`;
-  //   };
-    
-  //   setCurrentTime(updateTime()); 
-  //   const timer = setInterval(() => {
-  //     setCurrentTime(updateTime());
-  //   }, 1000);
-  //   return () => clearInterval(timer); 
-  // }, []);
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -65,7 +33,7 @@ const TopBar: React.FC = () => {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Link href="/" className="text-2xl font-bold flex items-center">
-              <BrainCircuit className="w-7 h-7 mr-2 text-primary-foreground" />
+              <BrainCircuit className="w-7 h-7 mr-2 text-white" />
                <span className="text-accent dark:text-white">ΛΞVON OS</span>
             </Link>
             <nav className="hidden md:flex items-center space-x-1">
@@ -105,8 +73,6 @@ const TopBar: React.FC = () => {
             </div>
           </div>
           
-          {/* Entire right-hand side section removed */}
-
         </div>
       </header>
     </TooltipProvider>
