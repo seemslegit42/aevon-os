@@ -7,6 +7,8 @@ import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
+  Moon, 
+  Sun, 
   Search,
   Home,
   Settings,
@@ -39,6 +41,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from '@/lib/utils';
+import { useThemeStore } from '@/stores/theme.store';
 
 interface NavItemConfig {
   href: string;
@@ -57,6 +60,7 @@ const TopBar: React.FC = () => {
   const pathname = usePathname();
   const [currentTime, setCurrentTime] = useState("--:--");
   const [isMounted, setIsMounted] = useState(false);
+  const { theme, toggleTheme } = useThemeStore();
 
   useEffect(() => {
     setIsMounted(true);
@@ -69,7 +73,7 @@ const TopBar: React.FC = () => {
       setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
     };
     updateClock();
-    const timerId = setInterval(updateClock, 60000); // Update every minute
+    const timerId = setInterval(updateClock, 60000); 
 
     return () => clearInterval(timerId);
   }, [isMounted]);
@@ -81,7 +85,7 @@ const TopBar: React.FC = () => {
           {/* Left Side: Logo and Navigation */}
           <div className="flex items-center space-x-4">
             <Link href="/" className="text-2xl font-bold flex items-center">
-              <BrainCircuit className="w-7 h-7 mr-2 text-white" />
+              <BrainCircuit className="w-7 h-7 mr-2 text-primary dark:text-white" />
                <span className="text-accent dark:text-white">ΛΞVON OS</span>
             </Link>
             <nav className="hidden md:flex items-center space-x-1">
@@ -95,7 +99,7 @@ const TopBar: React.FC = () => {
                       "text-gray-700 dark:text-white",
                       "hover:text-gray-900 dark:hover:text-neutral-100",
                       (pathname === item.href || (item.href === '/' && pathname.startsWith('/dashboard') && pathname.length <=1 ) || (item.href !== '/' && pathname.startsWith(item.href)) ) &&
-                        "active-nav-link-dark font-semibold"
+                        "active-nav-link-dark font-semibold" // This class needs review for light mode compatibility
                     )}
                   >
                     <item.icon className="w-4 h-4 mr-2" />
@@ -112,10 +116,10 @@ const TopBar: React.FC = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-neutral-400" />
               <Input
                 type="search"
-                placeholder="Command or Search (Ctrl+K)..."
+                placeholder="Command or Search..."
                 className={cn(
                   "w-full h-9 pl-10 pr-4 border-border/30 dark:border-white/10 focus:ring-accent focus:border-accent",
-                  "bg-background/30 dark:bg-black/20 ",
+                  "bg-background/50 dark:bg-black/30",
                   "text-sm text-gray-900 dark:text-white",
                   "placeholder-muted-foreground dark:placeholder-neutral-500"
                 )}
@@ -126,6 +130,23 @@ const TopBar: React.FC = () => {
 
           {/* Right Side: Controls & User Menu */}
           <div className="flex items-center space-x-1.5">
+             <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleTheme}
+                  className="text-gray-700 dark:text-neutral-200 hover:bg-primary/10 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white w-9 h-9"
+                  aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
+                >
+                  {isMounted && theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode</p>
+              </TooltipContent>
+            </Tooltip>
+
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="ghost" size="icon" className="text-gray-700 dark:text-neutral-200 hover:bg-primary/10 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white w-9 h-9">
@@ -164,11 +185,11 @@ const TopBar: React.FC = () => {
               <DropdownMenuContent align="end" className="w-56 glassmorphism-panel border-border/30 dark:border-white/10">
                 <DropdownMenuLabel className="font-headline text-primary dark:text-primary">My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-border/20 dark:bg-white/5"/>
-                <DropdownMenuItem className="hover:!bg-primary/10 dark:hover:!bg-white/5">Profile</DropdownMenuItem>
-                <DropdownMenuItem className="hover:!bg-primary/10 dark:hover:!bg-white/5">Billing</DropdownMenuItem>
-                <DropdownMenuItem className="hover:!bg-primary/10 dark:hover:!bg-white/5">Settings</DropdownMenuItem>
+                <DropdownMenuItem className="hover:!bg-primary/10 dark:hover:!bg-white/5 focus:bg-accent focus:text-accent-foreground">Profile</DropdownMenuItem>
+                <DropdownMenuItem className="hover:!bg-primary/10 dark:hover:!bg-white/5 focus:bg-accent focus:text-accent-foreground">Billing</DropdownMenuItem>
+                <DropdownMenuItem className="hover:!bg-primary/10 dark:hover:!bg-white/5 focus:bg-accent focus:text-accent-foreground">Settings</DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-border/20 dark:bg-white/5"/>
-                <DropdownMenuItem className="hover:!bg-primary/10 dark:hover:!bg-white/5">Log out</DropdownMenuItem>
+                <DropdownMenuItem className="hover:!bg-primary/10 dark:hover:!bg-white/5 focus:bg-accent focus:text-accent-foreground">Log out</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

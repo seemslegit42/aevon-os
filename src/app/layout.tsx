@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import MainLayout from '@/components/layout/main-layout';
+import ThemeManager from '@/components/theme-manager';
 
 export const metadata: Metadata = {
   title: 'ΛΞVON OS: AI-Powered Business Revolution',
@@ -15,20 +16,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning> {/* suppressHydrationWarning is key for dynamic class changes */}
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Lexend:wght@100..900&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col">
-        <MainLayout>
-          {children}
-        </MainLayout>
-        <Toaster />
+        <ThemeManager>
+          <MainLayout>
+            {children}
+          </MainLayout>
+          <Toaster />
+        </ThemeManager>
       </body>
     </html>
   );
 }
-
-    
