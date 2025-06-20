@@ -20,10 +20,10 @@ import { generatePersonalizedBriefing } from '@/ai/flows/generate-personalized-b
 
 
 const initialAgentsData: Agent[] = [
-  { id: '1', name: 'NexusGuard_Alpha', description: 'Actively monitoring inbound/outbound netwo...', status: 'Idle', statusColor: 'text-yellow-400', statusIcon: CircleDot, time: '2m ago' },
-  { id: '2', name: 'Helios_Stream_Processor', description: 'Continuously analyzing high-volume sen...', status: 'Processing', statusColor: 'text-blue-400', statusIcon: LoaderCircle, time: 'Now' },
-  { id: '3', name: 'NovaSys_QueryEngine', description: 'Awaiting complex user queries and data retri...', status: 'Idle', statusColor: 'text-yellow-400', statusIcon: CircleDot, time: '10s ago' },
-  { id: '4', name: 'Cygnus_BackupAgent', description: 'Scheduled integrity check failed on target...', status: 'Error', statusColor: 'text-red-500', statusIcon: AlertCircle, time: '5m ago' },
+  { id: '1', name: 'NexusGuard_Alpha', description: 'Actively monitoring inbound/outbound netwo...', status: 'Idle', statusColor: 'text-yellow-400 dark:text-yellow-400', statusIcon: CircleDot, time: '2m ago' },
+  { id: '2', name: 'Helios_Stream_Processor', description: 'Continuously analyzing high-volume sen...', status: 'Processing', statusColor: 'text-blue-400 dark:text-cyan-400', statusIcon: LoaderCircle, time: 'Now' },
+  { id: '3', name: 'NovaSys_QueryEngine', description: 'Awaiting complex user queries and data retri...', status: 'Idle', statusColor: 'text-yellow-400 dark:text-yellow-400', statusIcon: CircleDot, time: '10s ago' },
+  { id: '4', name: 'Cygnus_BackupAgent', description: 'Scheduled integrity check failed on target...', status: 'Error', statusColor: 'text-red-500 dark:text-red-500', statusIcon: AlertCircle, time: '5m ago' },
 ];
 
 const initialFeedItems: FeedItem[] = [
@@ -32,6 +32,7 @@ const initialFeedItems: FeedItem[] = [
   { task: 'Agent Task: Backup Database Cluster', time: '15 minutes ago', status: 'success', details: 'Full backup completed.' },
 ];
 
+// Matching the reference image data
 const systemMetricsConfigData: SystemMetric[] = [
   { id: 'agents', icon: Users, label: 'Active Agents', value: 5, unit: '' },
   { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: 450, progressMax: 1000, unit: 'GB' },
@@ -115,7 +116,7 @@ export default function DashboardPage() {
     try {
       const input: GeneratePersonalizedBriefingInput = {
         userName: "Dashboard User",
-        operationalMetrics: "System metrics displayed: Active Agents (5), Disk Usage (450GB/1000GB), Network Sent (1.2GB), Network Received (8.5GB), System Uptime (12d 4h 32m).",
+        operationalMetrics: "System metrics: Active Agents (5), Disk Usage (450GB/1000GB), Network Sent (1.2GB), Network Received (8.5GB), System Uptime (12d 4h 32m).",
         relevantInformation: `User asked: "${aiPrompt}". Provide a concise, helpful response.`,
       };
       const result = await generatePersonalizedBriefing(input);
@@ -129,10 +130,11 @@ export default function DashboardPage() {
     }
   };
 
+  // Layout based on reference image
   const initialCardsData: CardConfig[] = [
-    {
+    { // AI Assistant - Spans top, left-ish
       id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, isDismissible: true,
-      x: 50, y: 50, width: 400, height: 380, zIndex: 1, minWidth: 320, minHeight: 300,
+      x: 20, y: 20, width: 580, height: 300, zIndex: 1, minWidth: 400, minHeight: 280,
       cardClassName: "flex-grow flex flex-col",
       content: AiAssistantCardContent,
       contentProps: {
@@ -144,31 +146,31 @@ export default function DashboardPage() {
         placeholderInsight: "Analyze product sales, compare revenue, or ask for insights."
       }
     },
-    {
+    { // Agent Presence - Top Right
       id: 'agentPresence', title: 'Agent Presence', icon: Cpu, isDismissible: true,
-      x: 470, y: 50, width: 420, height: 280, zIndex: 1, minWidth: 300, minHeight: 200,
+      x: 620, y: 20, width: 450, height: 230, zIndex: 1, minWidth: 300, minHeight: 200,
       content: AgentPresenceCardContent,
       contentProps: { agents: initialAgentsData }
     },
-    {
+    { // System Snapshot - Under Agent Presence
       id: 'systemSnapshot', title: 'System Snapshot', icon: LayoutGrid, isDismissible: true,
-      x: 470, y: 350, width: 420, height: 300, zIndex: 1, minWidth: 320, minHeight: 280,
+      x: 620, y: 270, width: 450, height: 250, zIndex: 1, minWidth: 320, minHeight: 240,
       content: SystemSnapshotCardContent,
       contentProps: { systemMetricsConfig: systemMetricsConfigData, agentTask: agentTaskExampleData }
     },
-    {
-      id: 'applicationView', title: 'Application View', icon: AppWindow, isDismissible: true,
-      x: 50, y: 450, width: 400, height: 200, zIndex: 1, minWidth: 300, minHeight: 180,
-      content: ApplicationViewCardContent,
-    },
-    {
+     { // Micro-Apps - Between System Snapshot and Live Orchestration (middle right)
       id: 'microApps', title: 'Micro-Apps', icon: Blocks, isDismissible: true,
-      x: 910, y: 350, width: 380, height: 130, zIndex: 1, minWidth: 280, minHeight: 120, 
+      x: 620, y: 540, width: 450, height: 130, zIndex: 1, minWidth: 280, minHeight: 120, 
       content: MicroAppsCardContent,
     },
-    {
+    { // Application View - Bottom Left
+      id: 'applicationView', title: 'Application View', icon: AppWindow, isDismissible: true,
+      x: 20, y: 340, width: 580, height: 330, zIndex: 1, minWidth: 400, minHeight: 200,
+      content: ApplicationViewCardContent,
+    },
+    { // Live Orchestration - Bottom Right-ish (under Micro-Apps)
       id: 'liveOrchestration', title: 'Live Orchestration Feed', icon: CheckCircle, isDismissible: true,
-      x: 910, y: 50, width: 380, height: 280, zIndex: 1, minWidth: 320, minHeight: 250, 
+      x: 1090, y: 20, width: 400, height: 650, zIndex: 1, minWidth: 320, minHeight: 250, 
       cardClassName: "flex-grow flex flex-col",
       content: LiveOrchestrationFeedCardContent,
       contentProps: { feedItems: initialFeedItems }
@@ -272,5 +274,4 @@ export default function DashboardPage() {
     </div>
   );
 }
-
     

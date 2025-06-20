@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Bell, Bot, Home, Settings, Shield, ShoppingCart, Settings2, type LucideIcon } from 'lucide-react';
+import { Search, Bell, Bot, Home, Settings, Shield, ShoppingCart, Settings2, type LucideIcon, ChevronDown, LayoutGrid, Clock } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -24,13 +24,14 @@ interface NavItem {
   href: string;
   label: string;
   icon: LucideIcon;
+  showDropdown?: boolean;
 }
 
 const navItems: NavItem[] = [
-  { href: '/', label: 'Dashboard', icon: Home },
-  { href: '/loom-studio', label: 'Loom Studio', icon: Settings },
-  { href: '/aegis-security', label: 'Aegis Security', icon: Shield },
-  { href: '/armory', label: 'Armory', icon: ShoppingCart },
+  { href: '/', label: 'Home Dashboard', icon: Home, showDropdown: true },
+  // { href: '/loom-studio', label: 'Loom Studio', icon: Settings }, // Hidden as per image
+  // { href: '/aegis-security', label: 'Aegis Security', icon: Shield },
+  // { href: '/armory', label: 'Armory', icon: ShoppingCart },
 ];
 
 const TopBar: React.FC = () => {
@@ -40,18 +41,20 @@ const TopBar: React.FC = () => {
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      let hours = now.getUTCHours(); 
+      // Format as HH:MM:SS AM/PM UTC as per image
+      let hours = now.getUTCHours();
       const minutes = now.getUTCMinutes();
+      const seconds = now.getUTCSeconds(); // Added seconds
       const ampm = hours >= 12 ? 'PM' : 'AM';
       hours = hours % 12;
-      hours = hours ? hours : 12; 
-      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${ampm} UTC`;
+      hours = hours ? hours : 12;
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm} UTC`;
     };
     
     setCurrentTime(updateTime()); 
     const timer = setInterval(() => {
       setCurrentTime(updateTime());
-    }, 1000 * 60); // Update every minute, no need for seconds
+    }, 1000); // Update every second
     return () => clearInterval(timer); 
   }, []);
 
@@ -71,12 +74,13 @@ const TopBar: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     className={cn(
-                      "text-muted-foreground hover:text-primary-foreground hover:bg-white/10",
-                      pathname === item.href && "active-nav-link-dark font-semibold"
+                      "text-muted-foreground hover:text-primary-foreground hover:bg-white/10 flex items-center",
+                      (pathname === item.href || (item.href === '/' && pathname.startsWith('/dashboard'))) && "active-nav-link-dark font-semibold" // Adjusted active logic
                     )}
                   >
                     <item.icon className="w-4 h-4 mr-2" />
                     {item.label}
+                    {item.showDropdown && <ChevronDown className="w-4 h-4 ml-1 opacity-70" />}
                   </Button>
                 </Link>
               ))}
@@ -88,11 +92,11 @@ const TopBar: React.FC = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Q Command or Search (Ctrl+K)..."
-                className="w-full h-9 pl-10 pr-16 bg-white/5 dark:bg-white/5 border-white/10 dark:border-white/20 text-sm text-primary-foreground placeholder-muted-foreground"
+                placeholder="Command or Search (Ctrl+K)..."
+                className="w-full h-9 pl-10 pr-16 bg-white/5 dark:bg-white/5 border-white/10 dark:border-white/20 text-sm text-primary-foreground placeholder-muted-foreground focus:ring-primary focus:border-primary"
                 aria-label="Command or search input"
               />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
+              <div className="absolute right-2 top-1/2 -translatey-1/2 flex items-center">
                 <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border border-muted/50 bg-muted/20 px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
                   ⌘K
                 </kbd>
@@ -101,53 +105,42 @@ const TopBar: React.FC = () => {
           </div>
           
           <div className="flex items-center space-x-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary-foreground hover:bg-white/10" aria-label="Notifications">
-                      <Bell className="w-5 h-5" />
+             <Tooltip>
+                <TooltipTrigger asChild>
+                     <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary-foreground hover:bg-white/10" aria-label="Grid/App Menu">
+                        <LayoutGrid className="w-5 h-5" /> {/* Changed from Bell to LayoutGrid */}
                     </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80 glassmorphism-panel">
-                    <div className="grid gap-4">
-                      <div className="space-y-2">
-                        <h4 className="font-medium leading-none font-headline text-primary">Notifications</h4>
-                        <p className="text-sm text-muted-foreground">
-                          No new notifications.
-                        </p>
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </TooltipTrigger>
-              <TooltipContent side="bottom"><p>Notifications</p></TooltipContent>
+                </TooltipTrigger>
+                <TooltipContent side="bottom"><p>App Launcher</p></TooltipContent>
             </Tooltip>
-
             <Tooltip>
               <TooltipTrigger asChild>
-                 <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary-foreground hover:bg-white/10" aria-label="Core Settings">
-                  <Settings2 className="w-5 h-5" />
+                 <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary-foreground hover:bg-white/10" aria-label="Time/Date Settings">
+                  <Clock className="w-5 h-5" /> {/* Changed from Settings2 to Clock */}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="bottom"><p>Core Settings</p></TooltipContent>
+              <TooltipContent side="bottom"><p>Timezone & Date Settings</p></TooltipContent>
             </Tooltip>
             
-            <div className="text-xs text-muted-foreground hidden sm:block w-24 text-center">{currentTime}</div>
+            <div className="text-xs text-muted-foreground hidden sm:block w-[130px] text-center">{currentTime}</div>
 
             <Tooltip>
               <TooltipTrigger asChild>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="p-0 h-auto" aria-label="User Menu">
+                    <Button variant="ghost" className="p-0 h-auto flex items-center space-x-2 text-muted-foreground hover:text-primary-foreground hover:bg-white/10" aria-label="User Menu">
                       <Avatar className="h-8 w-8">
                         <AvatarFallback className="bg-primary/80 text-primary-foreground text-xs">ΛΞ</AvatarFallback>
                       </Avatar>
+                      <div className="hidden lg:flex flex-col items-start text-xs">
+                        {/* Removed static Admin User text */}
+                      </div>
+                       <ChevronDown className="w-4 h-4 opacity-70" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="glassmorphism-panel w-56">
                     <DropdownMenuLabel className="font-normal">
-                      <p className="text-sm font-medium leading-none text-foreground">Admin User</p>
+                      <p className="text-sm font-medium leading-none text-foreground">User</p> {/* Generic "User" */}
                       <p className="text-xs text-muted-foreground">Session: Active</p>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
@@ -166,5 +159,4 @@ const TopBar: React.FC = () => {
 };
 
 export default TopBar;
-
     

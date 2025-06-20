@@ -24,21 +24,21 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
 }) => {
   return (
     <>
-      <div className="flex flex-col items-center justify-center text-center p-6 flex-grow">
+      <div className="flex flex-col items-start justify-start text-left p-4 pt-2 flex-grow">
         {placeholderInsight && (
-          <p className="text-sm text-foreground mb-4 mt-4">
+          <p className="text-sm text-foreground/90 mb-4 mt-2">
             {placeholderInsight}
           </p>
         )}
-        {aiResponse && <ScrollArea className="h-[120px] w-full"><p className="text-sm text-foreground bg-primary/10 dark:bg-primary/20 rounded-md p-3 mb-4 text-left whitespace-pre-wrap">{aiResponse}</p></ScrollArea>}
+        {aiResponse && <ScrollArea className="h-[80px] w-full"><p className="text-sm text-foreground bg-primary/10 dark:bg-primary/20 rounded-md p-3 mb-4 text-left whitespace-pre-wrap">{aiResponse}</p></ScrollArea>}
       </div>
-      <form onSubmit={handleAiSubmit} className="p-4 border-t border-border/30 dark:border-border/50 mt-auto">
+      <form onSubmit={handleAiSubmit} className="p-4 border-t border-border/20 dark:border-white/10 mt-auto">
         <Textarea
           placeholder="Ask the AI assistant..."
           value={aiPrompt}
           onChange={(e) => setAiPrompt(e.target.value)}
           rows={2}
-          className="bg-input border-border/50 focus:ring-primary mb-2 text-foreground placeholder-muted-foreground"
+          className="bg-input border-border/50 dark:border-white/20 focus:ring-primary mb-2 text-foreground placeholder-muted-foreground text-sm"
         />
         <button
           type="submit"
@@ -54,5 +54,4 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
 };
 
 export default AiAssistantCardContent;
-
     

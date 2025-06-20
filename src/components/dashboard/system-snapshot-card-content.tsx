@@ -2,9 +2,6 @@
 import React from 'react';
 import { Progress } from '@/components/ui/progress';
 import type { LucideIcon } from 'lucide-react';
-// import { CheckCircle, ChevronDown, X } from 'lucide-react'; 
-// import { Separator } from '@/components/ui/separator';
-// import { cn } from '@/lib/utils';
 
 export interface SystemMetric {
   id: string;
@@ -15,7 +12,7 @@ export interface SystemMetric {
   unit: string;
 }
 
-export interface AgentTask {
+export interface AgentTask { /* This interface is kept for potential future use but not currently displayed */
   icon: LucideIcon;
   task: string;
   time: string;
@@ -26,10 +23,10 @@ export interface AgentTask {
 
 interface SystemSnapshotCardContentProps {
   systemMetricsConfig: SystemMetric[];
-  agentTask?: AgentTask; 
+  agentTask?: AgentTask; // Kept for future use, not displayed as per reference image
 }
 
-const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({ systemMetricsConfig, agentTask }) => {
+const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({ systemMetricsConfig }) => {
   const hasMetrics = systemMetricsConfig && systemMetricsConfig.length > 0;
 
   return (
@@ -41,7 +38,7 @@ const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({ s
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center text-primary">
                   <metric.icon className="w-4 h-4 mr-2" />
-                  <span className="font-medium">{metric.label}</span>
+                  <span className="font-medium text-foreground/90">{metric.label}</span>
                 </div>
                 {metric.value !== undefined ? (
                   metric.id === 'agents' ? (
@@ -49,9 +46,11 @@ const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({ s
                       {metric.value}
                     </span>
                   ) : (
-                    <span className="font-medium text-foreground">
+                    <span className="font-medium text-foreground text-xs">
                       {metric.id === 'disk' && typeof metric.value === 'number' && metric.progressMax
                         ? `${metric.value}${metric.unit} / ${metric.progressMax}${metric.unit}`
+                        : metric.id === 'disk' // handles cases where disk might not be a number (though it should be)
+                        ? `${metric.value}${metric.unit}` // Ensure unit is always shown for disk
                         : typeof metric.value === 'string' && metric.unit === ''
                         ? metric.value
                         : typeof metric.value === 'number' && metric.unit !== '%' && metric.unit !== ''
@@ -67,8 +66,8 @@ const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({ s
               {metric.progressMax && metric.value !== undefined && metric.id === 'disk' && (
                   <Progress 
                       value={typeof metric.value === 'number' ? (metric.value / metric.progressMax) * 100 : 0} 
-                      className="h-2"
-                      indicatorClassName="progress-custom"
+                      className="h-1.5" // Made progress bar thinner
+                      indicatorClassName="progress-custom" // Cyan color from globals.css
                   />
               )}
             </li>
@@ -79,12 +78,10 @@ const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({ s
           <p className="text-sm text-muted-foreground">System metrics not available.</p>
         </div>
       )}
-      {!agentTask && !hasMetrics && <div className="flex-grow"></div>} 
-      {!agentTask && hasMetrics && <div className="mt-auto"></div>}
+      {hasMetrics && <div className="mt-auto"></div>} {/* Pushes content up if no agent task */}
     </div>
   );
 };
 
 export default SystemSnapshotCardContent;
-
     

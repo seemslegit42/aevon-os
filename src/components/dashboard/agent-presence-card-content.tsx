@@ -31,17 +31,17 @@ const AgentPresenceCardContent: React.FC<AgentPresenceCardContentProps> = ({ age
     <ScrollArea className="h-full pr-1"> 
       <ul className="space-y-2 p-1">
         {agents.map(agent => ( 
-          <li key={agent.id} className="p-2.5 rounded-md bg-card hover:bg-primary/5 dark:bg-black/10 dark:hover:bg-primary/10 transition-colors">
+          <li key={agent.id} className="p-2.5 rounded-md bg-card/50 hover:bg-primary/10 dark:bg-black/20 dark:hover:bg-primary/10 transition-colors">
             <div className="flex items-center justify-between mb-0.5">
               <span className="font-semibold text-foreground text-sm">{agent.name}</span>
               <div className="flex items-center text-xs">
                 <agent.statusIcon className={cn(
-                    "w-3.5 h-3.5 mr-1.5", 
+                    "w-3.5 h-3.5 mr-1.5 shrink-0", 
                     agent.statusColor,
                     agent.status === 'Processing' ? 'animate-spin' : ''
                   )} 
                 />
-                <span className={agent.statusColor}>{agent.status}</span>
+                <span className={cn("font-medium", agent.statusColor)}>{agent.status}</span>
                 <span className="text-muted-foreground ml-1.5">({agent.time})</span>
               </div>
             </div>
@@ -54,5 +54,4 @@ const AgentPresenceCardContent: React.FC<AgentPresenceCardContentProps> = ({ age
 };
 
 export default AgentPresenceCardContent;
-
     

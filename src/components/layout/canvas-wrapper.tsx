@@ -1,6 +1,7 @@
 
 "use client";
 import React from 'react';
+import { cn } from '@/lib/utils';
 
 type CanvasWrapperProps = {
   children: React.ReactNode;
@@ -8,9 +9,12 @@ type CanvasWrapperProps = {
 
 const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
   return (
-    // Removed iridescent-aurora-bg, main background is now controlled by body styles
-    // Also removed the inner div with the grid pattern to match the solid background of the reference image
-    <main className="flex-grow w-full p-4 md:p-8 overflow-y-auto relative">
+    <main 
+      className={cn(
+        "flex-grow w-full p-4 md:p-8 overflow-y-auto relative",
+        "iridescent-purple-bg-light dark:iridescent-purple-bg-dark" 
+      )}
+    >
       <div className="relative z-10">
         {children}
       </div>
@@ -19,4 +23,3 @@ const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
 };
 
 export default CanvasWrapper;
-

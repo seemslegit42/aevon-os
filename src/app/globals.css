@@ -5,43 +5,47 @@
 
 @layer base {
   :root {
-    --background: 283 30% 97%; /* Very Light Imperial Purple - Light Mode */
-    --foreground: 248 37% 15%; /* Obsidian Black - Light Mode */
+    /* --- Light Theme (Reference Adjusted) --- */
+    --background: 283 30% 97%; /* Very Light Imperial Purple */
+    --background-h: 283; --background-s: 30%; --background-l: 97%;
+    --foreground: 248 37% 15%; /* Obsidian Black */
     --foreground-h: 248; --foreground-s: 37%; --foreground-l: 15%;
 
-    --card: 150 100% 98%; /* Vitreous White - Light Mode */
+    --card: 150 100% 98%; /* Vitreous White (Panel Background Base) */
     --card-h: 150; --card-s: 100%; --card-l: 98%;
-    --card-foreground: 248 37% 15%; /* Obsidian Black - Light Mode */
+    --card-foreground: 248 37% 15%; /* Obsidian Black for text on cards */
 
-    --popover: 150 100% 98%; /* Vitreous White - Light Mode */
-    --popover-foreground: 248 37% 15%; /* Obsidian Black - Light Mode */
+    --popover: 150 100% 98%; /* Vitreous White */
+    --popover-foreground: 248 37% 15%;
 
-    /* --- Guide's Suggested Colors Translated to Light Theme Equivalents --- */
-    /* Primary: Magenta/Pink equivalent for Light Mode (less saturated) */
-    --primary: 323 70% 65%;
+    /* Primary Accent: Magenta/Pink (from reference image) */
+    --primary: 323 70% 65%; /* Brighter pink for light mode */
     --primary-h: 323; --primary-s: 70%; --primary-l: 65%;
-    --primary-foreground: 0 0% 100%; /* White for contrast on vibrant primary */
-    --primary-gradient-start: 323 70% 55%; /* Darker version for gradient */
+    --primary-foreground: 0 0% 100%; /* White text on magenta */
+    --primary-gradient-start: 283 50% 55%; /* Darker, more purplish magenta for gradient start */
 
-    /* Secondary: Cyan equivalent for Light Mode */
-    --secondary: 187 80% 50%;
-    --secondary-foreground: 0 0% 100%; /* White for contrast */
 
-    --muted: 223 13% 92%; /* Lighter Conchoidal Gray - Light Mode */
-    --muted-foreground: 248 37% 40%; /* Darker Gray - Light Mode */
+    /* Secondary Accent: Cyan (from reference image) */
+    --secondary: 187 80% 50%; /* Vivid Cyan for light mode */
+    --secondary-h: 187; --secondary-s: 80%; --secondary-l: 50%;
+    --secondary-foreground: 0 0% 100%; /* White text for contrast */
 
-    /* Accent: Kept as Gold/Yellow for distinct accents if needed, separate from primary/secondary */
-    --accent: 45 100% 60%;
-    --accent-foreground: 248 37% 15%;
+    --muted: 223 13% 92%; /* Lighter Conchoidal Gray */
+    --muted-foreground: 248 37% 40%; /* Darker Gray */
 
-    --destructive: 0 84.2% 60.2%; /* Red for failure/destructive */
+    /* Accent: Gold/Yellow (from reference image, for Active Agents badge) */
+    --accent: 45 100% 60%; /* Bright Yellow */
+    --accent-h: 45; --accent-s: 100%; --accent-l: 60%;
+    --accent-foreground: 248 37% 15%; /* Dark text on yellow */
+
+    --destructive: 0 84.2% 60.2%; /* Standard Red for destructive actions */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 223 13% 85%; /* Lighter Conchoidal Gray for borders - Light Mode */
-    --input: 223 13% 95%;  /* Lighter Conchoidal Gray for input backgrounds - Light Mode */
-    --ring: 323 70% 65%;   /* Magenta/Pink (for focus rings) - Light Mode */
+    --border: 223 13% 85%; /* Lighter Conchoidal Gray for general borders */
+    --input: 223 13% 95%;  /* Lighter Conchoidal Gray for input backgrounds */
+    --ring: 323 70% 65%;   /* Magenta/Pink for focus rings */
 
-    --radius: 0.5rem; /* Corresponds to 8px, guide suggests 8px-16px */
+    --radius: 0.5rem; /* Corresponds to 8px */
 
     /* Chart/Progress Bar Colors - Light Theme */
     --chart-1: hsl(var(--primary)); /* Magenta/Pink */
@@ -52,58 +56,55 @@
   }
 
   .dark {
-    /* --- Matching Guide's Dark Theme --- */
-    /* --color-background: #1a102c; (hsl(267, 45%, 12%)) */
-    --background: 267 45% 12%;
-    /* --color-text-primary: rgba(255, 255, 255, 0.9); */
-    --foreground: 0 0% 95%;
+    /* --- Dark Theme (Matches Reference Image) --- */
+    --background: 267 45% 12%; /* Deep Dark Purple Background */
+    --background-h: 267; --background-s: 45%; --background-l: 12%;
+    --foreground: 0 0% 95%; /* Off-white text */
     --foreground-h: 0; --foreground-s: 0%; --foreground-l: 95%;
 
-    /* Card background based on --color-panel-glass: rgba(40, 30, 60, 0.5); */
-    /* rgb(40, 30, 60) -> hsl(270, 33%, 18%) */
-    --card: 270 33% 18%;
+    /* Card background: Translucent Dark Purple */
+    --card: 270 33% 18%; /* Base color for hsla for glass panels */
     --card-h: 270; --card-s: 33%; --card-l: 18%;
     --card-foreground: 0 0% 95%;
 
-    --popover: 270 30% 15%; /* Darker Popover Purple */
+    --popover: 270 33% 18%; /* Consistent with card */
     --popover-foreground: 0 0% 95%;
 
-    /* --color-accent-primary: #e0359e; (hsl(323, 70%, 54%)) Magenta/Pink */
+    /* Primary Accent: Magenta/Pink */
     --primary: 323 70% 54%;
     --primary-h: 323; --primary-s: 70%; --primary-l: 54%;
     --primary-foreground: 0 0% 100%; /* White text on magenta */
-    --primary-gradient-start: 323 70% 40%; /* Darker magenta for gradient start */
+    --primary-gradient-start: 283 50% 35%; /* Darker, more purplish magenta for gradient start */
 
-    /* --color-accent-secondary: #00bcd4; (hsl(187, 100%, 42%)) Cyan */
+    /* Secondary Accent: Cyan */
     --secondary: 187 100% 42%;
-    --secondary-foreground: 0 0% 100%; /* White text on cyan */
+    --secondary-h: 187; --secondary-s: 100%; --secondary-l: 42%;
+    --secondary-foreground: 0 0% 100%;
 
-    /* --color-text-secondary: rgba(255, 255, 255, 0.6); */
-    /* For muted text, using a light gray HSL for consistency rather than white with alpha */
+    /* Muted Text */
     --muted: 270 15% 30%;
     --muted-foreground: 0 0% 70%; /* Lighter Gray for muted text */
 
-    /* Accent: (Gold/Yellow for "Active Agents" badge - Matches reference image if distinct from primary) */
-    /* If magenta is primary accent, this yellow can be for specific warnings or distinct highlights. */
-    --accent: 45 100% 55%; /* Slightly desaturated yellow from original theme */
-    --accent-foreground: 270 30% 10%;
+    /* Accent: Gold/Yellow (for Active Agents badge) */
+    --accent: 43 95% 55%;
+    --accent-h: 43; --accent-s: 95%; --accent-l: 55%;
+    --accent-foreground: 270 40% 10%; /* Dark purple/black text on yellow badge */
 
-    /* --color-error: #ff4d4f; (hsl(359, 100%, 65%)) */
-    --destructive: 359 100% 65%;
+    /* Destructive: Red */
+    --destructive: 0 72% 51%; /* Error Red from screenshot */
     --destructive-foreground: 0 0% 98%;
 
-    /* Border for general elements, distinct from glass panel border */
-    --border: 270 25% 25%;
-    --input: 270 25% 22%;
+    /* Borders & Inputs */
+    --border: 270 25% 25%; /* General border, glass panel has specific border */
+    --input: 270 20% 15%; /* Slightly darker for input fields */
     --ring: 323 70% 54%; /* Magenta/Pink for focus rings */
 
-    /* Chart/Progress Bar Colors - Dark Theme (Matches reference image & guide) */
+    /* Chart/Progress Bar Colors - Dark Theme (Matches reference image) */
     --chart-1: hsl(var(--primary)); /* Magenta/Pink */
-    --chart-2: hsl(var(--secondary)); /* Cyan */
+    --chart-2: hsl(187, 100%, 42%); /* Cyan (Progress Bar) */
     --chart-3: hsl(var(--accent)); /* Gold/Yellow */
-    /* --color-success: #39d98a; (hsl(151, 69%, 54%)) */
-    --chart-4: 151 69% 54%; /* Success Green */
-    --chart-5: hsl(var(--destructive)); /* Red for failure */
+    --chart-4: 145 63% 49%; /* Success Green from screenshot */
+    --chart-5: hsl(var(--destructive)); /* Error Red from screenshot */
   }
 }
 
@@ -113,36 +114,44 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Lexend', sans-serif; /* Ensuring default body font */
+    font-family: 'Lexend', sans-serif;
   }
   .dark body {
-    background-color: hsl(var(--background));
+    background-color: hsl(var(--background)); /* Explicitly set for dark mode */
   }
   h1, h2, h3, h4, h5, h6, .font-headline {
-    font-family: 'Comfortaa', sans-serif; /* Ensuring headline font */
+    font-family: 'Comfortaa', sans-serif;
   }
 }
 
+/* Iridescent Aurora Background - Not currently active on main canvas per latest instructions */
+.iridescent-purple-bg-light {
+  background: linear-gradient(160deg, hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) * 1.1)), hsl(270, 50%, 85%), hsl(var(--background-h), var(--background-s), var(--background-l)));
+}
+
+.iridescent-purple-bg-dark {
+  background: linear-gradient(160deg, hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) * 0.8)), hsl(270, 50%, 20%), hsl(var(--background-h), var(--background-s), var(--background-l)));
+}
+
+/* Glassmorphism Panel Style - Matches reference image and "frosted, layered depth" */
 .glassmorphism-panel {
-  /* background: rgba(40, 30, 60, 0.5); -- Guide's suggestion for dark mode */
-  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), 0.45); /* Adjusted alpha closer to 0.5 */
-  /* backdrop-filter: blur(12px); -- Guide's suggestion */
-  backdrop-filter: blur(12px) saturate(1.1); /* Kept saturate for a bit of pop */
+  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), 0.45);
+  backdrop-filter: blur(12px) saturate(1.1);
   -webkit-backdrop-filter: blur(12px) saturate(1.1);
-  /* border: 1px solid rgba(255, 255, 255, 0.1); -- Guide's suggestion for dark mode */
-  border: 1px solid hsla(0, 0%, 100%, 0.12); /* White border with low opacity for dark mode */
-  border-radius: var(--radius); /* Should be 0.5rem (8px) by default */
-  /* Subtle shadow for depth, not a colored glow for the panel itself */
-  box-shadow: 0 4px 18px hsla(var(--foreground-h), var(--foreground-s), var(--foreground-l), 0.05),
-              0 1px 5px hsla(var(--foreground-h), var(--foreground-s), var(--foreground-l), 0.04);
+  border: 1px solid hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 10%), 0.4); /* Brighter accent border */
+  border-radius: var(--radius);
+  box-shadow: 0 6px 24px hsla(var(--card-h), var(--card-s), 0%, 0.05), /* More subtle shadow */
+              0 2px 8px hsla(var(--card-h), var(--card-s), 0%, 0.03);
 }
 
 .dark .glassmorphism-panel {
-  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), 0.45); /* Matched dark mode alpha */
-  border: 1px solid hsla(0, 0%, 100%, 0.12); /* Matched dark mode border */
-  /* Adjusted shadow slightly for dark mode consistency */
-   box-shadow: 0 6px 24px hsla(var(--card-h), var(--card-s), 0%, 0.1), /* Darker shadow from card color */
-              0 2px 8px hsla(var(--card-h), var(--card-s), 0%, 0.08);
+  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), 0.45); /* Semi-transparent card base */
+  backdrop-filter: blur(12px) saturate(1.1); /* Frosted glass effect */
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+  border: 1px solid hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 15%), 0.5); /* Brighter primary accent border */
+  border-radius: var(--radius); /* Softly rounded corners */
+  box-shadow: 0 6px 24px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) - 80%), 0.1), /* Subtle depth shadow */
+              0 2px 8px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) - 80%), 0.08);
 }
 
 
@@ -167,7 +176,7 @@
   color: hsl(var(--primary-foreground));
 }
 .btn-gradient-primary-accent:hover {
-  filter: brightness(1.15); /* Slightly more pronounced hover brightness */
+  filter: brightness(1.15);
 }
 .btn-gradient-primary-accent:disabled {
   @apply opacity-50 cursor-not-allowed;
@@ -181,31 +190,31 @@
 
 /* TopBar specific background */
 .topbar-custom-bg {
-  background-color: hsl(0 0% 10%); /* Very dark gray / near black for TopBar (Matches reference) */
+  background-color: hsl(0 0% 10%); /* Very dark gray / near black for TopBar */
 }
 
 /* Active Nav Link in TopBar */
 .active-nav-link-dark {
   background-color: hsl(var(--primary-h) var(--primary-s) calc(var(--primary-l) * 0.8 / 1%)) !important; /* Darker Primary for active nav item background */
-  color: hsl(var(--primary-foreground)) !important; /* White text */
+  color: hsl(var(--primary-foreground)) !important;
 }
 .active-nav-link-dark:hover {
   background-color: hsl(var(--primary-h) var(--primary-s) calc(var(--primary-l) * 0.9 / 1%)) !important;
 }
 
-/* Progress bar custom color */
+/* Progress bar custom color (Cyan) */
 .progress-custom {
-  background-color: hsl(var(--chart-2)) !important; /* Cyan (Matches reference and guide) */
+  background-color: hsl(var(--chart-2)) !important;
 }
 
 /* Success and Failure badges for Live Orchestration Feed */
 .badge-success {
-  background-color: hsl(var(--chart-4)) !important; /* Green (Matches reference and guide) */
-  color: hsl(0 0% 100%) !important; /* Ensure contrast - pure white */
+  background-color: hsl(var(--chart-4)) !important; /* Green */
+  color: hsl(0 0% 100%) !important; /* White text */
 }
 .badge-failure {
-  background-color: hsl(var(--chart-5)) !important; /* Red (Matches reference and guide) */
-  color: hsl(var(--destructive-foreground)) !important; /* Ensure contrast */
+  background-color: hsl(var(--chart-5)) !important; /* Red */
+  color: hsl(var(--destructive-foreground)) !important;
 }
 .details-link-success {
   color: hsl(var(--chart-4)) !important; /* Green text for link */
@@ -213,4 +222,6 @@
 .details-link-failure {
   color: hsl(var(--chart-5)) !important; /* Red text for link */
 }
+    
+
     

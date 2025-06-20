@@ -28,7 +28,7 @@ const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardConten
     <ScrollArea className="h-full pr-2">
       <ul className="space-y-3 p-1">
         {feedItems.map((item, index) => (
-          <li key={index} className="p-3 rounded-md bg-card hover:bg-primary/5 dark:bg-black/10 dark:hover:bg-primary/10">
+          <li key={index} className="p-3 rounded-md bg-card/50 hover:bg-primary/10 dark:bg-black/20 dark:hover:bg-primary/10">
             <div className="flex items-start justify-between mb-1">
               <div className="flex items-center">
                  {item.status === 'success' ? <CheckCircle className="w-5 h-5 mr-2 text-green-500 shrink-0" /> : <X className="w-5 h-5 mr-2 text-red-500 shrink-0" />}
@@ -38,7 +38,7 @@ const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardConten
                 </div>
               </div>
               <span className={cn(
-                `text-xs font-medium px-2 py-0.5 rounded-full`,
+                `text-xs font-semibold px-2.5 py-1 rounded-full leading-none`, // Adjusted padding & leading
                  item.status === 'success' ? 'badge-success' : 'badge-failure'
                 )}>
                 {item.status}
@@ -58,5 +58,4 @@ const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardConten
 };
 
 export default LiveOrchestrationFeedCardContent;
-
     

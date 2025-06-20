@@ -13,13 +13,13 @@ const Progress = React.forwardRef<
   <ProgressPrimitive.Root
     ref={ref}
     className={cn(
-      "relative h-2 w-full overflow-hidden rounded-full bg-primary/20",
+      "relative h-1.5 w-full overflow-hidden rounded-full bg-primary/20", // Thinner bar, darker track
       className
     )}
     {...props}
   >
     <ProgressPrimitive.Indicator
-      className={cn("h-full w-full flex-1 bg-secondary transition-all", indicatorClassName)}
+      className={cn("h-full w-full flex-1 bg-secondary transition-all", indicatorClassName)} // Default to secondary, but overridden by progress-custom
       style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
     />
   </ProgressPrimitive.Root>
@@ -27,5 +27,4 @@ const Progress = React.forwardRef<
 Progress.displayName = ProgressPrimitive.Root.displayName
 
 export { Progress }
-
     
