@@ -35,7 +35,7 @@
     --muted-foreground-h: 220; --muted-s: 18%; --muted-foreground-l: 50%;
 
     /* Accent: Gold */
-    --accent-h: 48; --accent-s: 100%; --accent-l: 50%; /* #FFC300 - slightly warmer gold */
+    --accent-h: 48; --accent-s: 100%; --accent-l: 50%; /* #FFD700 - slightly warmer gold */
     --accent-foreground-h: 48; --accent-foreground-s: 100%; --accent-foreground-l: 12%;
 
     --destructive-h: 0; --destructive-s: 86%; --destructive-l: 58%;
@@ -51,11 +51,6 @@
     --chart-3-h: var(--accent-h); --chart-3-s: var(--accent-s); --chart-3-l: var(--accent-l); /* Gold */
     --chart-4-h: 158; --chart-4-s: 55%; --chart-4-l: 58%; /* Patina Green for success */
     --chart-5-h: var(--destructive-h); --chart-5-s: var(--destructive-s); --chart-5-l: var(--destructive-l); /* Red for errors */
-
-    /* TopBar Specific Colors - Light Theme */
-    --topbar-bg-h: 0; --topbar-bg-s: 0%; --topbar-bg-l: 97%; --topbar-bg-a: 0.35; 
-    --topbar-border-h: 220; --topbar-border-s: 20%; --topbar-border-l: 88%; --topbar-border-a: 0.15; 
-
 
     /* Full HSL color definitions */
     --background: hsl(var(--background-h), var(--background-s), var(--background-l));
@@ -115,7 +110,7 @@
     --muted-foreground-h: 220; --muted-s: 15%; --muted-foreground-l: 75%; /* Lighter for dark mode */
 
 
-    /* Accent: Gold (#FFD700) - using the warmer gold from light theme */
+    /* Accent: Gold (#FFD700) */
     --accent-h: 48; --accent-s: 100%; --accent-l: 55%; /* Brighter for dark mode */
     --accent-foreground-h: 48; --accent-foreground-s: 100%; --accent-foreground-l: 8%; /* Darker for contrast */
 
@@ -134,16 +129,12 @@
     --chart-4-h: 158; --chart-4-s: 65%; --chart-4-l: 50%; /* Patina Green (#3EB991) for success */
     --chart-5-h: var(--destructive-h); --chart-5-s: var(--destructive-s); --chart-5-l: var(--destructive-l);
 
-    /* TopBar Specific Colors - Dark Theme */
-    --topbar-bg-h: 275; --topbar-bg-s: 30%; --topbar-bg-l: 12%; --topbar-bg-a: 0.25; 
-    --topbar-border-h: 275; --topbar-border-s: 20%; --topbar-border-l: 30%; --topbar-border-a: 0.15; 
-
-    /* FIX: Directly define --foreground, --card-foreground, and --muted-foreground for dark mode */
+    /* Directly define --foreground, --card-foreground, and --muted-foreground for dark mode */
     --background: hsl(var(--background-h), var(--background-s), var(--background-l));
-    --foreground: hsl(210, 30%, 96%); /* Directly defined for clarity in dark mode */
-    --card-foreground: hsl(210, 30%, 96%); /* Directly defined for clarity in dark mode */
-    --popover-foreground: hsl(210, 30%, 96%); /* Assuming popover should also use this */
-    --muted-foreground: hsl(220, 15%, 75%); /* Directly defined for clarity in dark mode */
+    --foreground: hsl(210, 30%, 96%); 
+    --card-foreground: hsl(210, 30%, 96%); 
+    --popover-foreground: hsl(210, 30%, 96%); 
+    --muted-foreground: hsl(220, 15%, 75%); 
 
     --card: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
     --popover: hsla(var(--popover-h), var(--popover-s), var(--popover-l), var(--popover-a));
@@ -153,7 +144,6 @@
     --secondary: hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l));
     --secondary-foreground: hsl(var(--secondary-foreground-h), var(--secondary-foreground-s), var(--secondary-foreground-l));
     --muted: hsl(var(--muted-h), var(--muted-s), var(--muted-l));
-    /* --muted-foreground is now directly defined above */
     --accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
     --accent-foreground: hsl(var(--accent-foreground-h), var(--accent-foreground-s), var(--accent-foreground-l));
     --destructive: hsl(var(--destructive-h), var(--destructive-s), var(--destructive-l));
@@ -188,7 +178,6 @@
 
 /* Glassmorphism Panel Style */
 .glassmorphism-panel {
-  /* Updated Light Theme Glass */
   background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -198,7 +187,6 @@
 }
 
 .dark .glassmorphism-panel {
-  /* Dark Theme Glass - Uses theme variables */
   background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
   backdrop-filter: blur(16px) saturate(1.2); 
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
@@ -303,12 +291,59 @@
 
 /* TopBar specific background - now glassmorphism */
 .topbar-custom-bg {
-  background-color: hsla(var(--topbar-bg-h), var(--topbar-bg-s), var(--topbar-bg-l), var(--topbar-bg-a));
+  background-color: hsla(var(--topbar-bg-h, 0), var(--topbar-bg-s, 0%), var(--topbar-bg-l, 97%), var(--topbar-bg-a, 0.35)); /* Default to light theme values if vars not found */
   backdrop-filter: blur(10px) saturate(1.05);
   -webkit-backdrop-filter: blur(10px) saturate(1.05);
-  border-bottom: 1px solid hsla(var(--topbar-border-h), var(--topbar-border-s), var(--topbar-border-l), var(--topbar-border-a));
+  border-bottom: 1px solid hsla(var(--topbar-border-h, 220), var(--topbar-border-s, 20%), var(--topbar-border-l, 88%), var(--topbar-border-a, 0.15));
   box-shadow: 0 1px 8px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 10%), 0.1);
 }
+.dark .topbar-custom-bg {
+    background-color: hsla(var(--topbar-bg-h, 275), var(--topbar-bg-s, 30%), var(--topbar-bg-l, 12%), var(--topbar-bg-a, 0.25));
+    border-bottom-color: hsla(var(--topbar-border-h, 275), var(--topbar-border-s, 20%), var(--topbar-border-l, 30%), var(--topbar-border-a, 0.15));
+}
+
+
+/* AEVOS TopBar Glass Effect */
+.topbar-aevos-glass {
+  background-color: rgba(245, 255, 250, 0.10); /* Vitreous White @ 10% opacity */
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-bottom: 1px solid rgba(245, 255, 250, 0.25);
+  box-shadow: 0 4px 24px 0 rgba(28, 25, 52, 0.1); /* Obsidian Black @ 10% opacity */
+}
+.dark .topbar-aevos-glass { /* Dark mode adjustments if needed, for now same as light */
+  background-color: rgba(28, 25, 52, 0.10); /* Obsidian Black @ 10% for dark theme */
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-bottom: 1px solid rgba(245, 255, 250, 0.15); /* Lighter border for dark */
+  box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.2); /* Slightly darker shadow for dark */
+}
+
+/* AEVOS Command Bar Input Style */
+.command-bar-input-aevos {
+  background-color: rgba(245, 255, 250, 0.2) !important; /* More opaque Vitreous White */
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.075);
+  border-color: rgba(245, 255, 250, 0.3) !important; /* Subtle border */
+}
+.dark .command-bar-input-aevos {
+  background-color: rgba(40, 35, 60, 0.3) !important; /* Darker translucent */
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+  border-color: rgba(245, 255, 250, 0.1) !important;
+  color: hsl(var(--foreground-h), var(--foreground-s), var(--foreground-l)) !important; /* Ensure text is light */
+}
+.dark .command-bar-input-aevos::placeholder {
+  color: hsla(var(--muted-foreground-h), var(--muted-foreground-s), var(--muted-foreground-l), 0.7) !important;
+}
+
+
+/* AEVOS Icon Style */
+.aevos-icon-style {
+  filter: drop-shadow(0px 0.5px 1px rgba(28, 25, 52, 0.2));
+}
+.dark .aevos-icon-style {
+  filter: drop-shadow(0px 0.5px 1px rgba(0, 0, 0, 0.3));
+}
+
 
 /* Progress bar custom color (Roman Aqua / Cyan - Chart 2) */
 .progress-custom {

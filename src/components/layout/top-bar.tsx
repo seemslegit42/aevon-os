@@ -10,15 +10,13 @@ import {
   MoonIcon,
   SunIcon,
   SearchIcon,
-  HomeIcon,
-  Settings2Icon as SettingsIcon, 
-  ShieldCheckIcon as ShieldIcon, 
-  CreditCardIcon as ShoppingCartIcon, 
+  Settings2Icon as LoomIcon, // Aliased for Loom
+  ShieldCheckIcon as AegisIcon, // Aliased for Aegis
+  CreditCardIcon as ArmoryIcon, // Aliased for Armory
   BellIcon,
-  Settings2Icon,
+  Settings2Icon, // General Settings
   ClockIcon,
   ChevronDownIcon,
-  UserIcon,
 } from '@/components/icons'; 
 import {
   Tooltip,
@@ -41,7 +39,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { cn } from '@/lib/utils';
 import { useThemeStore } from '@/stores/theme.store';
-import { LogoSymbol } from '@/components/icons/LogoSymbol';
 
 interface NavItemConfig {
   href: string;
@@ -50,10 +47,9 @@ interface NavItemConfig {
 }
 
 const mainNavItems: NavItemConfig[] = [
-  { href: '/', label: 'Home', icon: HomeIcon },
-  { href: '/loom-studio', label: 'Loom', icon: SettingsIcon },
-  { href: '/aegis-security', label: 'Λegis', icon: ShieldIcon },
-  { href: '/armory', label: 'Λrmory', icon: ShoppingCartIcon },
+  { href: '/loom-studio', label: 'Loom', icon: LoomIcon },
+  { href: '/aegis-security', label: 'Λegis', icon: AegisIcon },
+  { href: '/armory', label: 'Λrmory', icon: ArmoryIcon },
 ];
 
 const TopBar: React.FC = () => {
@@ -64,32 +60,40 @@ const TopBar: React.FC = () => {
     (state) => ({ theme: state.theme, toggleTheme: state.toggleTheme })
   );
 
-
   useEffect(() => {
     setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isMounted) return;
-
     const updateClock = () => {
-      setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      const now = new Date();
+      setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
     };
     updateClock();
     const timerId = setInterval(updateClock, 60000); 
-
     return () => clearInterval(timerId);
-  }, [isMounted]);
+  }, []);
+
+  const isActive = (href: string) => {
+    if (href === '/') return pathname === '/'; // Exact match for potential future dashboard/home
+    return pathname.startsWith(href);
+  };
 
   return (
     <TooltipProvider delayDuration={0}>
-      <header className="sticky top-0 z-50 w-full topbar-custom-bg font-headline text-foreground">
+      <header className={cn(
+        "sticky top-0 z-50 w-full topbar-aevos-glass font-body text-foreground",
+        // In dark mode, text should become light. This is handled by text-foreground
+        // which updates based on the .dark class on html.
+      )}>
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          {/* Left Side: Logo and Navigation */}
-          <div className="flex items-center space-x-4">
-            <Link href="/" className="text-2xl font-bold flex items-center">
-              <LogoSymbol className="text-primary dark:text-white" />
+          {/* Left Side: Branding */}
+          <div className="flex items-center space-x-2">
+            <Link href="/" className="text-2xl flex items-center text-[#6A0DAD] dark:text-primary-foreground">
+              <span className="font-headline font-bold">ΛΞVON</span>
+              <span className="font-headline font-bold ml-1">ΛΞVOS</span>
             </Link>
+          </div>
+
+          {/* Center: Navigation & Command Bar */}
+          <div className="flex-1 flex items-center justify-center space-x-6 px-4">
             <nav className="hidden md:flex items-center space-x-1">
               {mainNavItems.map((item) => (
                 <Link key={item.href} href={item.href}>
@@ -97,9 +101,10 @@ const TopBar: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     className={cn(
-                      "text-muted-foreground hover:text-foreground",
-                      (pathname === item.href || (item.href === '/' && pathname.startsWith('/dashboard') && pathname.length <=1 ) || (item.href !== '/' && pathname.startsWith(item.href)) ) &&
-                        "bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary-foreground font-semibold" 
+                      "font-body hover:bg-primary/10 dark:hover:bg-white/10",
+                      isActive(item.href) 
+                        ? "bg-primary/15 dark:bg-white/15 text-primary dark:text-primary-foreground font-medium"
+                        : "text-muted-foreground dark:text-neutral-300 hover:text-primary dark:hover:text-white"
                     )}
                   >
                     <item.icon className="w-4 h-4 mr-2" />
@@ -108,19 +113,14 @@ const TopBar: React.FC = () => {
                 </Link>
               ))}
             </nav>
-          </div>
-
-          {/* Center: Search Bar */}
-          <div className="flex-1 flex justify-center px-8 lg:px-16">
             <div className="relative w-full max-w-md">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground dark:text-neutral-400 aevos-icon-style" />
               <Input
                 type="search"
-                placeholder="Search or ask 'show my tasks'..."
+                placeholder="Command or Search..."
                 className={cn(
-                  "w-full h-9 pl-10 pr-4 bg-input border-input focus:ring-accent focus:border-accent",
-                  "text-sm text-foreground", // Ensures input text itself is also theme-aware
-                  "placeholder:text-muted-foreground"
+                  "w-full h-9 pl-10 pr-4 command-bar-input-aevos font-body",
+                  "text-sm text-foreground placeholder:text-muted-foreground dark:placeholder-neutral-400/70"
                 )}
                 aria-label="Command or search input"
               />
@@ -128,27 +128,25 @@ const TopBar: React.FC = () => {
           </div>
 
           {/* Right Side: Controls & User Menu */}
-          <div className="flex items-center space-x-1.5">
+          <div className="flex items-center space-x-1.5 font-body">
              <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={toggleTheme}
-                  className="w-9 h-9"
+                  className="w-9 h-9 text-foreground dark:text-primary-foreground hover:bg-primary/10 dark:hover:bg-white/10"
                   aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
                 >
                   {isMounted && theme === 'dark' ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode</p>
-              </TooltipContent>
+              <TooltipContent side="bottom"><p>Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode</p></TooltipContent>
             </Tooltip>
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="w-9 h-9">
+                 <Button variant="ghost" size="icon" className="w-9 h-9 text-foreground dark:text-primary-foreground hover:bg-primary/10 dark:hover:bg-white/10">
                   <BellIcon className="h-5 w-5" />
                   <span className="sr-only">Notifications</span>
                 </Button>
@@ -158,7 +156,7 @@ const TopBar: React.FC = () => {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="w-9 h-9">
+                <Button variant="ghost" size="icon" className="w-9 h-9 text-foreground dark:text-primary-foreground hover:bg-primary/10 dark:hover:bg-white/10">
                   <Settings2Icon className="h-5 w-5" />
                   <span className="sr-only">Settings</span>
                 </Button>
@@ -166,29 +164,33 @@ const TopBar: React.FC = () => {
               <TooltipContent side="bottom"><p>Settings</p></TooltipContent>
             </Tooltip>
 
-            <div className="flex items-center text-sm text-muted-foreground px-2 h-9">
+            <div className="flex items-center text-xs text-muted-foreground dark:text-neutral-300 px-2 h-9">
               <ClockIcon className="h-4 w-4 mr-1.5" />
               {isMounted ? currentTime : "--:--"}
             </div>
+             <div className="hidden md:flex items-center text-xs text-muted-foreground dark:text-neutral-300 px-1 h-9 border-l border-white/20 dark:border-neutral-700/50 ml-1 pl-2.5">
+                Admin User <span className="mx-1">|</span> Session: <span className="text-accent font-medium ml-1">Active</span>
+            </div>
+
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2 h-9 px-2.5">
+                <Button variant="ghost" className="flex items-center space-x-2 h-9 px-2.5 text-foreground dark:text-primary-foreground hover:bg-primary/10 dark:hover:bg-white/10">
                   <Avatar className="h-6 w-6">
                     <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
-                    <AvatarFallback className="text-xs bg-primary/30 text-primary-foreground">U</AvatarFallback>
+                    <AvatarFallback className="text-xs bg-primary/30 text-primary-foreground">AU</AvatarFallback>
                   </Avatar>
                   <ChevronDownIcon className="h-4 w-4 opacity-80" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 glassmorphism-panel border-border/30 dark:border-white/10">
-                <DropdownMenuLabel className="font-headline text-primary dark:text-primary">My Account</DropdownMenuLabel>
+                <DropdownMenuLabel className="font-headline text-primary dark:text-primary-foreground">My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator className="bg-border/20 dark:bg-white/5"/>
-                <DropdownMenuItem className="hover:!bg-primary/10 dark:hover:!bg-white/5 focus:bg-accent focus:text-accent-foreground">Profile</DropdownMenuItem>
-                <DropdownMenuItem className="hover:!bg-primary/10 dark:hover:!bg-white/5 focus:bg-accent focus:text-accent-foreground">Billing</DropdownMenuItem>
-                <DropdownMenuItem className="hover:!bg-primary/10 dark:hover:!bg-white/5 focus:bg-accent focus:text-accent-foreground">Settings</DropdownMenuItem>
+                <DropdownMenuItem className="font-body hover:!bg-primary/10 dark:hover:!bg-white/5 focus:bg-accent focus:text-accent-foreground">Profile</DropdownMenuItem>
+                <DropdownMenuItem className="font-body hover:!bg-primary/10 dark:hover:!bg-white/5 focus:bg-accent focus:text-accent-foreground">Billing</DropdownMenuItem>
+                <DropdownMenuItem className="font-body hover:!bg-primary/10 dark:hover:!bg-white/5 focus:bg-accent focus:text-accent-foreground">Settings</DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-border/20 dark:bg-white/5"/>
-                <DropdownMenuItem className="hover:!bg-primary/10 dark:hover:!bg-white/5 focus:bg-accent focus:text-accent-foreground">Log out</DropdownMenuItem>
+                <DropdownMenuItem className="font-body hover:!bg-primary/10 dark:hover:!bg-white/5 focus:bg-accent focus:text-accent-foreground">Log out</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
