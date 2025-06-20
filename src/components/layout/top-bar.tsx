@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Home, type LucideIcon, ChevronDown, BrainCircuit } from 'lucide-react';
+import { Search, Home, type LucideIcon, ChevronDown, BrainCircuit } from 'lucide-react'; // Removed LayoutGrid
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from '@/lib/utils';
 
@@ -17,9 +17,13 @@ interface NavItem {
   showDropdown?: boolean;
 }
 
-// Cleaned up navItems: Only active items are present.
 const navItems: NavItem[] = [
   { href: '/', label: 'Home Dashboard', icon: Home, showDropdown: true },
+  // Other nav items like Loom Studio, Aegis Security, Armory can be added here
+  // Example:
+  // { href: '/loom-studio', label: 'Loom Studio', icon: Settings /* Or other relevant icon */ },
+  // { href: '/aegis-security', label: 'Aegis Security', icon: Shield },
+  // { href: '/armory', label: 'Armory', icon: ShoppingCart },
 ];
 
 const TopBar: React.FC = () => {

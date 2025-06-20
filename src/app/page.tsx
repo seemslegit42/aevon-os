@@ -4,10 +4,11 @@ import React, { useState, useEffect, FormEvent } from 'react';
 import { Rnd, type Position, type Size } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Cpu, LayoutGrid, AppWindow, Users, HardDrive, Timer, Blocks, Mic, MoreHorizontal, X, CheckCircle, AlertCircle, LoaderCircle, CircleDot, BarChartBig, Settings2, Shield, Server, Network, Clock, Info } from 'lucide-react';
+import { Sparkles, Cpu, AppWindow, Users, HardDrive, Timer, Blocks, Mic, MoreHorizontal, X, CheckCircle, AlertCircle, LoaderCircle, CircleDot, BarChartBig, Settings2, Shield, Server, Network, Clock, Info } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 import AiAssistantCardContent from '@/components/dashboard/ai-assistant-card-content';
 import AgentPresenceCardContent, { type Agent } from '@/components/dashboard/agent-presence-card-content';
@@ -32,7 +33,6 @@ const initialFeedItems: FeedItem[] = [
   { task: 'Agent Task: Backup Database Cluster', time: '15 minutes ago', status: 'success', details: 'Full backup completed.' },
 ];
 
-// Matching the reference image data
 const systemMetricsConfigData: SystemMetric[] = [
   { id: 'agents', icon: Users, label: 'Active Agents', value: 5, unit: '' },
   { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: 450, progressMax: 1000, unit: 'GB' },
@@ -69,6 +69,7 @@ export default function DashboardPage() {
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   const [dismissedCardIds, setDismissedCardIds] = useState<string[]>([]);
 
@@ -130,9 +131,8 @@ export default function DashboardPage() {
     }
   };
 
-  // Layout based on reference image
   const initialCardsData: CardConfig[] = [
-    { // AI Assistant - Spans top, left-ish
+    { 
       id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, isDismissible: true,
       x: 20, y: 20, width: 580, height: 300, zIndex: 1, minWidth: 400, minHeight: 280,
       cardClassName: "flex-grow flex flex-col",
@@ -146,29 +146,29 @@ export default function DashboardPage() {
         placeholderInsight: "Analyze product sales, compare revenue, or ask for insights."
       }
     },
-    { // Agent Presence - Top Right
+    { 
       id: 'agentPresence', title: 'Agent Presence', icon: Cpu, isDismissible: true,
       x: 620, y: 20, width: 450, height: 230, zIndex: 1, minWidth: 300, minHeight: 200,
       content: AgentPresenceCardContent,
       contentProps: { agents: initialAgentsData }
     },
-    { // System Snapshot - Under Agent Presence
-      id: 'systemSnapshot', title: 'System Snapshot', icon: LayoutGrid, isDismissible: true,
+    { 
+      id: 'systemSnapshot', title: 'System Snapshot', icon: Server, isDismissible: true,
       x: 620, y: 270, width: 450, height: 250, zIndex: 1, minWidth: 320, minHeight: 240,
       content: SystemSnapshotCardContent,
       contentProps: { systemMetricsConfig: systemMetricsConfigData, agentTask: agentTaskExampleData }
     },
-     { // Micro-Apps - Between System Snapshot and Live Orchestration (middle right)
+     { 
       id: 'microApps', title: 'Micro-Apps', icon: Blocks, isDismissible: true,
       x: 620, y: 540, width: 450, height: 130, zIndex: 1, minWidth: 280, minHeight: 120, 
       content: MicroAppsCardContent,
     },
-    { // Application View - Bottom Left
+    { 
       id: 'applicationView', title: 'Application View', icon: AppWindow, isDismissible: true,
       x: 20, y: 340, width: 580, height: 330, zIndex: 1, minWidth: 400, minHeight: 200,
       content: ApplicationViewCardContent,
     },
-    { // Live Orchestration - Bottom Right-ish (under Micro-Apps)
+    { 
       id: 'liveOrchestration', title: 'Live Orchestration Feed', icon: CheckCircle, isDismissible: true,
       x: 1090, y: 20, width: 400, height: 650, zIndex: 1, minWidth: 320, minHeight: 250, 
       cardClassName: "flex-grow flex flex-col",
@@ -221,52 +221,73 @@ export default function DashboardPage() {
   const cardsToRender = initialCardsData.filter(card => !dismissedCardIds.includes(card.id));
 
   return (
-    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden p-4">
-      {cardsToRender.map(cardConfig => {
-        const currentLayout = cardLayouts.find(l => l.id === cardConfig.id);
-        if (!currentLayout) return null;
+    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-auto p-4">
+      {isMobile ? (
+        <div className="flex flex-col space-y-4">
+          {cardsToRender.map(cardConfig => {
+            const CardSpecificContent = cardConfig.content;
+            return (
+              <div key={cardConfig.id} className="w-full">
+                <MicroAppCard
+                  title={cardConfig.title}
+                  icon={cardConfig.icon}
+                  actions={cardConfig.actions ? cardConfig.actions(cardConfig.id, handleDismissCardAttempt) : undefined}
+                  className={cn("!rounded-lg", cardConfig.cardClassName)}
+                >
+                  <CardSpecificContent {...cardConfig.contentProps} />
+                </MicroAppCard>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        // Desktop: RND-based layout
+        cardsToRender.map(cardConfig => {
+          const currentLayout = cardLayouts.find(l => l.id === cardConfig.id);
+          if (!currentLayout) return null;
 
-        const CardSpecificContent = cardConfig.content;
+          const CardSpecificContent = cardConfig.content;
 
-        return (
-          <Rnd
-            key={cardConfig.id}
-            size={{ width: currentLayout.width, height: currentLayout.height }}
-            position={{ x: currentLayout.x, y: currentLayout.y }}
-            onDragStart={() => handleBringToFront(cardConfig.id)}
-            onDragStop={(e, d) => {
-              updateCardLayout(cardConfig.id, { x: d.x, y: d.y });
-            }}
-            onResizeStart={() => handleBringToFront(cardConfig.id)}
-            onResizeStop={(e, direction, ref, delta, position) => {
-              updateCardLayout(cardConfig.id, position, { width: ref.offsetWidth, height: ref.offsetHeight });
-            }}
-            minWidth={cardConfig.minWidth}
-            minHeight={cardConfig.minHeight}
-            bounds="parent"
-            dragHandleClassName="drag-handle"
-            enableResizing={{
-                top:true, right:true, bottom:true, left:true,
-                topRight:true, bottomRight:true, bottomLeft:true, topLeft:true
-            }}
-            style={{ zIndex: currentLayout.zIndex }}
-            className={cn(
-              "border-transparent hover:border-primary/30 focus-within:border-primary",
-            )}
-            dragGrid={[10, 10]}
-            resizeGrid={[10, 10]}
-          >
-            <MicroAppCard
-              title={cardConfig.title}
-              icon={cardConfig.icon}
-              actions={cardConfig.actions ? cardConfig.actions(cardConfig.id, handleDismissCardAttempt) : undefined}
-              className={cn("h-full w-full !rounded-lg", cardConfig.cardClassName)}
+          return (
+            <Rnd
+              key={cardConfig.id}
+              size={{ width: currentLayout.width, height: currentLayout.height }}
+              position={{ x: currentLayout.x, y: currentLayout.y }}
+              onDragStart={() => handleBringToFront(cardConfig.id)}
+              onDragStop={(e, d) => {
+                updateCardLayout(cardConfig.id, { x: d.x, y: d.y });
+              }}
+              onResizeStart={() => handleBringToFront(cardConfig.id)}
+              onResizeStop={(e, direction, ref, delta, position) => {
+                updateCardLayout(cardConfig.id, position, { width: ref.offsetWidth, height: ref.offsetHeight });
+              }}
+              minWidth={cardConfig.minWidth}
+              minHeight={cardConfig.minHeight}
+              bounds="parent"
+              dragHandleClassName="drag-handle"
+              enableResizing={{
+                  top:true, right:true, bottom:true, left:true,
+                  topRight:true, bottomRight:true, bottomLeft:true, topLeft:true
+              }}
+              style={{ zIndex: currentLayout.zIndex }}
+              className={cn(
+                "border-transparent hover:border-primary/30 focus-within:border-primary",
+              )}
+              dragGrid={[10, 10]}
+              resizeGrid={[10, 10]}
             >
-              <CardSpecificContent {...cardConfig.contentProps} />
-            </MicroAppCard>
-          </Rnd>
-        );
-      })}
+              <MicroAppCard
+                title={cardConfig.title}
+                icon={cardConfig.icon}
+                actions={cardConfig.actions ? cardConfig.actions(cardConfig.id, handleDismissCardAttempt) : undefined}
+                className={cn("h-full w-full !rounded-lg", cardConfig.cardClassName)}
+              >
+                <CardSpecificContent {...cardConfig.contentProps} />
+              </MicroAppCard>
+            </Rnd>
+          );
+        })
+      )}
        <div className="fixed bottom-4 right-4 text-xs text-muted-foreground/70 font-code z-[9999]">
         <span>ΛΞVON OS v1.0 </span>
         <span className="font-semibold">SILENT AUTOMATION</span>
