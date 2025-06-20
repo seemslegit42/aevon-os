@@ -91,10 +91,10 @@ const TopBar: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     className={cn(
-                      "hover:bg-primary/20 dark:hover:bg-white/10", // Common hover bg
-                      "text-gray-700 dark:text-white", // Base text color
-                      "hover:text-gray-900 dark:hover:text-neutral-200", // Hover text color
-                      (pathname === item.href || (item.href === '/' && pathname.startsWith('/dashboard'))) && 
+                      "hover:bg-primary/20 dark:hover:bg-white/10",
+                      "text-gray-700 dark:text-white",
+                      "hover:text-gray-900 dark:hover:text-neutral-200",
+                      (pathname === item.href || (item.href === '/' && pathname.startsWith('/dashboard') && pathname.length <=1 ) || (item.href !== '/' && pathname.startsWith(item.href)) ) && 
                         "active-nav-link-dark font-semibold" 
                     )}
                   >
@@ -114,22 +114,13 @@ const TopBar: React.FC = () => {
                 type="search"
                 placeholder="Command or Search (Ctrl+K)..."
                 className={cn(
-                  "w-full h-9 pl-10 pr-16 border-border/50 focus:ring-primary focus:border-primary",
+                  "w-full h-9 pl-10 pr-4 border-border/50 focus:ring-primary focus:border-primary",
                   "bg-background/50 dark:bg-white/5 ",
                   "text-sm text-gray-900 dark:text-white",
                   "placeholder-muted-foreground dark:placeholder-neutral-400"
                 )}
                 aria-label="Command or search input"
               />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
-                <kbd className={cn(
-                  "pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100",
-                  "border-muted/50 bg-muted/20 text-neutral-700 dark:text-neutral-400"
-                  )}
-                >
-                  ⌘K
-                </kbd>
-              </div>
             </div>
           </div>
           
