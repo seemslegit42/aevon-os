@@ -15,7 +15,7 @@
     --foreground-h: 255; --foreground-s: 15%; --foreground-l: 12%;
 
     /* Card: Cooler, less purple, slightly more translucent */
-    --card-h: 220; --card-s: 30%; --card-l: 98%; --card-a: 0.45; 
+    --card-h: 220; --card-s: 30%; --card-l: 98%; --card-a: 0.45;
     --card-foreground-h: var(--foreground-h); --card-foreground-s: var(--foreground-s); --card-foreground-l: var(--foreground-l);
 
     --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l); --popover-a: var(--card-a);
@@ -84,9 +84,9 @@
   .dark {
     /* --- Dark Theme --- */
     /* Background: Deep Dark Purple (derived from #1a102c / #6A0DAD) */
-    --background-h: 275; --background-s: 45%; --background-l: 8%; 
+    --background-h: 275; --background-s: 45%; --background-l: 8%;
     --background-l-offset: 8%;
-    
+
     /* Foreground TEXT Colors: ENSURE THESE ARE WHITE OR VERY LIGHT GRAY */
     --foreground-h: 0; --foreground-s: 0%; --foreground-l: 98%; /* Almost White */
     --card-foreground-h: 0; --card-foreground-s: 0%; --card-foreground-l: 98%; /* Almost White */
@@ -94,13 +94,13 @@
     --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 100%; /* White */
     --secondary-foreground-h: 0; --secondary-foreground-s: 0%; --secondary-foreground-l: 98%; /* Almost White */
     --muted-foreground-h: 220; --muted-s: 15%; --muted-foreground-l: 85%;  /* Very Light Gray */
-    --accent-foreground-h: 0; --accent-foreground-s: 0%; --accent-foreground-l: 98%; /* Almost White for text on accent backgrounds */
-    --destructive-foreground-h: 0; --destructive-foreground-s: 0%; --destructive-foreground-l: 98%; /* Almost White */
+    --accent-foreground-h: 0; --accent-s: 0%; --accent-l: 98%; /* Almost White for text on accent backgrounds */
+    --destructive-foreground-h: 0; --destructive-s: 0%; --destructive-l: 98%; /* Almost White */
 
 
     /* Card: Darker, slightly desaturated Purple base for cards */
-    --card-h: 275; --card-s: 25%; --card-l: 15%; --card-a: 0.50; 
-    
+    --card-h: 275; --card-s: 25%; --card-l: 15%; --card-a: 0.50;
+
     --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l); --popover-a: var(--card-a);
 
     /* Primary: Vibrant Magenta/Pink (#e0359e / #6A0DAD) */
@@ -110,13 +110,14 @@
     /* Secondary: Bright Blue/Cyan (#00bcd4 / #20B2AA) */
     --secondary-h: 177; --secondary-s: 100%; --secondary-l: 45%;
 
-    /* Muted: Light Gray for "muted" backgrounds/elements */
-    --muted-h: 220; --muted-s: 18%; --muted-l: 65%;
+    /* Muted: Light Gray for "muted" backgrounds/elements - this is for BACKGROUNDS, not text */
+    /* Ensure the HSL for muted text above (--muted-foreground-h,s,l) is used for text-muted-foreground */
+    --muted-h: 220; --muted-s: 18%; --muted-l: 25%; /* Darker muted background */
 
 
     /* Accent: Gold (#FFD700) */
     --accent-h: 48; --accent-s: 100%; --accent-l: 55%; /* Brighter for dark mode */
-    
+
     --destructive-h: 0; --destructive-s: 75%; --destructive-l: 55%;
 
     /* Border: Muted Cool Gray for general borders (#8C94A8 based) or specific glass border */
@@ -133,18 +134,18 @@
 
     /* Full HSL color definitions - These will use the HSL variables defined above */
     --background: hsl(var(--background-h), var(--background-s), var(--background-l));
-    --foreground: hsl(var(--foreground-h), var(--foreground-s), var(--foreground-l)); 
+    --foreground: hsl(var(--foreground-h), var(--foreground-s), var(--foreground-l));
     --card: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
-    --card-foreground: hsl(var(--card-foreground-h), var(--card-foreground-s), var(--card-foreground-l)); 
+    --card-foreground: hsl(var(--card-foreground-h), var(--card-foreground-s), var(--card-foreground-l));
     --popover: hsla(var(--popover-h), var(--popover-s), var(--popover-l), var(--popover-a));
-    --popover-foreground: hsl(var(--popover-foreground-h), var(--popover-foreground-s), var(--popover-foreground-l)); 
+    --popover-foreground: hsl(var(--popover-foreground-h), var(--popover-foreground-s), var(--popover-foreground-l));
     --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
     --primary-foreground: hsl(var(--primary-foreground-h), var(--primary-foreground-s), var(--primary-foreground-l));
     --primary-gradient-start: hsl(var(--primary-gradient-start-h), var(--primary-gradient-start-s), var(--primary-gradient-start-l));
     --secondary: hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l));
     --secondary-foreground: hsl(var(--secondary-foreground-h), var(--secondary-foreground-s), var(--secondary-foreground-l));
     --muted: hsl(var(--muted-h), var(--muted-s), var(--muted-l));
-    --muted-foreground: hsl(var(--muted-foreground-h), var(--muted-s), var(--muted-foreground-l)); 
+    --muted-foreground: hsl(var(--muted-foreground-h), var(--muted-s), var(--muted-foreground-l));
     --accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
     --accent-foreground: hsl(var(--accent-foreground-h), var(--accent-foreground-s), var(--accent-foreground-l));
     --destructive: hsl(var(--destructive-h), var(--destructive-s), var(--destructive-l));
@@ -179,7 +180,7 @@
 
 /* Glassmorphism Panel Style */
 .glassmorphism-panel {
-  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a)); 
+  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(200, 210, 230, 0.25); /* Neutral, highly translucent border */
@@ -188,12 +189,12 @@
 }
 
 .dark .glassmorphism-panel {
-  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a)); 
-  backdrop-filter: blur(16px) saturate(1.2); 
+  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
+  backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
-  border: 1px solid hsla(var(--border-h), var(--border-s), calc(var(--border-l) + 20%), 0.3); 
+  border: 1px solid hsla(var(--border-h), var(--border-s), calc(var(--border-l) + 20%), 0.3);
   box-shadow: 0 8px 28px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 3%), 0.25),
-              0 3px 10px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 3%), 0.2); 
+              0 3px 10px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 3%), 0.2);
 }
 
 
@@ -374,7 +375,7 @@
   color: hsl(var(--chart-5-h), var(--chart-5-s), calc(var(--chart-5-l) - 10%)) !important;
 }
 .dark .details-link-failure {
-  color: hsl(var(--chart-5-h), var(--chart-5-s), calc(var(--chart-5-l) + 10%)) !important; 
+  color: hsl(var(--chart-5-h), var(--chart-5-s), calc(var(--chart-5-l) + 10%)) !important;
 }
 
 /* New Dark Mode Canvas Background Styling */
