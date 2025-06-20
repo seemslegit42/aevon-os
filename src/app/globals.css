@@ -7,14 +7,17 @@
   :root {
     --background: 283 30% 97%; /* Very Light Imperial Purple - Light Mode */
     --foreground: 248 37% 15%; /* Obsidian Black - Light Mode */
+    --foreground-h: 248; --foreground-s: 37%; --foreground-l: 15%;
 
     --card: 150 100% 98%; /* Vitreous White - Light Mode */
+    --card-h: 150; --card-s: 100%; --card-l: 98%;
     --card-foreground: 248 37% 15%; /* Obsidian Black - Light Mode */
 
     --popover: 150 100% 98%; /* Vitreous White - Light Mode */
     --popover-foreground: 248 37% 15%; /* Obsidian Black - Light Mode */
 
     --primary: 283 54% 42%; /* Imperial Purple - Light Mode */
+    --primary-h: 283; --primary-s: 54%; --primary-l: 42%;
     --primary-foreground: 150 100% 98%; /* Vitreous White - Light Mode */
     --primary-gradient-start: 283 50% 35%; /* Darker Imperial Purple for gradient start - Light Mode */
 
@@ -47,15 +50,18 @@
   .dark {
     --background: 270 35% 12%; /* Deep Dark Purple (Matches reference image) */
     --foreground: 0 0% 95%;    /* White/Very Light Gray (Matches reference image) */
+    --foreground-h: 0; --foreground-s: 0%; --foreground-l: 95%;
 
     --card: 270 30% 18%;       /* Darker Purple for cards (Matches reference image) */
+    --card-h: 270; --card-s: 30%; --card-l: 18%;
     --card-foreground: 0 0% 95%; /* White/Very Light Gray */
 
     --popover: 270 25% 15%;    /* Darker Popover Purple */
     --popover-foreground: 0 0% 95%;
 
     --primary: 283 60% 70%;    /* Light Purple/Magenta (for card titles, icons - Matches reference image) */
-    --primary-foreground: 0 0% 98%; 
+    --primary-h: 283; --primary-s: 60%; --primary-l: 70%;
+    --primary-foreground: 0 0% 98%;
     --primary-gradient-start: 283 50% 55%; /* Darker Purple/Magenta for gradient start - Dark Mode */
 
     --secondary: 190 70% 60%; /* Light Blue/Cyan for progress bars (Matches reference image) */
@@ -68,7 +74,7 @@
     --accent-foreground: 270 30% 10%; /* Dark purple for contrast on accent badge text */
 
     --destructive: 0 70% 55%; /* Red for failure/destructive */
-    --destructive-foreground: 0 0% 98%; 
+    --destructive-foreground: 0 0% 98%;
 
     --border: 270 25% 25%;     /* Subtle Purple Border (Matches reference image card edges) */
     --input: 270 25% 22%;      /* Dark Purple Input Background */
@@ -96,10 +102,24 @@
 }
 
 .glassmorphism-panel {
-  background-color: hsl(var(--card)); 
-  border: 1px solid hsl(var(--border)); 
+  /* Default for Light Mode */
+  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), 0.65);
+  backdrop-filter: blur(10px) saturate(1.2);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  border: 1px solid hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.25);
   border-radius: var(--radius);
-  /* Removed backdrop-filter and strong shadows to match reference image */
+  box-shadow: 0 4px 24px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) / 2), 0.04), /* Adjusted shadow for light mode */
+              0 1px 6px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) / 2), 0.03);
+}
+
+.dark .glassmorphism-panel {
+  /* Dark Mode Overrides */
+  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), 0.15); /* More translucent for dark mode */
+  /* backdrop-filter is same or can be slightly adjusted if needed */
+  border: 1px solid hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 5%), 0.3); /* Slightly brighter, semi-transparent primary for border */
+  /* border-radius is same */
+  box-shadow: 0 6px 28px hsla(var(--foreground-h), var(--foreground-s), var(--foreground-l), 0.03), /* Adjusted shadow for dark mode */
+              0 2px 8px hsla(var(--foreground-h), var(--foreground-s), var(--foreground-l), 0.02);
 }
 
 
@@ -171,6 +191,3 @@
   color: hsl(var(--chart-5)) !important; /* Red text for link */
 }
     
-
-    
-
