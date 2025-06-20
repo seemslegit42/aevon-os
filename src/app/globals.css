@@ -16,76 +16,94 @@
     --popover: 150 100% 98%; /* Vitreous White - Light Mode */
     --popover-foreground: 248 37% 15%; /* Obsidian Black - Light Mode */
 
-    --primary: 283 54% 42%; /* Imperial Purple - Light Mode */
-    --primary-h: 283; --primary-s: 54%; --primary-l: 42%;
-    --primary-foreground: 150 100% 98%; /* Vitreous White - Light Mode */
-    --primary-gradient-start: 283 50% 35%; /* Darker Imperial Purple for gradient start - Light Mode */
+    /* --- Guide's Suggested Colors Translated to Light Theme Equivalents --- */
+    /* Primary: Magenta/Pink equivalent for Light Mode (less saturated) */
+    --primary: 323 70% 65%;
+    --primary-h: 323; --primary-s: 70%; --primary-l: 65%;
+    --primary-foreground: 0 0% 100%; /* White for contrast on vibrant primary */
+    --primary-gradient-start: 323 70% 55%; /* Darker version for gradient */
 
-    --secondary: 157 49% 55%; /* Patina Green - Light Mode (Used for success status by default) */
-    --secondary-foreground: 248 37% 15%; /* Obsidian Black for contrast - Light Mode */
+    /* Secondary: Cyan equivalent for Light Mode */
+    --secondary: 187 80% 50%;
+    --secondary-foreground: 0 0% 100%; /* White for contrast */
 
     --muted: 223 13% 92%; /* Lighter Conchoidal Gray - Light Mode */
     --muted-foreground: 248 37% 40%; /* Darker Gray - Light Mode */
 
-    --accent: 45 100% 60%; /* Gold/Yellow for badges/warnings - Light Mode */
-    --accent-foreground: 248 37% 15%; /* Obsidian Black - Light Mode */
+    /* Accent: Kept as Gold/Yellow for distinct accents if needed, separate from primary/secondary */
+    --accent: 45 100% 60%;
+    --accent-foreground: 248 37% 15%;
 
     --destructive: 0 84.2% 60.2%; /* Red for failure/destructive */
     --destructive-foreground: 0 0% 98%;
 
     --border: 223 13% 85%; /* Lighter Conchoidal Gray for borders - Light Mode */
     --input: 223 13% 95%;  /* Lighter Conchoidal Gray for input backgrounds - Light Mode */
-    --ring: 283 54% 42%;   /* Imperial Purple (for focus rings) - Light Mode */
+    --ring: 323 70% 65%;   /* Magenta/Pink (for focus rings) - Light Mode */
 
-    --radius: 0.5rem;
+    --radius: 0.5rem; /* Corresponds to 8px, guide suggests 8px-16px */
 
     /* Chart/Progress Bar Colors - Light Theme */
-    --chart-1: 283 60% 65%; /* Light Purple/Magenta for card titles/icons - Analogous to dark theme's primary */
-    --chart-2: 190 70% 60%; /* Light Blue/Cyan for progress bars - Consistent with dark theme for data viz */
+    --chart-1: hsl(var(--primary)); /* Magenta/Pink */
+    --chart-2: hsl(var(--secondary)); /* Cyan */
     --chart-3: hsl(var(--accent)); /* Gold/Yellow */
-    --chart-4: 157 60% 50%; /* Green for success status */
+    --chart-4: 151 60% 50%; /* Success Green (lighter shade for light theme) */
     --chart-5: hsl(var(--destructive)); /* Red for failure */
   }
 
   .dark {
-    --background: 270 35% 12%; /* Deep Dark Purple (Matches reference image) */
-    --foreground: 0 0% 95%;    /* White/Very Light Gray (Matches reference image) */
+    /* --- Matching Guide's Dark Theme --- */
+    /* --color-background: #1a102c; (hsl(267, 45%, 12%)) */
+    --background: 267 45% 12%;
+    /* --color-text-primary: rgba(255, 255, 255, 0.9); */
+    --foreground: 0 0% 95%;
     --foreground-h: 0; --foreground-s: 0%; --foreground-l: 95%;
 
-    --card: 270 30% 18%;       /* Darker Purple for cards (Matches reference image) */
-    --card-h: 270; --card-s: 30%; --card-l: 18%;
-    --card-foreground: 0 0% 95%; /* White/Very Light Gray */
+    /* Card background based on --color-panel-glass: rgba(40, 30, 60, 0.5); */
+    /* rgb(40, 30, 60) -> hsl(270, 33%, 18%) */
+    --card: 270 33% 18%;
+    --card-h: 270; --card-s: 33%; --card-l: 18%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 270 25% 15%;    /* Darker Popover Purple */
+    --popover: 270 30% 15%; /* Darker Popover Purple */
     --popover-foreground: 0 0% 95%;
 
-    --primary: 283 60% 70%;    /* Light Purple/Magenta (for card titles, icons - Matches reference image) */
-    --primary-h: 283; --primary-s: 60%; --primary-l: 70%;
-    --primary-foreground: 0 0% 98%;
-    --primary-gradient-start: 283 50% 55%; /* Darker Purple/Magenta for gradient start - Dark Mode */
+    /* --color-accent-primary: #e0359e; (hsl(323, 70%, 54%)) Magenta/Pink */
+    --primary: 323 70% 54%;
+    --primary-h: 323; --primary-s: 70%; --primary-l: 54%;
+    --primary-foreground: 0 0% 100%; /* White text on magenta */
+    --primary-gradient-start: 323 70% 40%; /* Darker magenta for gradient start */
 
-    --secondary: 190 70% 60%; /* Light Blue/Cyan for progress bars (Matches reference image) */
-    --secondary-foreground: 248 37% 10%; /* Dark contrast for text on secondary elements */
+    /* --color-accent-secondary: #00bcd4; (hsl(187, 100%, 42%)) Cyan */
+    --secondary: 187 100% 42%;
+    --secondary-foreground: 0 0% 100%; /* White text on cyan */
 
-    --muted: 270 15% 35%;      /* Muted Purple Gray for less important backgrounds */
-    --muted-foreground: 270 10% 70%; /* Lighter Muted Purple Gray for text (e.g., timestamps) */
+    /* --color-text-secondary: rgba(255, 255, 255, 0.6); */
+    /* For muted text, using a light gray HSL for consistency rather than white with alpha */
+    --muted: 270 15% 30%;
+    --muted-foreground: 0 0% 70%; /* Lighter Gray for muted text */
 
-    --accent: 45 100% 60%;     /* Gold/Yellow (for "Active Agents" badge - Matches reference image) */
-    --accent-foreground: 270 30% 10%; /* Dark purple for contrast on accent badge text */
+    /* Accent: (Gold/Yellow for "Active Agents" badge - Matches reference image if distinct from primary) */
+    /* If magenta is primary accent, this yellow can be for specific warnings or distinct highlights. */
+    --accent: 45 100% 55%; /* Slightly desaturated yellow from original theme */
+    --accent-foreground: 270 30% 10%;
 
-    --destructive: 0 70% 55%; /* Red for failure/destructive */
+    /* --color-error: #ff4d4f; (hsl(359, 100%, 65%)) */
+    --destructive: 359 100% 65%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 270 25% 25%;     /* Subtle Purple Border (Matches reference image card edges) */
-    --input: 270 25% 22%;      /* Dark Purple Input Background */
-    --ring: 283 60% 70%;       /* Light Purple/Magenta for focus rings (Matches primary) */
+    /* Border for general elements, distinct from glass panel border */
+    --border: 270 25% 25%;
+    --input: 270 25% 22%;
+    --ring: 323 70% 54%; /* Magenta/Pink for focus rings */
 
-    /* Chart/Progress Bar Colors - Dark Theme (Matches reference image) */
-    --chart-1: hsl(var(--primary)); /* Light Purple/Magenta for titles/icons */
-    --chart-2: hsl(var(--secondary)); /* Light Blue/Cyan for progress bars */
+    /* Chart/Progress Bar Colors - Dark Theme (Matches reference image & guide) */
+    --chart-1: hsl(var(--primary)); /* Magenta/Pink */
+    --chart-2: hsl(var(--secondary)); /* Cyan */
     --chart-3: hsl(var(--accent)); /* Gold/Yellow */
-    --chart-4: 130 60% 55%; /* Brighter Green for success status badges */
-    --chart-5: hsl(var(--destructive)); /* Red for failure status badges */
+    /* --color-success: #39d98a; (hsl(151, 69%, 54%)) */
+    --chart-4: 151 69% 54%; /* Success Green */
+    --chart-5: hsl(var(--destructive)); /* Red for failure */
   }
 }
 
@@ -95,31 +113,36 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Lexend', sans-serif; /* Ensuring default body font */
   }
   .dark body {
-    background-color: hsl(var(--background)); /* Ensure body takes the deep purple in dark mode */
+    background-color: hsl(var(--background));
+  }
+  h1, h2, h3, h4, h5, h6, .font-headline {
+    font-family: 'Comfortaa', sans-serif; /* Ensuring headline font */
   }
 }
 
 .glassmorphism-panel {
-  /* Default for Light Mode */
-  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), 0.65);
-  backdrop-filter: blur(10px) saturate(1.2);
-  -webkit-backdrop-filter: blur(10px) saturate(1.2);
-  border: 1px solid hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.25);
-  border-radius: var(--radius);
-  box-shadow: 0 4px 24px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) / 2), 0.04), /* Adjusted shadow for light mode */
-              0 1px 6px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) / 2), 0.03);
+  /* background: rgba(40, 30, 60, 0.5); -- Guide's suggestion for dark mode */
+  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), 0.45); /* Adjusted alpha closer to 0.5 */
+  /* backdrop-filter: blur(12px); -- Guide's suggestion */
+  backdrop-filter: blur(12px) saturate(1.1); /* Kept saturate for a bit of pop */
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+  /* border: 1px solid rgba(255, 255, 255, 0.1); -- Guide's suggestion for dark mode */
+  border: 1px solid hsla(0, 0%, 100%, 0.12); /* White border with low opacity for dark mode */
+  border-radius: var(--radius); /* Should be 0.5rem (8px) by default */
+  /* Subtle shadow for depth, not a colored glow for the panel itself */
+  box-shadow: 0 4px 18px hsla(var(--foreground-h), var(--foreground-s), var(--foreground-l), 0.05),
+              0 1px 5px hsla(var(--foreground-h), var(--foreground-s), var(--foreground-l), 0.04);
 }
 
 .dark .glassmorphism-panel {
-  /* Dark Mode Overrides */
-  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), 0.15); /* More translucent for dark mode */
-  /* backdrop-filter is same or can be slightly adjusted if needed */
-  border: 1px solid hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 5%), 0.3); /* Slightly brighter, semi-transparent primary for border */
-  /* border-radius is same */
-  box-shadow: 0 6px 28px hsla(var(--foreground-h), var(--foreground-s), var(--foreground-l), 0.03), /* Adjusted shadow for dark mode */
-              0 2px 8px hsla(var(--foreground-h), var(--foreground-s), var(--foreground-l), 0.02);
+  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), 0.45); /* Matched dark mode alpha */
+  border: 1px solid hsla(0, 0%, 100%, 0.12); /* Matched dark mode border */
+  /* Adjusted shadow slightly for dark mode consistency */
+   box-shadow: 0 6px 24px hsla(var(--card-h), var(--card-s), 0%, 0.1), /* Darker shadow from card color */
+              0 2px 8px hsla(var(--card-h), var(--card-s), 0%, 0.08);
 }
 
 
@@ -144,15 +167,15 @@
   color: hsl(var(--primary-foreground));
 }
 .btn-gradient-primary-accent:hover {
-  filter: brightness(1.1);
+  filter: brightness(1.15); /* Slightly more pronounced hover brightness */
 }
 .btn-gradient-primary-accent:disabled {
   @apply opacity-50 cursor-not-allowed;
 }
 
 .react-draggable-dragging {
-  border: 2px dashed hsl(var(--primary) / 0.7) !important;
-  box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+  border: 2px dashed hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.7) !important;
+  box-shadow: 0 0 20px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.3);
   transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out;
 }
 
@@ -163,25 +186,25 @@
 
 /* Active Nav Link in TopBar */
 .active-nav-link-dark {
-  background-color: hsl(270 40% 35%) !important; /* Lighter purple for active nav item background (Matches reference) */
-  color: hsl(0 0% 98%) !important; /* White text */
+  background-color: hsl(var(--primary-h) var(--primary-s) calc(var(--primary-l) * 0.8 / 1%)) !important; /* Darker Primary for active nav item background */
+  color: hsl(var(--primary-foreground)) !important; /* White text */
 }
 .active-nav-link-dark:hover {
-  background-color: hsl(270 40% 40%) !important;
+  background-color: hsl(var(--primary-h) var(--primary-s) calc(var(--primary-l) * 0.9 / 1%)) !important;
 }
 
 /* Progress bar custom color */
 .progress-custom {
-  background-color: hsl(var(--chart-2)) !important; /* Light Blue/Cyan (Matches reference) */
+  background-color: hsl(var(--chart-2)) !important; /* Cyan (Matches reference and guide) */
 }
 
 /* Success and Failure badges for Live Orchestration Feed */
 .badge-success {
-  background-color: hsl(var(--chart-4)) !important; /* Green (Matches reference) */
-  color: hsl(var(--primary-foreground)) !important; /* Ensure contrast */
+  background-color: hsl(var(--chart-4)) !important; /* Green (Matches reference and guide) */
+  color: hsl(0 0% 100%) !important; /* Ensure contrast - pure white */
 }
 .badge-failure {
-  background-color: hsl(var(--chart-5)) !important; /* Red (Matches reference) */
+  background-color: hsl(var(--chart-5)) !important; /* Red (Matches reference and guide) */
   color: hsl(var(--destructive-foreground)) !important; /* Ensure contrast */
 }
 .details-link-success {
