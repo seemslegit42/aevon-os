@@ -13,6 +13,7 @@ import {
 } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardFooter, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -43,7 +44,7 @@ interface ArmoryApp {
   tags: string[];
 }
 
-const initialApps: ArmoryApp[] = [];
+const initialApps: ArmoryApp[] = []; // Example: add predefined apps if any
 
 export default function ArmoryPage() {
   const [apps, setApps] = useState<ArmoryApp[]>(initialApps);
@@ -63,39 +64,68 @@ export default function ArmoryPage() {
 
   const handleGenerateDescription = async (values: AppDescriptionFormValues) => {
     setIsGenerating(true);
-    setGeneratedDescription(null);
+    setGeneratedDescription(""); // Initialize for streaming
 
-    // AI Description generation is disabled.
-    const featureUnavailableMessage = "AI description generation feature is currently unavailable.";
-    setGeneratedDescription(featureUnavailableMessage);
-    toast({ variant: "destructive", title: "Feature Unavailable", description: featureUnavailableMessage });
-    
-    setIsGenerating(false);
+    try {
+      const response = await fetch('/api/ai/app-description', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: "Failed to parse error response" }));
+        throw new Error(errorData.error || `API request failed with status ${response.status}`);
+      }
+      
+      if (!response.body) {
+        throw new Error('Response body is null');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        setGeneratedDescription((prev) => (prev || "") + chunk);
+      }
+
+    } catch (error) {
+      console.error("Error generating app description:", error);
+      let errorMessage = "Failed to generate app description.";
+       if (error instanceof Error) {
+          errorMessage = error.message;
+      }
+      setGeneratedDescription(`Error: ${errorMessage}`);
+      toast({ variant: "destructive", title: "Generation Error", description: errorMessage });
+    } finally {
+      setIsGenerating(false);
+    }
   };
-
+  
+  // Initial descriptions for existing apps are not fetched via AI in this version to simplify.
+  // They would show their 'shortDesc' or a placeholder.
   useEffect(() => {
     if (apps.length > 0) {
-        const fetchInitialDescriptions = async () => {
-          const updatedApps = await Promise.all(apps.map(async (app) => {
-            if (!app.aiGeneratedDesc) {
-              // AI Description generation is disabled.
-              return { ...app, aiGeneratedDesc: "AI-Generated description currently unavailable." };
-            }
-            return app;
-          }));
-          setApps(updatedApps);
-        };
-        fetchInitialDescriptions();
+        const updatedApps = apps.map(app => ({
+            ...app,
+            aiGeneratedDesc: app.shortDesc || "Description not available."
+        }));
+        setApps(updatedApps);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); 
+
 
   return (
     <div className="space-y-8">
       <MicroAppCard
         title="ΛΞVON Λrmory: Expand Your OS"
         icon={ShoppingCartIcon}
-        description="Discover, acquire, and manage AI-powered micro-apps and intelligent agents. Enhance your ΛΞVON OS capabilities and tailor the platform to your unique business needs. (AI Description Generation Currently Disabled)"
+        description="Discover, acquire, and manage AI-powered micro-apps and intelligent agents. Enhance your ΛΞVON OS capabilities and tailor the platform to your unique business needs."
       />
 
       <h2 className="font-headline text-2xl text-primary mt-10 mb-6">Featured Micro-Apps</h2>
@@ -135,7 +165,7 @@ export default function ArmoryPage() {
 
       <MicroAppCard title="Publish Your Micro-App" icon={PackagePlusIcon}>
         <p className="text-foreground/80 mb-6">
-          Have a micro-app idea? Use our AI to generate a compelling marketplace description. (AI Feature Currently Disabled)
+          Have a micro-app idea? Use our AI to generate a compelling marketplace description.
         </p>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleGenerateDescription)} className="space-y-6">
@@ -204,7 +234,9 @@ export default function ArmoryPage() {
               <CardTitle className="text-xl font-headline text-primary">AI-Generated Description:</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-foreground whitespace-pre-wrap">{generatedDescription}</p>
+              <ScrollArea className="h-40"> {/* Added ScrollArea for potentially long descriptions */}
+                <p className="text-foreground whitespace-pre-wrap">{generatedDescription}</p>
+              </ScrollArea>
             </CardContent>
           </Card>
         )}

@@ -20,19 +20,51 @@ export const useBeepStore = create<BeepState>((set, get) => ({
   setIsAiLoading: (loading) => set({ isAiLoading: loading }),
   clearResponse: () => set({ aiResponse: null, aiPrompt: '' }),
   submitPrompt: async (systemSnapshotData) => {
-    const prompt = get().aiPrompt;
-    if (!prompt.trim()) {
+    const userPrompt = get().aiPrompt;
+    if (!userPrompt.trim()) {
       toast({ variant: "destructive", title: "Input Error", description: "Please enter a prompt for BEEP." });
       return;
     }
 
-    set({ isAiLoading: true, aiResponse: null });
+    set({ isAiLoading: true, aiResponse: "" }); // Initialize for streaming
 
-    // BEEP functionality is disabled.
-    const featureUnavailableMessage = "BEEP feature is currently unavailable.";
-    set({ aiResponse: featureUnavailableMessage });
-    toast({ variant: "destructive", title: "Feature Unavailable", description: featureUnavailableMessage });
-   
-    set({ isAiLoading: false });
+    try {
+      const response = await fetch('/api/ai/briefing', { // Using the same briefing API for now
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: userPrompt, systemSnapshotData }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: "Failed to parse error response" }));
+        throw new Error(errorData.error || `API request failed with status ${response.status}`);
+      }
+      
+      if (!response.body) {
+        throw new Error('Response body is null');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        set((state) => ({ aiResponse: (state.aiResponse || "") + chunk }));
+      }
+
+    } catch (error) {
+      console.error("Error submitting prompt to BEEP:", error);
+      let errorMessage = "Failed to get response from BEEP.";
+      if (error instanceof Error) {
+          errorMessage = error.message;
+      }
+      set({ aiResponse: `Error: ${errorMessage}` });
+      toast({ variant: "destructive", title: "AI Error", description: errorMessage });
+    } finally {
+      set({ isAiLoading: false });
+    }
   },
 }));

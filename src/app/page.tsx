@@ -171,13 +171,14 @@ export default function DashboardPage() {
         size="icon"
         className="fixed bottom-6 left-6 z-50 rounded-full shadow-xl bg-accent hover:bg-accent/80 text-accent-foreground dark:text-white w-12 h-12 backdrop-blur-sm flex items-center justify-center"
         onClick={() => setIsCommandPaletteOpen(true)}
+        aria-label="Manage Dashboard Zones"
       >
         <LayoutDashboardIcon className="h-6 w-6" />
         <span className="sr-only">Manage Dashboard Zones</span>
       </Button>
       <div className="fixed bottom-4 right-4 text-xs z-[45] text-foreground/70 dark:text-neutral-400">
         <span>ΛΞVON OS v1.2 </span>
-        <span className="font-semibold">ZUSTAND</span>
+        <span className="font-semibold">GROQ</span>
       </div>
     </div>
   );

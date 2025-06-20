@@ -29,12 +29,32 @@ export default function AegisSecurityPage() {
     setIsLoading(true);
     setAnalysisResult(null);
 
-    // AI Analysis is disabled.
-    const featureUnavailableMessage = "AI analysis feature is currently unavailable.";
-    setAnalysisResult({ summary: featureUnavailableMessage, potentialThreats: [], recommendedActions: [] });
-    toast({ variant: "destructive", title: "Feature Unavailable", description: featureUnavailableMessage });
+    try {
+      const response = await fetch('/api/ai/security-analysis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ alertDetails }),
+      });
 
-    setIsLoading(false);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: "Failed to parse error response" }));
+        throw new Error(errorData.error || `API request failed with status ${response.status}`);
+      }
+
+      const result: AnalyzeSecurityAlertsOutput = await response.json();
+      setAnalysisResult(result);
+
+    } catch (error) {
+      console.error("Error analyzing security alerts:", error);
+      let errorMessage = "Failed to analyze security alerts.";
+      if (error instanceof Error) {
+          errorMessage = error.message;
+      }
+      setAnalysisResult({ summary: `Error: ${errorMessage}`, potentialThreats: [], recommendedActions: [] });
+      toast({ variant: "destructive", title: "Analysis Error", description: errorMessage });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -42,7 +62,7 @@ export default function AegisSecurityPage() {
       <MicroAppCard
         title="Aegis: AI Security Sentinel"
         icon={ShieldIcon}
-        description="Aegis provides always-on, AI-powered cybersecurity. Input raw alert data below to receive a plain English summary, potential threats, and recommended actions. (AI Analysis Currently Disabled)"
+        description="Aegis provides AI-powered cybersecurity. Input raw alert data below to receive a plain English summary, potential threats, and recommended actions."
       >
         <Textarea
           placeholder="Paste security alert details here... e.g., logs, error messages, SIEM output."
