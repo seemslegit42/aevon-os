@@ -8,41 +8,54 @@
     /* Imperial Purple (#6A0DAD), Patina Green (#3EB991), Roman Aqua (#20B2AA), Conchoidal Gray (#8C94A8), Vitreous White (#F5FFFA), Obsidian Black (#1C1934), Gold (#FFD700) */
 
     /* --- Light Theme --- */
-    --background-h: 150; --background-s: 100%; --background-l: 97%; /* Vitreous White (using a light mint hue for base) */
-    --background-l-offset: 97%;
-    --foreground-h: 255; --foreground-s: 15%; --foreground-l: 10%; /* Obsidian Black (darkened for text) */
+    /* Background: Vitreous White (using a light mint hue for base) */
+    --background-h: 150; --background-s: 100%; --background-l: 97%;
+    --background-l-offset: 97%; /* For body background */
+    /* Foreground: Obsidian Black (darkened for text) */
+    --foreground-h: 255; --foreground-s: 15%; --foreground-l: 10%;
 
-    --card-h: 275; --card-s: 52%; --card-l: 96%; /* Very Light Purple for cards */
+    /* Card: Very Light Purple for cards */
+    --card-h: 275; --card-s: 52%; --card-l: 96%;
     --card-foreground-h: var(--foreground-h); --card-foreground-s: var(--foreground-s); --card-foreground-l: var(--foreground-l);
 
     --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l);
     --popover-foreground-h: var(--card-foreground-h); --popover-foreground-s: var(--card-foreground-s); --popover-foreground-l: var(--card-foreground-l);
 
-    --primary-h: 275; --primary-s: 52%; --primary-l: 53%; /* Imperial Purple - main interactive color */
+    /* Primary: Imperial Purple */
+    --primary-h: 275; --primary-s: 52%; --primary-l: 53%;
     --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 100%; /* White */
     --primary-gradient-start-h: 275; --primary-gradient-start-s: 50%; --primary-gradient-start-l: 48%;
 
-    --secondary-h: 177; --secondary-s: 65%; --secondary-l: 45%; /* Roman Aqua */
+    /* Secondary: Roman Aqua */
+    --secondary-h: 177; --secondary-s: 65%; --secondary-l: 45%;
     --secondary-foreground-h: 0; --secondary-foreground-s: 0%; --secondary-foreground-l: 100%; /* White */
 
-    --muted-h: 220; --muted-s: 20%; --muted-l: 65%; /* Conchoidal Gray - for less important text */
+    /* Muted: Conchoidal Gray - for less important text */
+    --muted-h: 220; --muted-s: 20%; --muted-l: 65%;
     --muted-foreground-h: 220; --muted-foreground-s: 15%; --muted-foreground-l: 45%; /* Darker Conchoidal Gray */
 
-    --accent-h: 51; --accent-s: 100%; --accent-l: 50%; /* Gold */
+    /* Accent: Gold */
+    --accent-h: 51; --accent-s: 100%; --accent-l: 50%;
     --accent-foreground-h: 51; --accent-foreground-s: 100%; --accent-foreground-l: 15%; /* Dark Gold/Brown for text on accent */
 
     --destructive-h: 0; --destructive-s: 84%; --destructive-l: 60%;
     --destructive-foreground-h: 0; --destructive-foreground-s: 0%; --destructive-foreground-l: 98%;
 
-    --border-h: 220; --border-s: 20%; --border-l: 88%; /* Lighter Conchoidal Gray - for general borders */
+    /* Border: Lighter Conchoidal Gray - for general borders */
+    --border-h: 220; --border-s: 20%; --border-l: 88%;
     --input-h: 220; --input-s: 25%; --input-l: 94%;
     --ring-h: var(--primary-h); --ring-s: var(--primary-s); --ring-l: var(--primary-l);
 
     --chart-1-h: var(--primary-h); --chart-1-s: var(--primary-s); --chart-1-l: var(--primary-l);
-    --chart-2-h: var(--secondary-h); --chart-2-s: var(--secondary-s); --chart-2-l: var(--secondary-l); /* Roman Aqua */
+    --chart-2-h: 177; --chart-2-s: 65%; --chart-2-l: 45%; /* Roman Aqua */
     --chart-3-h: var(--accent-h); --chart-3-s: var(--accent-s); --chart-3-l: var(--accent-l); /* Gold */
     --chart-4-h: 158; --chart-4-s: 49%; --chart-4-l: 56%; /* Patina Green */
     --chart-5-h: var(--destructive-h); --chart-5-s: var(--destructive-s); --chart-5-l: var(--destructive-l); /* Red for errors */
+
+    /* TopBar Specific Colors - Light Theme */
+    --topbar-bg-h: 0; --topbar-bg-s: 0%; --topbar-bg-l: 95%; --topbar-bg-a: 0.75;
+    --topbar-border-h: 220; --topbar-border-s: 20%; --topbar-border-l: 80%; --topbar-border-a: 0.3;
+
 
     /* Full HSL color definitions */
     --background: hsl(var(--background-h), var(--background-s), var(--background-l));
@@ -75,42 +88,54 @@
 
   .dark {
     /* --- Dark Theme --- */
-    /* Imperial Purple (#6A0DAD), Patina Green (#3EB991), Roman Aqua (#20B2AA), Conchoidal Gray (#8C94A8), Vitreous White (#F5FFFA), Obsidian Black (#1C1934), Gold (#FFD700) */
-    --background-h: 267; --background-s: 45%; --background-l: 12%; /* Deep Dark Purple, base for Obsidian Black */
-    --background-l-offset: 12%;
-    --foreground-h: 210; --foreground-s: 25%; --foreground-l: 95%; /* Vitreous White (slightly off-white, increased saturation for vibrancy) */
+    /* Background: Obsidian Black (very dark purple) */
+    --background-h: 267; --background-s: 45%; --background-l: 12%;
+    --background-l-offset: 12%; /* For body background */
+    /* Foreground: Vitreous White (slightly off-white) */
+    --foreground-h: 210; --foreground-s: 25%; --foreground-l: 95%;
 
-    --card-h: 270; --card-s: 30%; --card-l: 18%; /* Darker, slightly desaturated Purple base for cards */
+    /* Card: Darker, slightly desaturated Purple base for cards */
+    --card-h: 270; --card-s: 30%; --card-l: 18%;
     --card-foreground-h: var(--foreground-h); --card-foreground-s: var(--foreground-s); --card-foreground-l: var(--foreground-l);
 
     --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l);
     --popover-foreground-h: var(--card-foreground-h); --popover-foreground-s: var(--card-foreground-s); --popover-foreground-l: var(--card-foreground-l);
 
-    --primary-h: 275; --primary-s: 65%; --primary-l: 60%; /* Imperial Purple - more vibrant */
+    /* Primary: Imperial Purple (more vibrant magenta/pink in dark mode) */
+    --primary-h: 323; --primary-s: 70%; --primary-l: 60%; /* Adjusted to vibrant magenta */
     --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 100%; /* White */
-    --primary-gradient-start-h: 275; --primary-gradient-start-s: 60%; --primary-gradient-start-l: 50%; /* Darker shade for gradient start */
+    --primary-gradient-start-h: 323; --primary-gradient-start-s: 65%; --primary-gradient-start-l: 50%; /* Darker shade for gradient start */
 
-    --secondary-h: 177; --secondary-s: 70%; --secondary-l: 50%; /* Roman Aqua - more vibrant */
+    /* Secondary: Roman Aqua (vibrant cyan in dark mode) */
+    --secondary-h: 187; --secondary-s: 100%; --secondary-l: 48%; /* Adjusted to vibrant cyan */
     --secondary-foreground-h: 210; --secondary-foreground-s: 100%; --secondary-foreground-l: 15%; /* Dark text for contrast */
 
-    --muted-h: 220; --muted-s: 15%; --muted-l: 60%; /* Conchoidal Gray - for less important text */
-    --muted-foreground-h: 220; --muted-foreground-s: 13%; --muted-foreground-l: 75%; /* Lighter Conchoidal Gray from #8C94A8 */
+    /* Muted: Conchoidal Gray - for less important text */
+    --muted-h: 220; --muted-s: 15%; --muted-l: 60%;
+    --muted-foreground-h: 220; --muted-foreground-s: 13%; --muted-foreground-l: 75%; /* Lighter Conchoidal Gray */
 
-    --accent-h: 51; --accent-s: 100%; --accent-l: 60%; /* Gold - more vibrant */
+    /* Accent: Gold (more vibrant) */
+    --accent-h: 51; --accent-s: 100%; --accent-l: 60%;
     --accent-foreground-h: 51; --accent-foreground-s: 100%; --accent-foreground-l: 10%; /* Dark Brown/Black for text on gold */
 
     --destructive-h: 0; --destructive-s: 72%; --destructive-l: 51%;
     --destructive-foreground-h: 0; --destructive-foreground-s: 0%; --destructive-foreground-l: 98%;
 
-    --border-h: 220; --border-s: 13%; --border-l: 30%; /* Muted Cool Gray for general borders (not glass panel border) */
+    /* Border: Muted Cool Gray for general borders */
+    --border-h: 220; --border-s: 13%; --border-l: 30%;
     --input-h: 270; --input-s: 20%; --input-l: 22%; /* Darker than card for inputs */
     --ring-h: var(--primary-h); --ring-s: var(--primary-s); --ring-l: calc(var(--primary-l) + 10%); /* Brighter primary for ring */
 
-    --chart-1-h: var(--primary-h); --chart-1-s: var(--primary-s); --chart-1-l: var(--primary-l); /* Imperial Purple */
-    --chart-2-h: 177; --chart-2-s: 70%; --chart-2-l: 50%; /* Roman Aqua (Consistent with secondary) */
+    /* Chart colors - Dark Theme specific adjustments */
+    --chart-1-h: var(--primary-h); --chart-1-s: var(--primary-s); --chart-1-l: var(--primary-l); /* Magenta */
+    --chart-2-h: 187; --chart-2-s: 100%; --chart-2-l: 48%; /* Cyan (Consistent with secondary) */
     --chart-3-h: var(--accent-h); --chart-3-s: var(--accent-s); --chart-3-l: var(--accent-l); /* Gold */
-    --chart-4-h: 158; --chart-4-s: 60%; --chart-4-l: 50%; /* Patina Green - more vibrant */
+    --chart-4-h: 140; --chart-4-s: 60%; --chart-4-l: 50%; /* Patina Green (clear bright green) */
     --chart-5-h: var(--destructive-h); --chart-5-s: var(--destructive-s); --chart-5-l: var(--destructive-l); /* Red for errors */
+
+    /* TopBar Specific Colors - Dark Theme */
+    --topbar-bg-h: 0; --topbar-bg-s: 0%; --topbar-bg-l: 10%; --topbar-bg-a: 0.65;
+    --topbar-border-h: 220; --topbar-border-s: 13%; --topbar-border-l: 25%; --topbar-border-a: 0.25;
   }
 }
 
@@ -132,20 +157,20 @@
 
 /* Iridescent Aurora Background */
 .iridescent-purple-bg-light {
-  background: linear-gradient(160deg, 
-    hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 5%)), /* Imperial Purple */
-    hsl(var(--chart-4-h), var(--chart-4-s), calc(var(--chart-4-l) + 10%)), /* Patina Green */
-    hsl(var(--secondary-h), var(--secondary-s), calc(var(--secondary-l) + 15%)) /* Roman Aqua */
+  background: linear-gradient(160deg,
+    hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 5%)), /* Imperial Purple base */
+    hsl(var(--chart-4-h), var(--chart-4-s), calc(var(--chart-4-l) + 10%)), /* Patina Green base */
+    hsl(var(--secondary-h), var(--secondary-s), calc(var(--secondary-l) + 15%)) /* Roman Aqua base */
   );
   background-size: 200% 200%;
   animation: aurora-glow 20s ease-in-out infinite alternate;
 }
 
 .dark .iridescent-purple-bg-dark {
-  background: linear-gradient(160deg, 
-    hsl(var(--primary-h), var(--primary-s), var(--primary-l)), /* Imperial Purple */
-    hsl(var(--chart-4-h), var(--chart-4-s), var(--chart-4-l)), /* Patina Green */
-    hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l)) /* Roman Aqua */
+  background: linear-gradient(160deg,
+    hsl(var(--primary-h), var(--primary-s), var(--primary-l)), /* Imperial Purple base (uses dark theme primary) */
+    hsl(var(--chart-4-h), var(--chart-4-s), var(--chart-4-l)), /* Patina Green base (uses dark theme chart-4) */
+    hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l)) /* Roman Aqua base (uses dark theme secondary) */
   );
   background-size: 200% 200%;
   animation: aurora-glow 20s ease-in-out infinite alternate;
@@ -169,7 +194,7 @@
   background-color: hsla(var(--card-h), var(--card-s), var(--card-l), 0.45); /* Semi-transparent card base for dark */
   backdrop-filter: blur(12px) saturate(1.1);
   -webkit-backdrop-filter: blur(12px) saturate(1.1);
-  border: 1px solid hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 15%), 0.35); /* Brighter primary accent border, more subtle for dark */
+  border: 1px solid hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 15%), 0.35); /* Brighter primary accent border */
   border-radius: var(--radius);
   box-shadow: 0 6px 24px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 5%), 0.2), /* Shadow using a darker background shade */
               0 2px 8px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 5%), 0.15);
@@ -213,51 +238,56 @@
   transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out;
 }
 
-/* TopBar specific background */
+/* TopBar specific background - now glassmorphism */
 .topbar-custom-bg {
-  background-color: hsl(0, 0%, 95%); /* Light gray for light mode */
-  .dark & {
-    background-color: hsl(0, 0%, 10%); /* Dark gray for dark mode */
-  }
+  background-color: hsla(var(--topbar-bg-h), var(--topbar-bg-s), var(--topbar-bg-l), var(--topbar-bg-a));
+  backdrop-filter: blur(10px) saturate(1.2);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  border-bottom: 1px solid hsla(var(--topbar-border-h), var(--topbar-border-s), var(--topbar-border-l), var(--topbar-border-a));
+  box-shadow: 0 2px 10px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 10%), 0.1); /* Subtle shadow */
 }
 
 /* Active Nav Link in TopBar */
 .active-nav-link-dark {
-  background-color: hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 5%), 0.9) !important; /* Slightly lighter primary for dark theme active nav */
+  background-color: hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l)), 0.9) !important;
   color: hsl(var(--primary-foreground-h), var(--primary-foreground-s), var(--primary-foreground-l)) !important;
   box-shadow: 0 0 10px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.3);
 }
 .active-nav-link-dark:hover {
-  background-color: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 1) !important;
+  background-color: hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 5%), 1) !important;
 }
 
-/* Progress bar custom color (Roman Aqua - Chart 2) */
+/* Progress bar custom color (Roman Aqua / Cyan - Chart 2) */
 .progress-custom {
   background-color: hsl(var(--chart-2-h), var(--chart-2-s), var(--chart-2-l)) !important;
 }
 
 /* Status badges for Live Orchestration Feed (using chart colors) */
-.badge-success {
-  background-color: hsl(var(--chart-4-h), var(--chart-4-s), var(--chart-4-l)) !important; /* Patina Green */
-  color: hsl(0, 0%, 100%) !important; /* White text */
+.badge-success { /* Patina Green */
+  background-color: hsl(var(--chart-4-h), var(--chart-4-s), var(--chart-4-l)) !important;
+  color: hsl(var(--foreground-h), var(--foreground-s), 10%) !important; /* Dark text on light green */
 }
-.badge-failure {
-  background-color: hsl(var(--chart-5-h), var(--chart-5-s), var(--chart-5-l)) !important; /* Red */
+.dark .badge-success {
+  color: hsl(var(--background-h), var(--background-s), 90%) !important; /* Light text on dark green */
+}
+
+.badge-failure { /* Red */
+  background-color: hsl(var(--chart-5-h), var(--chart-5-s), var(--chart-5-l)) !important;
   color: hsl(var(--destructive-foreground-h), var(--destructive-foreground-s), var(--destructive-foreground-l)) !important;
 }
-.details-link-success {
-  color: hsl(var(--chart-4-h), var(--chart-4-s), calc(var(--chart-4-l) + 10%)) !important;
+.details-link-success { /* Patina Green based */
+  color: hsl(var(--chart-4-h), var(--chart-4-s), calc(var(--chart-4-l) - 10%)) !important;
   .dark & {
-     color: hsl(var(--chart-4-h), var(--chart-4-s), var(--chart-4-l)) !important;
+     color: hsl(var(--chart-4-h), var(--chart-4-s), calc(var(--chart-4-l) + 10%)) !important;
   }
 }
-.details-link-failure {
-  color: hsl(var(--chart-5-h), var(--chart-5-s), calc(var(--chart-5-l) + 5%)) !important;
+.details-link-failure { /* Red based */
+  color: hsl(var(--chart-5-h), var(--chart-5-s), calc(var(--chart-5-l) - 5%)) !important;
   .dark & {
-    color: hsl(var(--chart-5-h), var(--chart-5-s), var(--chart-5-l)) !important;
+    color: hsl(var(--chart-5-h), var(--chart-5-s), calc(var(--chart-5-l) + 5%)) !important;
   }
 }
-    
+
 @keyframes aurora-glow {
   0% {
     background-position: 0% 50%;
@@ -272,4 +302,3 @@
     filter: hue-rotate(0deg) brightness(1);
   }
 }
-
