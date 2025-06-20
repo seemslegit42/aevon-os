@@ -17,11 +17,9 @@ interface NavItem {
   showDropdown?: boolean;
 }
 
+// Cleaned up navItems: Only active items are present.
 const navItems: NavItem[] = [
   { href: '/', label: 'Home Dashboard', icon: Home, showDropdown: true },
-  // { href: '/loom-studio', label: 'Loom Studio', icon: Settings },
-  // { href: '/aegis-security', label: 'Aegis Security', icon: Shield },
-  // { href: '/armory', label: 'Armory', icon: ShoppingCart },
 ];
 
 const TopBar: React.FC = () => {
