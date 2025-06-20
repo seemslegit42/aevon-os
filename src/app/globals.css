@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 150 100% 98%; /* Vitreous White */
+    --background: 283 30% 97%; /* Very Light Imperial Purple */
     --foreground: 248 37% 15%; /* Obsidian Black */
 
     --card: 150 100% 98%; /* Vitreous White */
@@ -19,8 +19,8 @@
     --secondary: 157 49% 55%; /* Patina Green */
     --secondary-foreground: 248 37% 15%; /* Obsidian Black for contrast */
 
-    --muted: 223 13% 60%; /* Conchoidal Gray */
-    --muted-foreground: 248 37% 15%; /* Obsidian Black */
+    --muted: 223 13% 92%; /* Lighter Conchoidal Gray */
+    --muted-foreground: 248 37% 40%; /* Darker Gray */
 
     --accent: 177 68% 41%; /* Roman Aqua */
     --accent-foreground: 150 100% 98%; /* Vitreous White */
@@ -28,8 +28,8 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 223 13% 55%; /* Conchoidal Gray (slightly darker than muted for borders) */
-    --input: 223 13% 65%;  /* Conchoidal Gray (lighter than muted for input backgrounds) */
+    --border: 223 13% 85%; /* Lighter Conchoidal Gray for borders */
+    --input: 223 13% 95%;  /* Lighter Conchoidal Gray for input backgrounds */
     --ring: 283 54% 42%;   /* Imperial Purple (for focus rings) */
 
     --radius: 0.5rem;

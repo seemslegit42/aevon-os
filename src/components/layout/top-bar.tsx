@@ -27,13 +27,11 @@ const TopBar: React.FC = () => {
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      // Format to hh:mm:ss AM/PM UTC
-      // This requires a bit more logic than toLocaleTimeString for specific "AM/PM UTC"
       const hours = now.getUTCHours();
       const minutes = now.getUTCMinutes();
       const seconds = now.getUTCSeconds();
       const ampm = hours >= 12 ? 'PM' : 'AM';
-      const displayHours = hours % 12 || 12; // Convert 0 to 12 for 12 AM/PM
+      const displayHours = hours % 12 || 12; 
       
       return `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm} UTC`;
     };
@@ -62,8 +60,8 @@ const TopBar: React.FC = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 
-                variant="default" // Changed variant
-                className="text-sm bg-primary/80 text-primary-foreground hover:bg-primary/70 px-3 h-9" // Updated class for styling
+                variant="default"
+                className="text-sm bg-primary/10 hover:bg-primary/20 text-primary dark:bg-primary/80 dark:text-primary-foreground dark:hover:bg-primary/70 px-3 h-9"
               >
                 <Home className="w-4 h-4 mr-2" />
                 Home Dashboard
@@ -71,7 +69,7 @@ const TopBar: React.FC = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-popover text-popover-foreground border-border/50">
-              <DropdownMenuItem>Home Dashboard</DropdownMenuItem> {/* Assuming this is the only item for now */}
+              <DropdownMenuItem>Home Dashboard</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -95,7 +93,7 @@ const TopBar: React.FC = () => {
         
         <div className="flex items-center space-x-2">
            {navItems.map((item) => (
-            <Button key={item.label} variant="ghost" size="icon" asChild className="text-muted-foreground hover:text-accent hover:bg-accent/10" title={item.label}>
+            <Button key={item.label} variant="ghost" size="icon" asChild className="text-foreground/70 hover:text-primary hover:bg-primary/10 dark:text-muted-foreground dark:hover:text-accent dark:hover:bg-accent/10" title={item.label}>
               <Link href={item.href}>
                 <item.icon className="w-5 h-5" />
               </Link>
@@ -104,7 +102,7 @@ const TopBar: React.FC = () => {
 
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-accent hover:bg-accent/10" aria-label="Notifications">
+              <Button variant="ghost" size="icon" className="text-foreground/70 hover:text-primary hover:bg-primary/10 dark:text-muted-foreground dark:hover:text-accent dark:hover:bg-accent/10" aria-label="Notifications">
                 <Bell className="w-5 h-5" />
               </Button>
             </PopoverTrigger>
@@ -120,7 +118,7 @@ const TopBar: React.FC = () => {
             </PopoverContent>
           </Popover>
 
-          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-accent hover:bg-accent/10" aria-label="Settings">
+          <Button variant="ghost" size="icon" className="text-foreground/70 hover:text-primary hover:bg-primary/10 dark:text-muted-foreground dark:hover:text-accent dark:hover:bg-accent/10" aria-label="Settings">
             <Settings2 className="w-5 h-5" />
           </Button>
           
@@ -151,5 +149,3 @@ const TopBar: React.FC = () => {
 };
 
 export default TopBar;
-
-    

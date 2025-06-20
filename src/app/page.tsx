@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Sparkles, Cpu, LayoutGrid, AppWindow, Users, HardDrive, Timer, LoaderCircle, CircleDot, AlertCircle, X, Blocks, Mic, MoreHorizontal, CheckCircle, ChevronDown } from 'lucide-react';
+import { Sparkles, Cpu, LayoutGrid, AppWindow, Users, HardDrive, Timer, LoaderCircle, CircleDot, AlertCircle, X, Blocks, Mic, MoreHorizontal, CheckCircle, ChevronDown, BarChartBig, Settings2, Shield } from 'lucide-react';
 import { generatePersonalizedBriefing, GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-personalized-briefings';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -61,7 +61,7 @@ export default function HomePage() {
   const [systemUptime, setSystemUptime] = useState("0d 0h 0m");
   const [cpuLoad, setCpuLoad] = useState(35);
   const [memoryUsage, setMemoryUsage] = useState(62);
-  const [diskUsageValue, setDiskUsageValue] = useState(450); // Example value
+  const [diskUsageValue, setDiskUsageValue] = useState(450); 
   const [activeAgentsCount, setActiveAgentsCount] = useState(initialAgentsData.filter(agent => agent.status === 'Processing' || agent.status === 'Idle').length);
 
 
@@ -99,7 +99,7 @@ export default function HomePage() {
       const d = Math.floor(uptimeMillis / (1000 * 60 * 60 * 24));
       const h = Math.floor((uptimeMillis % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const m = Math.floor((uptimeMillis % (1000 * 60 * 60)) / (1000 * 60));
-      setSystemUptime(`${d}d ${h}h ${m}m`); // Removed seconds
+      setSystemUptime(`${d}d ${h}h ${m}m`);
       
       setCpuLoad(Math.floor(Math.random() * (70 - 20 + 1)) + 20); 
       setMemoryUsage(Math.floor(Math.random() * (80 - 40 + 1)) + 40);
@@ -135,10 +135,11 @@ export default function HomePage() {
   };
   
   const systemMetricsConfig = [
-    { id: 'cpu', icon: Cpu, label: 'CPU Load', value: cpuLoad, progressMax: 100, unit: '%' },
-    { id: 'memory', icon: HardDrive, label: 'Memory Usage', value: memoryUsage, progressMax: 100, unit: '%' },
     { id: 'agents', icon: Users, label: 'Active Agents', value: activeAgentsCount, unit: '' }, 
     { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: diskUsageValue, progressMax: 1000, unit: 'GB / 1TB' },
+    { id: 'cpu', icon: Cpu, label: 'Network Sent', value: 1.2, unit: 'GB' }, // Placeholder, update if dynamic
+    { id: 'memory', icon: HardDrive, label: 'Network Received', value: 8.5, unit: 'GB' }, // Placeholder, update if dynamic
+    { id: 'uptime', icon: Timer, label: 'System Uptime', value: systemUptime, unit: '' },
   ];
 
   const initialCardsData: CardConfig[] = [
@@ -177,11 +178,11 @@ export default function HomePage() {
     },
     {
       id: 'agentPresence', title: 'Agent Presence', icon: Cpu, isDismissible: true,
-      x: 470, y: 50, width: 380, height: 230, zIndex: 1, minWidth: 300, minHeight: 150,
+      x: 470, y: 50, width: 380, height: 230, zIndex: 1, minWidth: 300, minHeight: 200, // Adjusted minHeight
       content: () => (
         <ScrollArea className="h-full pr-1">
           <ul className="space-y-2 p-1">
-            {agents.slice(0,3).map(agent => ( 
+            {agents.slice(0,4).map(agent => ( 
               <li key={agent.id} className="p-2.5 rounded-md bg-primary/5 dark:bg-black/20 hover:bg-muted/30 transition-colors">
                 <div className="flex items-center justify-between mb-0.5">
                   <span className="font-semibold text-foreground text-sm">{agent.name}</span>
@@ -200,7 +201,7 @@ export default function HomePage() {
     },
     {
       id: 'systemSnapshot', title: 'System Snapshot', icon: LayoutGrid, isDismissible: true,
-      x: 470, y: 300, width: 380, height: 300, zIndex: 1, minWidth: 300, minHeight: 280, 
+      x: 470, y: 300, width: 380, height: 320, zIndex: 1, minWidth: 300, minHeight: 300, 
       content: () => (
         <div className="space-y-3 p-1 flex flex-col h-full">
           <ul className="space-y-3">
@@ -211,56 +212,39 @@ export default function HomePage() {
                     <metric.icon className="w-4 h-4 mr-2 text-primary" />
                     <span>{metric.label}</span>
                   </div>
-                  <span className="font-medium text-foreground">
+                  {metric.id === 'agents' ? (
+                     <span className="bg-accent text-accent-foreground px-1.5 py-0.5 rounded-full text-xs font-medium">
+                       {metric.value}
+                     </span>
+                  ) : (
+                    <span className="font-medium text-foreground">
                     {metric.progressMax ? `${metric.value}${metric.unit.startsWith('%') ? '%' : ''}` : metric.value}
-                    {!metric.progressMax && metric.unit && !metric.unit.startsWith('%') && ` ${metric.unit}`}
-                    {metric.progressMax && metric.unit.includes('/') && !metric.unit.startsWith('%') && ` ${metric.unit.substring(metric.unit.indexOf('/'))}`}
+                    {metric.progressMax && metric.unit.includes('/') && !metric.unit.startsWith('%') && !metric.unit.startsWith('GB') ? ` ${metric.unit.substring(metric.unit.indexOf('/'))}` : ''}
+                    {!metric.progressMax && metric.unit && !metric.unit.startsWith('%') && !metric.unit.startsWith('GB') ? ` ${metric.unit}` : ''}
+                    {metric.unit.startsWith('GB') && metric.progressMax ? `${metric.value}GB / ${metric.progressMax/1000}TB` : ''}
+                    {metric.unit.startsWith('GB') && !metric.progressMax ? `${metric.value} GB` : ''}
                   </span>
+                  )}
                 </div>
                 {metric.progressMax ? (
                   <>
                     <Progress value={(metric.value / metric.progressMax) * 100} className="h-2 [&>div]:bg-primary" />
-                    {metric.unit.includes('/') && !metric.unit.startsWith('%') && (
-                      <span className="text-xs text-muted-foreground/70 float-right mt-0.5">
-                        {metric.value}{metric.unit.substring(0, metric.unit.indexOf('/'))} of {metric.unit.substring(metric.unit.indexOf('/') + 1).trim()}
-                      </span>
-                    )}
                   </>
                 ) : null}
+                 {metric.id === 'disk' && (
+                    <span className="text-xs text-muted-foreground/70 float-right mt-0.5">
+                        {/* Already handled in span above for disk */}
+                    </span>
+                )}
               </li>
             ))}
-            <li className="text-sm">
-               <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center text-muted-foreground">
-                    <Timer className="w-4 h-4 mr-2 text-primary" />
-                    <span>System Uptime</span>
-                  </div>
-                  <span className="font-medium text-foreground">{systemUptime}</span>
-                </div>
-              </li>
           </ul>
-          <div className="mt-auto pt-3 border-t border-border/20 dark:border-border/30">
-            <div className="p-2.5 rounded-md bg-primary/5 dark:bg-black/20">
-              <div className="flex items-start justify-between mb-1">
-                <div className="flex items-center">
-                  <CheckCircle className="w-5 h-5 mr-2 text-secondary" />
-                  <div>
-                    <p className="font-semibold text-foreground text-sm">Agent Task: Backup Database Cluster</p>
-                    <p className="text-xs text-muted-foreground">15 minutes ago</p>
-                  </div>
-                </div>
-                <span className="text-xs font-medium bg-secondary text-primary-foreground px-2 py-0.5 rounded-full">SUCCESS</span>
-              </div>
-              <button className="text-xs text-secondary hover:underline flex items-center mt-1">
-                Success Details <ChevronDown className="w-3 h-3 ml-1" />
-              </button>
-            </div>
-          </div>
+          {/* Removed the "Agent Task: Backup Database Cluster" as it's in Live Orchestration Feed */}
         </div>
       )
     },
     {
-      id: 'appView', title: 'Application View', icon: AppWindow, isDismissible: true,
+      id: 'applicationView', title: 'Application View', icon: AppWindow, isDismissible: true, // Changed icon from Blocks
       x: 50, y: 550, width: 400, height: 220, zIndex: 1, minWidth: 250, minHeight: 180,
       content: () => (
           <div className="flex flex-col items-center justify-center h-full text-center p-4">
@@ -268,6 +252,60 @@ export default function HomePage() {
             <p className="text-sm text-muted-foreground">No micro-app launched.</p>
             <p className="text-xs text-muted-foreground/80">Select an app from the 'Micro-Apps' launcher.</p>
           </div>
+      )
+    },
+    {
+      id: 'microApps', title: 'Micro-Apps', icon: Blocks, isDismissible: true,
+      x: 470, y: 640, width: 380, height: 130, zIndex: 1, minWidth: 300, minHeight: 120,
+      content: () => (
+        <div className="grid grid-cols-3 gap-3 pt-1">
+          {[
+            {icon: BarChartBig, label: "Analytics"},
+            {icon: Settings2, label: "Workflow"},
+            {icon: Shield, label: "Security"},
+          ].map((app, index) => (
+            <Button key={index} variant="outline" className="flex flex-col items-center justify-center h-20 p-2 border-primary/20 hover:bg-primary/10">
+              <app.icon className="w-7 h-7 text-primary mb-1" />
+              <span className="text-xs text-primary truncate">Launch</span>
+            </Button>
+          ))}
+        </div>
+      )
+    },
+    {
+      id: 'liveOrchestration', title: 'Live Orchestration Feed', icon: CheckCircle, isDismissible: true, // Icon changed from Activity
+      x: 870, y: 50, width: 380, height: 720, zIndex: 1, minWidth: 320, minHeight: 300,
+      cardClassName: "flex-grow flex flex-col",
+      content: () => (
+        <ScrollArea className="h-full pr-2">
+          <ul className="space-y-3 p-1">
+            {[
+              { task: "Agent Task: Analyze User Sentiment", time: "0 seconds ago", status: "failure", details: "Model output flagged for review due to policy violation on harmful content." },
+              { task: "Agent Task: Deploy Microservice v1.2", time: "3 minutes ago", status: "success", details: "Deployment to staging environment successful. Health checks passing." },
+              { task: "Agent Task: Backup Database Cluster", time: "15 minutes ago", status: "success", details: "Full backup of 'production-db-cluster' completed and verified." },
+              { task: "Agent Task: Scale Worker Pool", time: "22 minutes ago", status: "success", details: "Scaled worker pool 'data-ingestion' from 3 to 5 instances." },
+              { task: "Agent Task: Train Sentiment Model", time: "1 hour ago", status: "failure", details: "Training failed. Insufficient data in 'new_feedback_batch'." },
+            ].map((item, index) => (
+              <li key={index} className="p-3 rounded-md bg-primary/5 dark:bg-black/20">
+                <div className="flex items-start justify-between mb-1">
+                  <div className="flex items-center">
+                     {item.status === 'success' ? <CheckCircle className="w-5 h-5 mr-2 text-secondary shrink-0" /> : <X className="w-5 h-5 mr-2 text-destructive shrink-0" />}
+                    <div>
+                      <p className="font-semibold text-foreground text-sm">{item.task}</p>
+                      <p className="text-xs text-muted-foreground">{item.time}</p>
+                    </div>
+                  </div>
+                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${item.status === 'success' ? 'bg-secondary text-secondary-foreground' : 'bg-destructive text-destructive-foreground'}`}>
+                    {item.status}
+                  </span>
+                </div>
+                <button className={`text-xs ${item.status === 'success' ? 'text-secondary' : 'text-destructive'} hover:underline flex items-center mt-1`}>
+                  {item.status === 'success' ? 'Success Details' : 'Failure Details'} <ChevronDown className="w-3 h-3 ml-1" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </ScrollArea>
       )
     },
   ];
@@ -316,7 +354,7 @@ export default function HomePage() {
   const cardsToRender = initialCardsData.filter(card => !dismissedCardIds.includes(card.id));
 
   return (
-    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden iridescent-aurora-bg">
+    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden"> {/* Removed iridescent-aurora-bg */}
       {cardsToRender.map(cardConfig => {
         const currentLayout = cardLayouts.find(l => l.id === cardConfig.id);
         if (!currentLayout) return null;
