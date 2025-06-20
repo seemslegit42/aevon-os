@@ -81,9 +81,10 @@
     --chart-4: 283 54% 75%; /* Even Lighter Imperial Purple */
     --chart-5: 157 49% 85%; /* Even Lighter Patina Green */
 
-    --iridescent-aurora-start: hsl(var(--primary));
-    --iridescent-aurora-mid: hsl(var(--secondary));
-    --iridescent-aurora-end: hsl(var(--accent));
+    /* Enhanced lightness for a more vibrant Aurora in dark mode */
+    --iridescent-aurora-start: 283 54% 65%; /* Was 60% (from primary: 283 54% 60%) */
+    --iridescent-aurora-mid: 157 49% 75%;   /* Was 70% (from secondary: 157 49% 70%) */
+    --iridescent-aurora-end: 177 85% 65%;   /* Was 60% (from accent: 177 85% 60%) */
   }
 }
 
