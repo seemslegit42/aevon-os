@@ -15,7 +15,7 @@
     --foreground-h: 255; --foreground-s: 15%; --foreground-l: 12%;
 
     /* Card: Very Light Purple for cards */
-    --card-h: 275; --card-s: 52%; --card-l: 97%; --card-a: 0.6;
+    --card-h: 275; --card-s: 52%; --card-l: 97%; --card-a: 0.40;
     --card-foreground-h: var(--foreground-h); --card-foreground-s: var(--foreground-s); --card-foreground-l: var(--foreground-l);
 
     --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l); --popover-a: var(--card-a);
@@ -53,8 +53,8 @@
     --chart-5-h: var(--destructive-h); --chart-5-s: var(--destructive-s); --chart-5-l: var(--destructive-l); /* Red for errors */
 
     /* TopBar Specific Colors - Light Theme */
-    --topbar-bg-h: 0; --topbar-bg-s: 0%; --topbar-bg-l: 97%; --topbar-bg-a: 0.65;
-    --topbar-border-h: 220; --topbar-border-s: 20%; --topbar-border-l: 88%; --topbar-border-a: 0.35;
+    --topbar-bg-h: 0; --topbar-bg-s: 0%; --topbar-bg-l: 97%; --topbar-bg-a: 0.45;
+    --topbar-border-h: 220; --topbar-border-s: 20%; --topbar-border-l: 88%; --topbar-border-a: 0.20;
 
 
     /* Full HSL color definitions */
@@ -95,11 +95,11 @@
     --foreground-h: 210; --foreground-s: 30%; --foreground-l: 96%;
 
     /* Card: Darker, slightly desaturated Purple base for cards */
-    --card-h: 275; --card-s: 30%; --card-l: 14%; --card-a: 0.75;
+    --card-h: 275; --card-s: 30%; --card-l: 14%; --card-a: 0.55;
     --card-foreground-h: var(--foreground-h); --card-foreground-s: var(--foreground-s); --card-foreground-l: var(--foreground-l);
 
     --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l); --popover-a: var(--card-a);
-    --popover-foreground-h: var(--card-foreground-h); --popover-foreground-s: var(--card-foreground-s); --popover-foreground-l: var(--card-foreground-l);
+    --popover-foreground-h: var(--card-foreground-h); --popover-foreground-s: var(--popover-foreground-s); --popover-foreground-l: var(--popover-foreground-l);
 
     /* Primary: Vibrant Magenta/Pink (#e0359e / #6A0DAD) */
     --primary-h: 275; --primary-s: 75%; --primary-l: 60%;
@@ -134,8 +134,8 @@
     --chart-5-h: var(--destructive-h); --chart-5-s: var(--destructive-s); --chart-5-l: var(--destructive-l);
 
     /* TopBar Specific Colors - Dark Theme */
-    --topbar-bg-h: 275; --topbar-bg-s: 30%; --topbar-bg-l: 12%; --topbar-bg-a: 0.55;
-    --topbar-border-h: 275; --topbar-border-s: 20%; --topbar-border-l: 30%; --topbar-border-a: 0.35;
+    --topbar-bg-h: 275; --topbar-bg-s: 30%; --topbar-bg-l: 12%; --topbar-bg-a: 0.35;
+    --topbar-border-h: 275; --topbar-border-s: 20%; --topbar-border-l: 30%; --topbar-border-a: 0.20;
   }
 }
 
@@ -162,7 +162,7 @@
   background-color: rgba(245, 255, 250, 0.15); /* Vitreous White with 0.15 alpha */
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(245, 255, 250, 0.3); /* Vitreous White with 0.3 alpha */
+  border: 1px solid rgba(245, 255, 250, 0.15); /* Vitreous White with 0.15 alpha */
   border-radius: var(--radius);
   box-shadow: 0 8px 32px 0 rgba(28, 25, 52, 0.1); /* Obsidian Black with 0.1 alpha */
 }
@@ -172,7 +172,7 @@
   background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
   backdrop-filter: blur(14px) saturate(1.1);
   -webkit-backdrop-filter: blur(14px) saturate(1.1);
-  border: 1px solid hsla(var(--border-h), var(--border-s), calc(var(--border-l) + 15%), 0.5);
+  border: 1px solid hsla(var(--border-h), var(--border-s), calc(var(--border-l) + 15%), 0.35);
   border-radius: var(--radius);
   box-shadow: 0 6px 24px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 2%), 0.2),
               0 2px 8px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 2%), 0.15);
@@ -374,3 +374,4 @@
   z-index: 2; /* Overlay on top of gradient */
 }
 
+    
