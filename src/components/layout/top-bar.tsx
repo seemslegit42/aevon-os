@@ -11,11 +11,11 @@ import {
   MoonIcon,
   SunIcon,
   SearchIcon,
-  Settings2Icon as LoomIcon,
+  Settings2Icon as LoomIcon, // Assuming this is the icon for Loom
   ShieldCheckIcon as AegisIcon,
   CreditCardIcon as ArmoryIcon,
   BellIcon,
-  Settings2Icon,
+  Settings2Icon, // General settings icon
   ClockIcon,
   ChevronDownIcon,
 } from '@/components/icons';
@@ -103,10 +103,10 @@ const TopBar: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   className={cn(
-                    "font-body", // Lexend font from topbar-aevos-glass-override
+                    "font-body",
                     isActive(item.href)
-                      ? "bg-white/10 dark:bg-white/5 text-foreground font-semibold"
-                      : "text-foreground/70 dark:text-foreground/60 hover:text-foreground dark:hover:text-foreground/90"
+                      ? "bg-white/10 dark:bg-white/5 text-foreground dark:text-primary-foreground font-semibold"
+                      : "text-foreground/70 dark:text-primary-foreground dark:opacity-70 hover:text-foreground dark:hover:text-primary-foreground dark:hover:opacity-100"
                   )}
                 >
                   <item.icon className="w-4 h-4 mr-2 aevos-icon-styling-override" />
@@ -120,7 +120,7 @@ const TopBar: React.FC = () => {
             <Input
               type="search"
               placeholder="Search or ask 'show my tasks'..."
-              className="command-bar-input-aevos-override w-full h-9 pl-10 pr-4 text-sm" // font-family is Lexend from command-bar-input-aevos-override
+              className="command-bar-input-aevos-override w-full h-9 pl-10 pr-4 text-sm"
               aria-label="Command or search input"
             />
           </div>
@@ -165,12 +165,12 @@ const TopBar: React.FC = () => {
             <TooltipContent side="bottom"><p>Settings</p></TooltipContent>
           </Tooltip>
 
-          <div className="flex items-center text-xs px-2 h-9 font-body"> {/* Lexend font from topbar-aevos-glass-override */}
+          <div className="flex items-center text-xs px-2 h-9 font-body dark:text-primary-foreground">
             <ClockIcon className="h-4 w-4 mr-1.5 aevos-icon-styling-override" />
             {isMounted ? currentTime : "--:--"}
           </div>
-           <div className="hidden md:flex items-center text-xs px-1 h-9 border-l border-white/20 dark:border-white/10 ml-1 pl-2.5 font-body"> {/* Lexend font */}
-              Admin User <span className="mx-1">|</span> Session: <span className="text-accent dark:text-accent font-medium ml-1">Active</span>
+           <div className="hidden md:flex items-center text-xs px-1 h-9 border-l border-white/20 dark:border-white/10 ml-1 pl-2.5 font-body dark:text-primary-foreground">
+              Admin User <span className="mx-1 dark:text-primary-foreground/70">|</span> Session: <span className="text-accent dark:text-accent font-medium ml-1">Active</span>
           </div>
 
           <DropdownMenu>
@@ -178,19 +178,19 @@ const TopBar: React.FC = () => {
               <Button variant="ghost" className="flex items-center space-x-2 h-9 px-2.5">
                 <Avatar className="h-6 w-6">
                   <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
-                  <AvatarFallback className="text-xs bg-primary/30 text-primary-foreground">AU</AvatarFallback>
+                  <AvatarFallback className="text-xs bg-primary/30 text-primary-foreground dark:bg-primary/50 dark:text-primary-foreground">AU</AvatarFallback>
                 </Avatar>
-                <ChevronDownIcon className="h-4 w-4 opacity-80 aevos-icon-styling-override" />
+                <ChevronDownIcon className="h-4 w-4 opacity-80 aevos-icon-styling-override dark:opacity-70" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 glassmorphism-panel mt-2">
               <DropdownMenuLabel className="font-headline text-primary dark:text-primary-foreground">My Account</DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-border/20 dark:bg-border/30"/>
-              <DropdownMenuItem className="font-body hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Profile</DropdownMenuItem>
-              <DropdownMenuItem className="font-body hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Billing</DropdownMenuItem>
-              <DropdownMenuItem className="font-body hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Settings</DropdownMenuItem>
+              <DropdownMenuItem className="font-body dark:text-primary-foreground hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Profile</DropdownMenuItem>
+              <DropdownMenuItem className="font-body dark:text-primary-foreground hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Billing</DropdownMenuItem>
+              <DropdownMenuItem className="font-body dark:text-primary-foreground hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Settings</DropdownMenuItem>
               <DropdownMenuSeparator className="bg-border/20 dark:bg-border/30"/>
-              <DropdownMenuItem className="font-body hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Log out</DropdownMenuItem>
+              <DropdownMenuItem className="font-body dark:text-primary-foreground hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Log out</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
