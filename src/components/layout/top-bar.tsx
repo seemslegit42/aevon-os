@@ -51,8 +51,8 @@ interface NavItemConfig {
 
 const mainNavItems: NavItemConfig[] = [
   { href: '/', label: 'Home', icon: Home },
-  { href: '/loom-studio', label: 'Loom Studio', icon: Settings },
-  { href: '/aegis-security', label: 'Aegis Security', icon: Shield },
+  { href: '/loom-studio', label: 'Loom', icon: Settings },
+  { href: '/aegis-security', label: 'Λegis', icon: Shield },
   { href: '/armory', label: 'Λrmory', icon: ShoppingCart },
 ];
 
@@ -60,7 +60,10 @@ const TopBar: React.FC = () => {
   const pathname = usePathname();
   const [currentTime, setCurrentTime] = useState("--:--");
   const [isMounted, setIsMounted] = useState(false);
-  const { theme, toggleTheme } = useThemeStore();
+  const { theme, toggleTheme } = useThemeStore(
+    (state) => ({ theme: state.theme, toggleTheme: state.toggleTheme })
+  );
+
 
   useEffect(() => {
     setIsMounted(true);
@@ -85,8 +88,7 @@ const TopBar: React.FC = () => {
           {/* Left Side: Logo and Navigation */}
           <div className="flex items-center space-x-4">
             <Link href="/" className="text-2xl font-bold flex items-center">
-              <BrainCircuit className="w-7 h-7 mr-2 text-primary dark:text-white" />
-               <span className="text-accent dark:text-white">ΛΞVON OS</span>
+              <BrainCircuit className="w-7 h-7 text-primary dark:text-white" />
             </Link>
             <nav className="hidden md:flex items-center space-x-1">
               {mainNavItems.map((item) => (
@@ -99,7 +101,7 @@ const TopBar: React.FC = () => {
                       "text-gray-700 dark:text-white",
                       "hover:text-gray-900 dark:hover:text-neutral-100",
                       (pathname === item.href || (item.href === '/' && pathname.startsWith('/dashboard') && pathname.length <=1 ) || (item.href !== '/' && pathname.startsWith(item.href)) ) &&
-                        "active-nav-link-dark font-semibold" // This class needs review for light mode compatibility
+                        "active-nav-link-dark font-semibold" 
                     )}
                   >
                     <item.icon className="w-4 h-4 mr-2" />
