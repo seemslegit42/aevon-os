@@ -1,9 +1,8 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Progress } from '@/components/ui/progress';
 import type { LucideIcon } from 'lucide-react';
 import type { Emitter } from 'mitt';
-import { useSystemSnapshotStore } from '@/stores/system-snapshot.store';
 
 export interface SystemMetric {
   id: string;
@@ -24,37 +23,18 @@ export interface AgentTask {
 }
 
 interface SystemSnapshotCardContentProps {
-  initialSystemMetricsConfig: SystemMetric[];
-  initialAgentTask?: AgentTask;
+  systemMetricsConfig: SystemMetric[];
+  agentTask?: AgentTask;
   eventBusInstance?: Emitter<any>;
 }
 
 const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({ 
-  initialSystemMetricsConfig, 
-  initialAgentTask, 
+  systemMetricsConfig, 
+  agentTask, 
   eventBusInstance 
 }) => {
-  const systemMetricsConfig = useSystemSnapshotStore((state) => state.systemMetricsConfig);
-  const agentTask = useSystemSnapshotStore((state) => state.agentTask);
-  const initializeData = useSystemSnapshotStore((state) => state.initializeData);
-  // const updateMetricValue = useSystemSnapshotStore((state) => state.updateMetricValue); // Example for agent interaction
-
-  useEffect(() => {
-    initializeData(initialSystemMetricsConfig, initialAgentTask);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialSystemMetricsConfig, initialAgentTask]);
-
-  // Example of agent interaction via event bus
-  // useEffect(() => {
-  //   const handleUpdateMetric = (payload: { metricId: string, value: string | number }) => {
-  //     updateMetricValue(payload.metricId, payload.value);
-  //   };
-  //   eventBusInstance?.on('systemsnapshot:updateMetric', handleUpdateMetric as any);
-  //   return () => {
-  //     eventBusInstance?.off('systemsnapshot:updateMetric', handleUpdateMetric as any);
-  //   };
-  // }, [eventBusInstance, updateMetricValue]);
-
+  // This component now receives its data directly as props.
+  // No Zustand store is used here.
 
   const hasMetrics = systemMetricsConfig && systemMetricsConfig.length > 0;
 
@@ -113,3 +93,5 @@ const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({
 };
 
 export default SystemSnapshotCardContent;
+
+    

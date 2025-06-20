@@ -1,10 +1,9 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { Emitter } from 'mitt';
-import { useAgentPresenceStore } from '@/stores/agent-presence.store';
 
 export interface Agent {
   id: string;
@@ -17,18 +16,13 @@ export interface Agent {
 }
 
 interface AgentPresenceCardContentProps {
-  initialAgents: Agent[]; // For one-time initialization
+  agents: Agent[];
   eventBusInstance?: Emitter<any>;
 }
 
-const AgentPresenceCardContent: React.FC<AgentPresenceCardContentProps> = ({ initialAgents, eventBusInstance }) => {
-  const agents = useAgentPresenceStore((state) => state.agents);
-  const initializeAgents = useAgentPresenceStore((state) => state.initializeAgents);
-
-  useEffect(() => {
-    initializeAgents(initialAgents);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialAgents]); // Only re-initialize if initialAgents prop itself changes instance
+const AgentPresenceCardContent: React.FC<AgentPresenceCardContentProps> = ({ agents, eventBusInstance }) => {
+  // This component now receives agents directly as a prop.
+  // No Zustand store is used here.
 
   if (!agents || agents.length === 0) {
     return (
@@ -65,3 +59,5 @@ const AgentPresenceCardContent: React.FC<AgentPresenceCardContentProps> = ({ ini
 };
 
 export default AgentPresenceCardContent;
+
+    

@@ -1,15 +1,5 @@
 
-import { create } from 'zustand';
-import type { FeedItem } from '@/components/dashboard/live-orchestration-feed-card-content';
+// This file is intentionally blank as the store has been removed.
+// LiveOrchestrationFeedCardContent now receives its data via props.
 
-interface LiveFeedState {
-  feedItems: FeedItem[];
-  initializeFeedItems: (items: FeedItem[]) => void;
-  addFeedItem: (item: FeedItem) => void; // For agent interaction
-}
-
-export const useLiveFeedStore = create<LiveFeedState>((set, get) => ({
-  feedItems: [],
-  initializeFeedItems: (items) => set({ feedItems: items }),
-  addFeedItem: (item) => set(state => ({ feedItems: [item, ...state.feedItems].slice(0, 50) })), // Keep last 50 items
-}));
+    

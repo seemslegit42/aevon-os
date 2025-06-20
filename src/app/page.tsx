@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense, useCallback, lazy } from 'react';
 import { Rnd, type Position, type Size } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Cpu, AppWindow, Users, Server, Blocks, CheckCircle, Mic, MoreHorizontal, X, LoaderCircle, LayoutDashboard } from 'lucide-react'; // Adjusted icons
+import { Sparkles, Cpu, AppWindow, Users, Server, Blocks, CheckCircle, Mic, MoreHorizontal, X, LoaderCircle, LayoutDashboard } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -13,13 +13,13 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import eventBus from '@/lib/event-bus';
 import CommandPalette from '@/components/command-palette';
 
-// Initial Data (could come from API or be part of store initialization if more complex)
-import type { Agent as AgentPresenceAgentType } from '@/components/dashboard/agent-presence-card-content';
-import { CircleDot, LoaderCircle as ProcessingIcon, AlertCircle as ErrorIcon } from 'lucide-react'; // For agent status
+import type { Agent as AgentPresenceAgentType } from '@/components/dashboard/agent-presence-card-content'; // Keep type
+import { CircleDot, LoaderCircle as ProcessingIcon, AlertCircle as ErrorIcon } from 'lucide-react';
 
-import type { FeedItem as LiveFeedItemType } from '@/components/dashboard/live-orchestration-feed-card-content';
-import type { SystemMetric as SystemMetricType, AgentTask as AgentTaskType } from '@/components/dashboard/system-snapshot-card-content';
-import { HardDrive, Network, Clock } from 'lucide-react'; // For system snapshot icons
+import type { FeedItem as LiveFeedItemType } from '@/components/dashboard/live-orchestration-feed-card-content'; // Keep type
+import type { SystemMetric as SystemMetricType, AgentTask as AgentTaskType } from '@/components/dashboard/system-snapshot-card-content'; // Keep types
+import { HardDrive, Network, Clock } from 'lucide-react';
+import type { MicroAppItem } from '@/components/dashboard/micro-apps-card-content'; // Keep type
 
 
 // Async load card content components
@@ -52,6 +52,12 @@ const systemMetricsConfigData: SystemMetricType[] = [
   { id: 'uptime', icon: Clock, label: 'System Uptime', value: '12d 4h 32m', unit: '' },
 ];
 
+const initialMicroAppsData: MicroAppItem[] = [
+  {id: "analytics", icon: Blocks /* Placeholder, update if specific icons are needed */, label: "Analytics"},
+  {id: "workflow", icon: Blocks, label: "Workflow"},
+  {id: "explorer", icon: Blocks, label: "Explorer"},
+];
+
 
 export interface CardLayoutInfo {
   id: string;
@@ -67,7 +73,7 @@ export interface CardConfig {
   title: string;
   icon: React.ElementType;
   content: React.LazyExoticComponent<React.FC<any>>;
-  contentProps?: any; // Props passed to the lazy loaded component, now includes initial data for stores
+  contentProps?: any; 
   defaultLayout: { x: number; y: number; width: number; height: number; zIndex: number };
   minWidth: number;
   minHeight: number;
@@ -78,49 +84,50 @@ export interface CardConfig {
 
 const ALL_CARD_CONFIGS: CardConfig[] = [
   {
-    id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, isDismissible: true,
+    id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, isDismissible: true, // TRUE MICRO-APP
     content: AiAssistantCardContent,
-    contentProps: { // No direct state props, placeholder can be static or from a config store later
+    contentProps: { 
       placeholderInsight: "Analyze product sales, compare revenue, or ask for insights."
+      // Zustand store handles its own state
     },
     defaultLayout: { x: 20, y: 20, width: 580, height: 300, zIndex: 1 },
     minWidth: 400, minHeight: 280, cardClassName: "flex-grow flex flex-col",
   },
   {
-    id: 'agentPresence', title: 'Agent Presence', icon: Cpu, isDismissible: true,
+    id: 'agentPresence', title: 'Agent Presence', icon: Cpu, isDismissible: true, // Passive Component
     content: AgentPresenceCardContent,
-    contentProps: { initialAgents: initialAgentsData }, // Pass initial data for the store
+    contentProps: { agents: initialAgentsData }, // Pass data as prop
     defaultLayout: { x: 620, y: 20, width: 450, height: 230, zIndex: 1 },
     minWidth: 300, minHeight: 200,
   },
   {
-    id: 'systemSnapshot', title: 'System Snapshot', icon: Server, isDismissible: true,
+    id: 'systemSnapshot', title: 'System Snapshot', icon: Server, isDismissible: true, // Passive Component
     content: SystemSnapshotCardContent,
     contentProps: { 
-        initialSystemMetricsConfig: systemMetricsConfigData, 
-        initialAgentTask: undefined // Or some initial task if needed
-    },
+        systemMetricsConfig: systemMetricsConfigData, 
+        agentTask: undefined 
+    }, // Pass data as props
     defaultLayout: { x: 620, y: 270, width: 450, height: 250, zIndex: 1 },
     minWidth: 320, minHeight: 240,
   },
   {
-    id: 'microApps', title: 'Micro-Apps', icon: Blocks, isDismissible: true,
+    id: 'microApps', title: 'Micro-Apps', icon: Blocks, isDismissible: true, // Passive Launcher
     content: MicroAppsCardContent,
-    // contentProps: { initialAppItems: hardcodedAppItems } // If apps list was dynamic and passed here
+    contentProps: { availableApps: initialMicroAppsData }, // Pass data as prop
     defaultLayout: { x: 620, y: 540, width: 450, height: 130, zIndex: 1 },
     minWidth: 280, minHeight: 120,
   },
   {
-    id: 'applicationView', title: 'Application View', icon: AppWindow, isDismissible: true,
+    id: 'applicationView', title: 'Application View', icon: AppWindow, isDismissible: true, // MICRO-APP (Container)
     content: ApplicationViewCardContent,
-    // contentProps: { initialAppId: null } // Or some default app
+    // Zustand store handles its own state (currentAppId)
     defaultLayout: { x: 20, y: 340, width: 580, height: 330, zIndex: 1 },
     minWidth: 400, minHeight: 200,
   },
   {
-    id: 'liveOrchestration', title: 'Live Orchestration Feed', icon: CheckCircle, isDismissible: true,
+    id: 'liveOrchestration', title: 'Live Orchestration Feed', icon: CheckCircle, isDismissible: true, // Passive Component
     content: LiveOrchestrationFeedCardContent,
-    contentProps: { initialFeedItems: initialFeedItemsData },
+    contentProps: { feedItems: initialFeedItemsData }, // Pass data as prop
     defaultLayout: { x: 1090, y: 20, width: 400, height: 650, zIndex: 1 },
     minWidth: 320, minHeight: 250, cardClassName: "flex-grow flex flex-col",
   },
@@ -139,8 +146,8 @@ export default function DashboardPage() {
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    const savedLayouts = localStorage.getItem('dashboardCardLayouts_v2_zustand');
-    const savedActiveIds = localStorage.getItem('dashboardActiveCardIds_v2_zustand');
+    const savedLayouts = localStorage.getItem('dashboardCardLayouts_v3_passive'); // Updated key for clarity
+    const savedActiveIds = localStorage.getItem('dashboardActiveCardIds_v3_passive'); // Updated key
 
     let currentActiveIds = DEFAULT_ACTIVE_CARD_IDS;
     if (savedActiveIds) {
@@ -175,12 +182,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!isInitialized) return;
-    localStorage.setItem('dashboardCardLayouts_v2_zustand', JSON.stringify(cardLayouts));
+    localStorage.setItem('dashboardCardLayouts_v3_passive', JSON.stringify(cardLayouts));
   }, [cardLayouts, isInitialized]);
 
   useEffect(() => {
     if (!isInitialized) return;
-     localStorage.setItem('dashboardActiveCardIds_v2_zustand', JSON.stringify(activeCardIds));
+     localStorage.setItem('dashboardActiveCardIds_v3_passive', JSON.stringify(activeCardIds));
   }, [activeCardIds, isInitialized]);
 
   const getMaxZIndex = useCallback(() => {
@@ -273,10 +280,8 @@ export default function DashboardPage() {
   const cardsToRender = ALL_CARD_CONFIGS.filter(card => activeCardIds.includes(card.id));
 
   const getMergedContentProps = (cardConfig: CardConfig) => {
-    // Props related to AI assistant are now managed by its Zustand store.
-    // We only pass initial data or event bus instance.
     return {
-      ...cardConfig.contentProps, // This now primarily includes initial data for stores
+      ...cardConfig.contentProps,
       eventBusInstance: eventBus, 
     };
   };
@@ -401,3 +406,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
