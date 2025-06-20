@@ -128,9 +128,10 @@ export default function DashboardPage() {
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
-  const [activeCardIds, setActiveCardIds] = useState<string[]>(DEFAULT_ACTIVE_CARD_IDS);
+  const [activeCardIds, setActiveCardIds] = useState<string[]>([]);
   const [cardLayouts, setCardLayouts] = useState<CardLayoutInfo[]>([]);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Load layout and active cards from localStorage
   useEffect(() => {
@@ -149,26 +150,36 @@ export default function DashboardPage() {
 
     if (savedLayouts) {
       try {
-        setCardLayouts(JSON.parse(savedLayouts));
+        const parsedLayouts = JSON.parse(savedLayouts);
+        // Ensure all active cards have layout info; add default if missing
+        const layoutsWithDefaults = currentActiveIds.map(id => {
+          const existing = parsedLayouts.find((l: CardLayoutInfo) => l.id === id);
+          if (existing) return existing;
+          const defaultConfig = ALL_CARD_CONFIGS.find(c => c.id === id);
+          return defaultConfig ? { ...defaultConfig.defaultLayout, id: id } : null;
+        }).filter(Boolean) as CardLayoutInfo[];
+        setCardLayouts(layoutsWithDefaults);
+
       } catch (e) {
         console.error("Failed to parse layouts from localStorage", e);
-        setCardLayouts(ALL_CARD_CONFIGS.map(c => ({ ...c.defaultLayout, id: c.id })));
+        setCardLayouts(ALL_CARD_CONFIGS.filter(c => currentActiveIds.includes(c.id)).map(c => ({ ...c.defaultLayout, id: c.id })));
       }
     } else {
-      setCardLayouts(ALL_CARD_CONFIGS.map(c => ({ ...c.defaultLayout, id: c.id })));
+       setCardLayouts(ALL_CARD_CONFIGS.filter(c => currentActiveIds.includes(c.id)).map(c => ({ ...c.defaultLayout, id: c.id })));
     }
+    setIsInitialized(true);
   }, []);
 
   // Save layout and active cards to localStorage
   useEffect(() => {
-    if (cardLayouts.length > 0) { // Only save if layouts have been initialized
-      localStorage.setItem('dashboardCardLayouts_v1', JSON.stringify(cardLayouts));
-    }
-  }, [cardLayouts]);
+    if (!isInitialized) return;
+    localStorage.setItem('dashboardCardLayouts_v1', JSON.stringify(cardLayouts));
+  }, [cardLayouts, isInitialized]);
 
   useEffect(() => {
+    if (!isInitialized) return;
      localStorage.setItem('dashboardActiveCardIds_v1', JSON.stringify(activeCardIds));
-  }, [activeCardIds]);
+  }, [activeCardIds, isInitialized]);
 
 
   const handleAiSubmit = async (e: FormEvent) => {
@@ -198,7 +209,7 @@ export default function DashboardPage() {
 
   const getMaxZIndex = useCallback(() => {
     if (cardLayouts.length === 0) return 0;
-    return Math.max(0, ...cardLayouts.map(card => card.zIndex).filter(z => typeof z === 'number'));
+    return Math.max(0, ...cardLayouts.map(card => card.zIndex || 0).filter(z => typeof z === 'number'));
   }, [cardLayouts]);
 
   const updateCardLayout = useCallback((id: string, newPos: Position, newSize?: Size) => {
@@ -230,6 +241,8 @@ export default function DashboardPage() {
 
   const handleRemoveCard = useCallback((cardId: string) => {
     setActiveCardIds(prev => prev.filter(id => id !== cardId));
+    // Optionally remove from layouts as well, or keep it if user might re-add
+    // setCardLayouts(prev => prev.filter(l => l.id !== cardId));
     toast({ title: "Zone Removed", description: `The zone has been removed from your dashboard.`});
   }, []);
   
@@ -242,14 +255,17 @@ export default function DashboardPage() {
         if (defaultConfig) {
           setCardLayouts(prev => [...prev, { ...defaultConfig.defaultLayout, id: cardId, zIndex: getMaxZIndex() + 1 }]);
         }
+      } else {
+        // If layout exists (e.g. card was removed then re-added), bring to front
+        handleBringToFront(cardId);
       }
       toast({ title: "Zone Added", description: `The zone has been added to your dashboard.`});
     }
-  }, [activeCardIds, cardLayouts, getMaxZIndex]);
+  }, [activeCardIds, cardLayouts, getMaxZIndex, handleBringToFront]);
 
   const handleResetLayout = useCallback(() => {
     setActiveCardIds(DEFAULT_ACTIVE_CARD_IDS);
-    setCardLayouts(ALL_CARD_CONFIGS.map(c => ({ ...c.defaultLayout, id: c.id })));
+    setCardLayouts(ALL_CARD_CONFIGS.filter(c => DEFAULT_ACTIVE_CARD_IDS.includes(c.id)).map(c => ({ ...c.defaultLayout, id: c.id })));
     toast({ title: "Layout Reset", description: "Dashboard layout has been reset to default."});
   }, []);
 
@@ -312,6 +328,15 @@ export default function DashboardPage() {
     </div>
   );
 
+  if (!isInitialized) {
+    // Render a full-page skeleton or loader while initializing from localStorage
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+        <LoaderCircle className="w-12 h-12 text-primary animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-auto p-4">
       {isMobile ? (
@@ -337,18 +362,18 @@ export default function DashboardPage() {
       ) : (
         cardsToRender.map(cardConfig => {
           const currentLayout = cardLayouts.find(l => l.id === cardConfig.id);
-          if (!currentLayout) {
-             // Attempt to find a default if somehow missing, though this should be rare
-             const defaultConf = ALL_CARD_CONFIGS.find(c => c.id === cardConfig.id);
-             if (defaultConf) {
-                // Add it to layouts with a new z-index, this could happen if a card was added and layout wasn't immediately set
-                const newLayout = { ...defaultConf.defaultLayout, id: cardConfig.id, zIndex: getMaxZIndex() + 1 };
-                // Avoid direct state update in render, but log or handle. For now, skip rendering if no layout.
-                console.warn(`Layout not found for card ${cardConfig.id}, consider adding default.`);
-                return null; 
-             }
-             return null;
+          // If a card is in activeCardIds but somehow not in cardLayouts, use its default.
+          // This can happen if localStorage gets into an inconsistent state or during development.
+          const layoutToUse = currentLayout || 
+                             ALL_CARD_CONFIGS.find(c => c.id === cardConfig.id)?.defaultLayout;
+
+          if (!layoutToUse) {
+             // This should ideally not happen if activeCardIds and ALL_CARD_CONFIGS are consistent
+             console.warn(`No layout or default layout found for card ${cardConfig.id}. Skipping render.`);
+             return null; 
           }
+          // Ensure layoutToUse has id, which currentLayout would, but defaultLayout might not if simply spread.
+          const finalLayout = {...layoutToUse, id: cardConfig.id, zIndex: layoutToUse.zIndex || (getMaxZIndex() + 1) };
 
 
           const CardSpecificContent = cardConfig.content;
@@ -356,8 +381,8 @@ export default function DashboardPage() {
           return (
             <Rnd
               key={cardConfig.id}
-              size={{ width: currentLayout.width, height: currentLayout.height }}
-              position={{ x: currentLayout.x, y: currentLayout.y }}
+              size={{ width: finalLayout.width, height: finalLayout.height }}
+              position={{ x: finalLayout.x, y: finalLayout.y }}
               onDragStart={() => handleBringToFront(cardConfig.id)}
               onDragStop={(e, d) => {
                 updateCardLayout(cardConfig.id, { x: d.x, y: d.y });
@@ -374,7 +399,7 @@ export default function DashboardPage() {
                   top:true, right:true, bottom:true, left:true,
                   topRight:true, bottomRight:true, bottomLeft:true, topLeft:true
               }}
-              style={{ zIndex: currentLayout.zIndex }}
+              style={{ zIndex: finalLayout.zIndex }}
               className={cn(
                 "border-transparent hover:border-primary/30 focus-within:border-primary",
               )}
