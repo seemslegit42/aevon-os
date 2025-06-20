@@ -1,6 +1,6 @@
 // src/components/icons/GlobeIcon.tsx
 import React from 'react';
-import { IconProps } from '../../../config';
+import type { IconProps } from '../../types/icon';
 
 export const GlobeIcon: React.FC<IconProps> = ({ className, size = 20, style }) => (
   <svg 

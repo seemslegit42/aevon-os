@@ -1,6 +1,6 @@
 // src/components/icons/CreditCardIcon.tsx
 import React from 'react';
-import { IconProps } from '../../../config';
+import type { IconProps } from '../../types/icon';
 
 export const CreditCardIcon: React.FC<IconProps> = ({ className, size = 20, style }) => (
   <svg 

@@ -1,6 +1,6 @@
 // src/components/icons/ChevronDownIcon.tsx
 import React from 'react';
-import { IconProps } from '../../../config';
+import type { IconProps } from '../../types/icon';
 
 export const ChevronDownIcon: React.FC<IconProps> = ({ className, size = 16, style }) => (
   <svg 

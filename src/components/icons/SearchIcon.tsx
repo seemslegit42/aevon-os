@@ -1,6 +1,6 @@
 // src/components/icons/SearchIcon.tsx
 import React from 'react';
-import { IconProps } from '../../../config';
+import type { IconProps } from '../../types/icon';
 
 export const SearchIcon: React.FC<IconProps> = ({ className, size = 20, style }) => (
   <svg 

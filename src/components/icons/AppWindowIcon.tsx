@@ -1,6 +1,6 @@
 // src/components/icons/AppWindowIcon.tsx
 import React from 'react';
-import { IconProps } from '../../../config';
+import type { IconProps } from '../../types/icon';
 
 export const AppWindowIcon: React.FC<IconProps> = ({ className, size = 24, style }) => (
  <svg 

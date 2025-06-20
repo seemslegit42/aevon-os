@@ -1,6 +1,6 @@
 // src/components/icons/PlayIcon.tsx
 import React from 'react';
-import { IconProps } from '../../../config';
+import type { IconProps } from '../../types/icon';
 
 export const PlayIcon: React.FC<IconProps> = ({ className, size = 20, style }) => (
   <svg 

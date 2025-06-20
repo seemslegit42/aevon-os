@@ -1,6 +1,6 @@
 // src/components/icons/CompassIcon.tsx
 import React from 'react';
-import { IconProps } from '../../../config';
+import type { IconProps } from '../../types/icon';
 
 export const CompassIcon: React.FC<IconProps> = ({ className, size = 20, style }) => (
   <svg 

@@ -1,6 +1,6 @@
 // src/components/icons/LogoSymbol.tsx
 import React from 'react';
-import { IconProps } from '../../../config'; // Assuming IconProps and COLORS are correctly defined
+import type { IconProps } from '../../types/icon';
 
 // New AEVON OS Symbol
 export const LogoSymbol: React.FC<IconProps> = ({ className, size = 32, style }) => (

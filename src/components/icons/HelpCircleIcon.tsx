@@ -2,7 +2,7 @@
 // This is the same as InfoIcon, just for semantic difference if desired.
 // For now, it will be identical to InfoIcon
 import React from 'react';
-import { IconProps } from '../../../config';
+import type { IconProps } from '../../types/icon';
 
 export const HelpCircleIcon: React.FC<IconProps> = ({ className, size = 20, style }) => (
   <svg

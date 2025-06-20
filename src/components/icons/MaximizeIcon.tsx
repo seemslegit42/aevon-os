@@ -1,6 +1,6 @@
 // src/components/icons/MaximizeIcon.tsx
 import React from 'react';
-import { IconProps } from '../../../config';
+import type { IconProps } from '../../types/icon';
 
 export const MaximizeIcon: React.FC<IconProps> = ({ className, size = 18, style }) => ( 
   <svg 

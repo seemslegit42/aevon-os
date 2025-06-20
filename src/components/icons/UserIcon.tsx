@@ -1,6 +1,6 @@
 // src/components/icons/UserIcon.tsx
 import React from 'react';
-import { IconProps } from '../../../config';
+import type { IconProps } from '../../types/icon';
 
 export const UserIcon: React.FC<IconProps> = ({ className, size = 24, style }) => (
   <svg 

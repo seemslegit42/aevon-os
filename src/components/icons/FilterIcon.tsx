@@ -1,6 +1,6 @@
 // src/components/icons/FilterIcon.tsx
 import React from 'react';
-import { IconProps } from '../../../config';
+import type { IconProps } from '../../types/icon';
 
 export const FilterIcon: React.FC<IconProps> = ({ className, size = 20, style }) => (
   <svg 

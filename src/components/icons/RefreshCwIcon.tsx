@@ -1,6 +1,6 @@
 // src/components/icons/RefreshCwIcon.tsx
 import React from 'react';
-import { IconProps } from '../../../config';
+import type { IconProps } from '../../types/icon';
 
 export const RefreshCwIcon: React.FC<IconProps> = ({ className, size = 16, style }) => (
   <svg 

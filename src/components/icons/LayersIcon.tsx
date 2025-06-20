@@ -1,6 +1,6 @@
 // src/components/icons/LayersIcon.tsx
 import React from 'react';
-import { IconProps } from '../../../config';
+import type { IconProps } from '../../types/icon';
 
 export const LayersIcon: React.FC<IconProps> = ({ className, size = 24, style }) => (
   <svg 
