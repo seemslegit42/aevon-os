@@ -23,5 +23,4 @@ export const Settings2Icon: React.FC<IconProps> = ({ className, size = 20, style
     <path d="M100,80a28,28,0,1,1,28-28A28.1,28.1,0,0,1,100,80Z" fill="none" stroke="url(#aevosIconGradient)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
   </svg>
 );
-
     

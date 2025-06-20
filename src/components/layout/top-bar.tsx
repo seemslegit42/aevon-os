@@ -11,11 +11,11 @@ import {
   MoonIcon,
   SunIcon,
   SearchIcon,
-  Settings2Icon as LoomIcon, // Assuming this is the icon for Loom
+  Settings2Icon as LoomIcon, 
   ShieldCheckIcon as AegisIcon,
   CreditCardIcon as ArmoryIcon,
   BellIcon,
-  Settings2Icon, // General settings icon
+  Settings2Icon, 
   ClockIcon,
   ChevronDownIcon,
 } from '@/components/icons';
@@ -110,13 +110,13 @@ const TopBar: React.FC = () => {
                   )}
                 >
                   <item.icon className="w-4 h-4 mr-2 aevos-icon-styling-override" />
-                  {item.label}
+                  <span className={cn(isActive(item.href) ? "dark:text-primary-foreground" : "dark:text-primary-foreground dark:opacity-70")}>{item.label}</span>
                 </Button>
               </Link>
             ))}
           </nav>
           <div className="relative w-full max-w-md">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 aevos-icon-styling-override" />
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 aevos-icon-styling-override dark:text-primary-foreground" />
             <Input
               type="search"
               placeholder="Search or ask 'show my tasks'..."
@@ -138,8 +138,8 @@ const TopBar: React.FC = () => {
                 aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
               >
                 {isMounted && theme === 'dark' ?
-                  <SunIcon className="h-5 w-5 aevos-icon-styling-override" /> :
-                  <MoonIcon className="h-5 w-5 aevos-icon-styling-override" />}
+                  <SunIcon className="h-5 w-5 aevos-icon-styling-override dark:text-primary-foreground" /> :
+                  <MoonIcon className="h-5 w-5 aevos-icon-styling-override dark:text-primary-foreground" />}
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom"><p>Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode</p></TooltipContent>
@@ -148,7 +148,7 @@ const TopBar: React.FC = () => {
           <Tooltip>
             <TooltipTrigger asChild>
                <Button variant="ghost" size="icon" className="w-9 h-9">
-                <BellIcon className="h-5 w-5 aevos-icon-styling-override" />
+                <BellIcon className="h-5 w-5 aevos-icon-styling-override dark:text-primary-foreground" />
                 <span className="sr-only">Notifications</span>
               </Button>
             </TooltipTrigger>
@@ -158,18 +158,18 @@ const TopBar: React.FC = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" className="w-9 h-9">
-                <Settings2Icon className="h-5 w-5 aevos-icon-styling-override" />
+                <Settings2Icon className="h-5 w-5 aevos-icon-styling-override" /> 
                 <span className="sr-only">Settings</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom"><p>Settings</p></TooltipContent>
           </Tooltip>
 
-          <div className="flex items-center text-xs px-2 h-9 font-body dark:text-primary-foreground">
-            <ClockIcon className="h-4 w-4 mr-1.5 aevos-icon-styling-override" />
+          <div className="flex items-center text-xs px-2 h-9 font-body dark:text-primary-foreground dark:opacity-80">
+            <ClockIcon className="h-4 w-4 mr-1.5 aevos-icon-styling-override dark:text-primary-foreground" />
             {isMounted ? currentTime : "--:--"}
           </div>
-           <div className="hidden md:flex items-center text-xs px-1 h-9 border-l border-white/20 dark:border-white/10 ml-1 pl-2.5 font-body dark:text-primary-foreground">
+           <div className="hidden md:flex items-center text-xs px-1 h-9 border-l border-white/20 dark:border-white/10 ml-1 pl-2.5 font-body dark:text-primary-foreground dark:opacity-80">
               Admin User <span className="mx-1 dark:text-primary-foreground/70">|</span> Session: <span className="text-accent dark:text-accent font-medium ml-1">Active</span>
           </div>
 
@@ -180,7 +180,7 @@ const TopBar: React.FC = () => {
                   <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
                   <AvatarFallback className="text-xs bg-primary/30 text-primary-foreground dark:bg-primary/50 dark:text-primary-foreground">AU</AvatarFallback>
                 </Avatar>
-                <ChevronDownIcon className="h-4 w-4 opacity-80 aevos-icon-styling-override dark:opacity-70" />
+                <ChevronDownIcon className="h-4 w-4 opacity-80 aevos-icon-styling-override dark:text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 glassmorphism-panel mt-2">
