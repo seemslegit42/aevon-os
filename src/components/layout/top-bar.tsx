@@ -18,8 +18,8 @@ import {
   Settings2Icon,
   ClockIcon,
   ChevronDownIcon,
-  CommandIcon, // Changed from LogoSymbol
-  UserIcon
+  UserIcon,
+  LogoSymbol // Changed from CommandIcon
 } from '@/components/icons'; 
 import {
   Tooltip,
@@ -88,7 +88,7 @@ const TopBar: React.FC = () => {
           {/* Left Side: Logo and Navigation */}
           <div className="flex items-center space-x-4">
             <Link href="/" className="text-2xl font-bold flex items-center">
-              <CommandIcon className="w-7 h-7 text-primary dark:text-white" /> {/* Changed from LogoSymbol */}
+              <LogoSymbol className="text-primary dark:text-white" /> {/* Changed from CommandIcon */}
             </Link>
             <nav className="hidden md:flex items-center space-x-1">
               {mainNavItems.map((item) => (
