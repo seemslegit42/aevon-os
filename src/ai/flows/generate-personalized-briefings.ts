@@ -1,58 +1,47 @@
 
-// src/ai/flows/generate-personalized-briefings.ts
 'use server';
 /**
- * @fileOverview An AI agent for generating personalized briefings for users.
+ * @fileOverview An AI agent for generating personalized briefings for users, using Vercel AI SDK and Groq.
  *
  * - generatePersonalizedBriefing - A function that generates a personalized briefing.
  * - GeneratePersonalizedBriefingInput - The input type for the generatePersonalizedBriefing function.
  * - GeneratePersonalizedBriefingOutput - The return type for the generatePersonalizedBriefing function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { günstigerLLM, createOpenAI } from 'ai';
+import { generateText } from 'ai';
 
-const GeneratePersonalizedBriefingInputSchema = z.object({
-  userName: z.string().describe('The name of the user for whom the briefing is being generated.'),
-  operationalMetrics: z.string().describe('Key operational metrics to include in the briefing.'),
-  relevantInformation: z.string().describe('Relevant information to include in the briefing.'),
+// Ensure you have GROQ_API_KEY in your .env file
+const groq = createOpenAI({
+  baseURL: 'https://api.groq.com/openai/v1',
+  apiKey: process.env.GROQ_API_KEY,
 });
-export type GeneratePersonalizedBriefingInput = z.infer<typeof GeneratePersonalizedBriefingInputSchema>;
 
-const GeneratePersonalizedBriefingOutputSchema = z.object({
-  briefing: z.string().describe('The personalized briefing for the user.'),
-});
-export type GeneratePersonalizedBriefingOutput = z.infer<typeof GeneratePersonalizedBriefingOutputSchema>;
-
-export async function generatePersonalizedBriefing(input: GeneratePersonalizedBriefingInput): Promise<GeneratePersonalizedBriefingOutput> {
-  return generatePersonalizedBriefingFlow(input);
+export interface GeneratePersonalizedBriefingInput {
+  userName: string;
+  operationalMetrics: string;
+  relevantInformation: string;
 }
 
-const prompt = ai.definePrompt({
-  name: 'generatePersonalizedBriefingPrompt',
-  input: {schema: GeneratePersonalizedBriefingInputSchema},
-  output: {schema: GeneratePersonalizedBriefingOutputSchema},
-  prompt: `You are BEEP (Behavioral Event & Execution Processor), a conversational agent interface for natural language tasking and operational intelligence. You are tasked with generating personalized briefings for users.
+export interface GeneratePersonalizedBriefingOutput {
+  briefing: string;
+}
 
-  Your goal is to summarize key operational metrics and relevant information to keep the user informed.
+export async function generatePersonalizedBriefing(input: GeneratePersonalizedBriefingInput): Promise<GeneratePersonalizedBriefingOutput> {
+  const prompt = `You are BEEP (Behavioral Event & Execution Processor), a conversational agent interface for natural language tasking and operational intelligence. You are tasked with generating personalized briefings for users.
 
-  User Name: {{{userName}}}
-  Operational Metrics: {{{operationalMetrics}}}
-  Relevant Information: {{{relevantInformation}}}
+Your goal is to summarize key operational metrics and relevant information to keep the user informed.
 
-  Please provide a concise and informative briefing, tailored to the user's needs.
-  `,
-});
+User Name: ${input.userName}
+Operational Metrics: ${input.operationalMetrics}
+Relevant Information: ${input.relevantInformation}
 
-const generatePersonalizedBriefingFlow = ai.defineFlow(
-  {
-    name: 'generatePersonalizedBriefingFlow',
-    inputSchema: GeneratePersonalizedBriefingInputSchema,
-    outputSchema: GeneratePersonalizedBriefingOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
-  }
-);
+Please provide a concise and informative briefing, tailored to the user's needs. Output only the briefing as a string.`;
 
+  const { text } = await generateText({
+    model: groq('mixtral-8x7b-32768'), // Or any other Groq model like 'llama3-8b-8192'
+    prompt: prompt,
+  });
+
+  return { briefing: text };
+}

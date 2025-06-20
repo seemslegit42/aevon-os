@@ -1,63 +1,55 @@
-// src/ai/flows/generate-micro-app-description.ts
+
 'use server';
 /**
- * @fileOverview This file defines a Genkit flow for generating descriptions for micro-apps to be published on the ΛΞVON Λrmory marketplace.
+ * @fileOverview This file defines a function for generating descriptions for micro-apps
+ * to be published on the ΛΞVON Λrmory marketplace, using Vercel AI SDK and Groq.
  *
  * - generateMicroAppDescription - A function that generates a micro-app description.
  * - GenerateMicroAppDescriptionInput - The input type for the generateMicroAppDescription function.
  * - GenerateMicroAppDescriptionOutput - The return type for the generateMicroAppDescription function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { günstigerLLM, createOpenAI } from 'ai';
+import { generateText } from 'ai';
 
-const GenerateMicroAppDescriptionInputSchema = z.object({
-  microAppName: z.string().describe('The name of the micro-app.'),
-  microAppFunctionality: z.string().describe('A detailed description of the micro-app functionality.'),
-  targetAudience: z.string().describe('The target audience for the micro-app.'),
-  keyFeatures: z.array(z.string()).describe('A list of key features of the micro-app.'),
+// Ensure you have GROQ_API_KEY in your .env file
+const groq = createOpenAI({
+  baseURL: 'https://api.groq.com/openai/v1',
+  apiKey: process.env.GROQ_API_KEY,
 });
-export type GenerateMicroAppDescriptionInput = z.infer<typeof GenerateMicroAppDescriptionInputSchema>;
 
-const GenerateMicroAppDescriptionOutputSchema = z.object({
-  description: z.string().describe('A compelling description of the micro-app for the marketplace.'),
-});
-export type GenerateMicroAppDescriptionOutput = z.infer<typeof GenerateMicroAppDescriptionOutputSchema>;
+export interface GenerateMicroAppDescriptionInput {
+  microAppName: string;
+  microAppFunctionality: string;
+  targetAudience: string;
+  keyFeatures: string[];
+}
+
+export interface GenerateMicroAppDescriptionOutput {
+  description: string;
+}
 
 export async function generateMicroAppDescription(
   input: GenerateMicroAppDescriptionInput
 ): Promise<GenerateMicroAppDescriptionOutput> {
-  return generateMicroAppDescriptionFlow(input);
+  const featuresString = input.keyFeatures.map(f => `- ${f}`).join('\n  ');
+
+  const prompt = `You are an expert copywriter specializing in writing descriptions for micro-apps for the ΛΞVON Λrmory marketplace.
+
+Given the following information about a micro-app, write a compelling description that will entice users to download and use the app.
+
+Micro-App Name: ${input.microAppName}
+Functionality: ${input.microAppFunctionality}
+Target Audience: ${input.targetAudience}
+Key Features:
+  ${featuresString}
+
+Provide only the description as a string.`;
+
+  const { text } = await generateText({
+    model: groq('mixtral-8x7b-32768'), // Or any other Groq model
+    prompt: prompt,
+  });
+
+  return { description: text };
 }
-
-const prompt = ai.definePrompt({
-  name: 'generateMicroAppDescriptionPrompt',
-  input: {schema: GenerateMicroAppDescriptionInputSchema},
-  output: {schema: GenerateMicroAppDescriptionOutputSchema},
-  prompt: `You are an expert copywriter specializing in writing descriptions for micro-apps for the ΛΞVON Λrmory marketplace.
-
-  Given the following information about a micro-app, write a compelling description that will entice users to download and use the app.
-
-  Micro-App Name: {{{microAppName}}}
-  Functionality: {{{microAppFunctionality}}}
-  Target Audience: {{{targetAudience}}}
-  Key Features:
-  {{#each keyFeatures}}
-  - {{{this}}}
-  {{/each}}
-
-  Description:
-  `,
-});
-
-const generateMicroAppDescriptionFlow = ai.defineFlow(
-  {
-    name: 'generateMicroAppDescriptionFlow',
-    inputSchema: GenerateMicroAppDescriptionInputSchema,
-    outputSchema: GenerateMicroAppDescriptionOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
-  }
-);

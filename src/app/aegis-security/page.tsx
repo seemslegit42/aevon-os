@@ -5,7 +5,7 @@ import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Shield, AlertTriangle, CheckCircle } from 'lucide-react';
-import { analyzeSecurityAlerts, AnalyzeSecurityAlertsInput } from '@/ai/flows/analyze-security-alerts';
+import { analyzeSecurityAlerts, type AnalyzeSecurityAlertsInput } from '@/ai/flows/analyze-security-alerts';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';

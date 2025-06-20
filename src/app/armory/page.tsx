@@ -5,8 +5,8 @@ import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { ShoppingCart, PackagePlus, Sparkles, Download, Wand2, Shield, type LucideIcon } from 'lucide-react'; // Added LucideIcon
-import { generateMicroAppDescription, GenerateMicroAppDescriptionInput } from '@/ai/flows/generate-micro-app-description';
+import { ShoppingCart, PackagePlus, Sparkles, Download, Wand2, Shield, type LucideIcon } from 'lucide-react';
+import { generateMicroAppDescription, type GenerateMicroAppDescriptionInput } from '@/ai/flows/generate-micro-app-description';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardFooter, CardTitle } from '@/components/ui/card';
 import { zodResolver } from "@hookform/resolvers/zod";

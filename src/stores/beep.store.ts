@@ -32,7 +32,7 @@ export const useBeepStore = create<BeepState>((set, get) => ({
 
     try {
       const input: GeneratePersonalizedBriefingInput = {
-        userName: "Dashboard User", // This could be made dynamic in a more complex app
+        userName: "Dashboard User", 
         operationalMetrics: systemSnapshotData || "No system data available.",
         relevantInformation: `User asked: "${prompt}". Provide a concise, helpful response.`,
       };
@@ -40,11 +40,11 @@ export const useBeepStore = create<BeepState>((set, get) => ({
       set({ aiResponse: result.briefing });
     } catch (error) {
       console.error("Error with BEEP:", error);
+      const errorMessage = error instanceof Error ? error.message : "Could not process your request.";
       set({ aiResponse: "Sorry, I encountered an error trying to respond. Please try again." });
-      toast({ variant: "destructive", title: "BEEP Error", description: "Could not process your request." });
+      toast({ variant: "destructive", title: "BEEP Error", description: errorMessage });
     } finally {
       set({ isAiLoading: false });
     }
   },
 }));
-

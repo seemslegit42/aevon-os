@@ -1,59 +1,45 @@
-// This is an AI-powered Security Alerts Analyzer.
 
 'use server';
-
 /**
- * @fileOverview A security alert analysis AI agent.
+ * @fileOverview A security alert analysis AI agent using Vercel AI SDK and Groq.
  *
  * - analyzeSecurityAlerts - A function that handles the security alerts analysis process.
  * - AnalyzeSecurityAlertsInput - The input type for the analyzeSecurityAlerts function.
  * - AnalyzeSecurityAlertsOutput - The return type for the analyzeSecurityAlerts function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { günstigerLLM, createOpenAI } from 'ai';
+import { generateText } from 'ai';
 
-const AnalyzeSecurityAlertsInputSchema = z.object({
-  alertDetails: z
-    .string()
-    .describe('Detailed information about the security alerts.'),
+// Ensure you have GROQ_API_KEY in your .env file
+const groq = createOpenAI({
+  baseURL: 'https://api.groq.com/openai/v1',
+  apiKey: process.env.GROQ_API_KEY,
 });
-export type AnalyzeSecurityAlertsInput = z.infer<typeof AnalyzeSecurityAlertsInputSchema>;
 
-const AnalyzeSecurityAlertsOutputSchema = z.object({
-  summary: z
-    .string()
-    .describe(
-      'A plain English summary of the security alerts, including potential threats and recommended responses.'
-    ),
-});
-export type AnalyzeSecurityAlertsOutput = z.infer<typeof AnalyzeSecurityAlertsOutputSchema>;
-
-export async function analyzeSecurityAlerts(input: AnalyzeSecurityAlertsInput): Promise<AnalyzeSecurityAlertsOutput> {
-  return analyzeSecurityAlertsFlow(input);
+export interface AnalyzeSecurityAlertsInput {
+  alertDetails: string;
 }
 
-const prompt = ai.definePrompt({
-  name: 'analyzeSecurityAlertsPrompt',
-  input: {schema: AnalyzeSecurityAlertsInputSchema},
-  output: {schema: AnalyzeSecurityAlertsOutputSchema},
-  prompt: `You are an AI-powered security expert specializing in analyzing security alerts.
+export interface AnalyzeSecurityAlertsOutput {
+  summary: string;
+}
+
+export async function analyzeSecurityAlerts(input: AnalyzeSecurityAlertsInput): Promise<AnalyzeSecurityAlertsOutput> {
+  const prompt = `You are an AI-powered security expert specializing in analyzing security alerts.
 
 You will receive detailed information about security alerts and your task is to provide a plain English summary that is easy to understand for non-technical users.
 
 The summary should include potential threats, recommended responses, and any other relevant information that can help the user quickly understand and respond to the alerts.
 
-Alert Details: {{{alertDetails}}}`,
-});
+Alert Details: ${input.alertDetails}
 
-const analyzeSecurityAlertsFlow = ai.defineFlow(
-  {
-    name: 'analyzeSecurityAlertsFlow',
-    inputSchema: AnalyzeSecurityAlertsInputSchema,
-    outputSchema: AnalyzeSecurityAlertsOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
-  }
-);
+Provide only the summary as a string.`;
+
+  const { text } = await generateText({
+    model: groq('mixtral-8x7b-32768'), // Or any other Groq model
+    prompt: prompt,
+  });
+
+  return { summary: text };
+}
