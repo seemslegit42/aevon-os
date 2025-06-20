@@ -1,18 +1,17 @@
 
 "use client";
-import React, { useState, useEffect, type ElementType } from 'react'; // Added ElementType
+import React, { useState, useEffect, type ElementType } from 'react';
 import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  CreditCardIcon as ShoppingCartIcon, // Changed imports and aliased
-  PlusSquareIcon as PackagePlusIcon, 
-  MagicWandIcon as SparklesIcon, 
+import {
+  CreditCardIcon as ShoppingCartIcon,
+  PlusSquareIcon as PackagePlusIcon,
+  MagicWandIcon as SparklesIcon,
   DownloadIcon,
-  ShieldCheckIcon, // Added for example, not used by default in initialApps
 } from '@/components/icons';
-import { generateMicroAppDescription, type GenerateMicroAppDescriptionInput } from '@/ai/flows/generate-micro-app-description';
+// import { generateMicroAppDescription, type GenerateMicroAppDescriptionInput } from '@/ai/flows/generate-micro-app-description';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardFooter, CardTitle } from '@/components/ui/card';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,11 +26,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
+// Placeholder type
+interface GenerateMicroAppDescriptionInput {
+  microAppName: string;
+  microAppFunctionality: string;
+  targetAudience: string;
+  keyFeatures: string[];
+}
+
+
 const formSchema = z.object({
   microAppName: z.string().min(3, "App name must be at least 3 characters"),
   microAppFunctionality: z.string().min(20, "Functionality description must be at least 20 characters"),
   targetAudience: z.string().min(10, "Target audience description must be at least 10 characters"),
-  keyFeatures: z.string().min(10, "Please list key features, separated by commas"),
+  keyFeatures: z.string().min(10, "Please list key features, separated by commas (e.g., Feature 1, Feature 2)"),
 });
 
 type AppDescriptionFormValues = z.infer<typeof formSchema>;
@@ -39,13 +47,13 @@ type AppDescriptionFormValues = z.infer<typeof formSchema>;
 interface ArmoryApp {
   id: string;
   name: string;
-  icon: ElementType; // Changed from LucideIcon
+  icon: ElementType;
   shortDesc: string;
   aiGeneratedDesc?: string;
   tags: string[];
 }
 
-const initialApps: ArmoryApp[] = []; 
+const initialApps: ArmoryApp[] = [];
 
 export default function ArmoryPage() {
   const [apps, setApps] = useState<ArmoryApp[]>(initialApps);
@@ -66,41 +74,22 @@ export default function ArmoryPage() {
   const handleGenerateDescription = async (values: AppDescriptionFormValues) => {
     setIsGenerating(true);
     setGeneratedDescription(null);
-    try {
-      const input: GenerateMicroAppDescriptionInput = {
-        ...values,
-        keyFeatures: values.keyFeatures.split(',').map(f => f.trim()).filter(f => f),
-      };
-      const result = await generateMicroAppDescription(input);
-      setGeneratedDescription(result.description);
-      toast({ title: "Description Generated", description: "AI-powered micro-app description created successfully." });
-    } catch (error) {
-      console.error("Error generating micro-app description:", error);
-      setGeneratedDescription("Failed to generate description. Please try again.");
-      toast({ variant: "destructive", title: "Generation Error", description: "Could not generate micro-app description." });
-    } finally {
-      setIsGenerating(false);
-    }
+
+    // AI Description generation is disabled as Genkit has been removed.
+    const featureUnavailableMessage = "AI description generation feature is currently unavailable.";
+    setGeneratedDescription(featureUnavailableMessage);
+    toast({ variant: "destructive", title: "Feature Unavailable", description: featureUnavailableMessage });
+    
+    setIsGenerating(false);
   };
-  
+
   useEffect(() => {
-    if (apps.length > 0) { 
+    if (apps.length > 0) {
         const fetchInitialDescriptions = async () => {
           const updatedApps = await Promise.all(apps.map(async (app) => {
             if (!app.aiGeneratedDesc) {
-              try {
-                const input: GenerateMicroAppDescriptionInput = {
-                  microAppName: app.name,
-                  microAppFunctionality: `${app.shortDesc} This app is designed to integrate seamlessly with ΛΞVON OS.`,
-                  targetAudience: "Small to Medium-sized Businesses using ΛΞVON OS.",
-                  keyFeatures: ["Easy Integration", "AI-Powered", ...app.tags],
-                };
-                const result = await generateMicroAppDescription(input);
-                return { ...app, aiGeneratedDesc: result.description };
-              } catch (error) {
-                console.warn(`Failed to generate description for ${app.name}`, error);
-                return { ...app, aiGeneratedDesc: "Description generation pending or failed." }; 
-              }
+              // AI Description generation is disabled.
+              return { ...app, aiGeneratedDesc: "AI-Generated description currently unavailable." };
             }
             return app;
           }));
@@ -116,7 +105,7 @@ export default function ArmoryPage() {
       <MicroAppCard
         title="ΛΞVON Λrmory: Expand Your OS"
         icon={ShoppingCartIcon}
-        description="Discover, acquire, and manage AI-powered micro-apps and intelligent agents. Enhance your ΛΞVON OS capabilities and tailor the platform to your unique business needs."
+        description="Discover, acquire, and manage AI-powered micro-apps and intelligent agents. Enhance your ΛΞVON OS capabilities and tailor the platform to your unique business needs. (AI Description Generation Currently Disabled)"
       />
 
       <h2 className="font-headline text-2xl text-primary mt-10 mb-6">Featured Micro-Apps</h2>
@@ -124,6 +113,7 @@ export default function ArmoryPage() {
         <Card>
           <CardContent className="pt-6">
             <p className="text-muted-foreground text-center">No micro-apps currently available in the Armory.</p>
+            <p className="text-muted-foreground text-center text-sm mt-2">Use the form below to define and describe a new micro-app.</p>
           </CardContent>
         </Card>
       ) : (
@@ -135,7 +125,7 @@ export default function ArmoryPage() {
                   <app.icon className="w-6 h-6 mr-2 text-primary" /> {app.name}
                 </CardTitle>
                 <CardDescription className="text-foreground/80 h-12 overflow-hidden text-ellipsis">
-                  {app.aiGeneratedDesc ? app.aiGeneratedDesc.substring(0,100)+'...' : 'Loading description...'}
+                  {app.aiGeneratedDesc ? app.aiGeneratedDesc.substring(0,100)+(app.aiGeneratedDesc.length > 100 ? '...' : '') : 'Loading description...'}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
@@ -155,7 +145,7 @@ export default function ArmoryPage() {
 
       <MicroAppCard title="Publish Your Micro-App" icon={PackagePlusIcon}>
         <p className="text-foreground/80 mb-6">
-          Have a micro-app idea? Use our AI to generate a compelling marketplace description.
+          Have a micro-app idea? Use our AI to generate a compelling marketplace description. (AI Feature Currently Disabled)
         </p>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleGenerateDescription)} className="space-y-6">

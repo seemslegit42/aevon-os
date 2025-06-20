@@ -1,8 +1,16 @@
 
 import { create } from 'zustand';
-import type { GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-personalized-briefings';
-import { generatePersonalizedBriefing } from '@/ai/flows/generate-personalized-briefings';
+// import type { GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-personalized-briefings';
+// import { generatePersonalizedBriefing } from '@/ai/flows/generate-personalized-briefings';
 import { toast } from "@/hooks/use-toast";
+
+// Placeholder type
+interface GeneratePersonalizedBriefingInput {
+  userName: string;
+  operationalMetrics: string;
+  relevantInformation: string;
+}
+
 
 interface BeepState {
   aiPrompt: string;
@@ -30,21 +38,11 @@ export const useBeepStore = create<BeepState>((set, get) => ({
 
     set({ isAiLoading: true, aiResponse: null });
 
-    try {
-      const input: GeneratePersonalizedBriefingInput = {
-        userName: "Dashboard User",
-        operationalMetrics: systemSnapshotData || "No system data available.",
-        relevantInformation: `User asked: "${prompt}". Provide a concise, helpful response.`,
-      };
-      const result = await generatePersonalizedBriefing(input);
-      set({ aiResponse: result.briefing });
-    } catch (error) {
-      console.error("Error with BEEP:", error);
-      const errorMessage = error instanceof Error ? error.message : "Could not process your request.";
-      set({ aiResponse: "Sorry, I encountered an error trying to respond. Please try again." });
-      toast({ variant: "destructive", title: "BEEP Error", description: errorMessage });
-    } finally {
-      set({ isAiLoading: false });
-    }
+    // BEEP functionality is disabled as Genkit has been removed.
+    const featureUnavailableMessage = "BEEP feature is currently unavailable.";
+    set({ aiResponse: featureUnavailableMessage });
+    toast({ variant: "destructive", title: "Feature Unavailable", description: featureUnavailableMessage });
+   
+    set({ isAiLoading: false });
   },
 }));
