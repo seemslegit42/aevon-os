@@ -18,14 +18,14 @@ const MicroAppCardComponent: React.FC<MicroAppCardProps> = ({ title, description
     <Card className={cn("glassmorphism-panel overflow-hidden flex flex-col", className)}>
       <CardHeader className="drag-handle flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b border-border/10 dark:border-white/5 bg-foreground/[.02] dark:bg-black/10 cursor-grab active:cursor-grabbing">
         <div className="flex items-center">
-          {Icon && <Icon className="h-5 w-5 text-primary mr-3" />}
-          <CardTitle className="text-base font-headline text-primary dark:text-primary">{title}</CardTitle>
+          {Icon && <Icon className="h-5 w-5 text-primary dark:text-primary-foreground mr-3" />}
+          <CardTitle className="text-base font-headline text-primary dark:text-primary-foreground">{title}</CardTitle>
         </div>
         {actions && <div className="flex items-center space-x-1">{actions}</div>}
       </CardHeader>
       <CardContent className={cn("pt-4 px-4 pb-4 flex-grow overflow-y-auto text-foreground dark:text-white")}>
         {description && typeof description === 'string' ? (
-          <CardDescription className="text-foreground/80 dark:text-neutral-300 mb-4 text-sm">{description}</CardDescription>
+          <CardDescription className="text-foreground/80 dark:text-neutral-200 mb-4 text-sm">{description}</CardDescription>
         ) : (
           description // This allows ReactNode descriptions
         )}
@@ -37,3 +37,4 @@ const MicroAppCardComponent: React.FC<MicroAppCardProps> = ({ title, description
 
 const MicroAppCard = React.memo(MicroAppCardComponent);
 export default MicroAppCard;
+
