@@ -1,3 +1,4 @@
+
 import mitt, { type Emitter } from 'mitt';
 
 // Define event types and their payloads
@@ -15,3 +16,5 @@ type AppEvents = {
 const eventBus: Emitter<AppEvents> = mitt<AppEvents>();
 
 export default eventBus;
+
+    
