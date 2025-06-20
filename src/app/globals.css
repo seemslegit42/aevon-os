@@ -28,7 +28,7 @@
 
     /* Secondary: Roman Aqua */
     --secondary-h: 177; --secondary-s: 75%; --secondary-l: 42%;
-    --secondary-foreground-h: 0; --secondary-foreground-s: 0%; --secondary-foreground-l: 100%;
+    --secondary-foreground-h: 0; --secondary-foreground-s: 0%; --secondary-foreground-l: 98%;
 
     /* Muted: Conchoidal Gray - for less important text */
     --muted-h: 220; --muted-s: 22%; --muted-l: 70%;
@@ -51,11 +51,6 @@
     --chart-3-h: var(--accent-h); --chart-3-s: var(--accent-s); --chart-3-l: var(--accent-l); /* Gold */
     --chart-4-h: 158; --chart-4-s: 55%; --chart-4-l: 58%; /* Patina Green for success */
     --chart-5-h: var(--destructive-h); --chart-5-s: var(--destructive-s); --chart-5-l: var(--destructive-l); /* Red for errors */
-
-    /* TopBar specific - Light Theme */
-    --topbar-bg-h: 0; --topbar-bg-s: 0%; --topbar-bg-l: 97%; --topbar-bg-a: 0.35; /* Vitreous White base, high translucency */
-    --topbar-border-h: 220; --topbar-border-s: 20%; --topbar-border-l: 88%; --topbar-border-a: 0.15; /* Very subtle border */
-
 
     /* Full HSL color definitions */
     --background: hsl(var(--background-h), var(--background-s), var(--background-l));
@@ -128,10 +123,6 @@
     --border-h: 275; --border-s: 15%; --border-l: 25%;
     --input-h: 275; --input-s: 25%; --input-l: 20%;
     --ring-h: var(--accent-h); --ring-s: var(--accent-s); --ring-l: calc(var(--accent-l) + 5%);
-
-    /* TopBar specific - Dark Theme */
-    --topbar-bg-h: 275; --topbar-bg-s: 30%; --topbar-bg-l: 12%; --topbar-bg-a: 0.25; 
-    --topbar-border-h: 275; --topbar-border-s: 20%; --topbar-border-l: 30%; --topbar-border-a: 0.15; 
 
     /* Chart colors - Dark Theme specific adjustments */
     --chart-1-h: var(--primary-h); --chart-1-s: var(--primary-s); --chart-1-l: var(--primary-l);
@@ -299,44 +290,58 @@
 }
 
 
-/* AEVOS TopBar Glass Effect */
-.topbar-aevos-glass {
-  background-color: hsla(var(--topbar-bg-h), var(--topbar-bg-s), var(--topbar-bg-l), var(--topbar-bg-a));
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border-bottom: 1px solid hsla(var(--topbar-border-h), var(--topbar-border-s), var(--topbar-border-l), var(--topbar-border-a));
-  box-shadow: 0 4px 24px 0 hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 5%), 0.1); /* Adjusted shadow */
-}
-.dark .topbar-aevos-glass { 
-  background-color: hsla(var(--topbar-bg-h), var(--topbar-bg-s), var(--topbar-bg-l), var(--topbar-bg-a));
-  backdrop-filter: blur(25px) saturate(1.1); 
-  -webkit-backdrop-filter: blur(25px) saturate(1.1);
-  border-bottom: 1px solid hsla(var(--topbar-border-h), var(--topbar-border-s), var(--topbar-border-l), var(--topbar-border-a));
-  box-shadow: 0 4px 24px 0 hsla(0, 0%, 0%, 0.2); 
+/* AEVOS TopBar Glass Effect - Critical Override */
+.topbar-aevos-glass-override {
+  background-color: rgba(245, 255, 250, 0.10) !important; /* Vitreous White with 10% opacity */
+  backdrop-filter: blur(25px) !important;
+  -webkit-backdrop-filter: blur(25px) !important;
+  border-bottom: 1px solid rgba(245, 255, 250, 0.25) !important;
+  box-shadow: 0 4px 24px 0 rgba(28, 25, 52, 0.1) !important; /* Obsidian Black with 10% opacity */
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1000 !important;
+  padding: 1rem 2rem !important;
+  font-family: 'Lexend', sans-serif !important; /* Default font: Lexend */
+  color: hsl(var(--foreground)) !important; /* Default text color, adapts to dark mode */
 }
 
-/* AEVOS Command Bar Input Style */
-.command-bar-input-aevos {
-  background-color: rgba(245, 255, 250, 0.2) !important; /* More opaque Vitreous White */
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.075);
-  border-color: rgba(245, 255, 250, 0.3) !important; /* Subtle border */
+.dark .topbar-aevos-glass-override {
+  /* Dark mode specifics can be added if needed, but base should be transparent */
+  /* Example: if border color needs to change slightly in dark mode for visibility */
+  /* border-bottom-color: rgba(60, 70, 90, 0.3) !important; */
+   color: hsl(var(--foreground)) !important; /* Ensure foreground text color is applied */
 }
-.dark .command-bar-input-aevos {
-  background-color: rgba(40, 35, 60, 0.3) !important; /* Darker translucent */
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+
+
+/* AEVOS Command Bar Input Style - Critical Override */
+.command-bar-input-aevos-override {
+  background-color: rgba(245, 255, 250, 0.2) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.075) !important;
+  border: 1px solid rgba(245, 255, 250, 0.3) !important;
+  color: hsl(var(--foreground)) !important;
+  font-family: 'Lexend', sans-serif !important;
+}
+.dark .command-bar-input-aevos-override {
+  background-color: rgba(40, 35, 60, 0.3) !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15) !important;
   border-color: rgba(245, 255, 250, 0.1) !important;
-  color: hsl(var(--foreground-h), var(--foreground-s), var(--foreground-l)) !important; /* Ensure text is light */
+  color: hsl(var(--foreground)) !important; /* Ensure text is light in dark mode */
 }
-.dark .command-bar-input-aevos::placeholder {
+.dark .command-bar-input-aevos-override::placeholder {
   color: hsla(var(--muted-foreground-h), var(--muted-s), var(--muted-foreground-l), 0.7) !important;
 }
+.command-bar-input-aevos-override::placeholder {
+   font-family: 'Lexend', sans-serif !important;
+}
 
 
-/* AEVOS Icon Style */
-.aevos-icon-style {
+/* AEVOS Icon Style - Critical Override for Drop Shadow */
+.aevos-icon-styling-override {
   filter: drop-shadow(0px 0.5px 1px rgba(28, 25, 52, 0.2));
 }
-.dark .aevos-icon-style {
+.dark .aevos-icon-styling-override {
   filter: drop-shadow(0px 0.5px 1px rgba(0, 0, 0, 0.3));
 }
 
@@ -424,6 +429,4 @@
   background-color: rgba(28, 25, 52, 0.55); /* Slightly more opaque Obsidian Black overlay */
   z-index: 2; /* Overlay on top of gradient */
 }
-
-
     

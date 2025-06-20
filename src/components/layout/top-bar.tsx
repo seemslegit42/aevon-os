@@ -79,126 +79,120 @@ const TopBar: React.FC = () => {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <header className={cn(
-        "sticky top-0 z-50 w-full topbar-aevos-glass font-body text-foreground",
-      )}>
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          {/* Left Side: Branding */}
-          <div className="flex items-center space-x-2">
-            <Link href="/" className="flex items-center">
-              <Image
-                src="/aevon-logo.png"
-                alt="Aevon OS Logo"
-                width={112} 
-                height={28} 
-                className="h-7 w-auto" 
-                priority
-              />
-            </Link>
-          </div>
+      <header className="topbar-aevos-glass-override flex items-center justify-between">
+        {/* Left Side: Branding */}
+        <div className="flex items-center">
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/aevon-logo.png"
+              alt="Aevon OS Logo"
+              width={112} 
+              height={28} 
+              className="h-7 w-auto" 
+              priority
+            />
+          </Link>
+        </div>
 
-          {/* Center: Navigation & Command Bar */}
-          <div className="flex-1 flex items-center justify-center space-x-6 px-4">
-            <nav className="hidden md:flex items-center space-x-1">
-              {mainNavItems.map((item) => (
-                <Link key={item.href} href={item.href}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className={cn(
-                      "font-body hover:bg-primary/10 dark:hover:bg-primary/20", // Adjusted dark hover
-                      isActive(item.href) 
-                        ? "bg-primary/15 dark:bg-primary/25 text-primary dark:text-primary-foreground font-semibold" 
-                        : "text-muted-foreground dark:text-muted-foreground hover:text-primary dark:hover:text-primary-foreground" // Use muted-foreground for dark inactive
-                    )}
-                  >
-                    <item.icon className="w-4 h-4 mr-2 aevos-icon-style" />
-                    {item.label}
-                  </Button>
-                </Link>
-              ))}
-            </nav>
-            <div className="relative w-full max-w-md">
-               <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground aevos-icon-style" />
-              <Input
-                type="search"
-                placeholder="Search or ask 'show my tasks'..."
-                className={cn(
-                  "w-full h-9 pl-10 pr-4 command-bar-input-aevos font-body",
-                  "text-sm placeholder:text-muted-foreground" 
-                )}
-                aria-label="Command or search input"
-              />
-            </div>
-          </div>
-
-          {/* Right Side: Controls & User Menu */}
-          <div className="flex items-center space-x-1.5 font-body">
-             <Tooltip>
-              <TooltipTrigger asChild>
+        {/* Center: Navigation & Command Bar */}
+        <div className="flex-1 flex items-center justify-center space-x-6 px-4">
+          <nav className="hidden md:flex items-center space-x-1">
+            {mainNavItems.map((item) => (
+              <Link key={item.href} href={item.href} passHref>
                 <Button
                   variant="ghost"
-                  size="icon"
-                  onClick={toggleTheme}
-                  className="w-9 h-9"
-                  aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
+                  size="sm"
+                  className={cn(
+                    "font-body", // Lexend is default via header
+                    isActive(item.href) 
+                      ? "bg-white/10 dark:bg-white/5 text-foreground font-semibold" 
+                      : "text-foreground/70 dark:text-foreground/60 hover:text-foreground dark:hover:text-foreground/90"
+                  )}
                 >
-                  {isMounted && theme === 'dark' ? <SunIcon className="h-5 w-5 aevos-icon-style" /> : <MoonIcon className="h-5 w-5 aevos-icon-style" />}
+                  <item.icon className="aevos-icon-styling-override text-[#20B2AA] dark:text-teal-400 w-4 h-4 mr-2" />
+                  {item.label}
                 </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom"><p>Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode</p></TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                 <Button variant="ghost" size="icon" className="w-9 h-9">
-                  <BellIcon className="h-5 w-5 aevos-icon-style" />
-                  <span className="sr-only">Notifications</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom"><p>Notifications</p></TooltipContent>
-            </Tooltip>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="w-9 h-9">
-                  <Settings2Icon className="h-5 w-5 aevos-icon-style" />
-                  <span className="sr-only">Settings</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom"><p>Settings</p></TooltipContent>
-            </Tooltip>
-
-            <div className="flex items-center text-xs text-muted-foreground px-2 h-9">
-              <ClockIcon className="h-4 w-4 mr-1.5 aevos-icon-style" />
-              {isMounted ? currentTime : "--:--"}
-            </div>
-             <div className="hidden md:flex items-center text-xs text-muted-foreground px-1 h-9 border-l border-border/20 dark:border-border/30 ml-1 pl-2.5">
-                Admin User <span className="mx-1">|</span> Session: <span className="text-accent font-medium ml-1">Active</span>
-            </div>
-
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2 h-9 px-2.5">
-                  <Avatar className="h-6 w-6">
-                    <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
-                    <AvatarFallback className="text-xs bg-primary/30 text-primary-foreground">AU</AvatarFallback>
-                  </Avatar>
-                  <ChevronDownIcon className="h-4 w-4 opacity-80 aevos-icon-style" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 glassmorphism-panel border-border/30 dark:border-border/50">
-                <DropdownMenuLabel className="font-headline text-primary dark:text-primary-foreground">My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-border/20 dark:bg-border/30"/>
-                <DropdownMenuItem className="font-body hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Profile</DropdownMenuItem>
-                <DropdownMenuItem className="font-body hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Billing</DropdownMenuItem>
-                <DropdownMenuItem className="font-body hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Settings</DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-border/20 dark:bg-border/30"/>
-                <DropdownMenuItem className="font-body hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Log out</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </Link>
+            ))}
+          </nav>
+          <div className="relative w-full max-w-md">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 aevos-icon-styling-override text-[#20B2AA] dark:text-teal-400" />
+            <Input
+              type="search"
+              placeholder="Search or ask 'show my tasks'..."
+              className="command-bar-input-aevos-override w-full h-9 pl-10 pr-4 font-body text-sm placeholder:text-muted-foreground dark:placeholder:text-muted-foreground/70"
+              aria-label="Command or search input"
+            />
           </div>
+        </div>
+
+        {/* Right Side: Controls & User Menu */}
+        <div className="flex items-center space-x-1.5">
+           <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="w-9 h-9"
+                aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
+              >
+                {isMounted && theme === 'dark' ? 
+                  <SunIcon className="h-5 w-5 aevos-icon-styling-override text-[#20B2AA] dark:text-teal-400" /> : 
+                  <MoonIcon className="h-5 w-5 aevos-icon-styling-override text-[#20B2AA] dark:text-teal-400" />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom"><p>Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode</p></TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+               <Button variant="ghost" size="icon" className="w-9 h-9">
+                <BellIcon className="h-5 w-5 aevos-icon-styling-override text-[#20B2AA] dark:text-teal-400" />
+                <span className="sr-only">Notifications</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom"><p>Notifications</p></TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" className="w-9 h-9">
+                <Settings2Icon className="h-5 w-5 aevos-icon-styling-override text-[#20B2AA] dark:text-teal-400" />
+                <span className="sr-only">Settings</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom"><p>Settings</p></TooltipContent>
+          </Tooltip>
+
+          <div className="flex items-center text-xs text-foreground/80 dark:text-foreground/70 px-2 h-9 font-body">
+            <ClockIcon className="h-4 w-4 mr-1.5 aevos-icon-styling-override text-[#20B2AA] dark:text-teal-400" />
+            {isMounted ? currentTime : "--:--"}
+          </div>
+           <div className="hidden md:flex items-center text-xs text-foreground/80 dark:text-foreground/70 px-1 h-9 border-l border-white/20 dark:border-white/10 ml-1 pl-2.5 font-body">
+              Admin User <span className="mx-1">|</span> Session: <span className="text-accent dark:text-accent font-medium ml-1">Active</span>
+          </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="flex items-center space-x-2 h-9 px-2.5">
+                <Avatar className="h-6 w-6">
+                  <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
+                  <AvatarFallback className="text-xs bg-primary/30 text-primary-foreground">AU</AvatarFallback>
+                </Avatar>
+                <ChevronDownIcon className="h-4 w-4 opacity-80 aevos-icon-styling-override text-[#20B2AA] dark:text-teal-400" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 glassmorphism-panel mt-2">
+              <DropdownMenuLabel className="font-headline text-primary dark:text-primary-foreground">My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator className="bg-border/20 dark:bg-border/30"/>
+              <DropdownMenuItem className="font-body hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Profile</DropdownMenuItem>
+              <DropdownMenuItem className="font-body hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Billing</DropdownMenuItem>
+              <DropdownMenuItem className="font-body hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Settings</DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-border/20 dark:bg-border/30"/>
+              <DropdownMenuItem className="font-body hover:!bg-accent/10 dark:hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Log out</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
     </TooltipProvider>
@@ -206,6 +200,3 @@ const TopBar: React.FC = () => {
 };
 
 export default TopBar;
-
-
-    
