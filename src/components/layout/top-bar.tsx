@@ -32,15 +32,21 @@ const TopBar: React.FC = () => {
       
       return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm} UTC`;
     };
+    
+    // Set initial time
     setCurrentTime(updateTime());
+
+    // Update time every second
     const timer = setInterval(() => {
       setCurrentTime(updateTime());
     }, 1000); 
+
+    // Cleanup interval on component unmount
     return () => clearInterval(timer);
   }, []);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border/30 dark:border-border/50 font-headline">
+    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border/20 dark:border-border/30 font-headline">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Link href="/" className="text-2xl font-bold text-primary flex items-center">
@@ -58,7 +64,7 @@ const TopBar: React.FC = () => {
                 <ChevronDown className="w-4 h-4 ml-1 opacity-70" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-popover text-popover-foreground border-border/50">
+            <DropdownMenuContent className="bg-popover text-popover-foreground border-border/20 dark:border-border/30">
               <DropdownMenuItem>Home Dashboard</DropdownMenuItem>
               {/* Add other dashboard links here if needed later */}
             </DropdownMenuContent>
@@ -71,7 +77,7 @@ const TopBar: React.FC = () => {
             <Input
               type="search"
               placeholder="Q Command or Search (Ctrl+K)..."
-              className="w-full h-9 pl-10 pr-16 bg-background/70 dark:bg-input border-border/50 text-sm"
+              className="w-full h-9 pl-10 pr-16 bg-background/70 dark:bg-input border-border/20 dark:border-border/30 text-sm"
               aria-label="Command or search input"
             />
             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
@@ -85,7 +91,7 @@ const TopBar: React.FC = () => {
         <div className="flex items-center space-x-2">
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-foreground/70 hover:text-primary hover:bg-primary/10 dark:text-muted-foreground dark:hover:text-accent dark:hover:bg-accent/10" aria-label="Notifications">
+              <Button variant="ghost" size="icon" className="text-foreground/70 hover:text-primary hover:bg-primary/10 dark:text-muted-foreground dark:hover:text-primary dark:hover:bg-primary/10" aria-label="Notifications">
                 <Bell className="w-5 h-5" />
               </Button>
             </PopoverTrigger>
@@ -101,7 +107,7 @@ const TopBar: React.FC = () => {
             </PopoverContent>
           </Popover>
 
-          <Button variant="ghost" size="icon" className="text-foreground/70 hover:text-primary hover:bg-primary/10 dark:text-muted-foreground dark:hover:text-accent dark:hover:bg-accent/10" aria-label="Settings">
+          <Button variant="ghost" size="icon" className="text-foreground/70 hover:text-primary hover:bg-primary/10 dark:text-muted-foreground dark:hover:text-primary dark:hover:bg-primary/10" aria-label="Settings">
             <Settings2 className="w-5 h-5" />
           </Button>
           
@@ -116,7 +122,7 @@ const TopBar: React.FC = () => {
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-popover text-popover-foreground border-border/50 w-56">
+            <DropdownMenuContent align="end" className="bg-popover text-popover-foreground border-border/20 dark:border-border/30 w-56">
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none text-foreground">Admin User</p>
