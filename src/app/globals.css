@@ -10,15 +10,15 @@
     --background-h: 275; --background-s: 45%; --background-l: 8%;
     --background-l-offset: 8%;
 
-    /* Foreground TEXT Colors: ENSURE THESE ARE WHITE OR VERY LIGHT GRAY */
-    --foreground-h: 0; --foreground-s: 0%; --foreground-l: 98%; /* Almost White */
-    --card-foreground-h: 0; --card-foreground-s: 0%; --card-foreground-l: 98%; /* Almost White */
-    --popover-foreground-h: 0; --popover-foreground-s: 0%; --popover-foreground-l: 98%; /* Almost White */
-    --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 100%; /* White */
-    --secondary-foreground-h: 0; --secondary-foreground-s: 0%; --secondary-foreground-l: 98%; /* Almost White */
-    --muted-foreground-h: 220; --muted-s: 10%; --muted-foreground-l: 95%;  /* Extremely Light Gray, almost white */
-    --accent-foreground-h: 0; --accent-s: 0%; --accent-foreground-l: 98%; /* Almost White for text on accent backgrounds */
-    --destructive-foreground-h: 0; --destructive-s: 0%; --destructive-foreground-l: 98%; /* Almost White */
+    /* Foreground TEXT Colors: ENSURE ALL ARE PURE WHITE */
+    --foreground-h: 0; --foreground-s: 0%; --foreground-l: 100%; /* White */
+    --card-foreground-h: 0; --card-foreground-s: 0%; --card-foreground-l: 100%; /* White */
+    --popover-foreground-h: 0; --popover-s: 0%; --popover-foreground-l: 100%; /* White */
+    --primary-foreground-h: 0; --primary-s: 0%; --primary-foreground-l: 100%; /* White (already correct) */
+    --secondary-foreground-h: 0; --secondary-s: 0%; --secondary-foreground-l: 100%; /* White */
+    --muted-foreground-h: 0; --muted-s: 0%; --muted-foreground-l: 100%;  /* White */
+    --accent-foreground-h: 0; --accent-s: 0%; --accent-foreground-l: 100%; /* White for text on accent backgrounds */
+    --destructive-foreground-h: 0; --destructive-s: 0%; --destructive-foreground-l: 100%; /* White */
 
 
     /* Card: Darker, slightly desaturated Purple base for cards */
@@ -185,7 +185,7 @@
 }
 
 
-/* AEVOS TopBar Glass Effect - Critical Override (Dark mode styles are default) */
+/* AEVOS TopBar Glass Effect - Critical Override (Dark mode styles are now default) */
 .topbar-aevos-glass-override {
   background-color: rgba(245, 255, 250, 0.10) !important; /* Vitreous White with 10% opacity */
   backdrop-filter: blur(25px) !important;
