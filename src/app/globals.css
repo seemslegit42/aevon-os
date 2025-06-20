@@ -16,6 +16,7 @@
 
     --primary: 283 54% 42%; /* Imperial Purple - Light Mode */
     --primary-foreground: 150 100% 98%; /* Vitreous White - Light Mode */
+    --primary-gradient-start: 283 50% 35%; /* Darker Imperial Purple for gradient start - Light Mode */
 
     --secondary: 157 49% 55%; /* Patina Green - Light Mode (Success status) */
     --secondary-foreground: 248 37% 15%; /* Obsidian Black for contrast - Light Mode */
@@ -55,6 +56,8 @@
 
     --primary: 283 60% 70%;    /* Light Purple/Magenta (for card titles, icons - Matches reference image) */
     --primary-foreground: 0 0% 98%; 
+    --primary-gradient-start: 283 50% 55%; /* Darker Purple/Magenta for gradient start - Dark Mode */
+
 
     --secondary: 190 70% 60%; /* Light Blue/Cyan for progress bars (Matches reference image) */
     --secondary-foreground: 248 37% 10%; 
@@ -93,19 +96,10 @@
   }
 }
 
-/* Remove Aurora, keep subtle grid for now if desired, or remove if not in image */
-.iridescent-aurora-bg {
-  /* background: linear-gradient(120deg, hsl(var(--iridescent-aurora-start)), hsl(var(--iridescent-aurora-mid)), hsl(var(--iridescent-aurora-end))); */
-  background-color: hsl(var(--background)); /* Ensures it takes the new dark purple */
-}
-
 .glassmorphism-panel {
-  /* Adjusted to match reference image: solid translucent purple, subtle border, no blur/strong shadow */
-  background-color: hsl(var(--card) / 0.85); /* Translucent card background */
-  border: 1px solid hsl(var(--border) / 0.5); /* Subtle border */
-  /* box-shadow: 0 1px 2px 0 hsl(var(--border) / 0.1); */ /* Very subtle shadow if any */
+  background-color: hsl(var(--card) / 0.85); 
+  border: 1px solid hsl(var(--border) / 0.5); 
   border-radius: var(--radius);
-  /* Removed backdrop-blur-lg and shadow-lg */
 }
 
 
@@ -126,8 +120,7 @@
 }
 
 .btn-gradient-primary-accent {
-  /* Updated to reflect new theme, matches "Send Prompt" button in image */
-  background: linear-gradient(to right, hsl(var(--primary) / 0.8), hsl(var(--primary)));
+  background: linear-gradient(to right, hsl(var(--primary-gradient-start)), hsl(var(--primary)));
   color: hsl(var(--primary-foreground));
 }
 .btn-gradient-primary-accent:hover {
