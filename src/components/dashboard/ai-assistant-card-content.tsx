@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { LoaderCircle } from 'lucide-react';
+import type { Emitter } from 'mitt';
 
 interface AiAssistantCardContentProps {
   aiPrompt: string;
@@ -12,6 +13,7 @@ interface AiAssistantCardContentProps {
   isAiLoading: boolean;
   aiResponse: string | null;
   placeholderInsight?: string;
+  eventBusInstance?: Emitter<any>; // Added eventBus prop
 }
 
 const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
@@ -20,12 +22,20 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
   handleAiSubmit,
   isAiLoading,
   aiResponse,
-  placeholderInsight
+  placeholderInsight,
+  eventBusInstance
 }) => {
+  // Example of using event bus:
+  // useEffect(() => {
+  //   const handleCustomEvent = (data: any) => console.log('AI Assistant received:', data);
+  //   eventBusInstance?.on('someEvent', handleCustomEvent);
+  //   return () => eventBusInstance?.off('someEvent', handleCustomEvent);
+  // }, [eventBusInstance]);
+
   return (
     <>
       <div className="flex flex-col items-start justify-start text-left p-4 pt-2 flex-grow">
-        {placeholderInsight && (
+        {placeholderInsight && !aiResponse && (
           <p className="text-sm text-foreground/90 mb-4 mt-2">
             {placeholderInsight}
           </p>
@@ -54,4 +64,3 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
 };
 
 export default AiAssistantCardContent;
-    

@@ -3,6 +3,7 @@ import React from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CheckCircle, X, ChevronDown } from 'lucide-react';
 import { cn } from "@/lib/utils";
+import type { Emitter } from 'mitt';
 
 export interface FeedItem {
   task: string;
@@ -13,9 +14,10 @@ export interface FeedItem {
 
 interface LiveOrchestrationFeedCardContentProps {
   feedItems: FeedItem[];
+  eventBusInstance?: Emitter<any>;
 }
 
-const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardContentProps> = ({ feedItems }) => {
+const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardContentProps> = ({ feedItems, eventBusInstance }) => {
   if (!feedItems || feedItems.length === 0) {
     return (
       <div className="flex items-center justify-center h-full p-4">
@@ -38,7 +40,7 @@ const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardConten
                 </div>
               </div>
               <span className={cn(
-                `text-xs font-semibold px-2.5 py-1 rounded-full leading-none`, // Adjusted padding & leading
+                `text-xs font-semibold px-2.5 py-1 rounded-full leading-none`,
                  item.status === 'success' ? 'badge-success' : 'badge-failure'
                 )}>
                 {item.status}
@@ -58,4 +60,3 @@ const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardConten
 };
 
 export default LiveOrchestrationFeedCardContent;
-    
