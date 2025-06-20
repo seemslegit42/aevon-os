@@ -4,29 +4,11 @@ import React, { useState } from 'react';
 import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Shield, AlertTriangle, CheckCircle, Info } from 'lucide-react';
+import { Shield, AlertTriangle, CheckCircle } from 'lucide-react';
 import { analyzeSecurityAlerts, AnalyzeSecurityAlertsInput } from '@/ai/flows/analyze-security-alerts';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-
-const exampleAlerts = [
-  {
-    id: "ex1",
-    name: "Suspicious Login Attempt",
-    details: "Multiple failed login attempts from IP address 192.168.1.100 for user 'admin', followed by a successful login from a new geo-location (Moscow, Russia) at 03:15 AM UTC."
-  },
-  {
-    id: "ex2",
-    name: "Potential Malware Detected",
-    details: "Endpoint security flagged a file 'update.exe' in C:\\Users\\JDoe\\Downloads as potentially malicious (Trojan.GenericKD.12345). The file attempted to make outbound connections to unknown domains."
-  },
-  {
-    id: "ex3",
-    name: "Unusual Data Access",
-    details: "User 'guest_worker' accessed and downloaded 1.5GB of data from the 'Confidential_Client_Data_Q4_2023' S3 bucket between 10:00 PM and 10:05 PM. This user typically does not access this bucket or download large volumes of data."
-  }
-];
 
 export default function AegisSecurityPage() {
   const [alertDetails, setAlertDetails] = useState('');
@@ -55,11 +37,6 @@ export default function AegisSecurityPage() {
     }
   };
 
-  const loadExample = (details: string) => {
-    setAlertDetails(details);
-    setAnalysisResult(null); // Clear previous analysis
-  };
-
   return (
     <div className="space-y-8">
       <MicroAppCard
@@ -67,14 +44,6 @@ export default function AegisSecurityPage() {
         icon={Shield}
         description="Aegis provides always-on, AI-powered cybersecurity. Input raw alert data below to receive a plain English summary, potential threats, and recommended actions."
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          {exampleAlerts.map(ex => (
-            <Button key={ex.id} variant="outline" className="text-left h-auto py-2 border-accent text-accent hover:bg-accent/10 hover:text-accent-foreground" onClick={() => loadExample(ex.details)}>
-              <Info className="w-4 h-4 mr-2 shrink-0"/> {ex.name}
-            </Button>
-          ))}
-        </div>
-
         <Textarea
           placeholder="Paste security alert details here... e.g., logs, error messages, SIEM output."
           value={alertDetails}

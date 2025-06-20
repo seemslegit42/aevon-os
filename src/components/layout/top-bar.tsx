@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Bell, Bot, Home, Settings, Shield, ShoppingCart, Settings2, LucideIcon } from 'lucide-react';
+import { Search, Bell, Bot, Home, Settings, Shield, ShoppingCart, Settings2, type LucideIcon } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -153,13 +153,10 @@ const TopBar: React.FC = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="bg-popover text-popover-foreground border-border/20 dark:border-border/30 w-56">
                     <DropdownMenuLabel className="font-normal">
-                      <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none text-foreground">Admin User</p>
-                        <p className="text-xs leading-none text-muted-foreground">Session: Active</p>
-                      </div>
+                      <p className="text-sm font-medium leading-none text-foreground">User Profile</p>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>Profile</DropdownMenuItem>
+                    <DropdownMenuItem>View Profile</DropdownMenuItem>
                     <DropdownMenuItem>Logout</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
