@@ -32,7 +32,7 @@ export const useBeepStore = create<BeepState>((set, get) => ({
 
     try {
       const input: GeneratePersonalizedBriefingInput = {
-        userName: "Dashboard User", 
+        userName: "Dashboard User",
         operationalMetrics: systemSnapshotData || "No system data available.",
         relevantInformation: `User asked: "${prompt}". Provide a concise, helpful response.`,
       };
