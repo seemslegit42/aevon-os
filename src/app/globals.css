@@ -63,7 +63,7 @@
     --secondary-foreground: 248 37% 10%; /* Dark Obsidian Black */
 
     --muted: 223 13% 25%; /* Darker Conchoidal Gray */
-    --muted-foreground: 223 13% 65%; /* Lighter Conchoidal Gray */
+    --muted-foreground: 223 13% 75%; /* Lighter Conchoidal Gray (was 65%) */
 
     --accent: 177 85% 60%; /* Made Roman Aqua brighter/more saturated for "incandescent glow" */
     --accent-foreground: 248 37% 10%; /* Obsidian Black for contrast on bright accent */
@@ -93,7 +93,6 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* Removed noise/grid background-image for solid theme background */
   }
 }
 

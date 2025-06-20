@@ -74,7 +74,7 @@ const TopBar: React.FC = () => {
                     size="sm"
                     className={cn(
                       "text-foreground/70 hover:text-primary hover:bg-primary/10 dark:text-muted-foreground dark:hover:text-primary dark:hover:bg-primary/10",
-                      pathname === item.href && "text-primary bg-primary/10 dark:text-primary dark:bg-primary/20 font-semibold"
+                      pathname === item.href && "text-primary bg-primary/10 dark:bg-primary dark:text-primary-foreground font-semibold"
                     )}
                   >
                     <item.icon className="w-4 h-4 mr-2" />
@@ -130,7 +130,7 @@ const TopBar: React.FC = () => {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-foreground/70 hover:text-primary hover:bg-primary/10 dark:text-muted-foreground dark:hover:text-primary dark:hover:bg-primary/10" aria-label="Settings">
+                 <Button variant="ghost" size="icon" className="text-foreground/70 hover:text-primary hover:bg-primary/10 dark:text-muted-foreground dark:hover:text-primary dark:hover:bg-primary/10" aria-label="Settings">
                   <Settings2 className="w-5 h-5" />
                 </Button>
               </TooltipTrigger>
@@ -147,13 +147,13 @@ const TopBar: React.FC = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="p-0 h-auto" aria-label="User Menu">
                       <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-primary text-primary-foreground text-xs">AU</AvatarFallback>
+                        <AvatarFallback className="bg-primary text-primary-foreground text-xs">ΛΞ</AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="bg-popover text-popover-foreground border-border/20 dark:border-border/30 w-56">
                     <DropdownMenuLabel className="font-normal">
-                      <p className="text-sm font-medium leading-none text-foreground">User Profile</p>
+                      <p className="text-sm font-medium leading-none text-foreground">ΛΞVON User</p>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>View Profile</DropdownMenuItem>
