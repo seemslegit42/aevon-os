@@ -15,7 +15,7 @@ import {
   ShieldCheckIcon as AegisIcon,
   CreditCardIcon as ArmoryIcon,
   BellIcon,
-  Settings2Icon, 
+  GearIcon, // Changed from Settings2Icon for general settings
   ClockIcon,
   ChevronDownIcon,
 } from '@/components/icons';
@@ -134,12 +134,12 @@ const TopBar: React.FC = () => {
                 variant="ghost"
                 size="icon"
                 onClick={toggleTheme}
-                className="w-9 h-9"
+                className="w-9 h-9 dark:text-primary-foreground dark:hover:text-primary-foreground/80"
                 aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
               >
                 {isMounted && theme === 'dark' ?
-                  <SunIcon className="h-5 w-5 aevos-icon-styling-override dark:text-primary-foreground" /> :
-                  <MoonIcon className="h-5 w-5 aevos-icon-styling-override dark:text-primary-foreground" />}
+                  <SunIcon className="h-5 w-5 aevos-icon-styling-override" /> : 
+                  <MoonIcon className="h-5 w-5 aevos-icon-styling-override" />}
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom"><p>Switch to {theme === 'dark' ? 'Light' : 'Dark'} Mode</p></TooltipContent>
@@ -147,8 +147,8 @@ const TopBar: React.FC = () => {
 
           <Tooltip>
             <TooltipTrigger asChild>
-               <Button variant="ghost" size="icon" className="w-9 h-9">
-                <BellIcon className="h-5 w-5 aevos-icon-styling-override dark:text-primary-foreground" />
+               <Button variant="ghost" size="icon" className="w-9 h-9 dark:text-primary-foreground dark:hover:text-primary-foreground/80">
+                <BellIcon className="h-5 w-5 aevos-icon-styling-override" />
                 <span className="sr-only">Notifications</span>
               </Button>
             </TooltipTrigger>
@@ -157,8 +157,8 @@ const TopBar: React.FC = () => {
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="w-9 h-9">
-                <Settings2Icon className="h-5 w-5 aevos-icon-styling-override" /> 
+              <Button variant="ghost" size="icon" className="w-9 h-9 dark:text-primary-foreground dark:hover:text-primary-foreground/80">
+                <GearIcon className="h-5 w-5 aevos-icon-styling-override" /> 
                 <span className="sr-only">Settings</span>
               </Button>
             </TooltipTrigger>
