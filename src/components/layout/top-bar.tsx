@@ -151,7 +151,7 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
             {isMounted ? currentTime : "--:--"}
           </div>
            <div className="hidden md:flex items-center text-xs px-1 h-9 border-l border-white/10 ml-1 pl-2.5 font-body text-primary-foreground opacity-80">
-              Admin User <span className="mx-1 text-primary-foreground/70">|</span> Session: <span className="text-accent font-medium ml-1">Active</span>
+              Admin User <span className="mx-1 text-primary-foreground/70">|</span> Session: <span className="text-primary-foreground font-medium ml-1">Active</span>
           </div>
 
           <DropdownMenu>

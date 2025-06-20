@@ -240,12 +240,12 @@
   background-color: hsl(var(--chart-5-h), var(--chart-5-s), var(--chart-5-l)) !important;
   color: hsl(var(--destructive-foreground-h), var(--destructive-foreground-s), var(--destructive-foreground-l)) !important;
 }
-.details-link-success { /* Patina Green based - dark mode style is default */
-  color: hsl(var(--chart-4-h), var(--chart-4-s), calc(var(--chart-4-l) + 15%)) !important;
+.details-link-success {
+  color: hsl(var(--primary-foreground-h), var(--primary-foreground-s), var(--primary-foreground-l)) !important;
 }
 
-.details-link-failure { /* Red based - dark mode style is default */
-  color: hsl(var(--chart-5-h), var(--chart-5-s), calc(var(--chart-5-l) + 10%)) !important;
+.details-link-failure {
+  color: hsl(var(--primary-foreground-h), var(--primary-foreground-s), var(--primary-foreground-l)) !important;
 }
 
 /* New Dark Mode Canvas Background Styling (now default canvas styling) */

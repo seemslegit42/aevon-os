@@ -119,8 +119,8 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     content: AgentPresenceCardContent,
     contentProps: {
       agents: [
-        { id: 'agent1', name: 'Data Harvester Alpha', description: 'Continuously gathering and adapting to market sentiment for evolving reports.', status: 'Adapting', statusColor: 'text-blue-500', statusIcon: LoaderCircleIcon, time: 'Live' },
-        { id: 'agent2', name: 'Insight Engine Gamma', description: 'Dynamically processing new data streams, learning patterns.', status: 'Learning', statusColor: 'text-green-500', statusIcon: ClockIcon, time: 'Live' },
+        { id: 'agent1', name: 'Data Harvester Alpha', description: 'Continuously gathering and adapting to market sentiment for evolving reports.', status: 'Adapting', statusColor: 'text-primary-foreground', statusIcon: LoaderCircleIcon, time: 'Live' },
+        { id: 'agent2', name: 'Insight Engine Gamma', description: 'Dynamically processing new data streams, learning patterns.', status: 'Learning', statusColor: 'text-primary-foreground', statusIcon: ClockIcon, time: 'Live' },
       ]
     },
     defaultLayout: { x: 20, y: 670, width: 550, height: 180, zIndex: 7 },
