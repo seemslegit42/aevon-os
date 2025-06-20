@@ -1,13 +1,13 @@
 
-import React from 'react';
+import React, { type ElementType } from 'react'; // Added ElementType
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
-import type { LucideIcon } from 'lucide-react';
+// Removed LucideIcon import as it's no longer needed
 import { cn } from '@/lib/utils';
 
 interface MicroAppCardProps {
   title: string;
   description?: string | React.ReactNode;
-  icon?: LucideIcon;
+  icon?: ElementType; // Changed from LucideIcon to ElementType
   children?: React.ReactNode;
   className?: string;
   actions?: React.ReactNode;

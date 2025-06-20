@@ -1,12 +1,12 @@
 
-import React from 'react';
+import React, { type ElementType } from 'react'; // Added ElementType
 import { Progress } from '@/components/ui/progress';
-import type { LucideIcon } from 'lucide-react';
+// LucideIcon type is no longer needed directly here
 import type { Emitter } from 'mitt';
 
 export interface SystemMetric {
   id: string;
-  icon: LucideIcon;
+  icon: ElementType; // Changed from LucideIcon
   label: string;
   value?: string | number;
   progressMax?: number;
@@ -14,7 +14,7 @@ export interface SystemMetric {
 }
 
 export interface AgentTask { 
-  icon: LucideIcon;
+  icon: ElementType; // Changed from LucideIcon
   task: string;
   time: string;
   status: 'success' | 'failure';
@@ -33,54 +33,54 @@ const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({
   agentTask, 
   eventBusInstance 
 }) => {
-  // This component now receives its data directly as props.
-  // No Zustand store is used here.
-
   const hasMetrics = systemMetricsConfig && systemMetricsConfig.length > 0;
 
   return (
     <div className="space-y-3 p-1 flex flex-col h-full">
       {hasMetrics ? (
         <ul className="space-y-3.5">
-          {systemMetricsConfig.map(metric => (
-            <li key={metric.id} className="text-sm">
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center text-primary">
-                  <metric.icon className="w-4 h-4 mr-2" />
-                  <span className="font-medium text-foreground/90">{metric.label}</span>
-                </div>
-                {metric.value !== undefined ? (
-                  metric.id === 'agents' ? (
-                    <span className="bg-accent text-accent-foreground px-2 py-0.5 rounded-full text-xs font-bold">
-                      {metric.value}
-                    </span>
+          {systemMetricsConfig.map(metric => {
+            const IconComponent = metric.icon; // Assign to capitalized variable for JSX
+            return (
+              <li key={metric.id} className="text-sm">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center text-primary">
+                    <IconComponent className="w-4 h-4 mr-2" />
+                    <span className="font-medium text-foreground/90">{metric.label}</span>
+                  </div>
+                  {metric.value !== undefined ? (
+                    metric.id === 'agents' ? (
+                      <span className="bg-accent text-accent-foreground px-2 py-0.5 rounded-full text-xs font-bold">
+                        {metric.value}
+                      </span>
+                    ) : (
+                      <span className="font-medium text-foreground text-xs">
+                        {metric.id === 'disk' && typeof metric.value === 'number' && metric.progressMax
+                          ? `${metric.value}${metric.unit} / ${metric.progressMax}${metric.unit}`
+                          : metric.id === 'disk' 
+                          ? `${metric.value}${metric.unit}` 
+                          : typeof metric.value === 'string' && metric.unit === ''
+                          ? metric.value
+                          : typeof metric.value === 'number' && metric.unit !== '%' && metric.unit !== ''
+                          ? `${metric.value} ${metric.unit}`
+                          : String(metric.value)
+                        }
+                      </span>
+                    )
                   ) : (
-                    <span className="font-medium text-foreground text-xs">
-                      {metric.id === 'disk' && typeof metric.value === 'number' && metric.progressMax
-                        ? `${metric.value}${metric.unit} / ${metric.progressMax}${metric.unit}`
-                        : metric.id === 'disk' 
-                        ? `${metric.value}${metric.unit}` 
-                        : typeof metric.value === 'string' && metric.unit === ''
-                        ? metric.value
-                        : typeof metric.value === 'number' && metric.unit !== '%' && metric.unit !== ''
-                        ? `${metric.value} ${metric.unit}`
-                        : String(metric.value)
-                      }
-                    </span>
-                  )
-                ) : (
-                  <span className="font-medium text-muted-foreground">N/A</span>
+                    <span className="font-medium text-muted-foreground">N/A</span>
+                  )}
+                </div>
+                {metric.progressMax && metric.value !== undefined && metric.id === 'disk' && (
+                    <Progress
+                        value={typeof metric.value === 'number' ? (metric.value / metric.progressMax) * 100 : 0}
+                        className="h-1.5" 
+                        indicatorClassName="progress-custom" 
+                    />
                 )}
-              </div>
-              {metric.progressMax && metric.value !== undefined && metric.id === 'disk' && (
-                  <Progress
-                      value={typeof metric.value === 'number' ? (metric.value / metric.progressMax) * 100 : 0}
-                      className="h-1.5" 
-                      indicatorClassName="progress-custom" 
-                  />
-              )}
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <div className="flex items-center justify-center flex-grow">
@@ -93,5 +93,3 @@ const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({
 };
 
 export default SystemSnapshotCardContent;
-
-    

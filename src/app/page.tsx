@@ -4,7 +4,13 @@ import React, { Suspense, useCallback, useState, lazy } from 'react';
 import { Rnd, type Position, type Size } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
-import { Mic, MoreHorizontal, X, LoaderCircle, LayoutDashboard } from 'lucide-react';
+import { 
+  BroadcastIcon as MicIcon, // Changed imports, MicIcon replaced by BroadcastIcon as placeholder
+  MoreHorizontalIcon, 
+  XIcon, 
+  RefreshCwIcon as LoaderCircleIcon, // LoaderCircleIcon replaced by RefreshCwIcon as static placeholder
+  LayoutGridIcon as LayoutDashboardIcon // LayoutDashboardIcon replaced by LayoutGridIcon
+} from '@/components/icons';
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -36,13 +42,13 @@ export default function DashboardPage() {
       <div className="flex items-center space-x-1">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground dark:text-neutral-200 hover:text-primary dark:hover:text-white"> <Mic className="w-3 h-3"/> </Button>
+            <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground dark:text-neutral-200 hover:text-primary dark:hover:text-white"> <MicIcon className="w-3 h-3"/> </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom"><p>Voice Command</p></TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground dark:text-neutral-200 hover:text-primary dark:hover:text-white"> <MoreHorizontal className="w-3 h-3"/> </Button>
+            <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground dark:text-neutral-200 hover:text-primary dark:hover:text-white"> <MoreHorizontalIcon className="w-3 h-3"/> </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom"><p>More Options</p></TooltipContent>
         </Tooltip>
@@ -50,7 +56,7 @@ export default function DashboardPage() {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground dark:text-neutral-200 hover:text-destructive dark:hover:text-red-400" onClick={() => handleRemoveCard(cardId)}>
-                <X className="w-4 h-4"/>
+                <XIcon className="w-4 h-4"/>
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom"><p>Remove Zone</p></TooltipContent>
@@ -80,7 +86,7 @@ export default function DashboardPage() {
   if (!isInitialized) {
     return (
       <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
-        <LoaderCircle className="w-12 h-12 text-primary animate-spin" />
+        <LoaderCircleIcon className="w-12 h-12 text-primary animate-spin" /> {/* Note: Custom RefreshCwIcon won't animate by default */}
       </div>
     );
   }
@@ -89,17 +95,15 @@ export default function DashboardPage() {
     <div className="relative w-full h-full p-4 md:p-0">
       {cardsToRender.map(cardConfig => {
         const currentLayout = cardLayouts.find(l => l.id === cardConfig.id);
-        // Fallback to default layout if somehow not found, though useDashboardLayout should ensure it.
         const layoutToUse = currentLayout || cardConfig.defaultLayout; 
 
         if (!layoutToUse) {
             console.warn(`No layout or default layout found for card ${cardConfig.id}. Skipping render.`);
             return null;
         }
-        // Ensure zIndex is set, defaulting if necessary using getMaxZIndex
         const finalLayout = {
           ...layoutToUse,
-          id: cardConfig.id, // Ensure id is part of finalLayout
+          id: cardConfig.id, 
           zIndex: layoutToUse.zIndex || (getMaxZIndex() + 1)
         };
         
@@ -168,7 +172,7 @@ export default function DashboardPage() {
         className="fixed bottom-6 left-6 z-50 rounded-full shadow-xl bg-accent hover:bg-accent/80 text-accent-foreground dark:text-white w-12 h-12 backdrop-blur-sm flex items-center justify-center"
         onClick={() => setIsCommandPaletteOpen(true)}
       >
-        <LayoutDashboard className="h-6 w-6" />
+        <LayoutDashboardIcon className="h-6 w-6" />
         <span className="sr-only">Manage Dashboard Zones</span>
       </Button>
       <div className="fixed bottom-4 right-4 text-xs text-foreground/90 dark:text-white backdrop-blur-sm bg-background/50 dark:bg-black/50 px-2 py-1 rounded-md shadow-lg z-[45]">
@@ -178,4 +182,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-

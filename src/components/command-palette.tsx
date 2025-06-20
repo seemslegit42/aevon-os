@@ -1,6 +1,6 @@
 
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, type ElementType } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -12,15 +12,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlusCircle, Trash2, Search, X } from 'lucide-react';
-import type { CardConfig, CardLayoutInfo } from '@/app/page'; // Adjust path as necessary
+import { PlusCircleIcon, Trash2Icon, SearchIcon, XIcon } from '@/components/icons'; // Changed imports
+import type { CardConfig } from '@/config/dashboard-cards.config'; // Adjusted path and CardLayoutInfo if necessary
+import type { CardLayoutInfo } from '@/hooks/use-dashboard-layout'; // Assuming CardLayoutInfo is also needed from hook or config
 
 interface CommandPaletteProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   allPossibleCards: CardConfig[];
   activeCardIds: string[];
-  cardLayouts: CardLayoutInfo[];
+  cardLayouts: CardLayoutInfo[]; // Make sure this type is correctly imported or defined
   onAddCard: (cardId: string) => void;
   onRemoveCard: (cardId: string) => void;
   onResetLayout: () => void;
@@ -68,7 +69,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
 
         <div className="p-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
               placeholder="Search zones..."
@@ -83,7 +84,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
                   className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7"
                   onClick={() => setSearchTerm('')}
                 >
-                  <X className="h-4 w-4" />
+                  <XIcon className="h-4 w-4" />
                 </Button>
               )}
           </div>
@@ -93,7 +94,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
           <div className="space-y-3">
             {filteredCards.map(card => {
               const isActive = activeCardIds.includes(card.id);
-              const Icon = card.icon;
+              const Icon = card.icon as ElementType; // Cast to ElementType
               return (
                 <div
                   key={card.id}
@@ -110,7 +111,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
                       onClick={() => onRemoveCard(card.id)}
                       className="text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive"
                     >
-                      <Trash2 className="w-4 h-4 mr-2" />
+                      <Trash2Icon className="w-4 h-4 mr-2" />
                       Remove
                     </Button>
                   ) : (
@@ -120,7 +121,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
                       onClick={() => onAddCard(card.id)}
                       className="text-primary border-primary/50 hover:bg-primary/10"
                     >
-                      <PlusCircle className="w-4 h-4 mr-2" />
+                      <PlusCircleIcon className="w-4 h-4 mr-2" />
                       Add
                     </Button>
                   )}

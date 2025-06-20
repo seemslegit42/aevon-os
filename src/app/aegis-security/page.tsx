@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Shield, AlertTriangle, CheckCircle } from 'lucide-react';
+import { ShieldCheckIcon as ShieldIcon, AlertTriangleIcon, CheckCircleIcon } from '@/components/icons'; // Changed imports
 import { analyzeSecurityAlerts, type AnalyzeSecurityAlertsInput } from '@/ai/flows/analyze-security-alerts';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -41,7 +41,7 @@ export default function AegisSecurityPage() {
     <div className="space-y-8">
       <MicroAppCard
         title="Aegis: AI Security Sentinel"
-        icon={Shield}
+        icon={ShieldIcon}
         description="Aegis provides always-on, AI-powered cybersecurity. Input raw alert data below to receive a plain English summary, potential threats, and recommended actions."
       >
         <Textarea
@@ -54,14 +54,14 @@ export default function AegisSecurityPage() {
         />
         <Button onClick={handleAnalyze} disabled={isLoading} className="mt-4 w-full md:w-auto bg-primary hover:bg-primary/80 text-primary-foreground">
           {isLoading ? 'Analyzing...' : 'Analyze Alerts'}
-          <AlertTriangle className="w-4 h-4 ml-2" />
+          <AlertTriangleIcon className="w-4 h-4 ml-2" />
         </Button>
 
         {analysisResult && (
-          <Card className="mt-6 glassmorphism-panel">
+          <Card className="mt-6">
             <CardHeader>
               <CardTitle className="text-xl font-headline text-primary flex items-center">
-                <CheckCircle className="w-6 h-6 mr-2 text-secondary" /> AI Analysis Summary
+                <CheckCircleIcon className="w-6 h-6 mr-2 text-secondary" /> AI Analysis Summary
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -73,16 +73,16 @@ export default function AegisSecurityPage() {
         )}
       </MicroAppCard>
 
-      <Card className="glassmorphism-panel">
+      <Card>
         <CardHeader>
-          <CardTitle className="font-headline text-primary flex items-center"><Shield className="w-5 h-5 mr-2"/>Proactive Defense</CardTitle>
+          <CardTitle className="font-headline text-primary flex items-center"><ShieldIcon className="w-5 h-5 mr-2"/>Proactive Defense</CardTitle>
           <CardDescription className="text-foreground/80">Aegis continuously monitors for anomalies and provides insights into user behavior baselines, making security management effortless.</CardDescription>
         </CardHeader>
         <CardContent>
           <ul className="space-y-2 text-foreground/90">
-            <li className="flex items-center"><CheckCircle className="w-4 h-4 mr-2 text-secondary"/> Contextual alerts with plain English explanations.</li>
-            <li className="flex items-center"><CheckCircle className="w-4 h-4 mr-2 text-secondary"/> Proactive anomaly detection.</li>
-            <li className="flex items-center"><CheckCircle className="w-4 h-4 mr-2 text-secondary"/> User behavior baseline insights.</li>
+            <li className="flex items-center"><CheckCircleIcon className="w-4 h-4 mr-2 text-secondary"/> Contextual alerts with plain English explanations.</li>
+            <li className="flex items-center"><CheckCircleIcon className="w-4 h-4 mr-2 text-secondary"/> Proactive anomaly detection.</li>
+            <li className="flex items-center"><CheckCircleIcon className="w-4 h-4 mr-2 text-secondary"/> User behavior baseline insights.</li>
           </ul>
         </CardContent>
       </Card>

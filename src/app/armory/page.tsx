@@ -1,11 +1,17 @@
 
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, type ElementType } from 'react'; // Added ElementType
 import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { ShoppingCart, PackagePlus, Sparkles, Download, Wand2, Shield, type LucideIcon } from 'lucide-react';
+import { 
+  CreditCardIcon as ShoppingCartIcon, // Changed imports and aliased
+  PlusSquareIcon as PackagePlusIcon, 
+  MagicWandIcon as SparklesIcon, 
+  DownloadIcon,
+  ShieldCheckIcon, // Added for example, not used by default in initialApps
+} from '@/components/icons';
 import { generateMicroAppDescription, type GenerateMicroAppDescriptionInput } from '@/ai/flows/generate-micro-app-description';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardFooter, CardTitle } from '@/components/ui/card';
@@ -33,7 +39,7 @@ type AppDescriptionFormValues = z.infer<typeof formSchema>;
 interface ArmoryApp {
   id: string;
   name: string;
-  icon: LucideIcon;
+  icon: ElementType; // Changed from LucideIcon
   shortDesc: string;
   aiGeneratedDesc?: string;
   tags: string[];
@@ -109,13 +115,13 @@ export default function ArmoryPage() {
     <div className="space-y-8">
       <MicroAppCard
         title="ΛΞVON Λrmory: Expand Your OS"
-        icon={ShoppingCart}
+        icon={ShoppingCartIcon}
         description="Discover, acquire, and manage AI-powered micro-apps and intelligent agents. Enhance your ΛΞVON OS capabilities and tailor the platform to your unique business needs."
       />
 
       <h2 className="font-headline text-2xl text-primary mt-10 mb-6">Featured Micro-Apps</h2>
       {apps.length === 0 ? (
-        <Card className="glassmorphism-panel">
+        <Card>
           <CardContent className="pt-6">
             <p className="text-muted-foreground text-center">No micro-apps currently available in the Armory.</p>
           </CardContent>
@@ -123,7 +129,7 @@ export default function ArmoryPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {apps.map((app) => (
-            <Card key={app.id} className="glassmorphism-panel flex flex-col overflow-hidden">
+            <Card key={app.id} className="flex flex-col overflow-hidden">
               <CardHeader>
                 <CardTitle className="font-headline text-xl text-primary flex items-center">
                   <app.icon className="w-6 h-6 mr-2 text-primary" /> {app.name}
@@ -139,7 +145,7 @@ export default function ArmoryPage() {
               </CardContent>
               <CardFooter>
                 <Button className="w-full bg-accent hover:bg-accent/80 text-accent-foreground">
-                  <Download className="w-4 h-4 mr-2" /> Get App
+                  <DownloadIcon className="w-4 h-4 mr-2" /> Get App
                 </Button>
               </CardFooter>
             </Card>
@@ -147,7 +153,7 @@ export default function ArmoryPage() {
         </div>
       )}
 
-      <MicroAppCard title="Publish Your Micro-App" icon={PackagePlus}>
+      <MicroAppCard title="Publish Your Micro-App" icon={PackagePlusIcon}>
         <p className="text-foreground/80 mb-6">
           Have a micro-app idea? Use our AI to generate a compelling marketplace description.
         </p>
@@ -207,13 +213,13 @@ export default function ArmoryPage() {
             />
             <Button type="submit" disabled={isGenerating} className="w-full md:w-auto bg-primary hover:bg-primary/80 text-primary-foreground">
               {isGenerating ? 'Generating...' : 'Generate Description'}
-              <Sparkles className="w-4 h-4 ml-2" />
+              <SparklesIcon className="w-4 h-4 ml-2" />
             </Button>
           </form>
         </Form>
 
         {generatedDescription && (
-          <Card className="mt-6 glassmorphism-panel">
+          <Card className="mt-6">
             <CardHeader>
               <CardTitle className="text-xl font-headline text-primary">AI-Generated Description:</CardTitle>
             </CardHeader>

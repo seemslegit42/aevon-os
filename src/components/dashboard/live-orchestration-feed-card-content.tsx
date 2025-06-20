@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CheckCircle, X, ChevronDown } from 'lucide-react';
+import { CheckCircleIcon, XCircleIcon as XIcon, ChevronDownIcon } from '@/components/icons'; // Changed imports
 import { cn } from "@/lib/utils";
 import type { Emitter } from 'mitt';
 
@@ -18,9 +18,6 @@ interface LiveOrchestrationFeedCardContentProps {
 }
 
 const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardContentProps> = ({ feedItems, eventBusInstance }) => {
-  // This component now receives feedItems directly as a prop.
-  // No Zustand store is used here.
-
   if (!feedItems || feedItems.length === 0) {
     return (
       <div className="flex items-center justify-center h-full p-4">
@@ -36,7 +33,7 @@ const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardConten
           <li key={index} className="p-3 rounded-md bg-card/50 hover:bg-primary/10 dark:bg-black/20 dark:hover:bg-primary/10">
             <div className="flex items-start justify-between mb-1">
               <div className="flex items-center">
-                 {item.status === 'success' ? <CheckCircle className="w-5 h-5 mr-2 text-green-500 shrink-0" /> : <X className="w-5 h-5 mr-2 text-red-500 shrink-0" />}
+                 {item.status === 'success' ? <CheckCircleIcon className="w-5 h-5 mr-2 text-green-500 shrink-0" /> : <XIcon className="w-5 h-5 mr-2 text-red-500 shrink-0" />}
                 <div>
                   <p className="font-semibold text-foreground text-sm">{item.task}</p>
                   <p className="text-xs text-muted-foreground">{item.time}</p>
@@ -53,7 +50,7 @@ const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardConten
                 `text-xs hover:underline flex items-center mt-1`,
                  item.status === 'success' ? 'details-link-success' : 'details-link-failure'
                 )}>
-              {item.status === 'success' ? 'Success Details' : 'Failure Details'} <ChevronDown className="w-3 h-3 ml-1" />
+              {item.status === 'success' ? 'Success Details' : 'Failure Details'} <ChevronDownIcon className="w-3 h-3 ml-1" />
             </button>
           </li>
         ))}
@@ -63,5 +60,3 @@ const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardConten
 };
 
 export default LiveOrchestrationFeedCardContent;
-
-    

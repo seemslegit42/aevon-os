@@ -3,10 +3,10 @@ import React, { FormEvent, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { LoaderCircle } from 'lucide-react';
+import { RefreshCwIcon as LoaderCircleIcon } from '@/components/icons'; // Changed import
 import type { Emitter } from 'mitt';
 import { useBeepStore } from '@/stores/beep.store';
-import eventBus from '@/lib/event-bus'; // Assuming eventBus is the default export
+import eventBus from '@/lib/event-bus';
 
 interface BeepCardContentProps {
   placeholderInsight?: string;
@@ -55,7 +55,7 @@ const BeepCardContent: React.FC<BeepCardContentProps> = ({
         {aiResponse && <ScrollArea className="h-[80px] w-full"><div className="text-sm text-foreground dark:text-white bg-primary/10 dark:bg-primary/20 rounded-md p-3 mb-4 text-left whitespace-pre-wrap">{aiResponse}</div></ScrollArea>}
         {isAiLoading && !aiResponse && (
             <div className="flex items-center justify-center w-full h-[80px]">
-                <LoaderCircle className="animate-spin h-6 w-6 text-primary" />
+                <LoaderCircleIcon className="animate-spin h-6 w-6 text-primary" /> {/* Note: Custom RefreshCwIcon won't animate by default */}
             </div>
         )}
       </div>
@@ -73,7 +73,7 @@ const BeepCardContent: React.FC<BeepCardContentProps> = ({
           className="w-full btn-wabi-sabi h-10 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center"
           disabled={isAiLoading}
         >
-          {isAiLoading ? <LoaderCircle className="animate-spin mr-2 h-4 w-4"/> : null}
+          {isAiLoading ? <LoaderCircleIcon className="animate-spin mr-2 h-4 w-4"/> : null} {/* Note: Custom RefreshCwIcon won't animate by default */}
           Send Prompt
         </button>
       </form>
@@ -82,4 +82,3 @@ const BeepCardContent: React.FC<BeepCardContentProps> = ({
 };
 
 export default BeepCardContent;
-

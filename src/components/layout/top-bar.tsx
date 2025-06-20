@@ -1,26 +1,26 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, type ElementType } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-  Moon, 
-  Sun, 
-  Search,
-  Home,
-  Settings,
-  Shield,
-  ShoppingCart,
-  Bell,
-  Settings2,
-  Clock,
-  ChevronDown,
-  BrainCircuit,
-  type LucideIcon
-} from 'lucide-react';
+  MoonIcon,
+  SunIcon,
+  SearchIcon,
+  HomeIcon,
+  Settings2Icon as SettingsIcon, // Aliasing for consistency with previous usage
+  ShieldCheckIcon as ShieldIcon, // Aliasing
+  CreditCardIcon as ShoppingCartIcon, // Aliasing
+  BellIcon,
+  Settings2Icon,
+  ClockIcon,
+  ChevronDownIcon,
+  BrainCircuitIcon,
+  UserIcon
+} from '@/components/icons'; // Changed imports to custom icons
 import {
   Tooltip,
   TooltipContent,
@@ -46,14 +46,14 @@ import { useThemeStore } from '@/stores/theme.store';
 interface NavItemConfig {
   href: string;
   label: string;
-  icon: LucideIcon;
+  icon: ElementType; // Changed from LucideIcon
 }
 
 const mainNavItems: NavItemConfig[] = [
-  { href: '/', label: 'Home', icon: Home },
-  { href: '/loom-studio', label: 'Loom', icon: Settings },
-  { href: '/aegis-security', label: 'Λegis', icon: Shield },
-  { href: '/armory', label: 'Λrmory', icon: ShoppingCart },
+  { href: '/', label: 'Home', icon: HomeIcon },
+  { href: '/loom-studio', label: 'Loom', icon: SettingsIcon },
+  { href: '/aegis-security', label: 'Λegis', icon: ShieldIcon },
+  { href: '/armory', label: 'Λrmory', icon: ShoppingCartIcon },
 ];
 
 const TopBar: React.FC = () => {
@@ -88,7 +88,7 @@ const TopBar: React.FC = () => {
           {/* Left Side: Logo and Navigation */}
           <div className="flex items-center space-x-4">
             <Link href="/" className="text-2xl font-bold flex items-center">
-              <BrainCircuit className="w-7 h-7 text-primary dark:text-white" />
+              <BrainCircuitIcon className="w-7 h-7 text-primary dark:text-white" />
             </Link>
             <nav className="hidden md:flex items-center space-x-1">
               {mainNavItems.map((item) => (
@@ -115,7 +115,7 @@ const TopBar: React.FC = () => {
           {/* Center: Search Bar */}
           <div className="flex-1 flex justify-center px-8 lg:px-16">
             <div className="relative w-full max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-neutral-400" />
+              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600 dark:text-neutral-400" />
               <Input
                 type="search"
                 placeholder="Command or Search..."
@@ -141,7 +141,7 @@ const TopBar: React.FC = () => {
                   className="text-gray-700 dark:text-neutral-200 hover:bg-primary/10 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white w-9 h-9"
                   aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
                 >
-                  {isMounted && theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                  {isMounted && theme === 'dark' ? <SunIcon className="h-5 w-5" /> : <MoonIcon className="h-5 w-5" />}
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="bottom">
@@ -152,7 +152,7 @@ const TopBar: React.FC = () => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="ghost" size="icon" className="text-gray-700 dark:text-neutral-200 hover:bg-primary/10 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white w-9 h-9">
-                  <Bell className="h-5 w-5" />
+                  <BellIcon className="h-5 w-5" />
                   <span className="sr-only">Notifications</span>
                 </Button>
               </TooltipTrigger>
@@ -162,7 +162,7 @@ const TopBar: React.FC = () => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="ghost" size="icon" className="text-gray-700 dark:text-neutral-200 hover:bg-primary/10 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white w-9 h-9">
-                  <Settings2 className="h-5 w-5" />
+                  <Settings2Icon className="h-5 w-5" />
                   <span className="sr-only">Settings</span>
                 </Button>
               </TooltipTrigger>
@@ -170,7 +170,7 @@ const TopBar: React.FC = () => {
             </Tooltip>
 
             <div className="flex items-center text-sm text-gray-700 dark:text-neutral-200 px-2 h-9">
-              <Clock className="h-4 w-4 mr-1.5" />
+              <ClockIcon className="h-4 w-4 mr-1.5" />
               {isMounted ? currentTime : "--:--"}
             </div>
 
@@ -181,7 +181,7 @@ const TopBar: React.FC = () => {
                     <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
                     <AvatarFallback className="text-xs bg-primary/30 text-primary-foreground">U</AvatarFallback>
                   </Avatar>
-                  <ChevronDown className="h-4 w-4 opacity-80" />
+                  <ChevronDownIcon className="h-4 w-4 opacity-80" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 glassmorphism-panel border-border/30 dark:border-white/10">
