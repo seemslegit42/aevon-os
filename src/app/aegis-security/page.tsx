@@ -5,12 +5,10 @@ import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ShieldCheckIcon as ShieldIcon, AlertTriangleIcon, CheckCircleIcon } from '@/components/icons';
-// import { analyzeSecurityAlerts, type AnalyzeSecurityAlertsInput, type AnalyzeSecurityAlertsOutput } from '@/ai/flows/analyze-security-alerts';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-// Placeholder type for analysis result
 interface AnalyzeSecurityAlertsOutput {
   summary: string;
   potentialThreats?: string[];
@@ -31,7 +29,7 @@ export default function AegisSecurityPage() {
     setIsLoading(true);
     setAnalysisResult(null);
 
-    // AI Analysis is disabled as Genkit has been removed.
+    // AI Analysis is disabled.
     const featureUnavailableMessage = "AI analysis feature is currently unavailable.";
     setAnalysisResult({ summary: featureUnavailableMessage, potentialThreats: [], recommendedActions: [] });
     toast({ variant: "destructive", title: "Feature Unavailable", description: featureUnavailableMessage });

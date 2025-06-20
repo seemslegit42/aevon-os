@@ -11,7 +11,6 @@ import {
   MagicWandIcon as SparklesIcon,
   DownloadIcon,
 } from '@/components/icons';
-// import { generateMicroAppDescription, type GenerateMicroAppDescriptionInput } from '@/ai/flows/generate-micro-app-description';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardFooter, CardTitle } from '@/components/ui/card';
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,15 +24,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
-// Placeholder type
-interface GenerateMicroAppDescriptionInput {
-  microAppName: string;
-  microAppFunctionality: string;
-  targetAudience: string;
-  keyFeatures: string[];
-}
-
 
 const formSchema = z.object({
   microAppName: z.string().min(3, "App name must be at least 3 characters"),
@@ -75,7 +65,7 @@ export default function ArmoryPage() {
     setIsGenerating(true);
     setGeneratedDescription(null);
 
-    // AI Description generation is disabled as Genkit has been removed.
+    // AI Description generation is disabled.
     const featureUnavailableMessage = "AI description generation feature is currently unavailable.";
     setGeneratedDescription(featureUnavailableMessage);
     toast({ variant: "destructive", title: "Feature Unavailable", description: featureUnavailableMessage });
