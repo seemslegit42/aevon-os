@@ -5,35 +5,32 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { MessageSquare, Search, Bell, Settings, Briefcase, Shield, ShoppingCart, Bot, Home, ChevronDown, Settings2 } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast";
-import { generatePersonalizedBriefing, GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-personalized-briefings';
+import { Search, Bell, Bot, Home, ChevronDown, Settings2 } from 'lucide-react'; // Removed unused: MessageSquare, Briefcase, Shield, ShoppingCart
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 const TopBar: React.FC = () => {
-  const [beepInput, setBeepInput] = useState('');
-  const [isBeepLoading, setIsBeepLoading] = useState(false);
-  const [beepResponse, setBeepResponse] = useState<string | null>(null);
-  const { toast } = useToast();
   const [currentTime, setCurrentTime] = useState<string | null>(null);
 
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      const hours = now.getUTCHours();
+      let hours = now.getUTCHours();
       const minutes = now.getUTCMinutes();
       const seconds = now.getUTCSeconds();
       const ampm = hours >= 12 ? 'PM' : 'AM';
-      const displayHours = hours % 12 || 12; 
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
       
-      return `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm} UTC`;
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm} UTC`;
     };
     setCurrentTime(updateTime());
     const timer = setInterval(() => {
@@ -41,13 +38,6 @@ const TopBar: React.FC = () => {
     }, 1000); 
     return () => clearInterval(timer);
   }, []);
-
-
-  const navItems = [
-    { href: "/loom-studio", label: "Loom Studio", icon: Settings },
-    { href: "/aegis-security", label: "Aegis Security", icon: Shield },
-    { href: "/armory", label: "ΛΞVON Λrmory", icon: ShoppingCart },
-  ];
 
   return (
     <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md border-b border-border/30 dark:border-border/50 font-headline">
@@ -70,6 +60,7 @@ const TopBar: React.FC = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-popover text-popover-foreground border-border/50">
               <DropdownMenuItem>Home Dashboard</DropdownMenuItem>
+              {/* Add other dashboard links here if needed later */}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -92,14 +83,6 @@ const TopBar: React.FC = () => {
         </div>
         
         <div className="flex items-center space-x-2">
-           {navItems.map((item) => (
-            <Button key={item.label} variant="ghost" size="icon" asChild className="text-foreground/70 hover:text-primary hover:bg-primary/10 dark:text-muted-foreground dark:hover:text-accent dark:hover:bg-accent/10" title={item.label}>
-              <Link href={item.href}>
-                <item.icon className="w-5 h-5" />
-              </Link>
-            </Button>
-          ))}
-
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="ghost" size="icon" className="text-foreground/70 hover:text-primary hover:bg-primary/10 dark:text-muted-foreground dark:hover:text-accent dark:hover:bg-accent/10" aria-label="Notifications">
@@ -133,11 +116,14 @@ const TopBar: React.FC = () => {
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-popover text-popover-foreground border-border/50">
-              <DropdownMenuItem className="flex flex-col items-start !text-muted-foreground cursor-default">
-                <span className="font-semibold text-foreground">Admin User</span>
-                <span className="text-xs">Session: Active</span>
-              </DropdownMenuItem>
+            <DropdownMenuContent align="end" className="bg-popover text-popover-foreground border-border/50 w-56">
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none text-foreground">Admin User</p>
+                  <p className="text-xs leading-none text-muted-foreground">Session: Active</p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
               <DropdownMenuItem>Profile</DropdownMenuItem>
               <DropdownMenuItem>Logout</DropdownMenuItem>
             </DropdownMenuContent>
@@ -149,3 +135,5 @@ const TopBar: React.FC = () => {
 };
 
 export default TopBar;
+
+    

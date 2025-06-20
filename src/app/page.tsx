@@ -62,6 +62,8 @@ export default function HomePage() {
   const [cpuLoad, setCpuLoad] = useState(35);
   const [memoryUsage, setMemoryUsage] = useState(62);
   const [diskUsageValue, setDiskUsageValue] = useState(450); 
+  const [networkSent, setNetworkSent] = useState(1.2);
+  const [networkReceived, setNetworkReceived] = useState(8.5);
   const [activeAgentsCount, setActiveAgentsCount] = useState(initialAgentsData.filter(agent => agent.status === 'Processing' || agent.status === 'Idle').length);
 
 
@@ -76,6 +78,7 @@ export default function HomePage() {
     );
     setTimeout(() => {
       setDismissedCardIds(prevIds => [...prevIds, id]);
+      setCardLayouts(prevLayouts => prevLayouts.filter(layout => layout.id !== id));
     }, 300); 
   };
 
@@ -104,6 +107,8 @@ export default function HomePage() {
       setCpuLoad(Math.floor(Math.random() * (70 - 20 + 1)) + 20); 
       setMemoryUsage(Math.floor(Math.random() * (80 - 40 + 1)) + 40);
       setDiskUsageValue(prev => Math.min(1000, Math.max(0, prev + Math.floor(Math.random() * 20) - 10)));
+      setNetworkSent(parseFloat((Math.random() * 5).toFixed(1)));
+      setNetworkReceived(parseFloat((Math.random() * 15).toFixed(1)));
     }, 2000);
     return () => clearInterval(interval);
   }, []);
@@ -135,10 +140,12 @@ export default function HomePage() {
   };
   
   const systemMetricsConfig = [
+    { id: 'cpu', icon: Cpu, label: 'CPU Load', value: cpuLoad, progressMax: 100, unit: '%' },
+    { id: 'memory', icon: HardDrive, label: 'Memory Usage', value: memoryUsage, progressMax: 100, unit: '%' },
     { id: 'agents', icon: Users, label: 'Active Agents', value: activeAgentsCount, unit: '' }, 
     { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: diskUsageValue, progressMax: 1000, unit: 'GB / 1TB' },
-    { id: 'cpu', icon: Cpu, label: 'Network Sent', value: 1.2, unit: 'GB' }, // Placeholder, update if dynamic
-    { id: 'memory', icon: HardDrive, label: 'Network Received', value: 8.5, unit: 'GB' }, // Placeholder, update if dynamic
+    { id: 'sent', icon: Cpu, label: 'Network Sent', value: networkSent, unit: 'GB' }, 
+    { id: 'received', icon: HardDrive, label: 'Network Received', value: networkReceived, unit: 'GB' }, 
     { id: 'uptime', icon: Timer, label: 'System Uptime', value: systemUptime, unit: '' },
   ];
 
@@ -178,11 +185,11 @@ export default function HomePage() {
     },
     {
       id: 'agentPresence', title: 'Agent Presence', icon: Cpu, isDismissible: true,
-      x: 470, y: 50, width: 380, height: 230, zIndex: 1, minWidth: 300, minHeight: 200, // Adjusted minHeight
+      x: 470, y: 50, width: 380, height: 230, zIndex: 1, minWidth: 300, minHeight: 200,
       content: () => (
         <ScrollArea className="h-full pr-1">
           <ul className="space-y-2 p-1">
-            {agents.slice(0,4).map(agent => ( 
+            {agents.slice(0,5).map(agent => ( 
               <li key={agent.id} className="p-2.5 rounded-md bg-primary/5 dark:bg-black/20 hover:bg-muted/30 transition-colors">
                 <div className="flex items-center justify-between mb-0.5">
                   <span className="font-semibold text-foreground text-sm">{agent.name}</span>
@@ -218,33 +225,29 @@ export default function HomePage() {
                      </span>
                   ) : (
                     <span className="font-medium text-foreground">
-                    {metric.progressMax ? `${metric.value}${metric.unit.startsWith('%') ? '%' : ''}` : metric.value}
-                    {metric.progressMax && metric.unit.includes('/') && !metric.unit.startsWith('%') && !metric.unit.startsWith('GB') ? ` ${metric.unit.substring(metric.unit.indexOf('/'))}` : ''}
-                    {!metric.progressMax && metric.unit && !metric.unit.startsWith('%') && !metric.unit.startsWith('GB') ? ` ${metric.unit}` : ''}
-                    {metric.unit.startsWith('GB') && metric.progressMax ? `${metric.value}GB / ${metric.progressMax/1000}TB` : ''}
-                    {metric.unit.startsWith('GB') && !metric.progressMax ? `${metric.value} GB` : ''}
+                    {metric.progressMax && metric.unit === '%' ? `${metric.value}%` : ''}
+                    {metric.progressMax && metric.unit !== '%' && metric.unit.includes('/') ? `${metric.value}${metric.unit.substring(0, metric.unit.indexOf('/'))} / ${metric.progressMax}${metric.unit.substring(metric.unit.indexOf('/'))}` : ''}
+                    {metric.progressMax && metric.unit !== '%' && !metric.unit.includes('/') && metric.unit.includes('GB') ? `${metric.value}GB / ${metric.progressMax}GB` : ''}
+                    {!metric.progressMax && metric.unit !== '%' && metric.unit.includes('GB')? `${metric.value} ${metric.unit}` : ''}
+                    {!metric.progressMax && metric.unit === '' ? metric.value : ''}
+                    {metric.id === 'disk' ? `${metric.value}GB / ${metric.progressMax/1000}TB` : ''}
                   </span>
                   )}
                 </div>
                 {metric.progressMax ? (
-                  <>
-                    <Progress value={(metric.value / metric.progressMax) * 100} className="h-2 [&>div]:bg-primary" />
-                  </>
+                  <Progress 
+                    value={metric.id === 'disk' ? (metric.value / metric.progressMax) * 100 : metric.value} 
+                    className="h-2 [&>div]:bg-primary" 
+                  />
                 ) : null}
-                 {metric.id === 'disk' && (
-                    <span className="text-xs text-muted-foreground/70 float-right mt-0.5">
-                        {/* Already handled in span above for disk */}
-                    </span>
-                )}
               </li>
             ))}
           </ul>
-          {/* Removed the "Agent Task: Backup Database Cluster" as it's in Live Orchestration Feed */}
         </div>
       )
     },
     {
-      id: 'applicationView', title: 'Application View', icon: AppWindow, isDismissible: true, // Changed icon from Blocks
+      id: 'applicationView', title: 'Application View', icon: AppWindow, isDismissible: true,
       x: 50, y: 550, width: 400, height: 220, zIndex: 1, minWidth: 250, minHeight: 180,
       content: () => (
           <div className="flex flex-col items-center justify-center h-full text-center p-4">
@@ -273,7 +276,7 @@ export default function HomePage() {
       )
     },
     {
-      id: 'liveOrchestration', title: 'Live Orchestration Feed', icon: CheckCircle, isDismissible: true, // Icon changed from Activity
+      id: 'liveOrchestration', title: 'Live Orchestration Feed', icon: CheckCircle, isDismissible: true,
       x: 870, y: 50, width: 380, height: 720, zIndex: 1, minWidth: 320, minHeight: 300,
       cardClassName: "flex-grow flex flex-col",
       content: () => (
@@ -295,11 +298,11 @@ export default function HomePage() {
                       <p className="text-xs text-muted-foreground">{item.time}</p>
                     </div>
                   </div>
-                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${item.status === 'success' ? 'bg-secondary text-secondary-foreground' : 'bg-destructive text-destructive-foreground'}`}>
+                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${item.status === 'success' ? 'bg-secondary text-primary-foreground' : 'bg-destructive text-destructive-foreground'}`}>
                     {item.status}
                   </span>
                 </div>
-                <button className={`text-xs ${item.status === 'success' ? 'text-secondary' : 'text-destructive'} hover:underline flex items-center mt-1`}>
+                 <button className={`text-xs ${item.status === 'success' ? 'text-secondary' : 'text-destructive'} hover:underline flex items-center mt-1`}>
                   {item.status === 'success' ? 'Success Details' : 'Failure Details'} <ChevronDown className="w-3 h-3 ml-1" />
                 </button>
               </li>
@@ -354,7 +357,7 @@ export default function HomePage() {
   const cardsToRender = initialCardsData.filter(card => !dismissedCardIds.includes(card.id));
 
   return (
-    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden"> {/* Removed iridescent-aurora-bg */}
+    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden bg-background">
       {cardsToRender.map(cardConfig => {
         const currentLayout = cardLayouts.find(l => l.id === cardConfig.id);
         if (!currentLayout) return null;
@@ -409,3 +412,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+    
