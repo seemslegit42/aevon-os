@@ -245,7 +245,7 @@ export default function DashboardPage() {
                   title={cardConfig.title}
                   icon={cardConfig.icon}
                   actions={CardActions(cardConfig.id, cardConfig.isDismissible)}
-                  className={cn("!rounded-lg", cardConfig.cardClassName)}
+                  className={cn(cardConfig.cardClassName)} 
                 >
                   <Suspense fallback={cardLoadingFallback}>
                     <CardSpecificContent {...getMergedContentProps(cardConfig)} />
@@ -301,7 +301,7 @@ export default function DashboardPage() {
                 title={cardConfig.title}
                 icon={cardConfig.icon}
                 actions={CardActions(cardConfig.id, cardConfig.isDismissible)}
-                className={cn("h-full w-full !rounded-lg", cardConfig.cardClassName)}
+                className={cn("h-full w-full", cardConfig.cardClassName)}
               >
                  <Suspense fallback={cardLoadingFallback}>
                     <CardSpecificContent {...getMergedContentProps(cardConfig)} />
