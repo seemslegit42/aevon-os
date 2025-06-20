@@ -51,6 +51,7 @@ export interface CardConfig {
   id: string;
   title: string;
   icon: ElementType;
+  description?: string; // Added description field
   content: LazyExoticComponent<FC<any>>;
   contentProps?: any;
   defaultLayout: { x: number; y: number; width: number; height: number; zIndex: number };
@@ -63,13 +64,15 @@ export interface CardConfig {
 export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'beep', title: 'BEEP Interface', icon: MagicWandIcon, isDismissible: true,
+    description: "Your natural language command center. BEEP learns from interactions to streamline tasks and provide system-wide intelligence.",
     content: BeepCardContent,
-    contentProps: { placeholderInsight: "Ask BEEP to analyze data or execute tasks." },
+    contentProps: { aiPromptPlaceholder: "BEEP learns from your interactions across ΛΞVON OS. Ask it to analyze system-wide data, automate complex workflows, or provide predictive insights." },
     defaultLayout: { x: 20, y: 20, width: 380, height: 280, zIndex: 1 },
     minWidth: 300, minHeight: 240, cardClassName: "flex-grow flex flex-col",
   },
   {
     id: 'systemSnapshot', title: 'System Snapshot', icon: BarChartBigIcon, isDismissible: true,
+    description: "Monitoring key system telemetry that feeds into ΛΞVON OS's adaptive learning core, ensuring optimal performance and proactive insights.",
     content: SystemSnapshotCardContent,
     contentProps: {
       systemMetricsConfig: [
@@ -84,35 +87,40 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   },
   {
     id: 'loomStudio', title: 'Loom Studio', icon: Settings2Icon, isDismissible: true,
+    description: "Design, test, and orchestrate dynamic AI workflows. Weave together intelligent agents that learn and adapt.",
     content: LoomStudioCardContent,
     defaultLayout: { x: 20, y: 310, width: 450, height: 350, zIndex: 3 },
     minWidth: 320, minHeight: 300,
   },
   {
     id: 'aegisSecurity', title: 'Aegis AI Security', icon: ShieldCheckIcon, isDismissible: true,
+    description: "AI-powered cybersecurity, analyzing alert data to provide summaries, identify threats, and recommend adaptive actions.",
     content: AegisSecurityCardContent,
     defaultLayout: { x: 480, y: 310, width: 380, height: 350, zIndex: 4 },
     minWidth: 300, minHeight: 280,
   },
   {
     id: 'armoryMarketplace', title: 'ΛΞVON Λrmory', icon: CreditCardIcon, isDismissible: true,
+    description: "Discover, acquire, and manage AI micro-apps and intelligent agents that seamlessly integrate and adapt within your OS.",
     content: ArmoryMarketplaceCardContent,
     defaultLayout: { x: 740, y: 20, width: 400, height: 400, zIndex: 5 },
     minWidth: 300, minHeight: 300,
   },
   {
     id: 'aiInsights', title: 'AI Insights Engine', icon: BrainCircuitIcon, isDismissible: true,
+    description: "Leverages deep learning from all OS modules to deliver proactive, predictive intelligence and optimize operations.",
     content: AiInsightsCardContent,
     defaultLayout: { x: 870, y: 310, width: 270, height: 200, zIndex: 6 },
     minWidth: 250, minHeight: 180,
   },
   {
     id: 'agentPresence', title: 'Agent Presence', icon: UsersIcon, isDismissible: true,
+    description: "Oversee your dynamic collective of AI agents. Witness their real-time status and collaborative efforts, powered by seamless data exchange.",
     content: AgentPresenceCardContent,
     contentProps: {
       agents: [
-        { id: 'agent1', name: 'Data Harvester Alpha', description: 'Collecting market sentiment data for Q3 report.', status: 'Processing', statusColor: 'text-blue-500', statusIcon: LoaderCircleIcon, time: '2m ago' },
-        { id: 'agent2', name: 'Insight Engine Gamma', description: 'Idle, awaiting new data stream.', status: 'Idle', statusColor: 'text-green-500', statusIcon: ClockIcon, time: '5m ago' },
+        { id: 'agent1', name: 'Data Harvester Alpha', description: 'Continuously gathering and adapting to market sentiment for evolving reports.', status: 'Adapting', statusColor: 'text-blue-500', statusIcon: LoaderCircleIcon, time: 'Live' },
+        { id: 'agent2', name: 'Insight Engine Gamma', description: 'Dynamically processing new data streams, learning patterns.', status: 'Learning', statusColor: 'text-green-500', statusIcon: ClockIcon, time: 'Live' },
       ]
     },
     defaultLayout: { x: 20, y: 670, width: 550, height: 180, zIndex: 7 },
@@ -120,12 +128,13 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   },
   {
     id: 'liveOrchestrationFeed', title: 'Live Orchestration Feed', icon: ListChecksIcon, isDismissible: true,
+    description: "Real-time visibility into the dynamic interplay of your AI agents and automated workflows as they adapt and execute.",
     content: LiveOrchestrationFeedCardContent,
     contentProps: {
       feedItems: [
-        { task: 'User Login Success', time: '10:35 AM', status: 'success', details: 'User john.doe logged in.' },
-        { task: 'Automated Report Generation', time: '10:33 AM', status: 'success', details: 'Monthly sales report generated.' },
-        { task: 'Data Sync Failure', time: '10:30 AM', status: 'failure', details: 'Failed to sync with CRM. Retrying.' },
+        { task: 'User Login Success', time: '10:35 AM', status: 'success', details: 'User john.doe logged in, profile adapted.' },
+        { task: 'Adaptive Report Generation', time: '10:33 AM', status: 'success', details: 'Monthly sales report dynamically adjusted based on new data.' },
+        { task: 'Data Sync Anomaly', time: '10:30 AM', status: 'failure', details: 'CRM sync deviation detected. Agent re-calibrating.' },
       ]
     },
     defaultLayout: { x: 580, y: 670, width: 560, height: 180, zIndex: 8 },
@@ -134,20 +143,21 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   // Kept for command palette, not active by default
   {
     id: 'microApps', title: 'Micro-Apps Palette', icon: LayoutGridIcon, isDismissible: true,
+    description: "Launch specialized AI micro-applications that integrate seamlessly into the ΛΞVON OS ecosystem.",
     content: MicroAppsCardContent,
     contentProps: {
       availableApps: [
         { id: 'app-analytics', icon: ChartBarIcon, label: 'Analytics (Demo)' },
-        // Core apps are now directly in dashboard, but this could list others
       ]
     },
-    defaultLayout: { x: 800, y: 430, width: 340, height: 230, zIndex: 9 }, // Off to the side if added
+    defaultLayout: { x: 800, y: 430, width: 340, height: 230, zIndex: 9 }, 
     minWidth: 200, minHeight: 120,
   },
   {
     id: 'applicationView', title: 'Active Micro-App View', icon: AppWindowIcon, isDismissible: true,
+    description: "View and interact with currently active micro-applications, benefiting from cross-app data synergy.",
     content: ApplicationViewCardContent,
-    defaultLayout: { x: 800, y: 520, width: 340, height: 200, zIndex: 10 }, // Off to the side if added
+    defaultLayout: { x: 800, y: 520, width: 340, height: 200, zIndex: 10 }, 
     minWidth: 300, minHeight: 180,
   },
 ];

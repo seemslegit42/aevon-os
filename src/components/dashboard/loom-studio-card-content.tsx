@@ -17,23 +17,23 @@ const LoomStudioCardContent: React.FC = () => {
         <ul className="list-disc list-inside space-y-3 text-foreground">
           <li className="flex items-start">
             <ZapIcon className="w-5 h-5 text-accent mr-2 mt-1 shrink-0" />
-            <span><strong>Visual Workflow Builder:</strong> Drag-and-drop components to design sophisticated AI agent behaviors and interactions.</span>
+            <span><strong>Dynamic Workflow Weaver:</strong> Visually orchestrate intelligent agents that learn and adapt, creating fluid, responsive automations across your OS.</span>
           </li>
           <li className="flex items-start">
             <GitForkIcon className="w-5 h-5 text-accent mr-2 mt-1 shrink-0" />
-            <span><strong>Event Debugging & Replay:</strong> Step through agent executions, inspect state, and replay events to quickly identify and fix issues.</span>
+            <span><strong>Adaptive Behavior Debugging:</strong> Intuitively step through and refine evolving agent behaviors, ensuring seamless data flow and robust performance.</span>
           </li>
           <li className="flex items-start">
             <EyeIcon className="w-5 h-5 text-accent mr-2 mt-1 shrink-0" />
-            <span><strong>Live Observability & Prompt Diffing:</strong> Monitor agents in real-time, compare prompt versions, and understand the impact of changes instantly.</span>
+            <span><strong>Real-time AI Observability:</strong> Monitor your AI ecosystem as it learns. Instantly understand and guide adaptive prompt chains and agent interactions.</span>
           </li>
           <li className="flex items-start">
             <SettingsIcon className="w-5 h-5 text-accent mr-2 mt-1 shrink-0" />
-            <span><strong>Agent DNA Viewer:</strong> Deep dive into the core logic and configuration of your AI agents for fine-grained control.</span>
+            <span><strong>Evolving Agent Core:</strong> Explore and fine-tune the evolving logic of your AI agents, fostering a deeply integrated and intelligent system.</span>
           </li>
         </ul>
         <p className="mt-6 text-sm text-muted-foreground">
-          Loom Studio empowers advanced users and AI agents to collaborate in building intelligent automation.
+          Loom Studio is where human ingenuity and adaptive AI converge to craft the next generation of dynamic, intelligent orchestrations.
         </p>
       </div>
     </div>

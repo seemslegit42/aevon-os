@@ -12,10 +12,10 @@ export default function HomePage() {
         ΛΞVON OS
       </h1>
       <p className="text-lg mb-8 text-muted-foreground max-w-3xl mx-auto">
-        ΛΞVON OS can emphasize a more comprehensive and deeply integrated AI layer that learns and adapts across all modules from day one, minimizing data paucity issues for predictions. Its agent orchestration can provide a more dynamic and less &quot;fixed model&quot; approach to automation, ensuring higher adoption through intuitive design and seamless data flow.
+        Welcome to ΛΞVON OS, the AI-first intelligent operating system. Experience a new era of productivity powered by adaptive learning, dynamic agent orchestration, and seamless data integration.
       </p>
       <Button size="lg" className="btn-gradient-primary-accent">
-        Get Started
+        Explore Dashboard
       </Button>
        <div className="fixed bottom-4 right-4 text-xs z-[45] text-foreground/70">
         <span>ΛΞVON OS v1.2 </span>
