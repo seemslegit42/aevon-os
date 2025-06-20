@@ -158,18 +158,17 @@
 
 /* Glassmorphism Panel Style */
 .glassmorphism-panel {
-  /* Light Theme Glass */
-  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
-  backdrop-filter: blur(12px) saturate(1.05);
-  -webkit-backdrop-filter: blur(12px) saturate(1.05);
-  border: 1px solid hsla(var(--border-h), var(--border-s), calc(var(--border-l) - 10%), 0.4);
+  /* Updated Light Theme Glass */
+  background-color: rgba(245, 255, 250, 0.15); /* Vitreous White with 0.15 alpha */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(245, 255, 250, 0.3); /* Vitreous White with 0.3 alpha */
   border-radius: var(--radius);
-  box-shadow: 0 6px 24px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) + 70%), 0.08),
-              0 2px 8px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) + 70%), 0.04);
+  box-shadow: 0 8px 32px 0 rgba(28, 25, 52, 0.1); /* Obsidian Black with 0.1 alpha */
 }
 
 .dark .glassmorphism-panel {
-  /* Dark Theme Glass */
+  /* Dark Theme Glass - Unchanged from previous, uses theme variables */
   background-color: hsla(var(--card-h), var(--card-s), var(--card-l), var(--card-a));
   backdrop-filter: blur(14px) saturate(1.1);
   -webkit-backdrop-filter: blur(14px) saturate(1.1);
@@ -374,3 +373,4 @@
   background-color: rgba(28, 25, 52, 0.35); /* Obsidian Black with 0.35 opacity */
   z-index: 2; /* Overlay on top of gradient */
 }
+
