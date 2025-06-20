@@ -9,10 +9,10 @@ type CanvasWrapperProps = {
 
 const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
   return (
-    <main 
+    <main
       className={cn(
         "flex-grow w-full p-4 md:p-8 overflow-y-auto relative",
-        "iridescent-purple-bg-light dark:iridescent-purple-bg-dark" 
+        "iridescent-purple-bg-light dark:iridescent-purple-bg-dark"
       )}
     >
       <div className="relative z-10">
