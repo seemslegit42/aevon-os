@@ -9,7 +9,6 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useIsMobile } from '@/hooks/use-mobile';
 import eventBus from '@/lib/event-bus';
 import CommandPalette from '@/components/command-palette';
 
@@ -49,13 +48,13 @@ const ALL_CARD_CONFIGS: CardConfig[] = [
       placeholderInsight: "Analyze product sales, compare revenue, or ask for insights."
     },
     defaultLayout: { x: 20, y: 20, width: 580, height: 300, zIndex: 1 },
-    minWidth: 400, minHeight: 280, cardClassName: "flex-grow flex flex-col",
+    minWidth: 320, minHeight: 280, cardClassName: "flex-grow flex flex-col",
   },
   {
     id: 'applicationView', title: 'Application View', icon: AppWindow, isDismissible: true,
     content: ApplicationViewCardContent,
     defaultLayout: { x: 20, y: 340, width: 580, height: 330, zIndex: 1 },
-    minWidth: 400, minHeight: 200,
+    minWidth: 320, minHeight: 200,
   },
 ];
 
@@ -64,7 +63,6 @@ const DEFAULT_ACTIVE_CARD_IDS = ['aiAssistant', 'applicationView'];
 
 export default function DashboardPage() {
   const { toast } = useToast();
-  const isMobile = useIsMobile();
 
   const [activeCardIds, setActiveCardIds] = useState<string[]>([]);
   const [cardLayouts, setCardLayouts] = useState<CardLayoutInfo[]>([]);
@@ -234,83 +232,68 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="relative w-full h-full">
-      {isMobile ? (
-        <div className="flex flex-col space-y-4 p-4">
-          {cardsToRender.map(cardConfig => {
-            const CardSpecificContent = cardConfig.content;
-            return (
-              <div key={cardConfig.id} className="w-full">
-                <MicroAppCard
-                  title={cardConfig.title}
-                  icon={cardConfig.icon}
-                  actions={CardActions(cardConfig.id, cardConfig.isDismissible)}
-                  className={cn(cardConfig.cardClassName)} 
-                >
-                  <Suspense fallback={cardLoadingFallback}>
-                    <CardSpecificContent {...getMergedContentProps(cardConfig)} />
-                  </Suspense>
-                </MicroAppCard>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        cardsToRender.map(cardConfig => {
-          const currentLayout = cardLayouts.find(l => l.id === cardConfig.id);
-          const layoutToUse = currentLayout ||
-                             ALL_CARD_CONFIGS.find(c => c.id === cardConfig.id)?.defaultLayout;
+    <div className="relative w-full h-full p-4 md:p-0"> {/* Added padding for mobile, removed md:p-0 if parent handles padding */}
+      {cardsToRender.map(cardConfig => {
+        const currentLayout = cardLayouts.find(l => l.id === cardConfig.id);
+        const layoutToUse = currentLayout ||
+                            ALL_CARD_CONFIGS.find(c => c.id === cardConfig.id)?.defaultLayout;
 
-          if (!layoutToUse) {
-             console.warn(`No layout or default layout found for card ${cardConfig.id}. Skipping render.`);
-             return null;
-          }
-          const finalLayout = {...layoutToUse, id: cardConfig.id, zIndex: layoutToUse.zIndex || (getMaxZIndex() + 1) };
+        if (!layoutToUse) {
+            console.warn(`No layout or default layout found for card ${cardConfig.id}. Skipping render.`);
+            return null;
+        }
+        const finalLayout = {...layoutToUse, id: cardConfig.id, zIndex: layoutToUse.zIndex || (getMaxZIndex() + 1) };
 
-          const CardSpecificContent = cardConfig.content;
+        const CardSpecificContent = cardConfig.content;
 
-          return (
-            <Rnd
-              key={cardConfig.id}
-              size={{ width: finalLayout.width, height: finalLayout.height }}
-              position={{ x: finalLayout.x, y: finalLayout.y }}
-              onDragStart={() => handleBringToFront(cardConfig.id)}
-              onDragStop={(e, d) => {
-                updateCardLayout(cardConfig.id, { x: d.x, y: d.y });
-              }}
-              onResizeStart={() => handleBringToFront(cardConfig.id)}
-              onResizeStop={(e, direction, ref, delta, position) => {
-                updateCardLayout(cardConfig.id, position, { width: ref.offsetWidth, height: ref.offsetHeight });
-              }}
-              minWidth={cardConfig.minWidth}
-              minHeight={cardConfig.minHeight}
-              bounds="parent"
-              dragHandleClassName="drag-handle"
-              enableResizing={{
-                  top:true, right:true, bottom:true, left:true,
-                  topRight:true, bottomRight:true, bottomLeft:true, topLeft:true
-              }}
-              style={{ zIndex: finalLayout.zIndex }}
-              className={cn(
-                "border-transparent hover:border-primary/20 focus-within:border-primary/40",
-              )}
-              dragGrid={[10, 10]}
-              resizeGrid={[10, 10]}
+        // For mobile, we might want to constrain initial card sizes or positions
+        // or use a different default. For now, we use the same.
+        // We also adjust minWidth/minHeight to be a bit more mobile friendly.
+        const effectiveMinWidth = Math.min(cardConfig.minWidth, 300);
+        const effectiveMinHeight = Math.min(cardConfig.minHeight, 150);
+
+
+        return (
+          <Rnd
+            key={cardConfig.id}
+            size={{ width: finalLayout.width, height: finalLayout.height }}
+            position={{ x: finalLayout.x, y: finalLayout.y }}
+            onDragStart={() => handleBringToFront(cardConfig.id)}
+            onDragStop={(e, d) => {
+              updateCardLayout(cardConfig.id, { x: d.x, y: d.y });
+            }}
+            onResizeStart={() => handleBringToFront(cardConfig.id)}
+            onResizeStop={(e, direction, ref, delta, position) => {
+              updateCardLayout(cardConfig.id, position, { width: ref.offsetWidth, height: ref.offsetHeight });
+            }}
+            minWidth={effectiveMinWidth}
+            minHeight={effectiveMinHeight}
+            bounds="parent"
+            dragHandleClassName="drag-handle"
+            enableResizing={{
+                top:true, right:true, bottom:true, left:true,
+                topRight:true, bottomRight:true, bottomLeft:true, topLeft:true
+            }}
+            style={{ zIndex: finalLayout.zIndex }}
+            className={cn(
+              "border-transparent hover:border-primary/20 focus-within:border-primary/40",
+            )}
+            dragGrid={[10, 10]}
+            resizeGrid={[10, 10]}
+          >
+            <MicroAppCard
+              title={cardConfig.title}
+              icon={cardConfig.icon}
+              actions={CardActions(cardConfig.id, cardConfig.isDismissible)}
+              className={cn("h-full w-full", cardConfig.cardClassName)}
             >
-              <MicroAppCard
-                title={cardConfig.title}
-                icon={cardConfig.icon}
-                actions={CardActions(cardConfig.id, cardConfig.isDismissible)}
-                className={cn("h-full w-full", cardConfig.cardClassName)}
-              >
-                 <Suspense fallback={cardLoadingFallback}>
-                    <CardSpecificContent {...getMergedContentProps(cardConfig)} />
-                 </Suspense>
-              </MicroAppCard>
-            </Rnd>
-          );
-        })
-      )}
+                <Suspense fallback={cardLoadingFallback}>
+                  <CardSpecificContent {...getMergedContentProps(cardConfig)} />
+                </Suspense>
+            </MicroAppCard>
+          </Rnd>
+        );
+      })}
       <CommandPalette
         isOpen={isCommandPaletteOpen}
         onOpenChange={setIsCommandPaletteOpen}
@@ -329,7 +312,7 @@ export default function DashboardPage() {
         <LayoutDashboard className="h-6 w-6" />
         <span className="sr-only">Manage Dashboard Zones</span>
       </Button>
-       <div className="fixed bottom-4 right-4 text-xs text-foreground/90 dark:text-foreground/80 font-code z-[45] bg-background/50 dark:bg-black/50 backdrop-blur-sm px-2 py-1 rounded-md shadow-lg">
+        <div className="fixed bottom-4 right-4 text-xs text-foreground/90 dark:text-foreground/80 font-code z-[45] bg-background/50 dark:bg-black/50 backdrop-blur-sm px-2 py-1 rounded-md shadow-lg">
         <span>ΛΞVON OS v1.2 </span>
         <span className="font-semibold">ZUSTAND</span>
       </div>
