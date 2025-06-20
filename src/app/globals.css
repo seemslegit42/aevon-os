@@ -214,6 +214,22 @@
   @apply opacity-60 cursor-not-allowed filter-none transform-none shadow-none;
 }
 
+.btn-gradient-primary-secondary {
+  background: linear-gradient(to right, hsl(var(--primary-h), var(--primary-s), var(--primary-l)), hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l)));
+  color: hsl(var(--primary-foreground-h), var(--primary-foreground-s), var(--primary-foreground-l));
+  transition: filter 0.2s ease, transform 0.15s ease-out, box-shadow 0.2s ease;
+  box-shadow: 0 1px 3px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.2);
+}
+.btn-gradient-primary-secondary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.3);
+}
+.btn-gradient-primary-secondary:disabled {
+  @apply opacity-60 cursor-not-allowed filter-none transform-none shadow-none;
+}
+
+
 .btn-wabi-sabi {
   @apply px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center transition-colors duration-150 ease-in-out;
   /* Light Theme: Lighter, more desaturated secondary */
