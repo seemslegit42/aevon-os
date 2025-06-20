@@ -72,15 +72,6 @@ export default function DashboardPage() {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const { toast } = useToast();
 
-  const [systemUptime, setSystemUptime] = useState("0d 0h 0m");
-  const [cpuLoad, setCpuLoad] = useState(35);
-  const [memoryUsage, setMemoryUsage] = useState(62);
-  const [diskUsageValue, setDiskUsageValue] = useState(450); // GB
-  const [networkSent, setNetworkSent] = useState(1.2); // GB
-  const [networkReceived, setNetworkReceived] = useState(8.5); // GB
-  const [activeAgentsCount, setActiveAgentsCount] = useState(initialAgentsData.filter(agent => agent.status === 'Processing' || agent.status === 'Idle').length);
-
-
   const [agents, setAgents] = useState<Agent[]>(initialAgentsData);
   const [feedItems, setFeedItems] = useState<FeedItem[]>(initialFeedItems);
   const [dismissedCardIds, setDismissedCardIds] = useState<string[]>([]);
@@ -126,32 +117,6 @@ export default function DashboardPage() {
     </TooltipProvider>
   );
 
-
-  useEffect(() => {
-    // Initialize metrics and agent statuses once on mount
-    setCpuLoad(Math.floor(Math.random() * (70 - 20 + 1)) + 20);
-    setMemoryUsage(Math.floor(Math.random() * (80 - 40 + 1)) + 40);
-    setDiskUsageValue(Math.floor(Math.random() * (800 - 200 + 1)) + 200);
-    setNetworkSent(parseFloat((Math.random() * 5).toFixed(1)));
-    setNetworkReceived(parseFloat((Math.random() * 15).toFixed(1)));
-
-    const updatedInitialAgents = initialAgentsData.map(agent => ({
-      ...agent,
-      status: Math.random() > 0.3 ? agent.status : (Math.random() > 0.5 ? 'Processing' : 'Idle'), // More likely to retain initial status
-    }));
-    setAgents(updatedInitialAgents);
-    setActiveAgentsCount(updatedInitialAgents.filter(agent => agent.status === 'Processing' || agent.status === 'Idle').length);
-
-    // Set a randomized static uptime
-    const d = Math.floor(Math.random() * 2 + 1); // 1-2 days
-    const h = Math.floor(Math.random() * 24);
-    const m = Math.floor(Math.random() * 60);
-    setSystemUptime(`${d}d ${h}h ${m}m`);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-
   const handleAiSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!aiPrompt.trim()) {
@@ -163,7 +128,7 @@ export default function DashboardPage() {
     try {
       const input: GeneratePersonalizedBriefingInput = {
         userName: "Dashboard User",
-        operationalMetrics: `CPU: ${cpuLoad}%, Memory: ${memoryUsage}%. System status normal. Key metrics are available in the System Snapshot. Active agents: ${activeAgentsCount}. Disk: ${diskUsageValue}GB. Uptime: ${systemUptime}.`,
+        operationalMetrics: `System status is nominal. Key metrics are displayed in the System Snapshot. Active agents: ${initialAgentsData.filter(agent => agent.status === 'Processing' || agent.status === 'Idle').length}.`,
         relevantInformation: `User asked: "${aiPrompt}". Provide a concise, helpful response based on general knowledge or simulate an action if appropriate for a demo.`,
       };
       const result = await generatePersonalizedBriefing(input);
@@ -178,19 +143,19 @@ export default function DashboardPage() {
   };
 
   const systemMetricsConfig: SystemMetric[] = [
-    { id: 'cpu', icon: Cpu, label: 'CPU Load', value: cpuLoad, progressMax: 100, unit: '%' },
-    { id: 'memory', icon: HardDrive, label: 'Memory Usage', value: memoryUsage, progressMax: 100, unit: '%' },
-    { id: 'agents', icon: Users, label: 'Active Agents', value: activeAgentsCount, unit: '' },
-    { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: diskUsageValue, progressMax: 1000, unit: 'GB' },
-    { id: 'sent', icon: Cpu, label: 'Network Sent', value: networkSent, unit: 'GB' },
-    { id: 'received', icon: HardDrive, label: 'Network Received', value: networkReceived, unit: 'GB' },
-    { id: 'uptime', icon: Timer, label: 'System Uptime', value: systemUptime, unit: '' },
+    { id: 'cpu', icon: Cpu, label: 'CPU Load', value: "--", progressMax: 100, unit: '%' },
+    { id: 'memory', icon: HardDrive, label: 'Memory Usage', value: "--", progressMax: 100, unit: '%' },
+    { id: 'agents', icon: Users, label: 'Active Agents', value: initialAgentsData.filter(agent => agent.status === 'Processing' || agent.status === 'Idle').length, unit: '' }, // Still useful to count agents
+    { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: "--", progressMax: 1000, unit: 'GB' },
+    { id: 'sent', icon: Cpu, label: 'Network Sent', value: "--", unit: 'GB' },
+    { id: 'received', icon: HardDrive, label: 'Network Received', value: "--", unit: 'GB' },
+    { id: 'uptime', icon: Timer, label: 'System Uptime', value: "N/A", unit: '' },
   ];
 
   const initialCardsData: CardConfig[] = [
     {
       id: 'aiAssistant', title: 'AI Assistant', icon: Sparkles, isDismissible: true,
-      x: 50, y: 50, width: 400, height: 480, zIndex: 1, minWidth: 320, minHeight: 420, // Adjusted minHeight
+      x: 50, y: 50, width: 400, height: 480, zIndex: 1, minWidth: 320, minHeight: 420,
       cardClassName: "flex-grow flex flex-col",
       content: AiAssistantCardContent,
       contentProps: {
@@ -209,7 +174,7 @@ export default function DashboardPage() {
     },
     {
       id: 'systemSnapshot', title: 'System Snapshot', icon: LayoutGrid, isDismissible: true,
-      x: 470, y: 300, width: 380, height: 380, zIndex: 1, minWidth: 320, minHeight: 350, // Adjusted minWidth
+      x: 470, y: 300, width: 380, height: 380, zIndex: 1, minWidth: 320, minHeight: 350,
       content: SystemSnapshotCardContent,
       contentProps: { systemMetricsConfig, agentTask: agentTaskData }
     },
