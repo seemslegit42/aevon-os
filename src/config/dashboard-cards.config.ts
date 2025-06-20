@@ -1,33 +1,33 @@
 
-import type { LazyExoticComponent, FC, ElementType } from 'react';
+import { lazy, type LazyExoticComponent, type FC, type ElementType } from 'react';
 
 // Lazy loaded card content components
-const BeepCardContent = (() => import('@/components/dashboard/beep-card-content')) as unknown as LazyExoticComponent<FC<any>>;
-const ApplicationViewCardContent = (() => import('@/components/dashboard/application-view-card-content')) as unknown as LazyExoticComponent<FC<any>>;
-const AgentPresenceCardContent = (() => import('@/components/dashboard/agent-presence-card-content')) as unknown as LazyExoticComponent<FC<any>>;
-const LiveOrchestrationFeedCardContent = (() => import('@/components/dashboard/live-orchestration-feed-card-content')) as unknown as LazyExoticComponent<FC<any>>;
-const MicroAppsCardContent = (() => import('@/components/dashboard/micro-apps-card-content')) as unknown as LazyExoticComponent<FC<any>>;
-const SystemSnapshotCardContent = (() => import('@/components/dashboard/system-snapshot-card-content')) as unknown as LazyExoticComponent<FC<any>>;
+const BeepCardContent = lazy(() => import('@/components/dashboard/beep-card-content'));
+const ApplicationViewCardContent = lazy(() => import('@/components/dashboard/application-view-card-content'));
+const AgentPresenceCardContent = lazy(() => import('@/components/dashboard/agent-presence-card-content'));
+const LiveOrchestrationFeedCardContent = lazy(() => import('@/components/dashboard/live-orchestration-feed-card-content'));
+const MicroAppsCardContent = lazy(() => import('@/components/dashboard/micro-apps-card-content'));
+const SystemSnapshotCardContent = lazy(() => import('@/components/dashboard/system-snapshot-card-content'));
 
 
 // Icons for card titles and content
 import {
-  MagicWandIcon, // Changed from SparklesIcon
-  AppWindowIcon, // Changed from AppWindow
-  UsersIcon, // Changed from Users
-  ListChecksIcon, // Changed from ListChecks
-  LayoutGridIcon, // Changed from LayoutGrid
-  BarChartBigIcon, // Changed from Activity to a more generic dashboard/stats icon
+  MagicWandIcon,
+  AppWindowIcon,
+  UsersIcon,
+  ListChecksIcon,
+  LayoutGridIcon,
+  BarChartBigIcon,
   CpuIcon,
-  DatabaseZapIcon, // Changed from Database
-  HardDriveIcon, // Changed from Server
+  DatabaseZapIcon,
+  HardDriveIcon,
   ZapIcon,
-  ChartBarIcon, // Changed from BarChart2
-  CreditCardIcon as ArmoryIcon, // Changed from ShoppingCart, using CreditCardIcon as ArmoryIcon
-  Settings2Icon as LoomIcon, // Changed from Settings, using Settings2Icon as LoomIcon
-  ShieldCheckIcon as AegisIcon, // Changed from Shield, using ShieldCheckIcon as AegisIcon
+  ChartBarIcon,
+  CreditCardIcon as ArmoryIcon,
+  Settings2Icon as LoomIcon,
+  ShieldCheckIcon as AegisIcon,
   ClockIcon,
-  RefreshCwIcon as LoaderCircleIcon, // Changed from LoaderCircle, using RefreshCwIcon
+  RefreshCwIcon as LoaderCircleIcon,
   AlertTriangleIcon,
 } from '@/components/icons';
 
@@ -43,7 +43,7 @@ export interface CardLayoutInfo {
 export interface CardConfig {
   id: string;
   title: string;
-  icon: ElementType; // Changed from LucideIcon to ElementType
+  icon: ElementType;
   content: LazyExoticComponent<FC<any>>;
   contentProps?: any;
   defaultLayout: { x: number; y: number; width: number; height: number; zIndex: number };
@@ -70,7 +70,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     minWidth: 300, minHeight: 180,
   },
   {
-    id: 'systemSnapshot', title: 'System Snapshot', icon: BarChartBigIcon, isDismissible: true, // Changed icon from Activity
+    id: 'systemSnapshot', title: 'System Snapshot', icon: BarChartBigIcon, isDismissible: true,
     content: SystemSnapshotCardContent,
     contentProps: {
       systemMetricsConfig: [
