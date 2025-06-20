@@ -12,8 +12,9 @@ export const LayersIcon: React.FC<IconProps> = ({ className, size = 24, style })
     style={style}
     xmlns="http://www.w3.org/2000/svg"
   >
-    <polyline points="48 100.8 128 56 208 100.8" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
-    <polyline points="48 144.8 128 100 208 144.8" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
-    <polyline points="48 188.8 128 144 208 188.8" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
+    <rect x="32" y="104" width="192" height="104" rx="8" opacity="0.2"/>
+    <rect x="32" y="104" width="192" height="104" rx="8" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
+    <path d="M64,104V72a8,8,0,0,1,8-8H184a8,8,0,0,1,8,8v32" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
+    <path d="M96,104V48a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v56" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
   </svg>
 );

@@ -18,7 +18,7 @@ import {
   Settings2Icon,
   ClockIcon,
   ChevronDownIcon,
-  BrainCircuitIcon,
+  LogoSymbol, // Changed from BrainCircuitIcon
   UserIcon
 } from '@/components/icons'; // Changed imports to custom icons
 import {
@@ -88,7 +88,7 @@ const TopBar: React.FC = () => {
           {/* Left Side: Logo and Navigation */}
           <div className="flex items-center space-x-4">
             <Link href="/" className="text-2xl font-bold flex items-center">
-              <BrainCircuitIcon className="w-7 h-7 text-primary dark:text-white" />
+              <LogoSymbol className="w-7 h-7 text-primary dark:text-white" />
             </Link>
             <nav className="hidden md:flex items-center space-x-1">
               {mainNavItems.map((item) => (
