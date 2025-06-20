@@ -46,7 +46,7 @@ const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center text-primary">
                     <IconComponent className="w-4 h-4 mr-2" />
-                    <span className="font-medium text-foreground">{metric.label}</span>
+                    <span className="font-medium text-foreground dark:text-foreground">{metric.label}</span>
                   </div>
                   {metric.value !== undefined ? (
                     metric.id === 'agents' ? (
@@ -54,7 +54,7 @@ const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({
                         {metric.value}
                       </span>
                     ) : (
-                      <span className="font-medium text-foreground text-xs">
+                      <span className="font-medium text-foreground dark:text-foreground text-xs">
                         {metric.id === 'disk' && typeof metric.value === 'number' && metric.progressMax
                           ? `${metric.value}${metric.unit} / ${metric.progressMax}${metric.unit}`
                           : metric.id === 'disk' 
@@ -68,7 +68,7 @@ const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({
                       </span>
                     )
                   ) : (
-                    <span className="font-medium text-muted-foreground">N/A</span>
+                    <span className="font-medium text-muted-foreground dark:text-muted-foreground">N/A</span>
                   )}
                 </div>
                 {metric.progressMax && metric.value !== undefined && metric.id === 'disk' && (
@@ -84,7 +84,7 @@ const SystemSnapshotCardContent: React.FC<SystemSnapshotCardContentProps> = ({
         </ul>
       ) : (
         <div className="flex items-center justify-center flex-grow">
-          <p className="text-sm text-muted-foreground">System metrics not available.</p>
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground">System metrics not available.</p>
         </div>
       )}
       {hasMetrics && <div className="mt-auto"></div>} 

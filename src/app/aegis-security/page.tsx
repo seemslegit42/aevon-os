@@ -70,7 +70,7 @@ export default function AegisSecurityPage() {
           onChange={(e) => setAlertDetails(e.target.value)}
           rows={8}
           aria-label="Security alert details input"
-          className="bg-input border-input placeholder:text-muted-foreground"
+          className="bg-input border-input placeholder:text-muted-foreground dark:placeholder:text-muted-foreground dark:text-foreground"
         />
         <Button onClick={handleAnalyze} disabled={isLoading} className="mt-4 w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
           {isLoading ? 'Analyzing...' : 'Analyze Alerts'}
@@ -80,20 +80,20 @@ export default function AegisSecurityPage() {
         {analysisResult && (
           <Card className="mt-6 glassmorphism-panel">
             <CardHeader>
-              <CardTitle className="text-xl font-headline text-primary flex items-center">
+              <CardTitle className="text-xl font-headline text-primary dark:text-primary-foreground flex items-center">
                 <CheckCircleIcon className="w-6 h-6 mr-2 text-secondary" /> AI Analysis Result
               </CardTitle>
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-[250px] pr-4 space-y-3">
                 <div>
-                  <h4 className="font-semibold text-lg text-foreground mb-1">Summary:</h4>
-                  <p className="text-foreground whitespace-pre-wrap text-sm">{analysisResult.summary}</p>
+                  <h4 className="font-semibold text-lg text-foreground dark:text-foreground mb-1">Summary:</h4>
+                  <p className="text-foreground dark:text-foreground whitespace-pre-wrap text-sm">{analysisResult.summary}</p>
                 </div>
                 {analysisResult.potentialThreats && analysisResult.potentialThreats.length > 0 && (
                   <div>
-                    <h4 className="font-semibold text-lg text-foreground mb-1">Potential Threats:</h4>
-                    <ul className="list-disc list-inside text-sm space-y-1 text-foreground">
+                    <h4 className="font-semibold text-lg text-foreground dark:text-foreground mb-1">Potential Threats:</h4>
+                    <ul className="list-disc list-inside text-sm space-y-1 text-foreground dark:text-foreground">
                       {analysisResult.potentialThreats.map((threat, index) => (
                         <li key={`threat-${index}`}>{threat}</li>
                       ))}
@@ -102,8 +102,8 @@ export default function AegisSecurityPage() {
                 )}
                 {analysisResult.recommendedActions && analysisResult.recommendedActions.length > 0 && (
                   <div>
-                    <h4 className="font-semibold text-lg text-foreground mb-1">Recommended Actions:</h4>
-                    <ul className="list-disc list-inside text-sm space-y-1 text-foreground">
+                    <h4 className="font-semibold text-lg text-foreground dark:text-foreground mb-1">Recommended Actions:</h4>
+                    <ul className="list-disc list-inside text-sm space-y-1 text-foreground dark:text-foreground">
                       {analysisResult.recommendedActions.map((action, index) => (
                         <li key={`action-${index}`}>{action}</li>
                       ))}
@@ -118,11 +118,11 @@ export default function AegisSecurityPage() {
 
       <Card className="glassmorphism-panel">
         <CardHeader>
-          <CardTitle className="font-headline text-primary flex items-center"><ShieldIcon className="w-5 h-5 mr-2"/>Proactive Defense</CardTitle>
-          <CardDescription className="text-muted-foreground">Aegis continuously monitors for anomalies and provides insights into user behavior baselines, making security management effortless.</CardDescription>
+          <CardTitle className="font-headline text-primary dark:text-primary-foreground flex items-center"><ShieldIcon className="w-5 h-5 mr-2"/>Proactive Defense</CardTitle>
+          <CardDescription className="text-muted-foreground dark:text-muted-foreground">Aegis continuously monitors for anomalies and provides insights into user behavior baselines, making security management effortless.</CardDescription>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-2 text-foreground">
+          <ul className="space-y-2 text-foreground dark:text-foreground">
             <li className="flex items-center"><CheckCircleIcon className="w-4 h-4 mr-2 text-secondary"/> Contextual alerts with plain English explanations.</li>
             <li className="flex items-center"><CheckCircleIcon className="w-4 h-4 mr-2 text-secondary"/> Proactive anomaly detection.</li>
             <li className="flex items-center"><CheckCircleIcon className="w-4 h-4 mr-2 text-secondary"/> User behavior baseline insights.</li>

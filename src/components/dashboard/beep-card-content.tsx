@@ -48,11 +48,11 @@ const BeepCardContent: React.FC<BeepCardContentProps> = ({
     <>
       <div className="flex flex-col items-start justify-start text-left p-4 pt-2 flex-grow">
         {placeholderInsight && !aiResponse && !isAiLoading && (
-          <p className="text-sm text-muted-foreground mb-4 mt-2">
+          <p className="text-sm text-muted-foreground dark:text-muted-foreground mb-4 mt-2">
             {placeholderInsight}
           </p>
         )}
-        {aiResponse && <ScrollArea className="h-[80px] w-full"><div className="text-sm text-foreground dark:text-white bg-primary/10 dark:bg-primary/20 rounded-md p-3 mb-4 text-left whitespace-pre-wrap">{aiResponse}</div></ScrollArea>}
+        {aiResponse && <ScrollArea className="h-[80px] w-full"><div className="text-sm text-foreground dark:text-foreground bg-primary/10 dark:bg-primary/20 rounded-md p-3 mb-4 text-left whitespace-pre-wrap">{aiResponse}</div></ScrollArea>}
         {isAiLoading && !aiResponse && (
             <div className="flex items-center justify-center w-full h-[80px]">
                 <LoaderCircleIcon className="animate-spin h-6 w-6 text-primary" /> 
@@ -65,7 +65,7 @@ const BeepCardContent: React.FC<BeepCardContentProps> = ({
           value={aiPrompt}
           onChange={(e) => setAiPrompt(e.target.value)}
           rows={2}
-          className="bg-input border-input mb-2 text-foreground dark:text-white placeholder:text-muted-foreground text-sm"
+          className="bg-input border-input mb-2 text-foreground dark:text-foreground placeholder:text-muted-foreground dark:placeholder:text-muted-foreground text-sm"
           disabled={isAiLoading}
         />
         <button

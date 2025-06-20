@@ -115,31 +115,31 @@ export default function ArmoryPage() {
         description="Discover, acquire, and manage AI-powered micro-apps and intelligent agents. Enhance your ΛΞVON OS capabilities and tailor the platform to your unique business needs."
       />
 
-      <h2 className="font-headline text-2xl text-primary mt-10 mb-6">Featured Micro-Apps</h2>
+      <h2 className="font-headline text-2xl text-primary dark:text-primary-foreground mt-10 mb-6">Featured Micro-Apps</h2>
       {apps.length === 0 ? (
-        <Card>
+        <Card className="glassmorphism-panel">
           <CardContent className="pt-6">
             <div className="text-center py-10">
-              <p className="text-muted-foreground">No micro-apps currently available in the Armory.</p>
-              <p className="text-muted-foreground text-sm mt-2">Use the form below to define and describe a new micro-app.</p>
+              <p className="text-muted-foreground dark:text-muted-foreground">No micro-apps currently available in the Armory.</p>
+              <p className="text-muted-foreground dark:text-muted-foreground text-sm mt-2">Use the form below to define and describe a new micro-app.</p>
             </div>
           </CardContent>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {apps.map((app) => (
-            <Card key={app.id} className="flex flex-col overflow-hidden">
+            <Card key={app.id} className="flex flex-col overflow-hidden glassmorphism-panel">
               <CardHeader>
-                <CardTitle className="font-headline text-xl text-primary flex items-center">
-                  <app.icon className="w-6 h-6 mr-2 text-primary" /> {app.name}
+                <CardTitle className="font-headline text-xl text-primary dark:text-primary-foreground flex items-center">
+                  <app.icon className="w-6 h-6 mr-2 text-primary dark:text-primary-foreground" /> {app.name}
                 </CardTitle>
-                <CardDescription className="text-muted-foreground h-12 overflow-hidden text-ellipsis">
+                <CardDescription className="text-muted-foreground dark:text-muted-foreground h-12 overflow-hidden text-ellipsis">
                   {app.aiGeneratedDesc ? app.aiGeneratedDesc.substring(0,100)+(app.aiGeneratedDesc.length > 100 ? '...' : '') : 'Description not available.'}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-grow">
                 <div className="space-x-2 mb-3">
-                  {app.tags.map(tag => <span key={tag} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">{tag}</span>)}
+                  {app.tags.map(tag => <span key={tag} className="text-xs bg-primary/10 text-primary dark:text-primary px-2 py-1 rounded-full">{tag}</span>)}
                 </div>
               </CardContent>
               <CardFooter>
@@ -153,7 +153,7 @@ export default function ArmoryPage() {
       )}
 
       <MicroAppCard title="Publish Your Micro-App" icon={PackagePlusIcon}>
-        <p className="text-muted-foreground mb-6">
+        <p className="text-muted-foreground dark:text-muted-foreground mb-6">
           Have a micro-app idea? Use our AI to generate a compelling marketplace description.
         </p>
         <Form {...form}>
@@ -163,9 +163,9 @@ export default function ArmoryPage() {
               name="microAppName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-primary">Micro-App Name</FormLabel>
+                  <FormLabel className="text-primary dark:text-primary">Micro-App Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Sales Forecaster AI" {...field} />
+                    <Input placeholder="e.g., Sales Forecaster AI" {...field} className="dark:text-foreground dark:placeholder:text-muted-foreground" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -176,9 +176,9 @@ export default function ArmoryPage() {
               name="microAppFunctionality"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-primary">Functionality</FormLabel>
+                  <FormLabel className="text-primary dark:text-primary">Functionality</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Describe what your app does..." {...field} rows={3} />
+                    <Textarea placeholder="Describe what your app does..." {...field} rows={3} className="dark:text-foreground dark:placeholder:text-muted-foreground" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -189,9 +189,9 @@ export default function ArmoryPage() {
               name="targetAudience"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-primary">Target Audience</FormLabel>
+                  <FormLabel className="text-primary dark:text-primary">Target Audience</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Sales teams in SMBs" {...field} />
+                    <Input placeholder="e.g., Sales teams in SMBs" {...field} className="dark:text-foreground dark:placeholder:text-muted-foreground" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -202,9 +202,9 @@ export default function ArmoryPage() {
               name="keyFeatures"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-primary">Key Features (comma-separated)</FormLabel>
+                  <FormLabel className="text-primary dark:text-primary">Key Features (comma-separated)</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., AI predictions, Data visualization, Report generation" {...field} />
+                    <Input placeholder="e.g., AI predictions, Data visualization, Report generation" {...field} className="dark:text-foreground dark:placeholder:text-muted-foreground" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -218,13 +218,13 @@ export default function ArmoryPage() {
         </Form>
 
         {generatedDescription && (
-          <Card className="mt-6">
+          <Card className="mt-6 glassmorphism-panel">
             <CardHeader>
-              <CardTitle className="text-xl font-headline text-primary">AI-Generated Description:</CardTitle>
+              <CardTitle className="text-xl font-headline text-primary dark:text-primary-foreground">AI-Generated Description:</CardTitle>
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-40"> 
-                <p className="text-foreground whitespace-pre-wrap">{generatedDescription}</p>
+                <p className="text-foreground dark:text-foreground whitespace-pre-wrap">{generatedDescription}</p>
               </ScrollArea>
             </CardContent>
           </Card>
