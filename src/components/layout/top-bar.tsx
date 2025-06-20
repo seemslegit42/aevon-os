@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Bell, Home, Settings, Shield, ShoppingCart, Settings2, type LucideIcon, ChevronDown, LayoutGrid, Clock, Cpu } from 'lucide-react';
+import { Search, Bell, Home, Settings, Shield, ShoppingCart, Settings2, type LucideIcon, ChevronDown, LayoutGrid, Clock, BrainCircuit } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -47,7 +47,7 @@ const TopBar: React.FC = () => {
       const seconds = now.getUTCSeconds(); // Added seconds
       const ampm = hours >= 12 ? 'PM' : 'AM';
       hours = hours % 12;
-      hours = hours ? hours : 12;
+      hours = hours ? hours : 12; // Handle midnight (0 hours)
       return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm} UTC`;
     };
     
@@ -64,7 +64,7 @@ const TopBar: React.FC = () => {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Link href="/" className="text-2xl font-bold flex items-center">
-              <Cpu className="w-7 h-7 mr-2 text-primary" />
+              <BrainCircuit className="w-7 h-7 mr-2 text-primary" />
                <span className="text-accent">ΛΞVON OS</span>
             </Link>
             <nav className="hidden md:flex items-center space-x-1">
