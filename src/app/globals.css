@@ -95,7 +95,7 @@
     --foreground-h: 210; --foreground-s: 25%; --foreground-l: 95%;
 
     /* Card: Darker, slightly desaturated Purple base for cards (rgba(40, 30, 60, 0.5)) */
-    --card-h: 270; --card-s: 30%; --card-l: 18%; --card-a: 0.45; /* alpha from 0.5, matches glass */
+    --card-h: 275; --card-s: 30%; --card-l: 18%; --card-a: 0.45; /* alpha from 0.5, matches glass */
     --card-foreground-h: var(--foreground-h); --card-foreground-s: var(--foreground-s); --card-foreground-l: var(--foreground-l);
 
     --popover-h: var(--card-h); --popover-s: var(--card-s); --popover-l: var(--card-l); --popover-a: var(--card-a);
@@ -110,9 +110,9 @@
     --secondary-h: 177; --secondary-s: 100%; --secondary-l: 40%; /* #20B2AA is 177, 70%, 40% - making it more vivid */
     --secondary-foreground-h: 210; --secondary-foreground-s: 100%; --secondary-foreground-l: 15%; /* Dark text for contrast */
 
-    /* Muted: Conchoidal Gray - for less important text */
-    --muted-h: 220; --muted-s: 15%; --muted-l: 60%;
-    --muted-foreground-h: 220; --muted-foreground-s: 13%; --muted-foreground-l: 90%; /* Lighter Conchoidal Gray - increased for TopBar contrast */
+    /* Muted: Conchoidal Gray - for less important text, now white for TopBar */
+    --muted-h: 220; --muted-s: 15%; --muted-l: 60%; /* Base muted color if needed elsewhere */
+    --muted-foreground-h: 0; --muted-foreground-s: 0%; --muted-foreground-l: 100%; /* White for TopBar text */
 
     /* Accent: Gold (#FFD700) */
     --accent-h: 51; --accent-s: 100%; --accent-l: 50%; /* #FFD700 */
