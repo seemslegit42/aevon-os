@@ -13,7 +13,7 @@ const MicroAppsCardContent: React.FC = () => {
       ].map((app, index) => (
         <Button key={index} variant="outline" className="flex flex-col items-center justify-center h-20 p-2 border-primary/20 hover:bg-primary/10">
           <app.icon className="w-7 h-7 text-primary mb-1" />
-          <span className="text-xs text-primary truncate">Launch</span>
+          <span className="text-xs text-primary">Launch</span>
         </Button>
       ))}
     </div>
@@ -21,5 +21,3 @@ const MicroAppsCardContent: React.FC = () => {
 };
 
 export default MicroAppsCardContent;
-
-    

@@ -5,10 +5,10 @@ import Image from 'next/image';
 import { Rnd, type Position, type Size } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Sparkles, Cpu, LayoutGrid, AppWindow, Users, HardDrive, Timer, LoaderCircle, CircleDot, AlertCircle, X, Blocks, Mic, MoreHorizontal, CheckCircle, ChevronDown, BarChartBig, Settings2, Shield } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 import AiAssistantCardContent from '@/components/dashboard/ai-assistant-card-content';
 import AgentPresenceCardContent, { type Agent } from '@/components/dashboard/agent-presence-card-content';
@@ -16,7 +16,7 @@ import SystemSnapshotCardContent, { type SystemMetric, type AgentTask } from '@/
 import ApplicationViewCardContent from '@/components/dashboard/application-view-card-content';
 import MicroAppsCardContent from '@/components/dashboard/micro-apps-card-content';
 import LiveOrchestrationFeedCardContent, { type FeedItem } from '@/components/dashboard/live-orchestration-feed-card-content';
-import type { GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-personalized-briefings'; 
+import type { GeneratePersonalizedBriefingInput } from '@/ai/flows/generate-personalized-briefings';
 import { generatePersonalizedBriefing } from '@/ai/flows/generate-personalized-briefings';
 
 
@@ -59,23 +59,23 @@ interface CardConfig extends CardLayoutInfo {
   icon: React.ElementType;
   actions?: (cardId: string, onDismiss: (id: string) => void) => React.ReactNode;
   cardClassName?: string;
-  content: React.FC<any>; 
-  contentProps?: any; 
+  content: React.FC<any>;
+  contentProps?: any;
   minWidth: number;
   minHeight: number;
   isDismissible?: boolean;
 }
 
-export default function HomePage() {
+export default function DashboardPage() {
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const { toast } = useToast();
-  
+
   const [systemUptime, setSystemUptime] = useState("0d 0h 0m");
   const [cpuLoad, setCpuLoad] = useState(35);
   const [memoryUsage, setMemoryUsage] = useState(62);
-  const [diskUsageValue, setDiskUsageValue] = useState(450); 
+  const [diskUsageValue, setDiskUsageValue] = useState(450);
   const [networkSent, setNetworkSent] = useState(1.2);
   const [networkReceived, setNetworkReceived] = useState(8.5);
   const [activeAgentsCount, setActiveAgentsCount] = useState(initialAgentsData.filter(agent => agent.status === 'Processing' || agent.status === 'Idle').length);
@@ -94,19 +94,36 @@ export default function HomePage() {
     setTimeout(() => {
       setDismissedCardIds(prevIds => [...prevIds, id]);
       setCardLayouts(prevLayouts => prevLayouts.filter(layout => layout.id !== id));
-    }, 300); 
+    }, 300);
   };
 
   const CardActions = (cardId: string, onDismiss: (id: string) => void, isDismissible?: boolean) => (
-    <div className="flex items-center space-x-1">
-      <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-primary"> <Mic className="w-3 h-3"/> </Button>
-      <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-primary"> <MoreHorizontal className="w-3 h-3"/> </Button>
-      {isDismissible && (
-        <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-destructive" onClick={() => onDismiss(cardId)}>
-          <X className="w-4 h-4"/>
-        </Button>
-      )}
-    </div>
+    <TooltipProvider delayDuration={300}>
+      <div className="flex items-center space-x-1">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-primary"> <Mic className="w-3 h-3"/> </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom"><p>Voice Command</p></TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-primary"> <MoreHorizontal className="w-3 h-3"/> </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom"><p>More Options</p></TooltipContent>
+        </Tooltip>
+        {isDismissible && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" className="w-6 h-6 text-muted-foreground hover:text-destructive" onClick={() => onDismiss(cardId)}>
+                <X className="w-4 h-4"/>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom"><p>Dismiss Card</p></TooltipContent>
+          </Tooltip>
+        )}
+      </div>
+    </TooltipProvider>
   );
 
 
@@ -118,15 +135,23 @@ export default function HomePage() {
       const h = Math.floor((uptimeMillis % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const m = Math.floor((uptimeMillis % (1000 * 60 * 60)) / (1000 * 60));
       setSystemUptime(`${d}d ${h}h ${m}m`);
-      
-      setCpuLoad(Math.floor(Math.random() * (70 - 20 + 1)) + 20); 
+
+      setCpuLoad(Math.floor(Math.random() * (70 - 20 + 1)) + 20);
       setMemoryUsage(Math.floor(Math.random() * (80 - 40 + 1)) + 40);
       setDiskUsageValue(prev => Math.min(1000, Math.max(0, prev + Math.floor(Math.random() * 20) - 10))); // GB
       setNetworkSent(parseFloat((Math.random() * 5).toFixed(1))); // GB
       setNetworkReceived(parseFloat((Math.random() * 15).toFixed(1))); // GB
-      setActiveAgentsCount(initialAgentsData.filter(agent => Math.random() > 0.2 && (agent.status === 'Processing' || agent.status === 'Idle')).length);
+      // Simulate agent status changes for activeAgentsCount
+      const updatedAgents = agents.map(agent => ({
+        ...agent,
+        status: Math.random() > 0.7 ? (agent.status === 'Error' ? 'Idle' : (Math.random() > 0.5 ? 'Processing' : 'Idle')) : agent.status,
+      }));
+      setAgents(updatedAgents); // This will trigger re-render of AgentPresenceCardContent if it depends on agents prop
+      setActiveAgentsCount(updatedAgents.filter(agent => agent.status === 'Processing' || agent.status === 'Idle').length);
+
     }, 2000);
     return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
@@ -141,7 +166,7 @@ export default function HomePage() {
     try {
       const input: GeneratePersonalizedBriefingInput = {
         userName: "Dashboard User",
-        operationalMetrics: `CPU: ${cpuLoad}%, Memory: ${memoryUsage}%. System status normal. Key metrics are available in the System Snapshot. Active agents: ${activeAgentsCount}.`,
+        operationalMetrics: `CPU: ${cpuLoad}%, Memory: ${memoryUsage}%. System status normal. Key metrics are available in the System Snapshot. Active agents: ${activeAgentsCount}. Disk: ${diskUsageValue}GB. Uptime: ${systemUptime}.`,
         relevantInformation: `User asked: "${aiPrompt}". Provide a concise, helpful response based on general knowledge or simulate an action if appropriate for a demo.`,
       };
       const result = await generatePersonalizedBriefing(input);
@@ -154,14 +179,14 @@ export default function HomePage() {
       setIsAiLoading(false);
     }
   };
-  
+
   const systemMetricsConfig: SystemMetric[] = [
     { id: 'cpu', icon: Cpu, label: 'CPU Load', value: cpuLoad, progressMax: 100, unit: '%' },
     { id: 'memory', icon: HardDrive, label: 'Memory Usage', value: memoryUsage, progressMax: 100, unit: '%' },
-    { id: 'agents', icon: Users, label: 'Active Agents', value: activeAgentsCount, unit: '' }, 
-    { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: diskUsageValue, progressMax: 1000, unit: 'GB' }, // Max 1TB
-    { id: 'sent', icon: Cpu, label: 'Network Sent', value: networkSent, unit: 'GB' }, 
-    { id: 'received', icon: HardDrive, label: 'Network Received', value: networkReceived, unit: 'GB' }, 
+    { id: 'agents', icon: Users, label: 'Active Agents', value: activeAgentsCount, unit: '' },
+    { id: 'disk', icon: HardDrive, label: 'Disk Usage', value: diskUsageValue, progressMax: 1000, unit: 'GB' },
+    { id: 'sent', icon: Cpu, label: 'Network Sent', value: networkSent, unit: 'GB' },
+    { id: 'received', icon: HardDrive, label: 'Network Received', value: networkReceived, unit: 'GB' },
     { id: 'uptime', icon: Timer, label: 'System Uptime', value: systemUptime, unit: '' },
   ];
 
@@ -187,7 +212,7 @@ export default function HomePage() {
     },
     {
       id: 'systemSnapshot', title: 'System Snapshot', icon: LayoutGrid, isDismissible: true,
-      x: 470, y: 300, width: 380, height: 380, zIndex: 1, minWidth: 300, minHeight: 350, 
+      x: 470, y: 300, width: 380, height: 380, zIndex: 1, minWidth: 300, minHeight: 350,
       content: SystemSnapshotCardContent,
       contentProps: { systemMetricsConfig, agentTask: agentTaskData }
     },
@@ -209,7 +234,7 @@ export default function HomePage() {
       contentProps: { feedItems }
     },
   ];
-  
+
   initialCardsData.forEach(card => {
     card.actions = (cardId, onDismiss) => CardActions(cardId, onDismiss, card.isDismissible);
   });
@@ -240,7 +265,7 @@ export default function HomePage() {
       )
     );
   };
-  
+
   const handleBringToFront = (id: string) => {
     setCardLayouts(prevLayouts =>
       prevLayouts.map(layout =>
@@ -254,7 +279,7 @@ export default function HomePage() {
   const cardsToRender = initialCardsData.filter(card => !dismissedCardIds.includes(card.id));
 
   return (
-    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden bg-background">
+    <div className="relative w-full min-h-[calc(100vh-4rem)] overflow-hidden bg-transparent"> {/* Changed bg-background to bg-transparent so CanvasWrapper bg shows */}
       {cardsToRender.map(cardConfig => {
         const currentLayout = cardLayouts.find(l => l.id === cardConfig.id);
         if (!currentLayout) return null;
@@ -285,8 +310,8 @@ export default function HomePage() {
             style={{ zIndex: currentLayout.zIndex }}
             className={cn(
               "border border-transparent hover:border-primary/30 rounded-lg focus-within:border-primary",
-              "card-enter-animation", 
-              currentLayout.isDismissing && "card-exit-animation" 
+              "card-enter-animation",
+              currentLayout.isDismissing && "card-exit-animation"
             )}
             dragGrid={[20, 20]}
             resizeGrid={[20, 20]}

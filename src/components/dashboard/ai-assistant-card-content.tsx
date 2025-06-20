@@ -28,7 +28,7 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
         <p className="text-sm text-muted-foreground mb-4">
           Analyze product sales, compare revenue, or ask for insights.
         </p>
-        {aiResponse && <ScrollArea className="h-[100px] w-full"><p className="text-sm text-foreground bg-primary/10 dark:bg-primary/20 rounded-md p-3 mb-4 text-left whitespace-pre-wrap">{aiResponse}</p></ScrollArea>}
+        {aiResponse && <ScrollArea className="h-[120px] w-full"><p className="text-sm text-foreground bg-primary/10 dark:bg-primary/20 rounded-md p-3 mb-4 text-left whitespace-pre-wrap">{aiResponse}</p></ScrollArea>}
       </div>
       <form onSubmit={handleAiSubmit} className="p-4 border-t border-border/30 dark:border-border/50 mt-auto">
         <Textarea
@@ -38,9 +38,9 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
           rows={2}
           className="bg-background/70 dark:bg-input border-border/50 focus:ring-primary mb-2"
         />
-        <button 
-          type="submit" 
-          className="w-full btn-gradient-primary-accent h-10 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center" 
+        <button
+          type="submit"
+          className="w-full btn-gradient-primary-accent h-10 px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center"
           disabled={isAiLoading}
         >
           {isAiLoading ? <LoaderCircle className="animate-spin mr-2 h-4 w-4"/> : null}
@@ -52,5 +52,3 @@ const AiAssistantCardContent: React.FC<AiAssistantCardContentProps> = ({
 };
 
 export default AiAssistantCardContent;
-
-    
