@@ -2,7 +2,7 @@
 "use client"
 
 import * as React from "react"
-import { ArrowLeftIcon as ChevronLeft, ArrowRightIcon as ChevronRight } from "@/components/icons" // Changed imports
+import { ArrowLeftIcon, ArrowRightIcon } from "@/components/icons" 
 import { DayPicker } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
@@ -55,8 +55,8 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" {...props} />,
-        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" {...props} />,
+        IconLeft: ({ ...props }) => <ArrowLeftIcon className="h-4 w-4" {...props} />,
+        IconRight: ({ ...props }) => <ArrowRightIcon className="h-4 w-4" {...props} />,
       }}
       {...props}
     />
