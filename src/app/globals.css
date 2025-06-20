@@ -39,7 +39,7 @@
     --accent-foreground-h: 48; --accent-foreground-s: 100%; --accent-foreground-l: 12%;
 
     --destructive-h: 0; --destructive-s: 86%; --destructive-l: 58%;
-    --destructive-foreground-h: 0; --destructive-foreground-s: 0%; --destructive-foreground-l: 98%;
+    --destructive-foreground-h: 0; --destructive-s: 0%; --destructive-foreground-l: 98%;
 
     /* Border: Lighter Conchoidal Gray - for general borders */
     --border-h: 220; --border-s: 25%; --border-l: 88%;
@@ -69,7 +69,7 @@
     --accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
     --accent-foreground: hsl(var(--accent-foreground-h), var(--accent-foreground-s), var(--accent-foreground-l));
     --destructive: hsl(var(--destructive-h), var(--destructive-s), var(--destructive-l));
-    --destructive-foreground: hsl(var(--destructive-foreground-h), var(--destructive-foreground-s), var(--destructive-foreground-l));
+    --destructive-foreground: hsl(var(--destructive-foreground-h), var(--destructive-s), var(--destructive-foreground-l));
     --border: hsl(var(--border-h), var(--border-s), var(--border-l));
     --input: hsl(var(--input-h), var(--input-s), var(--input-l));
     --ring: hsl(var(--ring-h), var(--ring-s), var(--ring-l));
@@ -93,9 +93,9 @@
     --popover-foreground-h: 0; --popover-foreground-s: 0%; --popover-foreground-l: 98%; /* Almost White */
     --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 100%; /* White */
     --secondary-foreground-h: 0; --secondary-foreground-s: 0%; --secondary-foreground-l: 98%; /* Almost White */
-    --muted-foreground-h: 220; --muted-s: 15%; --muted-foreground-l: 85%;  /* Very Light Gray */
+    --muted-foreground-h: 220; --muted-s: 10%; --muted-foreground-l: 95%;  /* Extremely Light Gray, almost white */
     --accent-foreground-h: 0; --accent-s: 0%; --accent-l: 98%; /* Almost White for text on accent backgrounds */
-    --destructive-foreground-h: 0; --destructive-s: 0%; --destructive-l: 98%; /* Almost White */
+    --destructive-foreground-h: 0; --destructive-s: 0%; --destructive-foreground-l: 98%; /* Almost White */
 
 
     /* Card: Darker, slightly desaturated Purple base for cards */
@@ -147,9 +147,9 @@
     --muted: hsl(var(--muted-h), var(--muted-s), var(--muted-l));
     --muted-foreground: hsl(var(--muted-foreground-h), var(--muted-s), var(--muted-foreground-l));
     --accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
-    --accent-foreground: hsl(var(--accent-foreground-h), var(--accent-foreground-s), var(--accent-foreground-l));
+    --accent-foreground: hsl(var(--accent-foreground-h), var(--accent-s), var(--accent-foreground-l));
     --destructive: hsl(var(--destructive-h), var(--destructive-s), var(--destructive-l));
-    --destructive-foreground: hsl(var(--destructive-foreground-h), var(--destructive-foreground-s), var(--destructive-foreground-l));
+    --destructive-foreground: hsl(var(--destructive-foreground-h), var(--destructive-s), var(--destructive-foreground-l));
     --border: hsl(var(--border-h), var(--border-s), var(--border-l));
     --input: hsl(var(--input-h), var(--input-s), var(--input-l));
     --ring: hsl(var(--ring-h), var(--ring-s), var(--ring-l));
@@ -362,7 +362,7 @@
 
 .badge-failure { /* Red */
   background-color: hsl(var(--chart-5-h), var(--chart-5-s), var(--chart-5-l)) !important;
-  color: hsl(var(--destructive-foreground-h), var(--destructive-foreground-s), var(--destructive-foreground-l)) !important;
+  color: hsl(var(--destructive-foreground-h), var(--destructive-s), var(--destructive-foreground-l)) !important;
 }
 .details-link-success { /* Patina Green based */
   color: hsl(var(--chart-4-h), var(--chart-4-s), calc(var(--chart-4-l) - 15%)) !important;
