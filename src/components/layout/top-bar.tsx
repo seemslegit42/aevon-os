@@ -6,18 +6,19 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Home, type LucideIcon, ChevronDown, LayoutGrid, Clock, BrainCircuit } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Search, Home, type LucideIcon, ChevronDown, BrainCircuit } from 'lucide-react'; // Removed LayoutGrid, Clock
+// Popover, Avatar, DropdownMenu related imports are no longer needed if the entire right section is removed.
+// import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+// import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuLabel,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
+import { TooltipProvider } from "@/components/ui/tooltip"; // Tooltip might still be used for left/center items
 import { cn } from '@/lib/utils';
 
 interface NavItem {
@@ -35,28 +36,28 @@ const navItems: NavItem[] = [
 ];
 
 const TopBar: React.FC = () => {
-  const [currentTime, setCurrentTime] = useState<string | null>(null);
+  // currentTime and its useEffect are no longer needed if the time display is removed.
+  // const [currentTime, setCurrentTime] = useState<string | null>(null);
   const pathname = usePathname();
 
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      // Format as HH:MM:SS AM/PM UTC
-      let hours = now.getUTCHours();
-      const minutes = now.getUTCMinutes();
-      const seconds = now.getUTCSeconds();
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-      hours = hours % 12;
-      hours = hours ? hours : 12; // Handle midnight (0 hours)
-      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm} UTC`;
-    };
+  // useEffect(() => {
+  //   const updateTime = () => {
+  //     const now = new Date();
+  //     let hours = now.getUTCHours();
+  //     const minutes = now.getUTCMinutes();
+  //     const seconds = now.getUTCSeconds();
+  //     const ampm = hours >= 12 ? 'PM' : 'AM';
+  //     hours = hours % 12;
+  //     hours = hours ? hours : 12; 
+  //     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm} UTC`;
+  //   };
     
-    setCurrentTime(updateTime()); 
-    const timer = setInterval(() => {
-      setCurrentTime(updateTime());
-    }, 1000);
-    return () => clearInterval(timer); 
-  }, []);
+  //   setCurrentTime(updateTime()); 
+  //   const timer = setInterval(() => {
+  //     setCurrentTime(updateTime());
+  //   }, 1000);
+  //   return () => clearInterval(timer); 
+  // }, []);
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -93,7 +94,7 @@ const TopBar: React.FC = () => {
               <Input
                 type="search"
                 placeholder="Command or Search (Ctrl+K)..."
-                className="w-full h-9 pl-10 pr-16 bg-background/50 dark:bg-white/5 border-border/50 dark:border-white/20 text-sm text-foreground dark:text-primary-foreground placeholder-muted-foreground dark:placeholder-neutral-400 focus:ring-primary focus:border-primary"
+                className="w-full h-9 pl-10 pr-16 bg-background/50 dark:bg-white/5 border-border/50 dark:border-white/20 text-sm text-primary-foreground dark:text-primary-foreground placeholder-muted-foreground dark:placeholder-neutral-400 focus:ring-primary focus:border-primary"
                 aria-label="Command or search input"
               />
               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
@@ -104,54 +105,8 @@ const TopBar: React.FC = () => {
             </div>
           </div>
           
-          <div className="flex items-center space-x-2"> {/* All children here should inherit dark:text-primary-foreground or have specific light color styles */}
-             <Tooltip>
-                <TooltipTrigger asChild>
-                     <Button variant="ghost" size="icon" className="text-primary-foreground hover:text-primary-foreground hover:bg-primary/20 dark:hover:bg-white/10" aria-label="Grid/App Menu">
-                        <LayoutGrid className="w-5 h-5" />
-                    </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom"><p>App Launcher</p></TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                 <Button variant="ghost" size="icon" className="text-primary-foreground hover:text-primary-foreground hover:bg-primary/20 dark:hover:bg-white/10" aria-label="Time/Date Settings">
-                  <Clock className="w-5 h-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom"><p>Timezone & Date Settings</p></TooltipContent>
-            </Tooltip>
-            
-            <div className="text-xs text-primary-foreground hidden sm:block w-[130px] text-center">{currentTime}</div>
+          {/* Entire right-hand side section removed */}
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="p-0 h-auto flex items-center space-x-2 text-primary-foreground hover:text-primary-foreground hover:bg-primary/20 dark:hover:bg-white/10" aria-label="User Menu">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-primary/80 text-primary-foreground text-xs">ΛΞ</AvatarFallback>
-                      </Avatar>
-                      <div className="hidden lg:flex flex-col items-start text-xs">
-                        {/* Removed static Admin User text */}
-                      </div>
-                       <ChevronDown className="w-4 h-4 opacity-70" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="glassmorphism-panel w-56">
-                    <DropdownMenuLabel className="font-normal">
-                      <p className="text-sm font-medium leading-none text-foreground">User</p>
-                      <p className="text-xs text-muted-foreground">Session: Active</p>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>View Profile</DropdownMenuItem>
-                    <DropdownMenuItem>Logout</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TooltipTrigger>
-              <TooltipContent side="bottom"><p>User Menu</p></TooltipContent>
-            </Tooltip>
-          </div>
         </div>
       </header>
     </TooltipProvider>
