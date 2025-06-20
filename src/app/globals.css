@@ -5,106 +5,132 @@
 
 @layer base {
   :root {
-    /* --- Light Theme (Reference Adjusted) --- */
-    --background: 283 30% 97%; /* Very Light Imperial Purple */
-    --background-h: 283; --background-s: 30%; --background-l: 97%;
-    --foreground: 248 37% 15%; /* Obsidian Black */
-    --foreground-h: 248; --foreground-s: 37%; --foreground-l: 15%;
+    /* --- Light Theme --- */
+    --background-h: 275; --background-s: 50%; --background-l: 97%; /* Very Light Purple */
+    --foreground-h: 275; --foreground-s: 30%; --foreground-l: 15%; /* Dark Purple Text */
 
-    --card: 150 100% 98%; /* Vitreous White (Panel Background Base) */
-    --card-h: 150; --card-s: 100%; --card-l: 98%;
-    --card-foreground: 248 37% 15%; /* Obsidian Black for text on cards */
+    --card-h: 275; --card-s: 45%; --card-l: 96%; /* Base for glass panels */
+    
+    --popover-h: 275; --popover-s: 45%; --popover-l: 96%;
+    --popover-foreground-h: 275; --popover-foreground-s: 30%; --popover-foreground-l: 15%;
 
-    --popover: 150 100% 98%; /* Vitreous White */
-    --popover-foreground: 248 37% 15%;
+    --primary-h: 275; --primary-s: 55%; --primary-l: 58%; /* Purple Accent */
+    --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 100%; /* White */
+    --primary-gradient-start-h: 275; --primary-gradient-start-s: 50%; --primary-gradient-start-l: 48%;
 
-    /* Primary Accent: Magenta/Pink (from reference image) */
-    --primary: 323 70% 65%; /* Brighter pink for light mode */
-    --primary-h: 323; --primary-s: 70%; --primary-l: 65%;
-    --primary-foreground: 0 0% 100%; /* White text on magenta */
-    --primary-gradient-start: 283 50% 55%; /* Darker, more purplish magenta for gradient start */
+    --secondary-h: 177; --secondary-s: 60%; --secondary-l: 45%; /* Light Sea Green/Teal */
+    --secondary-foreground-h: 0; --secondary-foreground-s: 0%; --secondary-foreground-l: 100%; /* White */
 
+    --muted-h: 223; --muted-s: 15%; --muted-l: 92%; /* Light Cool Gray */
+    --muted-foreground-h: 223; --muted-foreground-s: 10%; --muted-foreground-l: 45%; /* Darker Cool Gray */
 
-    /* Secondary Accent: Cyan (from reference image) */
-    --secondary: 187 80% 50%; /* Vivid Cyan for light mode */
-    --secondary-h: 187; --secondary-s: 80%; --secondary-l: 50%;
-    --secondary-foreground: 0 0% 100%; /* White text for contrast */
+    --accent-h: 51; --accent-s: 100%; --accent-l: 53%; /* Gold */
+    --accent-foreground-h: 51; --accent-foreground-s: 100%; --accent-foreground-l: 15%; /* Dark Gold/Brown for text on accent */
 
-    --muted: 223 13% 92%; /* Lighter Conchoidal Gray */
-    --muted-foreground: 248 37% 40%; /* Darker Gray */
+    --destructive-h: 0; --destructive-s: 84%; --destructive-l: 60%;
+    --destructive-foreground-h: 0; --destructive-foreground-s: 0%; --destructive-foreground-l: 98%;
 
-    /* Accent: Gold/Yellow (from reference image, for Active Agents badge) */
-    --accent: 45 100% 60%; /* Bright Yellow */
-    --accent-h: 45; --accent-s: 100%; --accent-l: 60%;
-    --accent-foreground: 248 37% 15%; /* Dark text on yellow */
+    --border-h: 223; --border-s: 15%; --border-l: 88%; /* Light Cool Gray */
+    --input-h: 223; --input-s: 20%; --input-l: 94%;  
+    --ring-h: 275; --ring-s: 55%; --ring-l: 58%;   
 
-    --destructive: 0 84.2% 60.2%; /* Standard Red for destructive actions */
-    --destructive-foreground: 0 0% 98%;
+    --chart-1-h: var(--primary-h); --chart-1-s: var(--primary-s); --chart-1-l: var(--primary-l);
+    --chart-2-h: 177; --chart-2-s: 60%; --chart-2-l: 45%; /* Teal from #20B2AA */
+    --chart-3-h: var(--accent-h); --chart-3-s: var(--accent-s); --chart-3-l: var(--accent-l);
+    --chart-4-h: 158; --chart-4-s: 45%; --chart-4-l: 52%; /* Green/Teal from #3EB991 */
+    --chart-5-h: var(--destructive-h); --chart-5-s: var(--destructive-s); --chart-5-l: var(--destructive-l);
 
-    --border: 223 13% 85%; /* Lighter Conchoidal Gray for general borders */
-    --input: 223 13% 95%;  /* Lighter Conchoidal Gray for input backgrounds */
-    --ring: 323 70% 65%;   /* Magenta/Pink for focus rings */
-
-    --radius: 0.5rem; /* Corresponds to 8px */
-
-    /* Chart/Progress Bar Colors - Light Theme */
-    --chart-1: hsl(var(--primary)); /* Magenta/Pink */
-    --chart-2: hsl(var(--secondary)); /* Cyan */
-    --chart-3: hsl(var(--accent)); /* Gold/Yellow */
-    --chart-4: 151 60% 50%; /* Success Green (lighter shade for light theme) */
-    --chart-5: hsl(var(--destructive)); /* Red for failure */
+    /* Full HSL color definitions */
+    --background: hsl(var(--background-h), var(--background-s), var(--background-l));
+    --foreground: hsl(var(--foreground-h), var(--foreground-s), var(--foreground-l));
+    --card: hsl(var(--card-h), var(--card-s), var(--card-l));
+    --card-foreground: hsl(var(--foreground-h), var(--foreground-s), var(--foreground-l));
+    --popover: hsl(var(--popover-h), var(--popover-s), var(--popover-l));
+    --popover-foreground: hsl(var(--popover-foreground-h), var(--popover-foreground-s), var(--popover-foreground-l));
+    --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+    --primary-foreground: hsl(var(--primary-foreground-h), var(--primary-foreground-s), var(--primary-foreground-l));
+    --primary-gradient-start: hsl(var(--primary-gradient-start-h), var(--primary-gradient-start-s), var(--primary-gradient-start-l));
+    --secondary: hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l));
+    --secondary-foreground: hsl(var(--secondary-foreground-h), var(--secondary-foreground-s), var(--secondary-foreground-l));
+    --muted: hsl(var(--muted-h), var(--muted-s), var(--muted-l));
+    --muted-foreground: hsl(var(--muted-foreground-h), var(--muted-foreground-s), var(--muted-foreground-l));
+    --accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+    --accent-foreground: hsl(var(--accent-foreground-h), var(--accent-foreground-s), var(--accent-foreground-l));
+    --destructive: hsl(var(--destructive-h), var(--destructive-s), var(--destructive-l));
+    --destructive-foreground: hsl(var(--destructive-foreground-h), var(--destructive-foreground-s), var(--destructive-foreground-l));
+    --border: hsl(var(--border-h), var(--border-s), var(--border-l));
+    --input: hsl(var(--input-h), var(--input-s), var(--input-l));
+    --ring: hsl(var(--ring-h), var(--ring-s), var(--ring-l));
+    --chart-1: hsl(var(--chart-1-h), var(--chart-1-s), var(--chart-1-l));
+    --chart-2: hsl(var(--chart-2-h), var(--chart-2-s), var(--chart-2-l));
+    --chart-3: hsl(var(--chart-3-h), var(--chart-3-s), var(--chart-3-l));
+    --chart-4: hsl(var(--chart-4-h), var(--chart-4-s), var(--chart-4-l));
+    --chart-5: hsl(var(--chart-5-h), var(--chart-5-s), var(--chart-5-l));
+    --radius: 0.5rem;
   }
 
   .dark {
-    /* --- Dark Theme (Matches Reference Image) --- */
-    --background: 267 45% 12%; /* Deep Dark Purple Background */
-    --background-h: 267; --background-s: 45%; --background-l: 12%;
-    --foreground: 0 0% 95%; /* Off-white text */
-    --foreground-h: 0; --foreground-s: 0%; --foreground-l: 95%;
+    /* --- Dark Theme --- */
+    --background-h: 275; --background-s: 47%; --background-l: 15%; /* Deep Dark Purple from #6A0DAD (darkened) */
+    --foreground-h: 223; --foreground-s: 15%; --foreground-l: 90%; /* Light Cool Gray for text */
 
-    /* Card background: Translucent Dark Purple */
-    --card: 270 33% 18%; /* Base color for hsla for glass panels */
-    --card-h: 270; --card-s: 33%; --card-l: 18%;
-    --card-foreground: 0 0% 95%;
+    --card-h: 275; --card-s: 40%; --card-l: 22%; /* Base for glass panels, derived from #6A0DAD */
+    
+    --popover-h: 275; --popover-s: 40%; --popover-l: 22%;
+    --popover-foreground-h: 223; --popover-foreground-s: 15%; --popover-foreground-l: 90%;
 
-    --popover: 270 33% 18%; /* Consistent with card */
-    --popover-foreground: 0 0% 95%;
+    --primary-h: 275; --primary-s: 55%; --primary-l: 60%; /* Vibrant Purple, lighter than #6A0DAD */
+    --primary-foreground-h: 0; --primary-foreground-s: 0%; --primary-foreground-l: 100%; /* White */
+    --primary-gradient-start-h: 275; --primary-gradient-start-s: 50%; --primary-gradient-start-l: 45%; /* Darker shade for gradient */
 
-    /* Primary Accent: Magenta/Pink */
-    --primary: 323 70% 54%;
-    --primary-h: 323; --primary-s: 70%; --primary-l: 54%;
-    --primary-foreground: 0 0% 100%; /* White text on magenta */
-    --primary-gradient-start: 283 50% 35%; /* Darker, more purplish magenta for gradient start */
+    --secondary-h: 177; --secondary-s: 69%; --secondary-l: 40%; /* Teal from #20B2AA */
+    --secondary-foreground-h: 0; --secondary-foreground-s: 0%; --secondary-foreground-l: 100%; /* White */
 
-    /* Secondary Accent: Cyan */
-    --secondary: 187 100% 42%;
-    --secondary-h: 187; --secondary-s: 100%; --secondary-l: 42%;
-    --secondary-foreground: 0 0% 100%;
+    --muted-h: 223; --muted-s: 15%; --muted-l: 30%; /* Dark Cool Gray */
+    --muted-foreground-h: 223; --muted-foreground-s: 13%; --muted-foreground-l: 65%; /* Lighter Cool Gray from #8C94A8 */
 
-    /* Muted Text */
-    --muted: 270 15% 30%;
-    --muted-foreground: 0 0% 70%; /* Lighter Gray for muted text */
+    --accent-h: 51; --accent-s: 100%; --accent-l: 50%; /* Gold from #FFD700 */
+    --accent-foreground-h: 51; --accent-foreground-s: 100%; --accent-foreground-l: 10%; /* Dark Brown/Black for text on gold */
 
-    /* Accent: Gold/Yellow (for Active Agents badge) */
-    --accent: 43 95% 55%;
-    --accent-h: 43; --accent-s: 95%; --accent-l: 55%;
-    --accent-foreground: 270 40% 10%; /* Dark purple/black text on yellow badge */
+    --destructive-h: 0; --destructive-s: 72%; --destructive-l: 51%; 
+    --destructive-foreground-h: 0; --destructive-foreground-s: 0%; --destructive-foreground-l: 98%;
 
-    /* Destructive: Red */
-    --destructive: 0 72% 51%; /* Error Red from screenshot */
-    --destructive-foreground: 0 0% 98%;
+    --border-h: 223; --border-s: 13%; --border-l: 35%; /* Muted Cool Gray for general borders */
+    --input-h: 275; --input-s: 40%; --input-l: 18%; /* Darker than card for inputs */
+    --ring-h: 275; --ring-s: 55%; --ring-l: 60%;   
 
-    /* Borders & Inputs */
-    --border: 270 25% 25%; /* General border, glass panel has specific border */
-    --input: 270 20% 15%; /* Slightly darker for input fields */
-    --ring: 323 70% 54%; /* Magenta/Pink for focus rings */
-
-    /* Chart/Progress Bar Colors - Dark Theme (Matches reference image) */
-    --chart-1: hsl(var(--primary)); /* Magenta/Pink */
-    --chart-2: hsl(187, 100%, 42%); /* Cyan (Progress Bar) */
-    --chart-3: hsl(var(--accent)); /* Gold/Yellow */
-    --chart-4: 145 63% 49%; /* Success Green from screenshot */
-    --chart-5: hsl(var(--destructive)); /* Error Red from screenshot */
+    --chart-1-h: var(--primary-h); --chart-1-s: var(--primary-s); --chart-1-l: var(--primary-l);
+    --chart-2-h: 177; --chart-2-s: 69%; --chart-2-l: 40%; /* Teal from #20B2AA */
+    --chart-3-h: var(--accent-h); --chart-3-s: var(--accent-s); --chart-3-l: var(--accent-l);
+    --chart-4-h: 158; --chart-4-s: 49%; --chart-4-l: 49%; /* Green/Teal from #3EB991 */
+    --chart-5-h: var(--destructive-h); --chart-5-s: var(--destructive-s); --chart-5-l: var(--destructive-l);
+    
+    /* Full HSL color definitions */
+    --background: hsl(var(--background-h), var(--background-s), var(--background-l));
+    --foreground: hsl(var(--foreground-h), var(--foreground-s), var(--foreground-l));
+    --card: hsl(var(--card-h), var(--card-s), var(--card-l));
+    --card-foreground: hsl(var(--foreground-h), var(--foreground-s), var(--foreground-l));
+    --popover: hsl(var(--popover-h), var(--popover-s), var(--popover-l));
+    --popover-foreground: hsl(var(--popover-foreground-h), var(--popover-foreground-s), var(--popover-foreground-l));
+    --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+    --primary-foreground: hsl(var(--primary-foreground-h), var(--primary-foreground-s), var(--primary-foreground-l));
+    --primary-gradient-start: hsl(var(--primary-gradient-start-h), var(--primary-gradient-start-s), var(--primary-gradient-start-l));
+    --secondary: hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l));
+    --secondary-foreground: hsl(var(--secondary-foreground-h), var(--secondary-foreground-s), var(--secondary-foreground-l));
+    --muted: hsl(var(--muted-h), var(--muted-s), var(--muted-l));
+    --muted-foreground: hsl(var(--muted-foreground-h), var(--muted-foreground-s), var(--muted-foreground-l));
+    --accent: hsl(var(--accent-h), var(--accent-s), var(--accent-l));
+    --accent-foreground: hsl(var(--accent-foreground-h), var(--accent-foreground-s), var(--accent-foreground-l));
+    --destructive: hsl(var(--destructive-h), var(--destructive-s), var(--destructive-l));
+    --destructive-foreground: hsl(var(--destructive-foreground-h), var(--destructive-foreground-s), var(--destructive-foreground-l));
+    --border: hsl(var(--border-h), var(--border-s), var(--border-l));
+    --input: hsl(var(--input-h), var(--input-s), var(--input-l));
+    --ring: hsl(var(--ring-h), var(--ring-s), var(--ring-l));
+    --chart-1: hsl(var(--chart-1-h), var(--chart-1-s), var(--chart-1-l));
+    --chart-2: hsl(var(--chart-2-h), var(--chart-2-s), var(--chart-2-l));
+    --chart-3: hsl(var(--chart-3-h), var(--chart-3-s), var(--chart-3-l));
+    --chart-4: hsl(var(--chart-4-h), var(--chart-4-s), var(--chart-4-l));
+    --chart-5: hsl(var(--chart-5-h), var(--chart-5-s), var(--chart-5-l));
   }
 }
 
@@ -117,7 +143,7 @@
     font-family: 'Lexend', sans-serif;
   }
   .dark body {
-    background-color: hsl(var(--background)); /* Explicitly set for dark mode */
+    background-color: hsl(var(--background-h), var(--background-s), var(--background-l)); 
   }
   h1, h2, h3, h4, h5, h6, .font-headline {
     font-family: 'Comfortaa', sans-serif;
@@ -126,32 +152,32 @@
 
 /* Iridescent Aurora Background - Not currently active on main canvas per latest instructions */
 .iridescent-purple-bg-light {
-  background: linear-gradient(160deg, hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) * 1.1)), hsl(270, 50%, 85%), hsl(var(--background-h), var(--background-s), var(--background-l)));
+  background: linear-gradient(160deg, hsl(var(--primary-gradient-start-h), var(--primary-gradient-start-s), var(--primary-gradient-start-l)), hsl(var(--secondary-h), var(--secondary-s), calc(var(--secondary-l) + 20%)), hsl(var(--background-h), var(--background-s), var(--background-l)));
 }
 
 .iridescent-purple-bg-dark {
-  background: linear-gradient(160deg, hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) * 0.8)), hsl(270, 50%, 20%), hsl(var(--background-h), var(--background-s), var(--background-l)));
+  background: linear-gradient(160deg, hsl(var(--primary-gradient-start-h), var(--primary-gradient-start-s), var(--primary-gradient-start-l)), hsl(var(--secondary-h), var(--secondary-s), var(--secondary-l)), hsl(var(--background-h), var(--background-s), var(--background-l)));
 }
 
-/* Glassmorphism Panel Style - Matches reference image and "frosted, layered depth" */
+/* Glassmorphism Panel Style */
 .glassmorphism-panel {
-  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), 0.45);
+  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), 0.6); /* Semi-transparent card base for light */
   backdrop-filter: blur(12px) saturate(1.1);
   -webkit-backdrop-filter: blur(12px) saturate(1.1);
-  border: 1px solid hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 10%), 0.4); /* Brighter accent border */
+  border: 1px solid hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 10%), 0.4); /* Brighter accent border for light */
   border-radius: var(--radius);
-  box-shadow: 0 6px 24px hsla(var(--card-h), var(--card-s), 0%, 0.05), /* More subtle shadow */
+  box-shadow: 0 6px 24px hsla(var(--card-h), var(--card-s), 0%, 0.05),
               0 2px 8px hsla(var(--card-h), var(--card-s), 0%, 0.03);
 }
 
 .dark .glassmorphism-panel {
-  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), 0.45); /* Semi-transparent card base */
-  backdrop-filter: blur(12px) saturate(1.1); /* Frosted glass effect */
+  background-color: hsla(var(--card-h), var(--card-s), var(--card-l), 0.45); /* Semi-transparent card base for dark */
+  backdrop-filter: blur(12px) saturate(1.1); 
   -webkit-backdrop-filter: blur(12px) saturate(1.1);
-  border: 1px solid hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 15%), 0.5); /* Brighter primary accent border */
-  border-radius: var(--radius); /* Softly rounded corners */
-  box-shadow: 0 6px 24px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) - 80%), 0.1), /* Subtle depth shadow */
-              0 2px 8px hsla(var(--foreground-h), var(--foreground-s), calc(var(--foreground-l) - 80%), 0.08);
+  border: 1px solid hsla(var(--primary-h), var(--primary-s), calc(var(--primary-l) + 15%), 0.3); /* Brighter primary accent border, more subtle for dark */
+  border-radius: var(--radius); 
+  box-shadow: 0 6px 24px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 5%), 0.2), /* Shadow using a darker background shade */
+              0 2px 8px hsla(var(--background-h), var(--background-s), calc(var(--background-l) - 5%), 0.15);
 }
 
 
@@ -160,20 +186,20 @@
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: hsl(var(--background) / 0.5);
+  background: hsla(var(--background-h), var(--background-s), var(--background-l), 0.5);
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted) / 0.7);
+  background: hsla(var(--muted-h), var(--muted-s), var(--muted-l), 0.7);
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted));
+  background: hsl(var(--muted-h), var(--muted-s), var(--muted-l));
 }
 
 .btn-gradient-primary-accent {
-  background: linear-gradient(to right, hsl(var(--primary-gradient-start)), hsl(var(--primary)));
-  color: hsl(var(--primary-foreground));
+  background: linear-gradient(to right, hsl(var(--primary-gradient-start-h), var(--primary-gradient-start-s), var(--primary-gradient-start-l)), hsl(var(--primary-h), var(--primary-s), var(--primary-l)));
+  color: hsl(var(--primary-foreground-h), var(--primary-foreground-s), var(--primary-foreground-l));
 }
 .btn-gradient-primary-accent:hover {
   filter: brightness(1.15);
@@ -190,37 +216,40 @@
 
 /* TopBar specific background */
 .topbar-custom-bg {
-  background-color: hsl(0 0% 10%); /* Very dark gray / near black for TopBar */
+  background-color: hsl(var(--background-h), var(--background-s), calc(var(--background-l) - 5%)); /* Slightly darker than main bg */
+  .dark & {
+    background-color: hsl(270, 30%, 8%); /* Very dark gray / near black for TopBar in dark mode, distinct from purple */
+  }
 }
 
 /* Active Nav Link in TopBar */
 .active-nav-link-dark {
-  background-color: hsl(var(--primary-h) var(--primary-s) calc(var(--primary-l) * 0.8 / 1%)) !important; /* Darker Primary for active nav item background */
-  color: hsl(var(--primary-foreground)) !important;
+  background-color: hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) * 0.8 / 1%)) !important; 
+  color: hsl(var(--primary-foreground-h), var(--primary-foreground-s), var(--primary-foreground-l)) !important;
 }
 .active-nav-link-dark:hover {
-  background-color: hsl(var(--primary-h) var(--primary-s) calc(var(--primary-l) * 0.9 / 1%)) !important;
+  background-color: hsl(var(--primary-h), var(--primary-s), calc(var(--primary-l) * 0.9 / 1%)) !important;
 }
 
-/* Progress bar custom color (Cyan) */
+/* Progress bar custom color (Teal - Chart 2) */
 .progress-custom {
-  background-color: hsl(var(--chart-2)) !important;
+  background-color: hsl(var(--chart-2-h), var(--chart-2-s), var(--chart-2-l)) !important;
 }
 
 /* Success and Failure badges for Live Orchestration Feed */
 .badge-success {
-  background-color: hsl(var(--chart-4)) !important; /* Green */
-  color: hsl(0 0% 100%) !important; /* White text */
+  background-color: hsl(var(--chart-4-h), var(--chart-4-s), var(--chart-4-l)) !important; /* Green/Teal - Chart 4 */
+  color: hsl(0, 0%, 100%) !important; /* White text */
 }
 .badge-failure {
-  background-color: hsl(var(--chart-5)) !important; /* Red */
-  color: hsl(var(--destructive-foreground)) !important;
+  background-color: hsl(var(--chart-5-h), var(--chart-5-s), var(--chart-5-l)) !important; /* Red - Chart 5 */
+  color: hsl(var(--destructive-foreground-h), var(--destructive-foreground-s), var(--destructive-foreground-l)) !important;
 }
 .details-link-success {
-  color: hsl(var(--chart-4)) !important; /* Green text for link */
+  color: hsl(var(--chart-4-h), var(--chart-4-s), var(--chart-4-l)) !important; 
 }
 .details-link-failure {
-  color: hsl(var(--chart-5)) !important; /* Red text for link */
+  color: hsl(var(--chart-5-h), var(--chart-5-s), var(--chart-5-l)) !important; 
 }
     
 
