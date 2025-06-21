@@ -5,6 +5,7 @@ import { StateGraph, END, START, type MessagesState } from '@langchain/langgraph
 import { ToolNode } from '@langchain/langgraph/prebuilt';
 import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+import { generateObject } from 'ai';
 import { DynamicTool } from '@langchain/core/tools';
 import { z } from 'zod';
 import {
@@ -61,7 +62,7 @@ const categorizeTextTool = new DynamicTool({
   }),
   func: async ({ text }) => {
     const { object: category } = await generateObject({
-      model: google('gemini-1.5-flash-latest'),
+      model: new ChatGoogleGenerativeAI({ model: 'gemini-1.5-flash-latest' }).client,
       schema: TextCategorySchema,
       prompt: `You are an expert text classification agent. Analyze the following text and determine if it is an invoice.
       If it is an invoice, set 'isMatch' to true and 'category' to 'Invoice'.
@@ -85,7 +86,7 @@ const extractInvoiceDataTool = new DynamicTool({
   }),
   func: async ({ text }) => {
     const { object: invoiceData } = await generateObject({
-      model: google('gemini-1.5-flash-latest'),
+      model: new ChatGoogleGenerativeAI({ model: 'gemini-1.5-flash-latest' }).client,
       schema: InvoiceDataSchema,
       prompt: `You are a data extraction expert. Analyze the following invoice text and extract the required information into a structured JSON object.
       If a field is not present, omit it from the output.
