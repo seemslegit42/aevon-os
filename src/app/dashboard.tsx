@@ -85,12 +85,14 @@ const Dashboard: React.FC = () => {
             ...sampleAgentStatuses[Math.floor(Math.random() * sampleAgentStatuses.length)]
         }));
         
-        // Calculate active agents and emit event
+        // Calculate active agents and schedule the event emission
         const activeAgents = updatedAgents.filter(a => a.isSpinning);
-        eventBus.emit('agents:statusUpdate', {
-            activeCount: activeAgents.length,
-            totalCount: updatedAgents.length,
-        });
+        setTimeout(() => {
+            eventBus.emit('agents:statusUpdate', {
+                activeCount: activeAgents.length,
+                totalCount: updatedAgents.length,
+            });
+        }, 0);
         
         return updatedAgents;
       });
