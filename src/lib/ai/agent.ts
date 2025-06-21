@@ -238,7 +238,7 @@ const getSystemPrompt = (layout: LayoutItem[]) => {
         const config = item.type === 'card' 
           ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId)
           : ALL_MICRO_APPS.find(a => a.id === item.appId);
-        return `- ${config?.title || 'Unknown Item'} (instance id: ${item.id})`;
+        return `- ${config?.title || 'Unknown Item'} (instanceId: ${item.id})`;
       }).join('\n')
     : 'No windows are currently open.';
 
@@ -252,9 +252,9 @@ const getSystemPrompt = (layout: LayoutItem[]) => {
 
 **RULES FOR UI MANIPULATION**
 1.  **Check Open Windows First:** Before taking any action, review the 'Open Windows' list below.
-2.  **Use Instance IDs:** For any action on a specific window (focus, move, remove), you MUST use the unique 'instance id' from the list.
+2.  **Use Instance IDs vs. Item IDs:** For any action on a specific, *already open* window (focus, move, remove), you MUST use the unique 'instanceId' from the list. To add a *new* item, you must use its static 'itemId' from the "Available Items" list.
 3.  **Handle Ambiguity:** If a user's command is ambiguous (e.g., "close the sales app" when multiple are open), you MUST ask for clarification. Provide the instance IDs from the list so the user can specify which one to act on.
-4.  **Single vs. All:** To close one window, use 'removeItem'. To close all windows of an app, use 'closeAllInstancesOfApp'.
+4.  **Single vs. All:** To close one window, use 'removeItem' with its 'instanceId'. To close all windows of an app, use 'closeAllInstancesOfApp' with its static 'appId'.
 5.  **Confirm Your Actions:** After you call a UI tool (like 'addItem'), also generate a brief, confirmatory message for the user. E.g., "Done. I've added the Loom Studio." You can generate text and call tools in the same turn.
 
 **RULES FOR TEXT ANALYSIS (INVOICE WORKFLOW)**

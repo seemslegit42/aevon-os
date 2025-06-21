@@ -20,12 +20,14 @@ interface LayoutState {
   addCard: (cardId: string) => string | undefined;
   launchApp: (app: MicroApp) => string;
   cloneApp: (appId: string) => string | undefined;
+  closeAllInstancesOfApp: (appId: string) => boolean;
+  focusLatestInstance: (appId: string) => boolean;
+  moveItem: (itemId: string, newPos: Position) => void;
   resetLayout: () => void;
 }
 
 const saveStateToLocalStorage = (state: Pick<LayoutState, 'layoutItems' | 'focusedItemId'>) => {
   try {
-    // A simple validation to prevent storing clearly invalid state
     if (Array.isArray(state.layoutItems)) {
       localStorage.setItem(LAYOUT_STORAGE_KEY, JSON.stringify(state));
     }
@@ -52,15 +54,13 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
       if (savedStateJSON) {
         const parsedState = JSON.parse(savedStateJSON);
         if (parsedState && Array.isArray(parsedState.layoutItems)) {
-          // Validate that the saved items still exist in our configs
-          const validLayouts = parsedState.layoutItems.filter(item => 
+          const validLayouts = parsedState.layoutItems.filter((item: LayoutItem) => 
              item && typeof item.id === 'string' && typeof item.type === 'string' &&
              (item.type === 'card' ? ALL_CARD_CONFIGS.some(c => c.id === item.cardId) : ALL_MICRO_APPS.some(a => a.id === item.appId))
           );
           
           finalState.layoutItems = validLayouts;
-          // also restore focused item if it's still valid
-          finalState.focusedItemId = validLayouts.some(item => item.id === parsedState.focusedItemId) ? parsedState.focusedItemId : null;
+          finalState.focusedItemId = validLayouts.some((item: LayoutItem) => item.id === parsedState.focusedItemId) ? parsedState.focusedItemId : null;
         }
       }
       set(finalState);
@@ -118,15 +118,13 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
       if (item.id === id) {
         const isNowMinimized = !item.isMinimized;
         if (isNowMinimized) {
-          // Minimizing
           return {
             ...item,
             isMinimized: true,
-            lastHeight: item.height, // Store current height
-            height: 44, // Header height
+            lastHeight: item.height,
+            height: 44,
           };
         } else {
-          // Restoring
           const cardConfig = item.type === 'card' ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId) : null;
           const appConfig = item.type === 'app' ? ALL_MICRO_APPS.find(a => a.id === item.appId) : null;
           const defaultHeight = cardConfig ? cardConfig.minHeight : (appConfig ? appConfig.defaultSize.height : 200);
@@ -147,7 +145,6 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
 
   addCard: (cardId) => {
     const currentItems = get().layoutItems;
-    // Prevent duplicates
     if (currentItems.some(item => item.id === cardId)) {
         return cardId;
     }
@@ -163,10 +160,10 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
         ...cardConfig.defaultLayout,
         zIndex: maxZ + 1,
     }
-    const newItems = [...currentItems, newCard];
     set(state => {
-        saveStateToLocalStorage({ layoutItems: newItems, focusedItemId: state.focusedItemId });
-        return { layoutItems: newItems };
+      const newItems = [...state.layoutItems, newCard];
+      saveStateToLocalStorage({ layoutItems: newItems, focusedItemId: cardId });
+      return { layoutItems: newItems, focusedItemId: cardId };
     });
     return cardId;
   },
@@ -189,10 +186,10 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
         zIndex: maxZ + 1
     };
     
-    const newItems = [...currentItems, newAppWindow];
     set(state => {
-        saveStateToLocalStorage({ layoutItems: newItems, focusedItemId: state.focusedItemId });
-        return { layoutItems: newItems };
+      const newItems = [...state.layoutItems, newAppWindow];
+      saveStateToLocalStorage({ layoutItems: newItems, focusedItemId: instanceId });
+      return { layoutItems: newItems, focusedItemId: instanceId };
     });
     return instanceId;
   },
@@ -201,11 +198,8 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
     const currentItems = get().layoutItems;
     const openInstances = currentItems.filter(item => item.type === 'app' && item.appId === appId);
 
-    if (openInstances.length === 0) {
-        return undefined; // No instance to clone
-    }
+    if (openInstances.length === 0) return undefined;
 
-    // Find the instance with the highest zIndex (most recently focused)
     const sourceInstance = openInstances.reduce((latest, current) => 
         (current.zIndex > latest.zIndex ? current : latest)
     );
@@ -213,24 +207,58 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
     const instanceId = `${appId}-${crypto.randomUUID()}`;
     const maxZ = Math.max(0, ...currentItems.map(item => item.zIndex || 0));
     
-    // Create a new window by cloning properties from the source
     const newAppWindow: LayoutItem = {
         id: instanceId,
         type: 'app',
         appId: sourceInstance.appId,
-        x: sourceInstance.x + 30, // Stagger the clone
+        x: sourceInstance.x + 30,
         y: sourceInstance.y + 30,
         width: sourceInstance.width,
         height: sourceInstance.height,
         zIndex: maxZ + 1,
     };
 
-    const newItems = [...currentItems, newAppWindow];
     set(state => {
-        saveStateToLocalStorage({ layoutItems: newItems, focusedItemId: state.focusedItemId });
-        return { layoutItems: newItems };
+      const newItems = [...state.layoutItems, newAppWindow];
+      saveStateToLocalStorage({ layoutItems: newItems, focusedItemId: instanceId });
+      return { layoutItems: newItems, focusedItemId: instanceId };
     });
     return instanceId;
+  },
+
+  closeAllInstancesOfApp: (appId) => {
+    const currentItems = get().layoutItems;
+    const itemsToKeep = currentItems.filter(item => !(item.type === 'app' && item.appId === appId));
+    
+    if (itemsToKeep.length === currentItems.length) return false; // Nothing was removed
+
+    set(state => {
+        const newFocusedId = state.focusedItemId && itemsToKeep.some(i => i.id === state.focusedItemId) ? state.focusedItemId : null;
+        saveStateToLocalStorage({ layoutItems: itemsToKeep, focusedItemId: newFocusedId });
+        return { layoutItems: itemsToKeep, focusedItemId: newFocusedId };
+    });
+    return true;
+  },
+
+  focusLatestInstance: (appId: string) => {
+    const instances = get().layoutItems.filter(item => item.type === 'app' && item.appId === appId);
+    if (instances.length > 0) {
+        const latestInstance = instances.reduce((latest, current) => (current.zIndex > latest.zIndex ? current : latest));
+        get().bringToFront(latestInstance.id);
+        return true;
+    }
+    return false;
+  },
+
+  moveItem: (itemId, newPos) => {
+    set(state => {
+      const newItems = state.layoutItems.map(item => 
+        item.id === itemId ? { ...item, x: newPos.x, y: newPos.y } : item
+      );
+      saveStateToLocalStorage({ layoutItems: newItems, focusedItemId: itemId });
+      return { layoutItems: newItems, focusedItemId: itemId };
+    });
+    get().bringToFront(itemId);
   },
 
   resetLayout: () => {

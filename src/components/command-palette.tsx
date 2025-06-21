@@ -17,36 +17,49 @@ import { ALL_CARD_CONFIGS } from '@/config/dashboard-cards.config';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { useMicroApps } from '@/hooks/use-micro-apps';
 import type { MicroApp } from '@/stores/micro-app.store';
-import eventBus from '@/lib/event-bus';
 import { useLayoutStore } from '@/stores/layout.store';
 
 const CommandPalette: React.FC = () => {
   const { isOpen, setOpen } = useCommandPaletteStore();
-  const { layoutItems } = useLayoutStore();
   const [searchTerm, setSearchTerm] = useState('');
   const allMicroApps = useMicroApps();
   const appMap = new Map(allMicroApps.map(app => [app.id, app]));
 
+  // Directly use actions and state from the layout store
+  const {
+    layoutItems,
+    launchApp,
+    addCard,
+    closeItem,
+    bringToFront,
+    resetLayout,
+  } = useLayoutStore();
+
+
   const handleLaunchApp = (app: MicroApp) => {
-    eventBus.emit('app:launch', app);
+    const instanceId = launchApp(app);
+    bringToFront(instanceId);
     setOpen(false); // Close palette after launching
   };
 
   const handleAddCard = (cardId: string) => {
-      eventBus.emit('panel:add', cardId);
+      const instanceId = addCard(cardId);
+      if (instanceId) {
+        bringToFront(instanceId);
+      }
   }
 
   const handleCloseItem = (itemId: string) => {
-      eventBus.emit('panel:remove', itemId);
+      closeItem(itemId);
   }
   
   const handleFocusItem = (itemId: string) => {
-    eventBus.emit('panel:focus', itemId);
+    bringToFront(itemId);
     setOpen(false);
   }
 
   const handleResetLayout = () => {
-      eventBus.emit('layout:reset');
+      resetLayout();
   }
   
   const activeCardIds = new Set(layoutItems.filter(i => i.type === 'card').map(i => i.cardId));

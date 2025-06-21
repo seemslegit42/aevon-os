@@ -1,71 +1,46 @@
 
 import { useEffect, useCallback } from 'react';
 import { useToast } from "@/hooks/use-toast";
-import { useMicroAppStore, type MicroApp } from '@/stores/micro-app.store';
+import type { MicroApp } from '@/stores/micro-app.store';
 import eventBus from '@/lib/event-bus';
-import { ALL_MICRO_APPS, ALL_CARD_CONFIGS } from '@/config/dashboard-cards.config';
+import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
 import { useLayoutStore } from '@/stores/layout.store';
-import type { Position, Size } from 'react-rnd';
 
 /**
- * This hook acts as a controller for the dashboard layout. It consumes the layout state from a centralized
- * Zustand store (`useLayoutStore`) and orchestrates side-effects like event bus communication and toasts.
- * It provides a stable API for components to interact with the dashboard layout.
+ * This hook acts as a central controller for the dashboard layout. It initializes the layout
+ * and sets up all event bus listeners. It translates events from other parts of the app
+ * (like the AI agent) into state changes in the centralized Zustand store.
+ * This encapsulates side-effect logic and keeps the rest of the component tree clean.
  */
 export function useDashboardLayout() {
   const { toast } = useToast();
   
-  // Consume state and actions from the global layout store
+  // Get actions directly from the store.
   const {
-    layoutItems,
-    isInitialized,
     initialize,
-    updateItemLayout: updateStoreLayout,
     bringToFront,
-    closeItem: closeItemInStore,
-    toggleMinimizeItem: toggleMinimizeItemInStore,
     addCard,
+    closeItem,
+    resetLayout,
     launchApp,
     cloneApp,
-    resetLayout,
-    setFocusedItemId,
-  } = useLayoutStore();
+    closeAllInstancesOfApp,
+    focusLatestInstance,
+    moveItem,
+  } = useLayoutStore.getState();
 
-  const initializeApps = useMicroAppStore(state => state.initializeApps);
+  const handleLaunchAppWithToast = useCallback((app: MicroApp) => {
+      const newInstanceId = launchApp(app);
+      bringToFront(newInstanceId);
+      toast({ title: "App Launched", description: `Launched "${app.title}".` });
+  }, [launchApp, bringToFront, toast]);
 
-  const handleBringToFront = useCallback((id: string) => {
-    setFocusedItemId(id);
-    bringToFront(id);
-  }, [bringToFront, setFocusedItemId]);
-
-  const updateItemLayout = useCallback((id: string, newPos: Position, newSize?: Size) => {
-    updateStoreLayout(id, newPos, newSize);
-    handleBringToFront(id); // Moving or resizing should bring the item to the front
-  }, [updateStoreLayout, handleBringToFront]);
-
-  const handleCloseItem = useCallback((itemId: string) => {
-    closeItemInStore(itemId);
-    toast({ title: "Item Closed", description: `The window has been removed from your dashboard.` });
-  }, [closeItemInStore, toast]);
-
-  const handleToggleMinimizeItem = useCallback((itemId: string) => {
-    toggleMinimizeItemInStore(itemId);
-  }, [toggleMinimizeItemInStore]);
-
-  const ensureCardIsPresent = useCallback((cardId: string) => {
-    const { layoutItems: currentItems, addCard: addCardToStore } = useLayoutStore.getState();
-    const cardExists = currentItems.some(item => item.id === cardId);
-    if (!cardExists) {
-      addCardToStore(cardId);
-    }
-    handleBringToFront(cardId);
-  }, [handleBringToFront]);
-
-  const handleAddCard = useCallback((cardId: string) => {
-    const { layoutItems: currentItems } = useLayoutStore.getState();
-    const cardExists = currentItems.some(item => item.id === cardId);
+  const handleAddCardWithToast = useCallback((cardId: string) => {
+    const { layoutItems } = useLayoutStore.getState();
+    const cardExists = layoutItems.some(item => item.id === cardId);
     
-    ensureCardIsPresent(cardId);
+    const instanceId = addCard(cardId);
+    if(instanceId) bringToFront(instanceId);
 
     if (!cardExists) {
         const cardConfig = ALL_CARD_CONFIGS.find(c => c.id === cardId);
@@ -73,100 +48,97 @@ export function useDashboardLayout() {
             toast({ title: "Zone Added", description: `The zone "${cardConfig.title}" has been added.` });
         }
     }
-  }, [ensureCardIsPresent, toast]);
+  }, [addCard, bringToFront, toast]);
 
-  const handleLaunchApp = useCallback((app: MicroApp) => {
-    const newInstanceId = launchApp(app);
-    handleBringToFront(newInstanceId);
-    toast({ title: "App Launched", description: `Launched "${app.title}".` });
-  }, [launchApp, handleBringToFront, toast]);
-
-  const handleCloneApp = useCallback((appId: string) => {
-    const newInstanceId = cloneApp(appId);
-    if (newInstanceId) {
-        handleBringToFront(newInstanceId);
-        toast({ title: "Instance Cloned", description: "A new window instance has been created." });
-    } else {
-        toast({ variant: "destructive", title: "Clone Failed", description: "No open instance available to clone." });
-    }
-  }, [cloneApp, handleBringToFront, toast]);
+  const handleCloseItemWithToast = useCallback((itemId: string) => {
+    closeItem(itemId);
+    toast({ title: "Item Closed", description: `The window has been removed from your dashboard.` });
+  }, [closeItem, toast]);
   
-  const handleResetLayout = useCallback(() => {
+  const handleResetLayoutWithToast = useCallback(() => {
     resetLayout();
     toast({ title: "Layout Reset", description: "Dashboard layout has been reset to default." });
   }, [resetLayout, toast]);
 
-  const handleCloseAllAppInstances = useCallback((appId: string) => {
-    const { layoutItems: currentItems, closeItem: close } = useLayoutStore.getState();
-    const instancesToClose = currentItems.filter(item => item.type === 'app' && item.appId === appId);
-    if (instancesToClose.length > 0) {
-        const app = ALL_MICRO_APPS.find(a => a.id === appId);
-        instancesToClose.forEach(instance => close(instance.id));
+  const handleCloneAppWithToast = useCallback((appId: string) => {
+      const newInstanceId = cloneApp(appId);
+      if (newInstanceId) {
+          bringToFront(newInstanceId);
+          toast({ title: "Instance Cloned", description: "A new window instance has been created." });
+      } else {
+          toast({ variant: "destructive", title: "Clone Failed", description: "No open instance available to clone." });
+      }
+  }, [cloneApp, bringToFront, toast]);
+
+  const handleCloseAllWithToast = useCallback((appId: string) => {
+    const app = ALL_MICRO_APPS.find(a => a.id === appId);
+    const success = closeAllInstancesOfApp(appId);
+     if (success) {
         toast({ title: "App Closed", description: `Closed all instances of ${app?.title || 'the app'}.` });
     } else {
         toast({ variant: 'destructive', title: "Not Found", description: `No open instances of that app to close.` });
     }
-  }, [toast]);
+  }, [closeAllInstancesOfApp, toast]);
 
-  const handleFocusLatestAppInstance = useCallback((appId: string) => {
-      const { layoutItems: currentItems } = useLayoutStore.getState();
-      const instances = currentItems.filter(item => item.type === 'app' && item.appId === appId);
-      if (instances.length > 0) {
-          const latestInstance = instances.reduce((latest, current) => (current.zIndex > latest.zIndex ? current : latest));
-          handleBringToFront(latestInstance.id);
-      } else {
+  const handleFocusLatestWithToast = useCallback((appId: string) => {
+      const success = focusLatestInstance(appId);
+      if (!success) {
           toast({ variant: 'destructive', title: "Not Found", description: `No open instance of that app to focus.` });
       }
-  }, [toast, handleBringToFront]);
+  }, [focusLatestInstance, toast]);
 
-  const handleMoveItem = useCallback(({ itemId, x, y }: { itemId: string; x: number; y: number; }) => {
-    updateItemLayout(itemId, { x, y });
+  const handleMoveItemWithToast = useCallback(({ itemId, x, y }: { itemId: string; x: number; y: number; }) => {
+    moveItem(itemId, {x, y});
     toast({ title: "Item Moved", description: `Item has been moved to a new position.` });
-  }, [updateItemLayout, toast]);
+  }, [moveItem, toast]);
 
   const handleCommand = useCallback((query: string) => {
-    ensureCardIsPresent('beep');
-    eventBus.emit('beep:submitQuery', query);
-  }, [ensureCardIsPresent]);
+    // Ensure the BEEP panel is open before submitting a query to it
+    const { layoutItems } = useLayoutStore.getState();
+    const beepExists = layoutItems.some(item => item.id === 'beep');
+    if (!beepExists) {
+        const instanceId = addCard('beep');
+        if(instanceId) bringToFront(instanceId);
+    } else {
+        bringToFront('beep');
+    }
+    // Give the UI a moment to respond before sending the event
+    setTimeout(() => eventBus.emit('beep:submitQuery', query), 50);
+  }, [addCard, bringToFront]);
 
-  // Effect for initialization and event bus setup
+  // This effect runs once on mount to initialize the dashboard and set up all event listeners.
   useEffect(() => {
     initialize();
-    initializeApps(ALL_MICRO_APPS);
 
-    // Event Bus Listeners
-    eventBus.on('panel:focus', handleBringToFront);
-    eventBus.on('panel:add', handleAddCard);
-    eventBus.on('panel:remove', handleCloseItem);
-    eventBus.on('layout:reset', handleResetLayout);
-    eventBus.on('app:launch', handleLaunchApp);
-    eventBus.on('app:clone', handleCloneApp);
+    eventBus.on('panel:focus', bringToFront);
+    eventBus.on('panel:add', handleAddCardWithToast);
+    eventBus.on('panel:remove', handleCloseItemWithToast);
+    eventBus.on('layout:reset', handleResetLayoutWithToast);
+    eventBus.on('app:launch', handleLaunchAppWithToast);
+    eventBus.on('app:clone', handleCloneAppWithToast);
     eventBus.on('command:submit', handleCommand);
-    eventBus.on('app:closeAll', handleCloseAllAppInstances);
-    eventBus.on('app:focusLatest', handleFocusLatestAppInstance);
-    eventBus.on('item:move', handleMoveItem);
+    eventBus.on('app:closeAll', handleCloseAllWithToast);
+    eventBus.on('app:focusLatest', handleFocusLatestWithToast);
+    eventBus.on('item:move', handleMoveItemWithToast);
 
     return () => {
-      eventBus.off('panel:focus', handleBringToFront);
-      eventBus.off('panel:add', handleAddCard);
-      eventBus.off('panel:remove', handleCloseItem);
-      eventBus.off('layout:reset', handleResetLayout);
-      eventBus.off('app:launch', handleLaunchApp);
-      eventBus.off('app:clone', handleCloneApp);
+      eventBus.off('panel:focus', bringToFront);
+      eventBus.off('panel:add', handleAddCardWithToast);
+      eventBus.off('panel:remove', handleCloseItemWithToast);
+      eventBus.off('layout:reset', handleResetLayoutWithToast);
+      eventBus.off('app:launch', handleLaunchAppWithToast);
+      eventBus.off('app:clone', handleCloneAppWithToast);
       eventBus.off('command:submit', handleCommand);
-      eventBus.off('app:closeAll', handleCloseAllAppInstances);
-      eventBus.off('app:focusLatest', handleFocusLatestAppInstance);
-      eventBus.off('item:move', handleMoveItem);
+      eventBus.off('app:closeAll', handleCloseAllWithToast);
+      eventBus.off('app:focusLatest', handleFocusLatestWithToast);
+      eventBus.off('item:move', handleMoveItemWithToast);
     };
-  }, [initialize, initializeApps, handleBringToFront, handleAddCard, handleCloseItem, handleResetLayout, handleLaunchApp, handleCloneApp, handleCloseAllAppInstances, handleFocusLatestAppInstance, handleMoveItem, handleCommand]);
+  }, [
+      initialize, bringToFront, handleAddCardWithToast, handleCloseItemWithToast, handleResetLayoutWithToast, 
+      handleLaunchAppWithToast, handleCloneAppWithToast, handleCloseAllWithToast, handleFocusLatestWithToast, 
+      handleMoveItemWithToast, handleCommand
+  ]);
 
-  // Expose the state and the composed controller functions
-  return {
-    layoutItems,
-    isInitialized,
-    updateItemLayout,
-    handleBringToFront,
-    closeItem: handleCloseItem,
-    toggleMinimizeItem: handleToggleMinimizeItem,
-  };
+  // This hook doesn't need to return anything as it's a controller.
+  // UI components will select their state directly from the store.
 }

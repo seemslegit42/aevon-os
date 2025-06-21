@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   SearchIcon,
-  Settings2Icon as LoomIcon,
+  GitForkIcon as LoomIcon,
   ShieldCheckIcon as AegisIcon,
   CreditCardIcon as ArmoryIcon,
   GearIcon,
@@ -59,8 +59,10 @@ const TopBar: React.FC = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [commandValue, setCommandValue] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const focusedItemId = useLayoutStore((state) => state.focusedItemId);
-  const { toggle: toggleCommandPalette } = useCommandPaletteStore();
+  
+  // Use store actions directly
+  const { focusedItemId, bringToFront } = useLayoutStore();
+  const { setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
   
   useEffect(() => {
     setIsMounted(true);
@@ -75,7 +77,7 @@ const TopBar: React.FC = () => {
 
   const handleNavClick = (item: NavItemConfig) => {
     if (!item.isLink) {
-        eventBus.emit('panel:focus', item.id);
+        bringToFront(item.id);
     }
     // Links are handled by the <Link> component
   };
@@ -182,7 +184,7 @@ const TopBar: React.FC = () => {
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80" onClick={toggleCommandPalette}>
+              <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80" onClick={() => setCommandPaletteOpen(true)}>
                 <GearIcon className="h-5 w-5 aevos-icon-styling-override" />
                 <span className="sr-only">Settings</span>
               </Button>
