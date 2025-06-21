@@ -1,11 +1,8 @@
 
-import { generateObject } from 'ai';
-import { z } from 'zod';
-import { AiInsightsSchema } from '@/lib/ai-schemas';
-import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
 import { type NextRequest } from 'next/server';
 import { rateLimiter } from '@/lib/rate-limiter';
-import { groq } from '@/lib/ai/groq';
+import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
+import { generateInsights } from '@/ai/flows/generate-insights-flow';
 
 export const maxDuration = 60;
 
@@ -33,23 +30,9 @@ export async function POST(req: NextRequest) {
     
     const allAvailableItems = [...ALL_CARD_CONFIGS.map(c => c.title), ...ALL_MICRO_APPS.map(a => a.title)].join(', ');
 
-    const { object: insights } = await generateObject({
-      model: groq('llama3-70b-8192'),
-      schema: AiInsightsSchema,
-      prompt: `You are the AI Insights Engine for the ΛΞVON OS. Your goal is to provide personalized, actionable recommendations to the user based on their current workspace layout.
-      Be helpful, brief, and forward-thinking. Generate 2-3 unique insights.
-
-      Here is the user's current workspace:
-      ${openItemsSummary || 'The user has an empty workspace.'}
-
-      Here is a list of all available panels and apps: ${allAvailableItems}.
-
-      Based on this, generate a few short insights. Examples:
-      - If many windows are open: "Your workspace is getting busy! Consider closing windows you're not using to stay focused."
-      - If a user has an app open that can be cloned: "You can open another 'Sales Analytics' window by right-clicking its icon in the Micro-Apps palette and selecting 'Clone'."
-      - If a core panel is not open: "Try adding the 'Loom Studio' panel to visualize and build AI workflows."
-      - If the workspace is empty: "Your workspace is ready for action. Launch an app from the Micro-Apps palette or add a panel using the command palette (Cmd+K)."
-      `,
+    const insights = await generateInsights({ 
+        layoutItemsSummary: openItemsSummary || 'The user has an empty workspace.',
+        allAvailableItemsSummary: allAvailableItems,
     });
 
     return Response.json(insights);
