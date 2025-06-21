@@ -57,7 +57,6 @@ interface NavItemConfig {
 const mainNavItems: NavItemConfig[] = [
   { id: 'loomStudio', label: 'Loom', icon: LoomIcon },
   { id: 'aegisSecurity', label: 'Λegis', icon: AegisIcon },
-  { id: 'armoryMarketplace', label: 'Λrmory', icon: ArmoryIcon },
 ];
 
 const TopBar: React.FC = () => {
