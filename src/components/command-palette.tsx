@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlusCircleIcon, Trash2Icon, SearchIcon, XIcon, GearIcon, RocketIcon } from '@/components/icons';
+import { PlusCircleIcon, Trash2Icon, SearchIcon, XIcon, GearIcon, RocketIcon, TargetIcon } from '@/components/icons';
 import { ALL_CARD_CONFIGS } from '@/config/dashboard-cards.config';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { useMicroApps } from '@/hooks/use-micro-apps';
@@ -25,6 +25,7 @@ const CommandPalette: React.FC = () => {
   const { layoutItems } = useLayoutStore();
   const [searchTerm, setSearchTerm] = useState('');
   const allMicroApps = useMicroApps();
+  const appMap = new Map(allMicroApps.map(app => [app.id, app]));
 
   const handleLaunchApp = (app: MicroApp) => {
     eventBus.emit('app:launch', app);
@@ -38,12 +39,17 @@ const CommandPalette: React.FC = () => {
   const handleCloseItem = (itemId: string) => {
       eventBus.emit('panel:remove', itemId);
   }
+  
+  const handleFocusItem = (itemId: string) => {
+    eventBus.emit('panel:focus', itemId);
+    setOpen(false);
+  }
 
   const handleResetLayout = () => {
       eventBus.emit('layout:reset');
   }
   
-  const activeCardIds = layoutItems.filter(i => i.type === 'card').map(i => i.id);
+  const activeCardIds = new Set(layoutItems.filter(i => i.type === 'card').map(i => i.cardId));
 
   const filteredCards = ALL_CARD_CONFIGS.filter(card =>
     !searchTerm ||
@@ -56,6 +62,12 @@ const CommandPalette: React.FC = () => {
     app.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     app.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const openAppInstances = layoutItems.filter(item => 
+      item.type === 'app' && 
+      (!searchTerm || appMap.get(item.appId)?.title.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -78,7 +90,7 @@ const CommandPalette: React.FC = () => {
       <DialogContent className="sm:max-w-[600px] p-0 max-h-[80vh] flex flex-col">
         <DialogHeader className="p-4 border-b border-border/30">
           <DialogTitle className="font-headline text-primary flex items-center gap-2"><GearIcon /> Manage Workspace</DialogTitle>
-          <DialogDescription>Add zones, launch micro-apps, or reset your layout.</DialogDescription>
+          <DialogDescription>Add zones, launch micro-apps, or manage open windows.</DialogDescription>
         </DialogHeader>
 
         <div className="p-4">
@@ -86,7 +98,7 @@ const CommandPalette: React.FC = () => {
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="Search zones or apps..."
+              placeholder="Search zones, apps, or open windows..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 bg-input border-input"
@@ -141,7 +153,7 @@ const CommandPalette: React.FC = () => {
 
             <h4 className="text-sm font-semibold text-muted-foreground px-1 pt-4">Dashboard Zones</h4>
             {filteredCards.map(card => {
-              const isActive = activeCardIds.includes(card.id);
+              const isActive = activeCardIds.has(card.id);
               const Icon = card.icon as ElementType;
               return (
                 <div
@@ -186,9 +198,41 @@ const CommandPalette: React.FC = () => {
              {filteredCards.length === 0 && searchTerm && (
               <p className="text-sm text-muted-foreground text-center py-2">No zones match your search.</p>
              )}
-             {filteredCards.length === 0 && filteredApps.length === 0 && !searchTerm && (
-                <p className="text-sm text-muted-foreground text-center py-4">No zones or apps available.</p>
-             )}
+             
+            {openAppInstances.length > 0 && (
+                <>
+                <h4 className="text-sm font-semibold text-muted-foreground px-1 pt-4">Open Windows</h4>
+                {openAppInstances.map(item => {
+                    const appConfig = appMap.get(item.appId);
+                    if (!appConfig) return null;
+                    const AppIcon = appConfig.icon;
+                    return (
+                        <div key={item.id} className="flex items-start justify-between p-3 rounded-md bg-card/70 dark:bg-card/80 hover:bg-primary/10 transition-colors">
+                            <div className="flex items-start space-x-3 flex-1 mr-4">
+                                <AppIcon className="w-5 h-5 text-secondary mt-1 flex-shrink-0" />
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-medium text-foreground">{appConfig.title}</span>
+                                    <p className="text-xs text-muted-foreground mt-1 font-mono">ID: ...{item.id.slice(-6)}</p>
+                                </div>
+                            </div>
+                            <div className="flex-shrink-0 flex items-center space-x-2">
+                                <Button variant="outline" size="sm" onClick={() => handleFocusItem(item.id)}>
+                                    <TargetIcon className="w-4 h-4 mr-2"/>
+                                    Focus
+                                </Button>
+                                <Button variant="outline" size="icon" onClick={() => handleCloseItem(item.id)} className="text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive h-9 w-9">
+                                    <XIcon className="w-4 h-4"/>
+                                    <span className="sr-only">Close</span>
+                                </Button>
+                            </div>
+                        </div>
+                    );
+                })}
+                </>
+            )}
+            {searchTerm && openAppInstances.length === 0 && filteredCards.length === 0 && filteredApps.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-4">No zones, apps, or open windows match your search.</p>
+            )}
           </div>
         </ScrollArea>
         <DialogFooter className="p-4 border-t border-border/30">
