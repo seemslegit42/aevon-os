@@ -15,10 +15,13 @@ const AiInsightsCardContent: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const { toast } = useToast();
 
-    // Selectively subscribe to layoutItems to trigger refetch on change
+    // Selectively subscribe to layoutItems.
     const layoutItems = useLayoutStore(state => state.layoutItems, shallow);
 
     const fetchInsights = useCallback(async () => {
+        // Prevent multiple requests from firing at the same time.
+        if (isLoading) return;
+
         setIsLoading(true);
         setError(null);
         
@@ -47,12 +50,14 @@ const AiInsightsCardContent: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [layoutItems, toast]);
+    }, [layoutItems, toast, isLoading]);
 
-    // Fetch insights on initial mount and whenever layoutItems change
+    // Fetch insights on initial mount only.
+    // Subsequent fetches are triggered manually by the user to prevent rate-limiting.
     useEffect(() => {
         fetchInsights();
-    }, [fetchInsights]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     
     const LoadingSkeleton = () => (
         <div className="space-y-3">
