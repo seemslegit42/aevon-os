@@ -104,6 +104,17 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     defaultLayout: { x: 870, y: 530, width: 450, height: 210, zIndex: 5 },
     minWidth: 250, minHeight: 180,
   },
+    {
+    id: 'aegisSecurity',
+    title: 'Aegis Security',
+    icon: ShieldCheckIcon,
+    isDismissible: true,
+    description: "Real-time security posture and threat analysis.",
+    content: AegisSecurityCardContent,
+    defaultLayout: { x: 1330, y: 20, width: 550, height: 720, zIndex: 9 },
+    minWidth: 450,
+    minHeight: 500,
+  },
   {
     id: 'liveOrchestrationFeed', title: 'Live Orchestration Feed', icon: ListChecksIcon, isDismissible: true,
     description: "A real-time feed of events and actions performed by the orchestrated AI agents and system workflows.",

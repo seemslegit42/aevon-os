@@ -1,3 +1,4 @@
+
 // src/components/icons/CloudCogIcon.tsx
 import React from 'react';
 import type { IconProps } from '../../types/icon';
