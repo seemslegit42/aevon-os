@@ -1,6 +1,5 @@
-
 // src/components/icons/CreditCardIcon.tsx
-import React from 'react';
+import type React from 'react';
 import type { IconProps } from '../../types/icon';
 
 export const CreditCardIcon: React.FC<IconProps> = ({ className, size = 20, style }) => (
@@ -8,7 +7,7 @@ export const CreditCardIcon: React.FC<IconProps> = ({ className, size = 20, styl
     width={size} 
     height={size} 
     viewBox="0 0 256 256" 
-    className={`aevos-icon-styling-override ${className || ''}`}
+    className={className}
     style={style}
     xmlns="http://www.w3.org/2000/svg"
   >
@@ -23,5 +22,3 @@ export const CreditCardIcon: React.FC<IconProps> = ({ className, size = 20, styl
     <line x1="80" y1="152" x2="120" y2="152" fill="none" stroke="url(#aevosIconGradient)" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
   </svg>
 );
-
-    

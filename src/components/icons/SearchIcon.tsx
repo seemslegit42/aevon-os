@@ -1,6 +1,5 @@
-
 // src/components/icons/SearchIcon.tsx
-import React from 'react';
+import type React from 'react';
 import type { IconProps } from '../../types/icon';
 
 export const SearchIcon: React.FC<IconProps> = ({ className, size = 20, style }) => (
@@ -8,7 +7,7 @@ export const SearchIcon: React.FC<IconProps> = ({ className, size = 20, style })
     width={size} 
     height={size} 
     viewBox="0 0 256 256" 
-    className={`aevos-icon-styling-override ${className || ''}`}
+    className={className}
     style={style}
     xmlns="http://www.w3.org/2000/svg"
   >
@@ -16,4 +15,3 @@ export const SearchIcon: React.FC<IconProps> = ({ className, size = 20, style })
     <line x1="175.4" y1="175.4" x2="224" y2="224" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="16"/>
   </svg>
 );
-    

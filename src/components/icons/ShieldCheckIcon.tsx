@@ -1,6 +1,5 @@
-
 // src/components/icons/ShieldCheckIcon.tsx
-import React from 'react';
+import type React from 'react';
 import type { IconProps } from '../../types/icon';
 
 export const ShieldCheckIcon: React.FC<IconProps> = ({ className, size = 20, style }) => (
@@ -8,7 +7,7 @@ export const ShieldCheckIcon: React.FC<IconProps> = ({ className, size = 20, sty
     width={size} 
     height={size} 
     viewBox="0 0 256 256" 
-    className={`aevos-icon-styling-override ${className || ''}`}
+    className={className}
     style={style}
     xmlns="http://www.w3.org/2000/svg"
   >
@@ -24,4 +23,3 @@ export const ShieldCheckIcon: React.FC<IconProps> = ({ className, size = 20, sty
     <polyline points="111.9 148.1 143.9 116.1 132.1 103.9 100.1 135.9 80 115.9 68.1 127.9 100.1 159.9 111.9 148.1" fill="#FFFFFF"/>
   </svg>
 );
-    

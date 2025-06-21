@@ -1,6 +1,5 @@
-
 // src/components/icons/HomeIcon.tsx
-import React from 'react';
+import type React from 'react';
 import type { IconProps } from '../../types/icon';
 
 export const HomeIcon: React.FC<IconProps> = ({ className, size = 20, style }) => (
@@ -8,7 +7,7 @@ export const HomeIcon: React.FC<IconProps> = ({ className, size = 20, style }) =
     width={size} 
     height={size} 
     viewBox="0 0 256 256" 
-    className={`aevos-icon-style ${className || ''}`}
+    className={className}
     style={style}
     xmlns="http://www.w3.org/2000/svg"
   >
