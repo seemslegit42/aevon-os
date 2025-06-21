@@ -1,2 +1,2 @@
-// This file is intentionally left blank to resolve build errors.
-// The Genkit dependency has been removed from the project.
+// This file is no longer used. AI client initialization now happens within each API route.
+// This file is intentionally left blank to deprecate its use.

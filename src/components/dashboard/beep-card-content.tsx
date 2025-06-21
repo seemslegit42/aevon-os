@@ -1,13 +1,13 @@
 
 "use client";
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useChat } from 'ai/react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { SendIcon, XCircleIcon, MagicWandIcon } from '@/components/icons';
-import { useBeepStore } from '@/stores/beep.store';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { SendIcon, MagicWandIcon, UserIcon } from '@/components/icons';
+import { cn } from '@/lib/utils';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface BeepCardContentProps {
   aiPromptPlaceholder?: string;
@@ -16,87 +16,97 @@ interface BeepCardContentProps {
 const BeepCardContent: React.FC<BeepCardContentProps> = ({ 
   aiPromptPlaceholder = "Ask BEEP anything..." 
 }) => {
-  const { 
-    aiPrompt, 
-    setAiPrompt, 
-    aiResponse, 
-    isAiLoading, 
-    submitPrompt, 
-    clearResponse 
-  } = useBeepStore();
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+    api: '/api/ai/chat'
+  });
 
-  const handleSubmit = () => {
-    // The backend API handles cases where system snapshot data isn't provided.
-    submitPrompt();
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Scroll to bottom when new messages are added
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTo({
+        top: scrollAreaRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
+  }, [messages]);
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+    handleSubmit(e);
   };
-
+  
   const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      handleSubmit();
+      // Manually create a form event to pass to the hook's handleSubmit
+      const form = event.currentTarget.closest('form');
+      if (form) {
+        form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+      }
     }
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="relative flex-grow flex flex-col">
-        <Textarea
-          placeholder={aiPromptPlaceholder}
-          value={aiPrompt}
-          onChange={(e) => setAiPrompt(e.target.value)}
-          onKeyPress={handleKeyPress}
-          rows={2}
-          className="bg-input border-input placeholder:text-muted-foreground text-sm mb-2 resize-none"
-          aria-label="BEEP prompt input"
-        />
-        <div className="flex items-center space-x-2 mb-3">
-          <Button 
-            onClick={handleSubmit} 
-            disabled={isAiLoading || !aiPrompt.trim()} 
-            size="sm" 
-            className="flex-1 btn-gradient-primary-accent"
-          >
-            <SendIcon className="w-4 h-4 mr-2" />
-            {isAiLoading ? 'BEEP Processing...' : 'Send to BEEP'}
-          </Button>
-          {aiResponse && !isAiLoading && (
-            <Button variant="ghost" size="icon" onClick={clearResponse} className="text-muted-foreground hover:text-destructive">
-              <XCircleIcon className="w-5 h-5" />
-            </Button>
-          )}
-        </div>
-        
-        {isAiLoading && !aiResponse && (
-          <div className="flex-grow flex flex-col items-center justify-center text-muted-foreground p-4">
-            <MagicWandIcon className="w-10 h-10 mb-3 animate-pulse text-primary" />
-            <p className="text-sm">BEEP is thinking...</p>
-            <p className="text-xs">Analyzing context and preparing response.</p>
-          </div>
-        )}
-
-        {aiResponse && (
-          <Card className="mt-0 flex-grow glassmorphism-panel">
-            <CardHeader className="py-2">
-              <CardTitle className="text-sm font-headline text-primary flex items-center">
-                <MagicWandIcon className="w-4 h-4 mr-2 text-secondary" /> BEEP Response
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-1 pb-2 text-sm">
-              <ScrollArea className="h-[100px] pr-2"> 
-                <div className="whitespace-pre-wrap text-foreground">
-                  {aiResponse}
+    <div className="flex flex-col h-full p-1">
+      <div className="flex-grow mb-2 min-h-0">
+        <ScrollArea className="h-full pr-2" ref={scrollAreaRef}>
+          <div className="space-y-4">
+            {messages.length > 0 ? (
+              messages.map(m => (
+                <div key={m.id} className={cn("flex items-start gap-3", m.role === 'user' ? 'justify-end' : '')}>
+                  {m.role === 'assistant' && <MagicWandIcon className="w-5 h-5 text-primary flex-shrink-0 mt-1" />}
+                  <div className={cn(
+                    "p-3 rounded-lg max-w-sm whitespace-pre-wrap text-sm",
+                    m.role === 'user'
+                      ? 'bg-primary/80 text-primary-foreground'
+                      : 'bg-muted/50 text-foreground'
+                  )}>
+                    {m.content}
+                  </div>
+                  {m.role === 'user' && <UserIcon className="w-5 h-5 text-primary flex-shrink-0 mt-1" />}
                 </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        )}
-        
-        {!aiResponse && !isAiLoading && (
-          <div className="flex-grow flex items-center justify-center text-muted-foreground text-center p-4">
-            <p className="text-sm">BEEP's responses will appear here. <br /> It learns from your interactions across the OS.</p>
+              ))
+            ) : (
+              <div className="flex-grow flex h-full items-center justify-center text-muted-foreground text-center">
+                <p className="text-sm">BEEP's responses will appear here. <br /> It learns from your interactions across the OS.</p>
+              </div>
+            )}
+            {isLoading && messages[messages.length-1]?.role === 'user' && (
+              <div className="flex items-start gap-3">
+                <MagicWandIcon className="w-5 h-5 text-primary flex-shrink-0 mt-1 animate-pulse" />
+                <div className="p-3 rounded-lg bg-muted/50 text-foreground text-sm">...</div>
+              </div>
+            )}
           </div>
-        )}
+        </ScrollArea>
       </div>
+
+      <form onSubmit={handleFormSubmit} className="flex-shrink-0">
+        <div className="relative">
+          <Textarea
+            placeholder={aiPromptPlaceholder}
+            value={input}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyPress}
+            rows={1}
+            className="bg-input border-input placeholder:text-muted-foreground text-sm pr-20 resize-none min-h-[40px]"
+            aria-label="BEEP prompt input"
+            disabled={isLoading}
+          />
+          <Button 
+            type="submit" 
+            disabled={isLoading || !input.trim()} 
+            size="sm" 
+            className="absolute right-2 top-1/2 -translate-y-1/2 btn-gradient-primary-accent"
+          >
+            <SendIcon className="w-4 h-4" />
+            <span className="sr-only">Send</span>
+          </Button>
+        </div>
+      </form>
     </div>
   );
 };

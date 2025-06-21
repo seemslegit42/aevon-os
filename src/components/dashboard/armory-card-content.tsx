@@ -21,8 +21,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { generateAppDescription } from '@/ai/flows/generate-app-description';
-import { AppDescriptionInputSchema } from '@/ai/schemas';
+import { AppDescriptionInputSchema } from '@/lib/ai-schemas';
 
 
 type AppDescriptionFormValues = z.infer<typeof AppDescriptionInputSchema>;
@@ -51,7 +50,18 @@ const ArmoryCardContent: React.FC = () => {
     setGeneratedDescription(null); 
 
     try {
-      const description = await generateAppDescription(values);
+      const response = await fetch('/api/ai/generate-description', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Request failed with status ${response.status}`);
+      }
+
+      const { description } = await response.json();
       setGeneratedDescription(description);
     } catch (error) {
       console.error("Error generating app description:", error);
