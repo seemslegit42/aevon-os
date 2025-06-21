@@ -49,14 +49,16 @@ import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
 
 interface NavItemConfig {
-  id: string; // The card ID to focus on
+  id: string; // The card ID to focus on, or a URL slug
   label: string;
   icon: ElementType;
+  isLink?: boolean;
 }
 
 const mainNavItems: NavItemConfig[] = [
   { id: 'loomStudio', label: 'Loom', icon: LoomIcon },
   { id: 'aegisSecurity', label: 'Λegis', icon: AegisIcon },
+  { id: '/armory', label: 'Armory', icon: ArmoryIcon, isLink: true },
 ];
 
 const TopBar: React.FC = () => {
@@ -103,8 +105,11 @@ const TopBar: React.FC = () => {
     };
   }, [addNotification]);
 
-  const handleNavClick = (cardId: string) => {
-    eventBus.emit('panel:focus', cardId);
+  const handleNavClick = (item: NavItemConfig) => {
+    if (!item.isLink) {
+        eventBus.emit('panel:focus', item.id);
+    }
+    // Links are handled by the <Link> component
   };
   
   const handleCommandSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -166,18 +171,25 @@ const TopBar: React.FC = () => {
         {/* Center: Navigation & Command Bar */}
         <div className="flex-1 flex items-center justify-center space-x-6 px-4">
           <nav className="hidden md:flex items-center space-x-1">
-            {mainNavItems.map((item) => (
-              <Button
-                key={item.id}
-                variant="ghost"
-                size="sm"
-                className="font-body text-primary-foreground opacity-70 hover:text-primary-foreground hover:opacity-100"
-                onClick={() => handleNavClick(item.id)}
-              >
-                <item.icon className="w-4 h-4 mr-2 aevos-icon-styling-override" />
-                <span>{item.label}</span>
-              </Button>
-            ))}
+            {mainNavItems.map((item) => {
+                const navButton = (
+                     <Button
+                        key={item.id}
+                        variant="ghost"
+                        size="sm"
+                        className="font-body text-primary-foreground opacity-70 hover:text-primary-foreground hover:opacity-100"
+                        onClick={() => handleNavClick(item)}
+                    >
+                        <item.icon className="w-4 h-4 mr-2 aevos-icon-styling-override" />
+                        <span>{item.label}</span>
+                    </Button>
+                );
+
+                if (item.isLink) {
+                    return <Link href={item.id} key={item.id} passHref legacyBehavior>{navButton}</Link>;
+                }
+                return navButton;
+            })}
             <ContextualActions />
           </nav>
           <div className="relative w-full max-w-md">

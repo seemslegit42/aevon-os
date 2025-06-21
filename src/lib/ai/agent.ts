@@ -7,15 +7,15 @@ import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import { DynamicTool } from '@langchain/core/tools';
 import { z } from 'zod';
-import { generateObject } from 'ai';
-import { google } from '@/lib/ai/groq';
 import {
   TextCategorySchema,
   InvoiceDataSchema,
   KnowledgeBaseSearchResultSchema,
   SalesMetricsSchema,
+  SubscriptionStatusSchema,
 } from '@/lib/ai-schemas';
 import * as SalesDataService from '@/services/sales-data.service';
+import * as BillingService from '@/services/billing.service';
 import {
   ALL_CARD_CONFIGS,
   ALL_MICRO_APPS,
@@ -29,7 +29,8 @@ const KNOWLEDGE_BASE = {
     'loom studio': 'Loom Studio is a visual workspace for designing, testing, and orchestrating complex AI workflows and prompt chains.',
     'aegis': 'Aegis is the security command center for AEVON OS. It provides a real-time overview of your security posture, including phishing resilience, cloud security, and endpoint detection.',
     'beep': 'BEEP (Behavioral Event & Execution Processor) is your natural language interface for tasking, information retrieval, and personalized briefings.',
-    'micro-apps': 'Micro-apps are small, single-purpose applications that can be launched into the workspace for specific tasks, like sales analytics or content creation.'
+    'micro-apps': 'Micro-apps are small, single-purpose applications that can be launched into the workspace for specific tasks, like sales analytics or content creation.',
+    'armory': 'The Armory is your portal for managing your AEVON OS subscription and exploring add-ons.',
 };
 
 const searchKnowledgeBaseTool = new DynamicTool({
@@ -130,12 +131,29 @@ const getSalesMetricsTool = new DynamicTool({
     },
 });
 
+const getSubscriptionStatusTool = new DynamicTool({
+    name: "getSubscriptionStatus",
+    description: "Retrieves the user's current subscription plan, status, and renewal date.",
+    schema: z.object({}),
+    func: async () => {
+        const status = await BillingService.getSubscriptionStatus();
+        const result: z.infer<typeof SubscriptionStatusSchema> = {
+            planName: status.planName,
+            status: status.status,
+            renewsOn: status.renewsOn,
+            manageUrl: status.manageUrl,
+        };
+        return JSON.stringify(result);
+    }
+});
+
 const serverTools = [
     categorizeTextTool,
     extractInvoiceDataTool,
     logAndAlertAegisTool,
     searchKnowledgeBaseTool,
-    getSalesMetricsTool
+    getSalesMetricsTool,
+    getSubscriptionStatusTool,
 ];
 const toolExecutor = new ToolNode(serverTools);
 
@@ -228,6 +246,7 @@ const getSystemPrompt = (layout: LayoutItem[]) => {
 **RULES FOR QUESTION ANSWERING & DATA ANALYSIS**
 - For general questions about OS features (e.g., "What is Loom Studio?"), you MUST use the \`searchKnowledgeBase\` tool to find the answer.
 - For questions about sales data (e.g., "how are sales?", "show me revenue"), you MUST use the \`getSalesMetrics\` tool.
+- For questions about the user's subscription or billing (e.g., "what's my plan?", "manage subscription"), you MUST use the \`getSubscriptionStatus\` tool.
 - For simple, conversational questions (e.g., "How are you?"), just respond directly without calling any tools.
 
 **RULES FOR UI MANIPULATION**

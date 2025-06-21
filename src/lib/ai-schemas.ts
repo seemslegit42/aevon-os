@@ -62,3 +62,12 @@ export const SalesMetricsSchema = z.object({
     trend: z.string().optional().describe("A brief, one-sentence textual summary of the sales trend."),
 });
 export type SalesMetrics = z.infer<typeof SalesMetricsSchema>;
+
+// Defines the structured output for the billing/subscription status tool.
+export const SubscriptionStatusSchema = z.object({
+  planName: z.enum(['Pro', 'Team', 'Enterprise']).describe("The name of the user's current subscription plan."),
+  status: z.enum(['active', 'trialing', 'canceled']).describe("The current status of the subscription."),
+  renewsOn: z.string().describe("The date the subscription renews, in YYYY-MM-DD format."),
+  manageUrl: z.string().url().describe("The URL to the customer's billing management portal."),
+});
+export type SubscriptionStatus = z.infer<typeof SubscriptionStatusSchema>;

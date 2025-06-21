@@ -15,10 +15,11 @@ import {
   LoaderIcon,
   BookOpenIcon,
   DollarSignIcon,
+  CreditCardIcon,
 } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import type { IconProps } from '@/types/icon';
-import { TextCategorySchema, InvoiceDataSchema, KnowledgeBaseSearchResultSchema, SalesMetricsSchema } from '@/lib/ai-schemas';
+import { TextCategorySchema, InvoiceDataSchema, KnowledgeBaseSearchResultSchema, SalesMetricsSchema, SubscriptionStatusSchema } from '@/lib/ai-schemas';
 
 const toolIcons: Record<string, React.ElementType<IconProps>> = {
   focusItem: TargetIcon,
@@ -33,6 +34,7 @@ const toolIcons: Record<string, React.ElementType<IconProps>> = {
   logAndAlertAegis: CheckCircleIcon,
   searchKnowledgeBase: BookOpenIcon,
   getSalesMetrics: DollarSignIcon,
+  getSubscriptionStatus: CreditCardIcon,
 };
 
 const toolFriendlyNames: Record<string, string> = {
@@ -47,6 +49,7 @@ const toolFriendlyNames: Record<string, string> = {
   logAndAlertAegis: 'Log Event',
   searchKnowledgeBase: 'Search Knowledge Base',
   getSalesMetrics: 'Get Sales Metrics',
+  getSubscriptionStatus: 'Get Subscription Status',
 };
 
 
@@ -104,6 +107,17 @@ const ToolResultContent: React.FC<{ toolName: string; result: any }> = ({ toolNa
               </ul>
             </div>
             {data.trend && <p className="text-xs italic text-muted-foreground">{data.trend}</p>}
+          </div>
+        );
+      }
+      case 'getSubscriptionStatus': {
+        const data = SubscriptionStatusSchema.parse(result);
+        return (
+          <div className="text-foreground font-sans text-xs space-y-1">
+              <p><strong>Plan:</strong> {data.planName}</p>
+              <p><strong>Status:</strong> <span className="capitalize">{data.status}</span></p>
+              <p><strong>Renews:</strong> {new Date(data.renewsOn).toLocaleDateString()}</p>
+              <a href={data.manageUrl} target="_blank" rel="noopener noreferrer" className="text-accent underline">Manage Billing</a>
           </div>
         );
       }

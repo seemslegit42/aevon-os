@@ -23,6 +23,7 @@ import {
   BrainCircuitIcon,
   LayersIcon,
   PenSquareIcon,
+  CreditCardIcon,
 } from '@/components/icons';
 
 
@@ -47,6 +48,16 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     permissions: [], // No special permissions needed
     tags: ['ai', 'writing', 'marketing'],
     defaultSize: { width: 750, height: 450 },
+  },
+  {
+    id: 'app-subscriptions',
+    title: 'Armory Subscriptions',
+    description: 'View and manage your AEVON OS subscription plan.',
+    icon: CreditCardIcon,
+    component: lazy(() => import('@/components/dashboard/micro-apps/armory-subscriptions-app')),
+    permissions: [],
+    tags: ['billing', 'account'],
+    defaultSize: { width: 400, height: 420 },
   },
 ];
 
