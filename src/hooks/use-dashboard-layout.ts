@@ -26,6 +26,7 @@ export function useDashboardLayout() {
     closeItem,
     addCard,
     launchApp,
+    cloneApp,
     resetLayout,
   } = useLayoutStore();
 
@@ -68,6 +69,16 @@ export function useDashboardLayout() {
     handleBringToFront(newInstanceId);
     toast({ title: "App Launched", description: `Launched "${app.title}".` });
   }, [launchApp, handleBringToFront, toast]);
+
+  const handleCloneApp = useCallback((appId: string) => {
+    const newInstanceId = cloneApp(appId);
+    if (newInstanceId) {
+        handleBringToFront(newInstanceId);
+        toast({ title: "Instance Cloned", description: "A new window instance has been created." });
+    } else {
+        toast({ variant: "destructive", title: "Clone Failed", description: "No open instance available to clone." });
+    }
+  }, [cloneApp, handleBringToFront, toast]);
   
   const handleResetLayout = useCallback(() => {
     setFocusedCardId(null);
@@ -91,6 +102,7 @@ export function useDashboardLayout() {
     eventBus.on('panel:remove', handleCloseItem);
     eventBus.on('layout:reset', handleResetLayout);
     eventBus.on('app:launch', handleLaunchApp);
+    eventBus.on('app:clone', handleCloneApp);
     eventBus.on('command:submit', handleCommand);
 
     return () => {
@@ -99,9 +111,10 @@ export function useDashboardLayout() {
       eventBus.off('panel:remove', handleCloseItem);
       eventBus.off('layout:reset', handleResetLayout);
       eventBus.off('app:launch', handleLaunchApp);
+      eventBus.off('app:clone', handleCloneApp);
       eventBus.off('command:submit', handleCommand);
     };
-  }, [initialize, initializeApps, handleBringToFront, handleAddCard, handleCloseItem, handleResetLayout, handleLaunchApp]);
+  }, [initialize, initializeApps, handleBringToFront, handleAddCard, handleCloseItem, handleResetLayout, handleLaunchApp, handleCloneApp]);
 
   // Expose the state and the composed controller functions
   return {

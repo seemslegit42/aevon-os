@@ -16,6 +16,7 @@ interface LayoutState {
   closeItem: (id: string) => void;
   addCard: (cardId: string) => string | undefined;
   launchApp: (app: MicroApp) => string;
+  cloneApp: (appId: string) => string | undefined;
   resetLayout: () => void;
 }
 
@@ -139,6 +140,40 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
         zIndex: maxZ + 1
     };
     
+    const newItems = [...currentItems, newAppWindow];
+    saveStateToLocalStorage(newItems);
+    set({ layoutItems: newItems });
+    return instanceId;
+  },
+
+  cloneApp: (appId) => {
+    const currentItems = get().layoutItems;
+    const openInstances = currentItems.filter(item => item.type === 'app' && item.appId === appId);
+
+    if (openInstances.length === 0) {
+        return undefined; // No instance to clone
+    }
+
+    // Find the instance with the highest zIndex (most recently focused)
+    const sourceInstance = openInstances.reduce((latest, current) => 
+        (current.zIndex > latest.zIndex ? current : latest)
+    );
+    
+    const instanceId = `${appId}-${crypto.randomUUID()}`;
+    const maxZ = Math.max(0, ...currentItems.map(item => item.zIndex || 0));
+    
+    // Create a new window by cloning properties from the source
+    const newAppWindow: LayoutItem = {
+        id: instanceId,
+        type: 'app',
+        appId: sourceInstance.appId,
+        x: sourceInstance.x + 30, // Stagger the clone
+        y: sourceInstance.y + 30,
+        width: sourceInstance.width,
+        height: sourceInstance.height,
+        zIndex: maxZ + 1,
+    };
+
     const newItems = [...currentItems, newAppWindow];
     saveStateToLocalStorage(newItems);
     set({ layoutItems: newItems });

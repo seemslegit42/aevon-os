@@ -12,6 +12,7 @@ type AppEvents = {
 
   // App Events
   'app:launch': MicroApp; // payload is the app object to launch
+  'app:clone': string; // payload is the appId of the app to clone
 
   // AI Command Events
   'command:submit': string; // payload is the query from the top bar

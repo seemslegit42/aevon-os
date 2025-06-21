@@ -13,7 +13,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Badge } from '../ui/badge';
-import { RocketIcon, TargetIcon, XIcon, PinIcon, Trash2Icon } from '../icons';
+import { RocketIcon, TargetIcon, XIcon, PinIcon, Trash2Icon, CopyIcon } from '../icons';
 import eventBus from '@/lib/event-bus';
 import type { MicroApp } from '@/stores/micro-app.store';
 import {
@@ -90,6 +90,10 @@ const MicroAppsCardContent: React.FC = () => {
         setMenuOpen(true);
     };
 
+    const handleClone = (appId: string) => {
+        eventBus.emit('app:clone', appId);
+    };
+
     return (
       <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
         <Tooltip>
@@ -141,11 +145,11 @@ const MicroAppsCardContent: React.FC = () => {
         <DropdownMenuContent className="w-56 glassmorphism-panel" onClick={(e) => e.preventDefault()}>
           <DropdownMenuLabel>{app.title}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => { handleLaunch(app); setMenuOpen(false); }}>
-            <RocketIcon />
-            <span>Clone Instance</span>
+          <DropdownMenuItem onClick={() => { handleClone(app.id); setMenuOpen(false); }} disabled={!isActive}>
+            <CopyIcon />
+            <span>Clone Latest Instance</span>
           </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => { handleFocusLatestInstance(app.id); setMenuOpen(false); }} disabled={!isActive}>
+          <DropdownMenuItem onClick={() => { handleFocusLatestInstance(app.id); setMenuOpen(false); }} disabled={!isActive}>
               <TargetIcon />
             <span>Focus Latest</span>
           </DropdownMenuItem>
