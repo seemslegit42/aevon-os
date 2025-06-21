@@ -86,6 +86,28 @@ export function useDashboardLayout() {
     toast({ title: "Layout Reset", description: "Dashboard layout has been reset to default." });
   }, [resetLayout, setFocusedCardId, toast]);
 
+  const handleCloseAllAppInstances = useCallback((appId: string) => {
+    const { layoutItems: currentItems, closeItem: close } = useLayoutStore.getState();
+    const instancesToClose = currentItems.filter(item => item.type === 'app' && item.appId === appId);
+    if (instancesToClose.length > 0) {
+        instancesToClose.forEach(instance => close(instance.id));
+        toast({ title: "App Closed", description: `Closed all instances of ${appId}.` });
+    } else {
+        toast({ variant: 'destructive', title: "Not Found", description: `No open instances of ${appId} to close.` });
+    }
+  }, [toast]);
+
+  const handleFocusLatestAppInstance = useCallback((appId: string) => {
+      const { layoutItems: currentItems } = useLayoutStore.getState();
+      const instances = currentItems.filter(item => item.type === 'app' && item.appId === appId);
+      if (instances.length > 0) {
+          const latestInstance = instances.reduce((latest, current) => (current.zIndex > latest.zIndex ? current : latest));
+          handleBringToFront(latestInstance.id);
+      } else {
+          toast({ variant: 'destructive', title: "Not Found", description: `No open instance of ${appId} to focus.` });
+      }
+  }, [toast, handleBringToFront]);
+
   // Effect for initialization and event bus setup
   useEffect(() => {
     initialize();
@@ -104,6 +126,8 @@ export function useDashboardLayout() {
     eventBus.on('app:launch', handleLaunchApp);
     eventBus.on('app:clone', handleCloneApp);
     eventBus.on('command:submit', handleCommand);
+    eventBus.on('app:closeAll', handleCloseAllAppInstances);
+    eventBus.on('app:focusLatest', handleFocusLatestAppInstance);
 
     return () => {
       eventBus.off('panel:focus', handleBringToFront);
@@ -113,8 +137,10 @@ export function useDashboardLayout() {
       eventBus.off('app:launch', handleLaunchApp);
       eventBus.off('app:clone', handleCloneApp);
       eventBus.off('command:submit', handleCommand);
+      eventBus.off('app:closeAll', handleCloseAllAppInstances);
+      eventBus.off('app:focusLatest', handleFocusLatestAppInstance);
     };
-  }, [initialize, initializeApps, handleBringToFront, handleAddCard, handleCloseItem, handleResetLayout, handleLaunchApp, handleCloneApp]);
+  }, [initialize, initializeApps, handleBringToFront, handleAddCard, handleCloseItem, handleResetLayout, handleLaunchApp, handleCloneApp, handleCloseAllAppInstances, handleFocusLatestAppInstance]);
 
   // Expose the state and the composed controller functions
   return {

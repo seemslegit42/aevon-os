@@ -5,7 +5,7 @@ import type { MicroApp } from '@/stores/micro-app.store';
 // Define event types and their payloads
 type AppEvents = {
   // Panel/Card Events
-  'panel:focus': string; // payload is the cardId
+  'panel:focus': string; // payload is the cardId or instanceId
   'panel:add': string; // payload is cardId
   'panel:remove': string; // payload is itemId (cardId or app instance id)
   'layout:reset': undefined;
@@ -13,6 +13,8 @@ type AppEvents = {
   // App Events
   'app:launch': MicroApp; // payload is the app object to launch
   'app:clone': string; // payload is the appId of the app to clone
+  'app:closeAll': string; // payload is appId
+  'app:focusLatest': string; // payload is appId
 
   // AI Command Events
   'command:submit': string; // payload is the query from the top bar
