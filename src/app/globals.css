@@ -232,6 +232,23 @@
   border-color: hsl(var(--chart-4) / 0.5) !important;
 }
 
+/* Background Glyphs Animation */
+@keyframes glyph-pulse {
+  0%, 100% {
+    opacity: 0.02;
+    transform: scale(1);
+    filter: blur(2px) brightness(0.8);
+  }
+  50% {
+    opacity: 0.06;
+    transform: scale(1.03);
+    filter: blur(1px) brightness(1.2);
+  }
+}
+
+.glyph-pulse-animate {
+  animation: glyph-pulse 20s ease-in-out infinite alternate;
+}
 
 @keyframes aurora-glow-subtle-dark {
   0% {
