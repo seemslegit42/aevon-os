@@ -1,11 +1,12 @@
 
 "use client";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { CheckCircleIcon, AlertTriangleIcon, ArrowRightIcon } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import eventBus from '@/lib/event-bus';
 
 interface FeedItem {
   task: string;
@@ -14,12 +15,40 @@ interface FeedItem {
   details: string;
 }
 
-interface LiveOrchestrationFeedCardContentProps {
-  feedItems: FeedItem[];
-}
 
-const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardContentProps> = ({ feedItems = [] }) => {
+const LiveOrchestrationFeedCardContent: React.FC = () => {
   const { toast } = useToast();
+  const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
+
+  useEffect(() => {
+    const handleOrchestrationLog = (logData: { task: string; status: 'success' | 'failure'; details: string; }) => {
+      setFeedItems(prevItems => {
+        const newItem = {
+          ...logData,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        };
+        const updatedItems = [newItem, ...prevItems];
+        if (updatedItems.length > 20) updatedItems.pop(); // Keep list from getting too long
+        return updatedItems;
+      });
+      // Trigger a notification glow for important events
+      eventBus.emit('notification:new');
+    };
+
+    eventBus.on('orchestration:log', handleOrchestrationLog);
+    
+    // Add an initial message
+    setFeedItems([{
+        task: "System Initialized",
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        status: "success",
+        details: "Live Orchestration Feed is active. Waiting for AI events."
+    }]);
+
+    return () => {
+      eventBus.off('orchestration:log', handleOrchestrationLog);
+    };
+  }, []);
 
   const handleViewDetails = (item: FeedItem) => {
     toast({

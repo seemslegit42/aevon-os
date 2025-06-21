@@ -60,7 +60,6 @@ interface TopBarProps {
 const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
   const [currentTime, setCurrentTime] = useState("--:--");
   const [isMounted, setIsMounted] = useState(false);
-  const [agentStatus, setAgentStatus] = useState<{ activeCount: number, totalCount: number } | null>(null);
   const [commandValue, setCommandValue] = useState('');
   const { focusedCardId } = useDashboardStore();
   const [isNotifying, setIsNotifying] = useState(false);
@@ -78,11 +77,6 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
   }, []);
 
   useEffect(() => {
-    const handleStatusUpdate = (status: { activeCount: number, totalCount: number }) => {
-        setAgentStatus(status);
-    };
-    eventBus.on('agents:statusUpdate', handleStatusUpdate);
-    
     const handleNewNotification = () => {
       setIsNotifying(true);
       // Reset the animation class after it has finished
@@ -92,7 +86,6 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
     eventBus.on('notification:new', handleNewNotification);
 
     return () => {
-        eventBus.off('agents:statusUpdate', handleStatusUpdate);
         eventBus.off('notification:new', handleNewNotification);
     };
   }, []);
@@ -205,18 +198,6 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
             {isMounted ? currentTime : "--:--"}
           </div>
            <div className="hidden md:flex items-center text-xs px-2 h-9 border-l border-white/10 ml-1 pl-3 space-x-2 font-body text-primary-foreground opacity-80">
-             <Tooltip>
-                <TooltipTrigger asChild>
-                    <div className="flex items-center">
-                        <UsersIcon className="h-4 w-4 mr-1.5 aevos-icon-styling-override" />
-                        <span>
-                            {agentStatus ? `${agentStatus.activeCount}/${agentStatus.totalCount} Active` : '...'}
-                        </span>
-                    </div>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="font-body"><p>Agent Status</p></TooltipContent>
-            </Tooltip>
-            <span className="text-primary-foreground/30">|</span>
             <div className="flex items-center">
                 <span>Admin User</span>
             </div>

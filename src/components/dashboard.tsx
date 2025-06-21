@@ -12,7 +12,6 @@ import { ALL_CARD_CONFIGS, DEFAULT_ACTIVE_CARD_IDS } from '@/config/dashboard-ca
 import CommandPalette from '@/components/command-palette';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { useDashboardStore } from '@/stores/dashboard.store';
-import { useDynamicData } from '@/hooks/use-dynamic-data';
 
 
 const Dashboard: React.FC = () => {
@@ -30,9 +29,6 @@ const Dashboard: React.FC = () => {
   const { isOpen: isCommandPaletteOpen, setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
   const { setFocusedCardId } = useDashboardStore();
   
-  const { liveFeedData, agentPresenceData } = useDynamicData();
-
-
   const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // If the click is on the direct background, clear the focus
     if (e.target === e.currentTarget) {
@@ -57,12 +53,6 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  // Map of dynamic props to inject into cards
-  const dynamicCardProps: { [key: string]: any } = {
-    liveOrchestrationFeed: { feedItems: liveFeedData },
-    agentPresence: { agents: agentPresenceData },
-  };
-
   return (
     <div className="h-full w-full relative" onClick={handleCanvasClick}>
       {cardLayouts
@@ -72,7 +62,7 @@ const Dashboard: React.FC = () => {
           if (!cardConfig) return null;
 
           const CardContent = cardConfig.content;
-          const mergedProps = { ...cardConfig.contentProps, ...dynamicCardProps[cardConfig.id] };
+          const mergedProps = { ...cardConfig.contentProps };
 
           return (
             <Rnd
