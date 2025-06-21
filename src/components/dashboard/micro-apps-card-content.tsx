@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '../ui/scroll-area';
 import { cn } from '@/lib/utils';
@@ -54,10 +54,41 @@ const MicroAppsCardContent: React.FC = () => {
   // Helper component for each menu item to avoid re-creating state logic in a loop
   const AppLauncherIcon: React.FC<{app: MicroApp}> = ({ app }) => {
     const [menuOpen, setMenuOpen] = useState(false);
+    const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const isLongPressTriggeredRef = useRef(false);
 
     const openInstances = layoutItems.filter(item => item.type === 'app' && item.appId === app.id);
     const isActive = openInstances.length > 0;
     const AppIcon = app.icon;
+
+    const handleTouchStart = () => {
+      isLongPressTriggeredRef.current = false;
+      longPressTimerRef.current = setTimeout(() => {
+        isLongPressTriggeredRef.current = true;
+        setMenuOpen(true);
+      }, 500); // 500ms for long press
+    };
+
+    const cancelLongPress = () => {
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
+      }
+    };
+    
+    // This will handle both click and tap
+    const handleClick = () => {
+      // If the menu was opened by a long press, don't also trigger a launch.
+      if (isLongPressTriggeredRef.current) {
+        return;
+      }
+      handleLaunch(app);
+    };
+
+    const handleContextMenu = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setMenuOpen(true);
+    };
 
     return (
       <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
@@ -70,11 +101,12 @@ const MicroAppsCardContent: React.FC = () => {
                   "relative flex flex-col items-center justify-center h-20 p-2 space-y-1 bg-card/60 hover:bg-primary/10 border-border/50 hover:border-primary/50 transition-all",
                   isActive && "border-secondary/60 ring-1 ring-secondary/50"
                 )}
-                onClick={() => handleLaunch(app)}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                  setMenuOpen(true);
-                }}
+                onClick={handleClick}
+                onContextMenu={handleContextMenu}
+                onTouchStart={handleTouchStart}
+                onTouchEnd={cancelLongPress}
+                onTouchMove={cancelLongPress}
+                onMouseLeave={cancelLongPress}
               >
                 {isActive && (
                     <div className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
@@ -102,7 +134,7 @@ const MicroAppsCardContent: React.FC = () => {
                           ))}
                       </div>
                   )}
-                  <p className="text-xs text-muted-foreground mt-2 border-t border-border/20 pt-2">Right-click for more options.</p>
+                  <p className="text-xs text-muted-foreground mt-2 border-t border-border/20 pt-2">Right-click or long-press for more options.</p>
               </div>
           </TooltipContent>
         </Tooltip>
