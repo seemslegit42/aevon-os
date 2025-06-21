@@ -19,8 +19,9 @@ interface MicroAppStoreState {
   apps: MicroApp[];
   registerApps: (newApps: MicroAppRegistration[]) => void;
   activateApp: (appId: string) => void;
+  deactivateApp: (appId: string) => void;
   deactivateAllApps: () => void;
-  getActiveApp: () => MicroApp | undefined;
+  getActiveApps: () => MicroApp[];
 }
 
 export const useMicroAppStore = create<MicroAppStoreState>((set, get) => ({
@@ -43,15 +44,26 @@ export const useMicroAppStore = create<MicroAppStoreState>((set, get) => ({
   },
 
   /**
-   * Activates a single micro-app by its ID, deactivating all others.
+   * Activates a single micro-app by its ID. Does not deactivate others.
    * @param appId - The ID of the app to activate.
    */
   activateApp: (appId) => {
     set((state) => ({
-      apps: state.apps.map(app => ({
-        ...app,
-        isActive: app.id === appId,
-      })),
+      apps: state.apps.map(app => 
+        app.id === appId ? { ...app, isActive: true } : app
+      ),
+    }));
+  },
+
+  /**
+   * Deactivates a single micro-app by its ID.
+   * @param appId - The ID of the app to deactivate.
+   */
+  deactivateApp: (appId) => {
+    set((state) => ({
+      apps: state.apps.map(app =>
+        app.id === appId ? { ...app, isActive: false } : app
+      ),
     }));
   },
 
@@ -68,10 +80,10 @@ export const useMicroAppStore = create<MicroAppStoreState>((set, get) => ({
   },
 
   /**
-   * A convenience getter to find the currently active app.
-   * @returns The active app object or undefined if none are active.
+   * A convenience getter to find all currently active apps.
+   * @returns An array of active app objects.
    */
-  getActiveApp: () => {
-    return get().apps.find(app => app.isActive);
+  getActiveApps: () => {
+    return get().apps.filter(app => app.isActive);
   }
 }));

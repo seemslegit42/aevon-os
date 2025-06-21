@@ -156,7 +156,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   },
   {
     id: 'applicationView', title: 'Active Micro-App View', icon: AppWindowIcon, isDismissible: true,
-    description: "The active viewing area for any launched micro-app. Facilitates data synergy between OS modules.",
+    description: "The active viewing area for launched micro-apps. Supports multiple apps via tabs.",
     content: ApplicationViewCardContent,
     defaultLayout: { x: 480, y: 310, width: 450, height: 350, zIndex: 4 }, 
     minWidth: 300, minHeight: 250,
