@@ -90,7 +90,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     id: 'aegisSecurity', title: 'Aegis AI Security', icon: ShieldCheckIcon, isDismissible: true,
     description: "AI-powered cybersecurity. Analyzes alert data to provide summaries, identify threats, and recommend actions.",
     content: AegisSecurityCardContent,
-    defaultLayout: { x: 480, y: 310, width: 380, height: 350, zIndex: 4 },
+    defaultLayout: { x: 870, y: 520, width: 380, height: 350, zIndex: 6 },
     minWidth: 300, minHeight: 280,
   },
   {
@@ -104,8 +104,8 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     id: 'aiInsights', title: 'AI Insights Engine', icon: BrainCircuitIcon, isDismissible: true,
     description: "Provides personalized recommendations and data-driven intelligence based on your OS activity.",
     content: AiInsightsCardContent,
-    defaultLayout: { x: 870, y: 310, width: 270, height: 200, zIndex: 6 },
-    minWidth: 250, minHeight: 180,
+    defaultLayout: { x: 870, y: 430, width: 270, height: 80, zIndex: 6 },
+    minWidth: 250, minHeight: 80,
   },
   {
     id: 'agentPresence', title: 'Agent Presence', icon: UsersIcon, isDismissible: true,
@@ -140,18 +140,18 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     content: MicroAppsCardContent,
     contentProps: {
       availableApps: [
-        { id: 'app-analytics', icon: ChartBarIcon, label: 'Analytics (Demo)' },
+        { id: 'app-analytics', icon: ChartBarIcon, label: 'Sales Analytics' },
       ]
     },
-    defaultLayout: { x: 800, y: 430, width: 340, height: 230, zIndex: 9 }, 
-    minWidth: 200, minHeight: 120,
+    defaultLayout: { x: 740, y: 430, width: 120, height: 230, zIndex: 9 }, 
+    minWidth: 120, minHeight: 120,
   },
   {
     id: 'applicationView', title: 'Active Micro-App View', icon: AppWindowIcon, isDismissible: true,
     description: "The active viewing area for any launched micro-app. Facilitates data synergy between OS modules.",
     content: ApplicationViewCardContent,
-    defaultLayout: { x: 800, y: 520, width: 340, height: 200, zIndex: 10 }, 
-    minWidth: 300, minHeight: 180,
+    defaultLayout: { x: 480, y: 310, width: 450, height: 350, zIndex: 4 }, 
+    minWidth: 300, minHeight: 250,
   },
 ];
 
@@ -164,4 +164,6 @@ export const DEFAULT_ACTIVE_CARD_IDS = [
   'aiInsights',
   'agentPresence',
   'liveOrchestrationFeed',
+  'microApps',
+  'applicationView'
 ];
