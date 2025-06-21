@@ -28,6 +28,18 @@ interface CommandPaletteProps {
   onResetLayout: () => void;
 }
 
+// Mock user object - in a real app, this would come from an auth context
+const currentUser = {
+  name: 'Admin User',
+  permissions: ['sales:view', 'analytics:read', 'email:process', 'invoice:extract'], // Has all permissions
+};
+
+// Example of a more restricted user:
+// const currentUser = {
+//   name: 'Sales Rep',
+//   permissions: ['sales:view', 'analytics:read'], // Can only see sales analytics
+// };
+
 const CommandPalette: React.FC<CommandPaletteProps> = ({
   allPossibleCards,
   activeCardIds,
@@ -38,7 +50,9 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
 }) => {
   const { isOpen, setOpen } = useCommandPaletteStore();
   const [searchTerm, setSearchTerm] = useState('');
-  const { apps: allMicroApps, activateApp } = useMicroAppStore();
+  const { activateApp, getPermittedApps } = useMicroAppStore();
+  const allMicroApps = getPermittedApps(currentUser.permissions);
+
 
   const handleLaunchApp = (appId: string) => {
     activateApp(appId);

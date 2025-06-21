@@ -8,9 +8,16 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { RocketIcon } from '@/components/icons';
 
+// Mock user object - in a real app, this would come from an auth context
+const currentUser = {
+  name: 'Admin User',
+  permissions: ['sales:view', 'analytics:read', 'email:process', 'invoice:extract'], // Has all permissions
+};
+
 const ArmoryCardContent: React.FC = () => {
-  const { apps } = useMicroAppStore();
+  const { getPermittedApps } = useMicroAppStore();
   const { setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
+  const apps = getPermittedApps(currentUser.permissions);
 
   return (
     <ScrollArea className="h-full pr-2">

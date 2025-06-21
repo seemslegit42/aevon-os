@@ -8,10 +8,15 @@ import { ScrollArea } from '../ui/scroll-area';
 import eventBus from '@/lib/event-bus';
 import { cn } from '@/lib/utils';
 
+// Mock user object - in a real app, this would come from an auth context
+const currentUser = {
+  name: 'Admin User',
+  permissions: ['sales:view', 'analytics:read', 'email:process', 'invoice:extract'], // Has all permissions
+};
 
 const MicroAppsCardContent: React.FC = () => {
-  const apps = useMicroAppStore(state => state.apps);
-  const activateApp = useMicroAppStore(state => state.activateApp);
+  const { getPermittedApps, activateApp } = useMicroAppStore();
+  const apps = getPermittedApps(currentUser.permissions);
 
   const handleLaunchApp = (appId: string) => {
     activateApp(appId);
@@ -46,7 +51,7 @@ const MicroAppsCardContent: React.FC = () => {
         })}
         {apps.length === 0 && (
              <div className="text-center py-6 col-span-2">
-                <p className="text-sm text-muted-foreground">No micro-apps available.</p>
+                <p className="text-sm text-muted-foreground">No micro-apps available for your account.</p>
             </div>
         )}
         </div>

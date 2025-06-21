@@ -10,7 +10,7 @@ export interface MicroApp {
   icon: ComponentType<{ className?: string }>;
   component: LazyExoticComponent<ComponentType<any>>; // The actual React component for the app, lazy loaded
   isActive: boolean;
-  permissions?: string[]; // Optional permissions required to use the app
+  permissions: string[]; // Permissions required to use the app
 }
 
 export type MicroAppRegistration = Omit<MicroApp, 'isActive'>;
@@ -20,10 +20,12 @@ interface MicroAppStoreState {
   apps: MicroApp[];
   _hasHydrated: boolean;
   initializeApps: (initialApps: MicroAppRegistration[]) => void;
+  registerApp: (appRegistration: MicroAppRegistration) => void;
   activateApp: (appId: string) => void;
   deactivateApp: (appId: string) => void;
   deactivateAllApps: () => void;
   getActiveApps: () => MicroApp[];
+  getPermittedApps: (userPermissions: string[]) => MicroApp[];
 }
 
 const ACTIVE_APPS_STORAGE_KEY = 'aevonActiveMicroAppIds_v1';
@@ -59,6 +61,20 @@ export const useMicroAppStore = create<MicroAppStoreState>((set, get) => ({
     set({ apps: allApps, _hasHydrated: true });
   },
 
+  registerApp: (appRegistration) => {
+    set((state) => {
+      // Avoid duplicates
+      if (state.apps.some(app => app.id === appRegistration.id)) {
+        return state;
+      }
+      const newApp: MicroApp = {
+        ...appRegistration,
+        isActive: false
+      };
+      return { apps: [...state.apps, newApp] };
+    });
+  },
+
   activateApp: (appId) => {
     set((state) => ({
       apps: state.apps.map(app => 
@@ -86,6 +102,16 @@ export const useMicroAppStore = create<MicroAppStoreState>((set, get) => ({
 
   getActiveApps: () => {
     return get().apps.filter(app => app.isActive);
+  },
+  
+  getPermittedApps: (userPermissions) => {
+    return get().apps.filter(app => {
+      if (!app.permissions || app.permissions.length === 0) {
+        return true; // No permissions required, so it's allowed
+      }
+      // User must have all permissions required by the app
+      return app.permissions.every(p => userPermissions.includes(p));
+    });
   }
 }));
 
