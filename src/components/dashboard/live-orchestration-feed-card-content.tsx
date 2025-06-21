@@ -31,8 +31,7 @@ const LiveOrchestrationFeedCardContent: React.FC = () => {
         if (updatedItems.length > 20) updatedItems.pop(); // Keep list from getting too long
         return updatedItems;
       });
-      // Trigger a notification glow for important events
-      eventBus.emit('notification:new');
+      // The TopBar now listens to this event directly to manage notifications and glow.
     };
 
     eventBus.on('orchestration:log', handleOrchestrationLog);
