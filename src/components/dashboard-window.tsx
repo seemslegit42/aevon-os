@@ -88,6 +88,8 @@ const DashboardWindow: React.FC<DashboardWindowProps> = ({ item, isFocused, onLa
             )}
             dragHandleClassName="drag-handle"
             onMouseDownCapture={() => onFocus(item.id)}
+            dragGrid={[20, 20]}
+            resizeGrid={[20, 20]}
         >
             <MicroAppCard
                 title={title}
