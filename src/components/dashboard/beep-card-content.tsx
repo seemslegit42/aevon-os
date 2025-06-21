@@ -111,15 +111,15 @@ const BeepCardContent: React.FC<BeepCardContentProps> = ({
             onChange={handleTextareaChange}
             onKeyDown={handleKeyPress}
             rows={1}
-            className="bg-input border-input placeholder:text-muted-foreground text-sm pr-20 min-h-[40px] max-h-[150px] overflow-y-auto"
+            className="bg-input border-input placeholder:text-muted-foreground text-sm pr-12 min-h-[40px] max-h-[150px] overflow-y-auto"
             aria-label="BEEP prompt input"
             disabled={isLoading}
           />
-          <Button 
-            type="submit" 
-            disabled={isLoading || !input.trim()} 
-            size="sm" 
-            className="absolute right-2 top-1/2 -translate-y-1/2 btn-gradient-primary-accent"
+          <Button
+            type="submit"
+            disabled={isLoading || !input.trim()}
+            size="icon"
+            className="absolute bottom-2 right-2 h-8 w-8 btn-gradient-primary-accent"
           >
             <SendIcon className="w-4 h-4" />
             <span className="sr-only">Send</span>

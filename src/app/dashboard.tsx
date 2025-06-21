@@ -5,7 +5,7 @@ import React, { Suspense } from 'react';
 import { Rnd } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { PinIcon, XIcon } from '@/components/icons';
+import { PinIcon, XIcon, LayoutGridIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { useDashboardLayout } from '@/hooks/use-dashboard-layout';
 import { ALL_CARD_CONFIGS, DEFAULT_ACTIVE_CARD_IDS } from '@/config/dashboard-cards.config';
@@ -107,6 +107,13 @@ const Dashboard: React.FC = () => {
         onRemoveCard={handleRemoveCard}
         onResetLayout={handleResetLayout}
       />
+      <Button
+        onClick={() => setCommandPaletteOpen(true)}
+        className="fixed bottom-8 left-8 btn-gradient-primary-secondary rounded-full h-14 w-14 z-50 shadow-lg hover:shadow-xl transition-all"
+        aria-label="Open Dashboard Settings"
+      >
+        <LayoutGridIcon className="h-7 w-7" />
+      </Button>
     </div>
   );
 };

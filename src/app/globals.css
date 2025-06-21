@@ -6,7 +6,7 @@
 @layer base {
   :root {
     /* --- Dark Theme Variables (Corrected) --- */
-    --background: 275 45% 8%;
+    --background: 275 25% 14%;
     --card: 275 25% 15% / 0.5; /* Note: alpha channel added for hsla() compatibility */
     --popover: 275 25% 15% / 0.5;
     
@@ -269,7 +269,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background-color: rgba(28, 25, 52, 0.55);
+  background-color: rgba(28, 25, 52, 0.3);
   z-index: 2;
 }
     
