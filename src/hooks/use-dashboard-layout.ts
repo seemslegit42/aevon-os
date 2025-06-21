@@ -19,7 +19,7 @@ export function useDashboardLayout(
   const [activeCardIds, setActiveCardIds] = useState<string[]>([]);
   const [cardLayouts, setCardLayouts] = useState<CardLayoutInfo[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
-  const { setFocusedCardId } = useDashboardStore();
+  const { focusedCardId, setFocusedCardId } = useDashboardStore();
 
   // Effect for initializing state from localStorage, runs only once on mount.
   useEffect(() => {
@@ -129,13 +129,12 @@ export function useDashboardLayout(
   }, [handleBringToFront]);
 
   const handleRemoveCard = useCallback((cardId: string) => {
-    const { focusedCardId } = useDashboardStore.getState();
     if (focusedCardId === cardId) {
         setFocusedCardId(null);
     }
     setActiveCardIds(prev => prev.filter(id => id !== cardId));
     toast({ title: "Zone Removed", description: `The zone has been removed from your dashboard.` });
-  }, [toast, setFocusedCardId]);
+  }, [toast, setFocusedCardId, focusedCardId]);
 
   const handleAddCard = useCallback((cardId: string) => {
     const cardConfig = allCardConfigs.find(c => c.id === cardId);
