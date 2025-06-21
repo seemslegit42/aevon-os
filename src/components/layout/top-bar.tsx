@@ -38,7 +38,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import eventBus from '@/lib/event-bus';
-import { useDashboardStore } from '@/stores/dashboard.store';
+import { useLayoutStore } from '@/stores/layout.store';
 import { cn } from '@/lib/utils';
 
 interface NavItemConfig {
@@ -61,7 +61,7 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
   const [currentTime, setCurrentTime] = useState("--:--");
   const [isMounted, setIsMounted] = useState(false);
   const [commandValue, setCommandValue] = useState('');
-  const { focusedCardId } = useDashboardStore();
+  const focusedItemId = useLayoutStore((state) => state.focusedItemId);
   const [isNotifying, setIsNotifying] = useState(false);
 
 
@@ -103,7 +103,7 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
   };
 
   const ContextualActions: React.FC = () => {
-    if (focusedCardId === 'loomStudio') {
+    if (focusedItemId === 'loomStudio') {
       return (
         <div className="border-l border-white/10 ml-2 pl-2">
           <Tooltip>

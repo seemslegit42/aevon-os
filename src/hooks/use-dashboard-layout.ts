@@ -1,7 +1,6 @@
 
 import { useEffect, useCallback } from 'react';
 import { useToast } from "@/hooks/use-toast";
-import { useDashboardStore } from '@/stores/dashboard.store';
 import { useMicroAppStore, type MicroApp } from '@/stores/micro-app.store';
 import eventBus from '@/lib/event-bus';
 import { ALL_MICRO_APPS, ALL_CARD_CONFIGS } from '@/config/dashboard-cards.config';
@@ -28,15 +27,15 @@ export function useDashboardLayout() {
     launchApp,
     cloneApp,
     resetLayout,
+    setFocusedItemId,
   } = useLayoutStore();
 
-  const { setFocusedCardId } = useDashboardStore();
   const initializeApps = useMicroAppStore(state => state.initializeApps);
 
   const handleBringToFront = useCallback((id: string) => {
-    setFocusedCardId(id);
+    setFocusedItemId(id);
     bringToFront(id);
-  }, [bringToFront, setFocusedCardId]);
+  }, [bringToFront, setFocusedItemId]);
 
   const updateItemLayout = useCallback((id: string, newPos: Position, newSize?: Size) => {
     updateStoreLayout(id, newPos, newSize);
@@ -44,10 +43,9 @@ export function useDashboardLayout() {
   }, [updateStoreLayout, handleBringToFront]);
 
   const handleCloseItem = useCallback((itemId: string) => {
-    setFocusedCardId(null);
     closeItem(itemId);
     toast({ title: "Item Closed", description: `The window has been removed from your dashboard.` });
-  }, [closeItem, setFocusedCardId, toast]);
+  }, [closeItem, toast]);
 
   const handleAddCard = useCallback((cardId: string) => {
     const { layoutItems: currentItems } = useLayoutStore.getState(); // Get fresh state
@@ -81,10 +79,9 @@ export function useDashboardLayout() {
   }, [cloneApp, handleBringToFront, toast]);
   
   const handleResetLayout = useCallback(() => {
-    setFocusedCardId(null);
     resetLayout();
     toast({ title: "Layout Reset", description: "Dashboard layout has been reset to default." });
-  }, [resetLayout, setFocusedCardId, toast]);
+  }, [resetLayout, toast]);
 
   const handleCloseAllAppInstances = useCallback((appId: string) => {
     const { layoutItems: currentItems, closeItem: close } = useLayoutStore.getState();

@@ -5,9 +5,10 @@ import React from 'react';
 import { useDashboardLayout } from '@/hooks/use-dashboard-layout';
 import CommandPalette from '@/components/command-palette';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
-import { useDashboardStore } from '@/stores/dashboard.store';
+import { useLayoutStore } from '@/stores/layout.store';
 import { Skeleton } from '@/components/ui/skeleton';
 import DashboardWindow from '@/components/dashboard-window';
+import { shallow } from 'zustand/shallow';
 
 const Dashboard: React.FC = () => {
   const {
@@ -19,11 +20,15 @@ const Dashboard: React.FC = () => {
   } = useDashboardLayout();
 
   const { isOpen: isCommandPaletteOpen, setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
-  const { focusedCardId, setFocusedCardId } = useDashboardStore();
+  const { focusedItemId, setFocusedItemId } = useLayoutStore(
+    (state) => ({ focusedItemId: state.focusedItemId, setFocusedItemId: state.setFocusedItemId }),
+    shallow
+  );
   
   const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // If the click is on the canvas itself and not a child element (a window)
     if (e.target === e.currentTarget) {
-        setFocusedCardId(null);
+        setFocusedItemId(null);
     }
   };
 
@@ -49,16 +54,13 @@ const Dashboard: React.FC = () => {
           <DashboardWindow
             key={item.id}
             item={item}
-            isFocused={item.id === focusedCardId}
+            isFocused={item.id === focusedItemId}
             onLayoutChange={updateItemLayout}
             onFocus={handleBringToFront}
             onClose={closeItem}
           />
       ))}
-       <CommandPalette
-        isOpen={isCommandPaletteOpen}
-        onOpenChange={setCommandPaletteOpen}
-      />
+       <CommandPalette />
     </div>
   );
 };

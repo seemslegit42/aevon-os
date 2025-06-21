@@ -20,11 +20,7 @@ import type { MicroApp } from '@/stores/micro-app.store';
 import eventBus from '@/lib/event-bus';
 import { useLayoutStore } from '@/stores/layout.store';
 
-interface CommandPaletteProps {
-  // All props are now derived from global state via hooks
-}
-
-const CommandPalette: React.FC<CommandPaletteProps> = () => {
+const CommandPalette: React.FC = () => {
   const { isOpen, setOpen } = useCommandPaletteStore();
   const { layoutItems } = useLayoutStore();
   const [searchTerm, setSearchTerm] = useState('');
@@ -189,7 +185,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = () => {
             })}
              {filteredCards.length === 0 && searchTerm && (
               <p className="text-sm text-muted-foreground text-center py-2">No zones match your search.</p>
-            )}
+             )}
              {filteredCards.length === 0 && filteredApps.length === 0 && !searchTerm && (
                 <p className="text-sm text-muted-foreground text-center py-4">No zones or apps available.</p>
              )}

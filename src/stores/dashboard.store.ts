@@ -1,11 +1,3 @@
-import { create } from 'zustand';
-
-interface DashboardState {
-  focusedCardId: string | null;
-  setFocusedCardId: (id: string | null) => void;
-}
-
-export const useDashboardStore = create<DashboardState>((set) => ({
-  focusedCardId: null,
-  setFocusedCardId: (id) => set({ focusedCardId: id }),
-}));
+// This store has been deprecated and its state (focusedItemId) has been merged into layout.store.ts
+// for a more consolidated and streamlined state management architecture.
+// This file can be safely deleted.
