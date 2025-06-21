@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/tooltip";
 import { Badge } from '../ui/badge';
 import { RocketIcon, TargetIcon, XIcon, PinIcon, Trash2Icon, CopyIcon } from '../icons';
-import eventBus from '@/lib/event-bus';
 import type { MicroApp } from '@/stores/micro-app.store';
 import {
   DropdownMenu,
@@ -34,29 +33,19 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
     const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
     const isLongPressTriggeredRef = useRef(false);
 
-    const { layoutItems } = useLayoutStore(state => ({
+    // Get both state and actions directly from the store.
+    // This makes the component's dependencies explicit.
+    const { layoutItems, launchApp, cloneApp, focusLatestInstance, closeAllInstancesOfApp } = useLayoutStore(state => ({
         layoutItems: state.layoutItems,
+        launchApp: state.launchApp,
+        cloneApp: state.cloneApp,
+        focusLatestInstance: state.focusLatestInstance,
+        closeAllInstancesOfApp: state.closeAllInstancesOfApp
     }), shallow);
     
     const openInstances = layoutItems.filter(item => item.type === 'app' && item.appId === app.id);
     const isActive = openInstances.length > 0;
     const AppIcon = app.icon;
-
-    const handleLaunch = (appToLaunch: MicroApp) => {
-        eventBus.emit('app:launch', appToLaunch);
-    };
-
-    const handleClone = (appId: string) => {
-        eventBus.emit('app:clone', appId);
-    };
-    
-    const handleFocusLatest = (appId: string) => {
-        eventBus.emit('app:focusLatest', appId);
-    };
-
-    const handleCloseAll = (appId: string) => {
-        eventBus.emit('app:closeAll', appId);
-    };
 
     const handleTouchStart = () => {
       isLongPressTriggeredRef.current = false;
@@ -73,13 +62,12 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
       }
     };
     
-    // This will handle both click and tap
+    // This will handle both click and tap, launching the app directly.
     const handleClick = () => {
-      // If the menu was opened by a long press, don't also trigger a launch.
       if (isLongPressTriggeredRef.current) {
         return;
       }
-      handleLaunch(app);
+      launchApp(app);
     };
 
     const handleContextMenu = (e: React.MouseEvent) => {
@@ -138,15 +126,15 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
         <DropdownMenuContent className="w-56 glassmorphism-panel" onClick={(e) => e.preventDefault()}>
           <DropdownMenuLabel>{app.title}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => { handleLaunch(app); setMenuOpen(false); }}>
+          <DropdownMenuItem onClick={() => { launchApp(app); setMenuOpen(false); }}>
             <RocketIcon />
             <span>Launch New Instance</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => { handleClone(app.id); setMenuOpen(false); }} disabled={!isActive}>
+          <DropdownMenuItem onClick={() => { cloneApp(app.id); setMenuOpen(false); }} disabled={!isActive}>
             <CopyIcon />
             <span>Clone Latest Instance</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => { handleFocusLatest(app.id); setMenuOpen(false); }} disabled={!isActive}>
+          <DropdownMenuItem onClick={() => { focusLatestInstance(app.id); setMenuOpen(false); }} disabled={!isActive}>
               <TargetIcon />
             <span>Focus Latest</span>
           </DropdownMenuItem>
@@ -157,7 +145,7 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="text-destructive focus:text-destructive focus:bg-destructive/10"
-            onClick={() => { handleCloseAll(app.id); setMenuOpen(false); }}
+            onClick={() => { closeAllInstancesOfApp(app.id); setMenuOpen(false); }}
             disabled={!isActive}
           >
             <XIcon />
