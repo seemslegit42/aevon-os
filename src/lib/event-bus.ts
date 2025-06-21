@@ -7,6 +7,7 @@ type AppEvents = {
   'agents:statusUpdate': { activeCount: number; totalCount: number };
   'command:submit': string; // payload is the query from the top bar
   'beep:submitQuery': string; // payload is the query to be appended to BEEP
+  'notification:new': undefined; // A new notification has occurred
   [key: string]: unknown;
 };
 

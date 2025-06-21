@@ -12,6 +12,7 @@ import { ALL_CARD_CONFIGS, DEFAULT_ACTIVE_CARD_IDS } from '@/config/dashboard-ca
 import CommandPalette from '@/components/command-palette';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import eventBus from '@/lib/event-bus';
+import { useDashboardStore } from '@/stores/dashboard.store';
 
 // Data for dynamic updates
 const sampleFeedItems = [
@@ -43,6 +44,7 @@ const Dashboard: React.FC = () => {
   } = useDashboardLayout(ALL_CARD_CONFIGS, DEFAULT_ACTIVE_CARD_IDS);
 
   const { isOpen: isCommandPaletteOpen, setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
+  const { setFocusedCardId } = useDashboardStore();
   
   const [liveFeedData, setLiveFeedData] = useState<any[]>([]);
   const [agentPresenceData, setAgentPresenceData] = useState<any[]>([]);
@@ -92,6 +94,11 @@ const Dashboard: React.FC = () => {
         
         return updatedAgents;
       });
+
+      // Periodically trigger a notification glow
+      if (Math.random() > 0.8) { // Approx. every 25 seconds
+        eventBus.emit('notification:new');
+      }
       
     }, 5000); // Update every 5 seconds
 
@@ -119,7 +126,11 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const handleCommand = (query: string) => {
       // Ensure BEEP panel is active and in front
-      handleAddCard('beep');
+      if (!activeCardIds.includes('beep')) {
+        handleAddCard('beep');
+      } else {
+        handleBringToFront('beep');
+      }
       
       // Give a slight delay to ensure the panel is ready before sending the query
       setTimeout(() => {
@@ -131,7 +142,14 @@ const Dashboard: React.FC = () => {
     return () => {
       eventBus.off('command:submit', handleCommand);
     };
-  }, [handleAddCard]);
+  }, [handleAddCard, activeCardIds, handleBringToFront]);
+
+  const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // If the click is on the direct background, clear the focus
+    if (e.target === e.currentTarget) {
+        setFocusedCardId(null);
+    }
+  };
 
 
   if (!isInitialized) {
@@ -157,7 +175,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="h-full w-full relative">
+    <div className="h-full w-full relative" onClick={handleCanvasClick}>
       {cardLayouts
         .filter(layout => activeCardIds.includes(layout.id))
         .map(layout => {

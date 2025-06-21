@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import eventBus from '@/lib/event-bus';
 import { useDashboardStore } from '@/stores/dashboard.store';
+import { cn } from '@/lib/utils';
 
 interface NavItemConfig {
   id: string; // The card ID to focus on
@@ -62,6 +63,8 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
   const [agentStatus, setAgentStatus] = useState<{ activeCount: number, totalCount: number } | null>(null);
   const [commandValue, setCommandValue] = useState('');
   const { focusedCardId } = useDashboardStore();
+  const [isNotifying, setIsNotifying] = useState(false);
+
 
   useEffect(() => {
     setIsMounted(true);
@@ -79,8 +82,18 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
         setAgentStatus(status);
     };
     eventBus.on('agents:statusUpdate', handleStatusUpdate);
+    
+    const handleNewNotification = () => {
+      setIsNotifying(true);
+      // Reset the animation class after it has finished
+      const timer = setTimeout(() => setIsNotifying(false), 2500); // Must match animation duration
+      return () => clearTimeout(timer);
+    };
+    eventBus.on('notification:new', handleNewNotification);
+
     return () => {
         eventBus.off('agents:statusUpdate', handleStatusUpdate);
+        eventBus.off('notification:new', handleNewNotification);
     };
   }, []);
 
@@ -170,7 +183,7 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
            <Tooltip>
             <TooltipTrigger asChild>
                <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80">
-                <BellIcon className="h-5 w-5 aevos-icon-styling-override" />
+                <BellIcon className={cn("h-5 w-5 aevos-icon-styling-override", isNotifying && "notification-glow-animate")} />
                 <span className="sr-only">Notifications</span>
               </Button>
             </TooltipTrigger>
