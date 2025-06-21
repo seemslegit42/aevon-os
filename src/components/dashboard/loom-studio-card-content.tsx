@@ -117,7 +117,7 @@ const LoomStudioCardContent: React.FC = () => {
         updateNodeState('trigger', { status: 'running' });
         await sleep(300);
         updateNodeState('trigger', { status: 'completed', output: { characters: inputText.length, receivedAt: new Date().toISOString() } });
-        eventBus.emit('orchestration:log', { task: 'Loom: Triggered', status: 'success', details: `Processing ${inputText.length} characters.` });
+        eventBus.emit('orchestration:log', { task: 'Loom: Triggered', status: 'success', details: `Processing ${inputText.length} characters.`, targetId: 'loomStudio' });
     }, [inputText, updateNodeState]);
 
     const runCategorizationStep = useCallback(async (): Promise<TextCategory> => {
@@ -131,7 +131,7 @@ const LoomStudioCardContent: React.FC = () => {
         const categoryResult: TextCategory = await catResponse.json();
         
         updateNodeState('condition', { status: 'completed', output: categoryResult });
-        eventBus.emit('orchestration:log', { task: 'Loom: Categorized', status: 'success', details: `Text classified as: ${categoryResult.category}` });
+        eventBus.emit('orchestration:log', { task: 'Loom: Categorized', status: 'success', details: `Text classified as: ${categoryResult.category}`, targetId: 'loomStudio' });
         return categoryResult;
     }, [inputText, updateNodeState]);
 
@@ -146,7 +146,7 @@ const LoomStudioCardContent: React.FC = () => {
         const extractResult: InvoiceData = await extractResponse.json();
         
         updateNodeState('action-extract', { status: 'completed', output: extractResult });
-        eventBus.emit('orchestration:log', { task: 'Loom: Extracted', status: 'success', details: extractResult.summary });
+        eventBus.emit('orchestration:log', { task: 'Loom: Extracted', status: 'success', details: extractResult.summary, targetId: 'loomStudio' });
         return extractResult;
     }, [inputText, updateNodeState]);
     
@@ -155,7 +155,7 @@ const LoomStudioCardContent: React.FC = () => {
         await sleep(300);
         const logOutput = { status: "Logged OK", loggedAt: new Date().toISOString() };
         updateNodeState('action-log', { status: 'completed', output: logOutput });
-        eventBus.emit('orchestration:log', { task: 'Loom: Logged', status: 'success', details: 'Workflow results logged to system.' });
+        eventBus.emit('orchestration:log', { task: 'Loom: Logged', status: 'success', details: 'Workflow results logged to system.', targetId: 'loomStudio' });
         
         // Fire the alert to Aegis
         const securityAlert = {
@@ -171,7 +171,7 @@ const LoomStudioCardContent: React.FC = () => {
         };
         
         eventBus.emit('aegis:new-alert', JSON.stringify(securityAlert, null, 2));
-        eventBus.emit('orchestration:log', { task: 'Aegis Alert Sent', status: 'success', details: 'Forwarded processing log to Aegis Security.' });
+        eventBus.emit('orchestration:log', { task: 'Aegis Alert Sent', status: 'success', details: 'Forwarded processing log to Aegis Security.', targetId: 'aegisSecurity' });
 
     }, [updateNodeState]);
 
@@ -200,7 +200,7 @@ const LoomStudioCardContent: React.FC = () => {
         } catch (error: any) {
             const errorMessage = error.message || "An unknown error occurred during simulation.";
             toast({ variant: "destructive", title: "Simulation Failed", description: errorMessage });
-            eventBus.emit('orchestration:log', { task: 'Loom: Workflow Failed', status: 'failure', details: errorMessage });
+            eventBus.emit('orchestration:log', { task: 'Loom: Workflow Failed', status: 'failure', details: errorMessage, targetId: 'loomStudio' });
             setNodes(prev => prev.map(n => n.status === 'running' ? { ...n, status: 'failed', error: errorMessage } : n));
         } finally {
             setIsSimulating(false);

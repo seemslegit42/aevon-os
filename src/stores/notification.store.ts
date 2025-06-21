@@ -8,6 +8,7 @@ export interface Notification {
   details: string;
   time: string;
   read: boolean;
+  targetId?: string;
 }
 
 interface NotificationStoreState {

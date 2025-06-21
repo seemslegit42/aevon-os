@@ -44,7 +44,7 @@ import {
 import eventBus from '@/lib/event-bus';
 import { useLayoutStore } from '@/stores/layout.store';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
-import { useNotificationStore } from '@/stores/notification.store';
+import { useNotificationStore, type Notification } from '@/stores/notification.store';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
 
@@ -69,7 +69,7 @@ const TopBar: React.FC = () => {
   const { toggle: toggleCommandPalette } = useCommandPaletteStore();
   
   // Notification state
-  const { notifications, unreadCount, addNotification, markAllAsRead, clearAll } = useNotificationStore();
+  const { notifications, unreadCount, addNotification, markAsRead, markAllAsRead, clearAll } = useNotificationStore();
   const [isNotifying, setIsNotifying] = useState(false);
 
 
@@ -119,6 +119,13 @@ const TopBar: React.FC = () => {
             setIsSubmitting(false);
         }, 2000);
     }
+  };
+
+  const handleNotificationClick = (notification: Notification) => {
+    if (notification.targetId) {
+      eventBus.emit('panel:focus', notification.targetId);
+    }
+    markAsRead(notification.id);
   };
 
   const ContextualActions: React.FC = () => {
@@ -227,7 +234,7 @@ const TopBar: React.FC = () => {
                           "flex items-start gap-3 !p-3 cursor-pointer hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground",
                           !n.read && "bg-primary/10"
                       )}
-                      onSelect={(e) => e.preventDefault()} // Prevent closing on click
+                      onClick={() => handleNotificationClick(n)}
                     >
                       <div className="flex-shrink-0 pt-0.5">
                         {n.status === 'success' ? (

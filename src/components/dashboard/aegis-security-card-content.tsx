@@ -46,12 +46,22 @@ const AegisSecurityCardContent: React.FC = () => {
       }
       const result: AegisSecurityAnalysis = await response.json();
       setAnalysis(result);
-      eventBus.emit('orchestration:log', { task: 'Aegis: Analysis Complete', status: 'success', details: `Severity assessed as ${result.severity}.` });
+      eventBus.emit('orchestration:log', { 
+        task: 'Aegis: Analysis Complete', 
+        status: 'success', 
+        details: `Severity assessed as ${result.severity}.`,
+        targetId: 'aegisSecurity' 
+      });
 
     } catch (err: any) {
       setError(err.message);
       toast({ variant: "destructive", title: "Analysis Failed", description: err.message });
-       eventBus.emit('orchestration:log', { task: 'Aegis: Analysis Failed', status: 'failure', details: err.message });
+       eventBus.emit('orchestration:log', { 
+         task: 'Aegis: Analysis Failed', 
+         status: 'failure', 
+         details: err.message,
+         targetId: 'aegisSecurity'
+        });
     } finally {
       setIsLoading(false);
     }
@@ -121,4 +131,3 @@ const AegisSecurityCardContent: React.FC = () => {
 };
 
 export default AegisSecurityCardContent;
-

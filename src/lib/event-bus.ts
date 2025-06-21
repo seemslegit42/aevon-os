@@ -25,7 +25,7 @@ type AppEvents = {
   'aegis:new-alert': string; // payload is the alert data string for Aegis to analyze
   
   // Notification Events - Fired whenever an agentic action completes
-  'orchestration:log': { task: string; status: 'success' | 'failure'; details: string; };
+  'orchestration:log': { task: string; status: 'success' | 'failure'; details: string; targetId?: string; };
   
   [key: string]: unknown;
 };
