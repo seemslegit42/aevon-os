@@ -6,9 +6,13 @@ import eventBus from '@/lib/event-bus';
 import { type AegisSecurityAnalysis } from '@/lib/ai-schemas';
 import CyberHealthGauge from '@/components/dashboard/aegis/cyber-health-gauge';
 import AegisAnalysisResult from '@/components/dashboard/aegis/aegis-analysis-result';
+import PhishingResiliencePanel from '@/components/dashboard/aegis/PhishingResiliencePanel';
+import CloudSecurityPanel from '@/components/dashboard/aegis/CloudSecurityPanel';
+import EdrSummaryPanel from '@/components/dashboard/aegis/EdrSummaryPanel';
 import { Button } from '@/components/ui/button';
 import { AlertTriangleIcon, ZapIcon } from '@/components/icons';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Sample alert data for the manual trigger
 const MOCK_ALERT_DATA = JSON.stringify({
@@ -84,26 +88,37 @@ const AegisSecurityCardContent: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-col h-full space-y-4">
-      <div className="flex-shrink-0 flex justify-center">
-        <CyberHealthGauge />
-      </div>
-      <div className="flex-grow min-h-0 border-t border-border/20 pt-4">
-        {isLoading && <AnalysisLoader />}
-        {error && <ErrorDisplay />}
-        {analysis && <AegisAnalysisResult result={analysis} />}
-        {!isLoading && !error && !analysis && (
-          <div className="text-center text-muted-foreground p-4">
-             <p className="text-sm mb-4">Awaiting security events...</p>
-            <Button size="sm" variant="outline" onClick={() => handleAnalysis(MOCK_ALERT_DATA)}>
-              <ZapIcon className="w-4 h-4 mr-2" />
-              Trigger Mock Alert
-            </Button>
+    <ScrollArea className="h-full">
+      <div className="p-4 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="flex justify-center items-center">
+            <CyberHealthGauge />
           </div>
-        )}
+          <div className="border border-border/20 rounded-lg p-4 min-h-[250px] flex flex-col justify-center glassmorphism-panel">
+            {isLoading && <AnalysisLoader />}
+            {error && <ErrorDisplay />}
+            {analysis && <AegisAnalysisResult result={analysis} />}
+            {!isLoading && !error && !analysis && (
+              <div className="text-center text-muted-foreground p-4">
+                <p className="text-sm mb-4">Awaiting security events...</p>
+                <Button size="sm" variant="outline" onClick={() => handleAnalysis(MOCK_ALERT_DATA)}>
+                  <ZapIcon className="w-4 h-4 mr-2" />
+                  Trigger Mock Alert
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <PhishingResiliencePanel />
+          <CloudSecurityPanel />
+          <EdrSummaryPanel />
+        </div>
       </div>
-    </div>
+    </ScrollArea>
   );
 };
 
 export default AegisSecurityCardContent;
+

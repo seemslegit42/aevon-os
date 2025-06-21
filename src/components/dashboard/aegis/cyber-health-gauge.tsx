@@ -1,3 +1,4 @@
+
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -16,8 +17,10 @@ const CyberHealthGauge: React.FC = () => {
     useEffect(() => {
         // Initial animation from 0 to a starting score
         const initialScore = Math.floor(Math.random() * 21) + 75; // Start between 75-95
-        setScore(initialScore);
-        prevScoreRef.current = initialScore;
+        setTimeout(() => {
+            setScore(initialScore);
+            prevScoreRef.current = initialScore;
+        }, 500);
 
         const interval = setInterval(() => {
             setScore(prevScore => {
@@ -56,31 +59,31 @@ const CyberHealthGauge: React.FC = () => {
 
     return (
         <div className={cn(
-            "glassmorphism-panel w-full max-w-sm mx-auto p-4 transition-all duration-500",
+            "glassmorphism-panel w-full max-w-sm mx-auto p-4 aspect-square flex items-center justify-center transition-all duration-500",
             score < 50 && "gauge-pulse-animate"
         )}>
-            <div className="relative w-full h-56">
+            <div className="relative w-full h-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <RadialBarChart
                         innerRadius="70%"
                         outerRadius="100%"
                         barSize={20}
-                        data={[{ value: 100 }]}
+                        data={[{ value: score }]}
                         startAngle={90}
                         endAngle={-270}
                     >
                         <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
                         {/* Background track */}
                         <RadialBar
-                            background
+                            background={{ fill: "hsl(var(--muted) / 0.3)" }}
                             dataKey="value"
                             angleAxisId={0}
-                            fill="hsl(var(--muted) / 0.3)"
                             cornerRadius={10}
+                            // This is a dummy data bar that will be overridden by the animated one
                         />
                         {/* Animated foreground score bar */}
                         <RadialBar
-                            dataKey={() => score}
+                            dataKey="value"
                             angleAxisId={0}
                             fill={fillColor}
                             cornerRadius={10}

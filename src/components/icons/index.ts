@@ -87,6 +87,10 @@ export * from './MicIcon';
 export * from './RocketIcon';
 export * from './CopyIcon';
 export * from './TargetIcon';
+export * from './FishIcon';
+export * from './CloudCogIcon';
+export * from './LaptopIcon';
+
 
 // Aliases for User Profile Dropdown for clarity, if needed, or use directly
 export { Settings2Icon as UserSettingsIcon } from './Settings2Icon';
