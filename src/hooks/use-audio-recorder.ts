@@ -50,12 +50,15 @@ export function useAudioRecorder({ onTranscriptionComplete, inputNode }: UseAudi
   }, [onTranscriptionComplete, toast]);
 
   const startRecording = useCallback(async () => {
+    if (isRecording) return;
     if (!inputNode) {
       toast({ variant: "destructive", title: "Audio Error", description: "Audio context not ready." });
       return;
     }
     audioContextRef.current = inputNode.context as AudioContext;
-    await audioContextRef.current.resume();
+    if (audioContextRef.current.state === 'suspended') {
+      await audioContextRef.current.resume();
+    }
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -74,8 +77,10 @@ export function useAudioRecorder({ onTranscriptionComplete, inputNode }: UseAudi
       mediaRecorderRef.current.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         stream.getTracks().forEach(track => track.stop());
-        micSourceNodeRef.current?.disconnect();
-        micSourceNodeRef.current = null;
+        if (micSourceNodeRef.current) {
+          micSourceNodeRef.current.disconnect();
+          micSourceNodeRef.current = null;
+        }
         handleTranscription(audioBlob);
       };
 
@@ -85,7 +90,7 @@ export function useAudioRecorder({ onTranscriptionComplete, inputNode }: UseAudi
       console.error("Error accessing microphone:", err);
       toast({ variant: "destructive", title: "Microphone Error", description: "Could not access microphone." });
     }
-  }, [inputNode, toast, handleTranscription]);
+  }, [inputNode, toast, handleTranscription, isRecording]);
 
   const stopRecording = useCallback(() => {
     if (mediaRecorderRef.current && isRecording) {

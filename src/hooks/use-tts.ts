@@ -13,6 +13,9 @@ export function useTTS({ outputNode }: UseTTSProps) {
   const playAudio = useCallback(async (text: string) => {
     if (!outputNode) return;
     const audioContext = outputNode.context as AudioContext;
+    if (audioContext.state === 'suspended') {
+      await audioContext.resume();
+    }
 
     try {
       const response = await fetch('/api/ai/tts', {

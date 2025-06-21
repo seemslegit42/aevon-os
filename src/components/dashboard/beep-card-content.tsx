@@ -25,7 +25,7 @@ const BeepCardContent: React.FC = () => {
   // Initialize audio context and nodes
   useEffect(() => {
     if (!audioContextRef.current) {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
         if (AudioContext) {
             const context = new AudioContext();
             audioContextRef.current = context;
@@ -58,7 +58,7 @@ const BeepCardContent: React.FC = () => {
     }
     
     // Check if the last message is from the assistant, contains text, and no tool calls are being processed.
-    if (lastMessage?.role === 'assistant' && lastMessage.content && !isLoading && lastMessage.tool_calls?.length === 0) {
+    if (lastMessage?.role === 'assistant' && lastMessage.content && !isLoading && !lastMessage.tool_calls) {
       const plainTextContent = lastMessage.content.replace(/`+/g, '');
       playAudio(plainTextContent);
     }
@@ -157,3 +157,5 @@ const BeepCardContent: React.FC = () => {
     </div>
   );
 };
+
+export default BeepCardContent;
