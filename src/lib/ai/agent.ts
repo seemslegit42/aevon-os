@@ -69,7 +69,22 @@ const extractInvoiceDataTool = new DynamicTool({
   },
 });
 
-const serverTools = [categorizeTextTool, extractInvoiceDataTool];
+const logAndAlertAegisTool = new DynamicTool({
+    name: 'logAndAlertAegis',
+    description: 'Logs the result of a workflow and prepares an alert for the security system. This is the final step after all analysis is complete.',
+    schema: z.object({
+        analysisSummary: z.string().describe('A brief summary of what was processed, e.g., "Invoice #123 extracted."'),
+    }),
+    func: async ({ analysisSummary }) => {
+        // This function runs on the server. It could log to a database or other service.
+        console.log(`WORKFLOW LOG & ALERT: ${analysisSummary}`);
+        // The return value confirms to the agent that the step is complete.
+        // The client-side component will see this and trigger the actual UI alert.
+        return JSON.stringify({ status: "Logged OK", summary: analysisSummary });
+    },
+});
+
+const serverTools = [categorizeTextTool, extractInvoiceDataTool, logAndAlertAegisTool];
 const toolExecutor = new ToolNode(serverTools);
 
 // -- CLIENT-SIDE TOOLS --
@@ -143,8 +158,9 @@ You have access to a suite of tools to manage the user's workspace and analyze t
 2.  **After receiving the result from 'categorizeText'**, look at the category.
     - If the category is 'Invoice', your next action is to use the 'extractInvoiceData' tool on the *same original text*.
     - If the category is anything else, your job is done. Synthesize a final response for the user telling them the category you found. Do not call any more tools.
-3.  **If the user asks to manage their UI**, use the appropriate UI management tool ('focusItem', 'addItem', etc.).
-4.  **For simple conversation**, just respond directly without calling any tools.
+3.  **After extracting invoice data**, your FINAL action is to call the 'logAndAlertAegis' tool to log the event.
+4.  **If the user asks to manage their UI**, use the appropriate UI management tool ('focusItem', 'addItem', etc.).
+5.  **For simple conversation**, just respond directly without calling any tools.
 
 Available Panels:
 ${availablePanels}

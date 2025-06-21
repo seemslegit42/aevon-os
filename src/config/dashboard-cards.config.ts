@@ -18,7 +18,7 @@ import {
   ListChecksIcon,
   LayoutGridIcon,
   ChartBarIcon,
-  Settings2Icon,
+  GitForkIcon,
   ShieldCheckIcon,
   BrainCircuitIcon,
   LayersIcon,
@@ -59,7 +59,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     minWidth: 300, minHeight: 480, cardClassName: "flex-grow flex flex-col",
   },
   {
-    id: 'loomStudio', title: 'Loom Studio', icon: Settings2Icon, isDismissible: true,
+    id: 'loomStudio', title: 'Loom Studio', icon: GitForkIcon, isDismissible: true,
     description: "Visual workspace for designing, testing, and orchestrating complex AI agent workflows and prompt chains.",
     content: LoomStudioCardContent,
     defaultLayout: { x: 410, y: 20, width: 450, height: 500, zIndex: 2 },

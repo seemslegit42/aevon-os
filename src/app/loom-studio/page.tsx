@@ -3,7 +3,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Settings2Icon as LoomIcon } from '@/components/icons'; // Renamed for clarity
+import { GitForkIcon as LoomIcon } from '@/components/icons'; // Renamed for clarity
 
 export default function LoomStudioPageStub() {
   return (

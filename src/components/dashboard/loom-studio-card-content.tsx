@@ -1,8 +1,8 @@
 
 "use client";
-import React, { useState, useCallback, type ElementType } from 'react';
-import { 
-    GitForkIcon, 
+import React, { useState, useCallback, type ElementType, useEffect } from 'react';
+import {
+    GitForkIcon,
     LogInIcon,
     DatabaseZapIcon,
     BrainCircuitIcon,
@@ -18,10 +18,11 @@ import { Button } from '@/components/ui/button';
 import { useToast } from "@/hooks/use-toast";
 import eventBus from '@/lib/event-bus';
 import { Textarea } from '@/components/ui/textarea';
-import type { TextCategory, InvoiceData } from '@/lib/ai-schemas';
+import type { InvoiceData } from '@/lib/ai-schemas';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { useChat } from 'ai/react';
 
 
 // Sample invoice text
@@ -79,19 +80,19 @@ const WorkflowNode: React.FC<WorkflowNodeProps> = ({ node, onInspect }) => {
                   'bg-secondary/10 border-secondary/50 font-semibold': node.isCondition
                 }
             )}>
-                {node.status === 'running' ? <LoaderIcon className="w-4 h-4 text-accent" /> : <NodeIcon className="w-4 h-4 text-primary" />}
+                {node.status === 'running' ? <LoaderIcon className="w-4 h-4 text-accent animate-spin" /> : <NodeIcon className="w-4 h-4 text-primary" />}
                 <span className="font-medium">{node.label}</span>
                 <div className="flex-grow" />
                 {node.status === 'completed' && <CheckCircleIcon className="w-4 h-4 text-chart-4" />}
                 {node.status === 'failed' && <AlertCircleIcon className="w-4 h-4 text-destructive" />}
             </div>
-             <Button 
-                variant="ghost" 
-                size="icon" 
+             <Button
+                variant="ghost"
+                size="icon"
                 className={cn(
-                    "ml-2 h-8 w-8 flex-shrink-0 transition-opacity", 
+                    "ml-2 h-8 w-8 flex-shrink-0 transition-opacity",
                     canInspect ? "opacity-40 group-hover:opacity-100" : "opacity-0 invisible"
-                )} 
+                )}
                 onClick={() => canInspect && onInspect(node)}
                 disabled={!canInspect}
                 >
@@ -112,109 +113,87 @@ const LoomStudioCardContent: React.FC = () => {
     const [inputText, setInputText] = useState(sampleInvoiceText);
     const [detailedNode, setDetailedNode] = useState<NodeState | null>(null);
     const { toast } = useToast();
-    const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+    // Use the main chat hook, but with a unique ID to isolate this conversation
+    const { messages, append, setMessages, isLoading } = useChat({ id: 'loom-simulation' });
+
+    // Map tool names from the agent to our UI node IDs
+    const toolNodeMap: { [key: string]: string } = {
+        categorizeText: 'condition',
+        extractInvoiceData: 'action-extract',
+        logAndAlertAegis: 'action-log',
+    };
 
     const updateNodeState = useCallback((nodeId: string, newState: Partial<NodeState>) => {
         setNodes(prev => prev.map(n => n.id === nodeId ? { ...n, ...newState } : n));
     }, []);
-    
+
     const handleInspectNode = (node: NodeState) => {
         setDetailedNode(node);
     };
 
-    const runTriggerStep = useCallback(async () => {
-        updateNodeState('trigger', { status: 'running' });
-        await sleep(300);
-        updateNodeState('trigger', { status: 'completed', output: { characters: inputText.length, receivedAt: new Date().toISOString() } });
-        eventBus.emit('orchestration:log', { task: 'Loom: Triggered', status: 'success', details: `Processing ${inputText.length} characters.`, targetId: 'loomStudio' });
-    }, [inputText, updateNodeState]);
-
-    const runCategorizationStep = useCallback(async (): Promise<TextCategory> => {
-        updateNodeState('condition', { status: 'running' });
-        const catResponse = await fetch('/api/ai/categorize-text', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: inputText }),
-        });
-        if (!catResponse.ok) throw new Error('Categorization API failed');
-        const categoryResult: TextCategory = await catResponse.json();
-        
-        updateNodeState('condition', { status: 'completed', output: categoryResult });
-        eventBus.emit('orchestration:log', { task: 'Loom: Categorized', status: 'success', details: `Text classified as: ${categoryResult.category}`, targetId: 'loomStudio' });
-        return categoryResult;
-    }, [inputText, updateNodeState]);
-
-    const runExtractionStep = useCallback(async () => {
-        updateNodeState('action-extract', { status: 'running' });
-        const extractResponse = await fetch('/api/ai/extract-invoice-data', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: inputText }),
-        });
-        if (!extractResponse.ok) throw new Error('Extraction API failed');
-        const extractResult: InvoiceData = await extractResponse.json();
-        
-        updateNodeState('action-extract', { status: 'completed', output: extractResult });
-        eventBus.emit('orchestration:log', { task: 'Loom: Extracted', status: 'success', details: extractResult.summary, targetId: 'loomStudio' });
-        return extractResult;
-    }, [inputText, updateNodeState]);
-    
-    const runLoggingStep = useCallback(async (extractedData: InvoiceData | null) => {
-        updateNodeState('action-log', { status: 'running' });
-        await sleep(300);
-        const logOutput = { status: "Logged OK", loggedAt: new Date().toISOString() };
-        updateNodeState('action-log', { status: 'completed', output: logOutput });
-        eventBus.emit('orchestration:log', { task: 'Loom: Logged', status: 'success', details: 'Workflow results logged to system.', targetId: 'loomStudio' });
-        
-        // Fire the alert to Aegis
-        const securityAlert = {
-          event: "External Document Processed",
-          source: "Loom Studio Workflow",
-          timestamp: new Date().toISOString(),
-          details: "An external document was processed and identified as an invoice.",
-          extractedData: extractedData ? {
-              invoiceNumber: extractedData.invoiceNumber,
-              amount: extractedData.amount,
-              dueDate: extractedData.dueDate,
-          } : "No data extracted."
-        };
-        
-        eventBus.emit('aegis:new-alert', JSON.stringify(securityAlert, null, 2));
-        eventBus.emit('orchestration:log', { task: 'Aegis Alert Sent', status: 'success', details: 'Forwarded processing log to Aegis Security.', targetId: 'aegisSecurity' });
-
-    }, [updateNodeState]);
-
-
-    const runSimulation = useCallback(async () => {
+    const runSimulation = useCallback(() => {
         setIsSimulating(true);
-        setNodes(initialWorkflow.map(n => ({...n, status: 'idle', output: null, error: null})));
-        let extractedData: InvoiceData | null = null;
+        setNodes(initialWorkflow); // Reset visual state
+        setMessages([]); // Clear previous simulation chat history
+        append({
+            role: 'user',
+            content: `Please run the full analysis workflow on the following text: """${inputText}"""`
+        });
+        updateNodeState('trigger', { status: 'completed', output: { receivedAt: new Date().toISOString(), characters: inputText.length } });
+        eventBus.emit('orchestration:log', { task: 'Loom: Triggered', status: 'success', details: `Processing ${inputText.length} characters.`, targetId: 'loomStudio' });
+    }, [inputText, append, setMessages, updateNodeState]);
 
-        try {
-            await runTriggerStep();
-            await sleep(400);
+    useEffect(() => {
+        if (!isSimulating) return;
 
-            const categoryResult = await runCategorizationStep();
-            await sleep(400);
+        const lastMessage = messages.at(-1);
+        if (!lastMessage) return;
 
-            if (categoryResult.isMatch) {
-                extractedData = await runExtractionStep();
-            } else {
-                updateNodeState('action-extract', { status: 'failed', error: "Skipped: Text was not categorized as an invoice." });
+        if (lastMessage.role === 'assistant' && lastMessage.tool_calls) {
+            lastMessage.tool_calls.forEach(tc => {
+                const nodeId = toolNodeMap[tc.toolName];
+                if (nodeId) updateNodeState(nodeId, { status: 'running' });
+            });
+        } else if (lastMessage.role === 'tool') {
+            const toolCallId = lastMessage.tool_call_id;
+            const originatingMsg = messages.find(m => m.role === 'assistant' && m.tool_calls?.some(tc => tc.toolCallId === toolCallId));
+            const toolCall = originatingMsg?.tool_calls?.find(tc => tc.toolCallId === toolCallId);
+
+            if (toolCall) {
+                const nodeId = toolNodeMap[toolCall.toolName];
+                if (nodeId) {
+                    try {
+                        const result = JSON.parse(lastMessage.content);
+                        updateNodeState(nodeId, { status: 'completed', output: result });
+                        eventBus.emit('orchestration:log', { task: `Loom: ${toolCall.toolName}`, status: 'success', details: `Tool executed successfully.` });
+
+                        // If extraction was successful, fire the Aegis alert
+                        if (toolCall.toolName === 'extractInvoiceData' && result.summary) {
+                           const securityAlert = {
+                                event: "Invoice Processed by Loom",
+                                source: "Loom Studio Workflow",
+                                timestamp: new Date().toISOString(),
+                                details: result.summary,
+                                extractedData: result,
+                            };
+                            eventBus.emit('aegis:new-alert', JSON.stringify(securityAlert, null, 2));
+                        }
+                    } catch (e) {
+                         const error = "Failed to parse tool output.";
+                         updateNodeState(nodeId, { status: 'failed', error });
+                         eventBus.emit('orchestration:log', { task: `Loom: ${toolCall.toolName}`, status: 'failure', details: error });
+                    }
+                }
             }
-            await sleep(400);
-            
-            await runLoggingStep(extractedData);
-
-        } catch (error: any) {
-            const errorMessage = error.message || "An unknown error occurred during simulation.";
-            toast({ variant: "destructive", title: "Simulation Failed", description: errorMessage });
-            eventBus.emit('orchestration:log', { task: 'Loom: Workflow Failed', status: 'failure', details: errorMessage, targetId: 'loomStudio' });
-            setNodes(prev => prev.map(n => n.status === 'running' ? { ...n, status: 'failed', error: errorMessage } : n));
-        } finally {
+        }
+        
+        if (!isLoading && messages.length > 1) {
             setIsSimulating(false);
         }
-    }, [toast, runTriggerStep, runCategorizationStep, runExtractionStep, runLoggingStep, updateNodeState, inputText]);
+
+    }, [messages, isSimulating, isLoading, updateNodeState]);
+
 
     const findNode = (id: string) => nodes.find(n => n.id === id)!;
 
