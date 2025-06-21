@@ -1,16 +1,16 @@
 
 "use client";
 
-import React, { Suspense, useState, memo } from 'react';
+import React, { useState, memo, type ElementType } from 'react';
 import { Rnd } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
-import { Skeleton } from '@/components/ui/skeleton';
 import { PinIcon, XIcon, MinimizeIcon, RestoreIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
 import type { LayoutItem } from '@/types/dashboard';
 import type { Position, Size } from 'react-rnd';
 import { cn } from '@/lib/utils';
+import { WindowContent } from './dashboard-window-content';
 
 interface DashboardWindowProps {
   item: LayoutItem;
@@ -23,16 +23,16 @@ interface DashboardWindowProps {
 
 const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocused, onLayoutChange, onFocus, onClose, onToggleMinimize }) => {
     const [isClosing, setIsClosing] = useState(false);
-    let title, Icon, Content, contentProps, minWidth, minHeight, cardClassName, isDismissible;
+    let title: string | undefined, Icon: ElementType | undefined, minWidth: number | undefined, minHeight: number | undefined, cardClassName: string | undefined, isDismissible: boolean | undefined;
 
+    // This block now only fetches metadata for the window frame.
+    // The actual content rendering is delegated to the <WindowContent /> component.
     if (item.type === 'card') {
         const cardConfig = ALL_CARD_CONFIGS.find(c => c.id === item.cardId);
         if (!cardConfig) return null;
         
         title = cardConfig.title;
         Icon = cardConfig.icon;
-        Content = cardConfig.content;
-        contentProps = { ...cardConfig.contentProps };
         minWidth = cardConfig.minWidth;
         minHeight = cardConfig.minHeight;
         cardClassName = cardConfig.cardClassName;
@@ -43,8 +43,6 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
 
         title = appConfig.title;
         Icon = appConfig.icon;
-        Content = appConfig.component;
-        contentProps = {};
         minWidth = appConfig.defaultSize.width || 300;
         minHeight = appConfig.defaultSize.height || 250;
         cardClassName = "";
@@ -100,7 +98,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
             enableResizing={resizeHandles}
         >
             <MicroAppCard
-                title={title}
+                title={title || 'Aevon Window'}
                 icon={Icon}
                 className={cardClassName}
                 actions={
@@ -119,9 +117,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
                   </>
                 }
             >
-                <Suspense fallback={<div className="p-4"><Skeleton className="h-full w-full" /></div>}>
-                    {!item.isMinimized && <Content {...contentProps} />}
-                </Suspense>
+               <WindowContent item={item} />
             </MicroAppCard>
         </Rnd>
     );
