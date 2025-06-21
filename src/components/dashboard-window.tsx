@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 import { Rnd } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -20,6 +20,7 @@ interface DashboardWindowProps {
 }
 
 const DashboardWindow: React.FC<DashboardWindowProps> = ({ item, isFocused, onLayoutChange, onFocus, onClose }) => {
+    const [isClosing, setIsClosing] = useState(false);
     let title, Icon, Content, contentProps, minWidth, minHeight, cardClassName, isDismissible;
 
     if (item.type === 'card') {
@@ -62,7 +63,10 @@ const DashboardWindow: React.FC<DashboardWindowProps> = ({ item, isFocused, onLa
 
     const handleCloseClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        onClose(item.id);
+        setIsClosing(true);
+        setTimeout(() => {
+            onClose(item.id);
+        }, 200); // Corresponds to animation duration
     };
 
     return (
@@ -77,7 +81,11 @@ const DashboardWindow: React.FC<DashboardWindowProps> = ({ item, isFocused, onLa
             minWidth={minWidth}
             minHeight={minHeight}
             style={{ zIndex: item.zIndex }}
-            className={cn("react-draggable", isFocused && "is-focused")}
+            className={cn(
+                "react-draggable animate-window-mount",
+                isFocused && "is-focused",
+                isClosing && "animate-window-unmount pointer-events-none"
+            )}
             dragHandleClassName="drag-handle"
             onMouseDownCapture={() => onFocus(item.id)}
         >

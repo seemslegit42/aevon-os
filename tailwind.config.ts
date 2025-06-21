@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -94,13 +95,23 @@ export default {
         "subtle-pulse": {
           '0%, 100%': { transform: 'scale(1)', opacity: '1' },
           '50%': { transform: 'scale(1.02)', opacity: '0.9' },
-        }
+        },
+        "window-mount": {
+          "0%": { opacity: "0", transform: "scale(0.97) translateY(10px)" },
+          "100%": { opacity: "1", transform: "scale(1) translateY(0)" },
+        },
+        "window-unmount": {
+          "0%": { opacity: "1", transform: "scale(1) translateY(0)" },
+          "100%": { opacity: "0", transform: "scale(0.97) translateY(10px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "aurora-glow": "aurora-glow 15s ease-in-out infinite alternate",
         "subtle-pulse": "subtle-pulse 5s ease-in-out infinite",
+        "window-mount": "window-mount 200ms ease-out",
+        "window-unmount": "window-unmount 200ms ease-out forwards",
       },
       boxShadow: {
         'glass-inset': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.05)',
