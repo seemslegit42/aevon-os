@@ -79,6 +79,12 @@ const BeepCardContent: React.FC = () => {
                 }
                 break;
             }
+            case 'moveItem': {
+                const { itemId, x, y } = toolCall.args as { itemId: string; x: number; y: number; };
+                eventBus.emit('item:move', { itemId, x, y });
+                resultMessage = `Moved item "${itemId}" to position (${x}, ${y}).`;
+                break;
+            }
             case 'removeItem': {
                 const { itemId } = toolCall.args;
                 const isApp = ALL_MICRO_APPS.some(app => app.id === itemId);

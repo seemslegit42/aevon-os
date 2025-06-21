@@ -9,6 +9,7 @@ type AppEvents = {
   'panel:add': string; // payload is cardId
   'panel:remove': string; // payload is itemId (cardId or app instance id)
   'layout:reset': undefined;
+  'item:move': { itemId: string; x: number; y: number; }; // payload to move an item
 
   // App Events
   'app:launch': MicroApp; // payload is the app object to launch

@@ -108,6 +108,11 @@ export function useDashboardLayout() {
       }
   }, [toast, handleBringToFront]);
 
+  const handleMoveItem = useCallback(({ itemId, x, y }: { itemId: string; x: number; y: number; }) => {
+    updateItemLayout(itemId, { x, y });
+    toast({ title: "Item Moved", description: `Item has been moved to a new position.` });
+  }, [updateItemLayout, toast]);
+
   // Effect for initialization and event bus setup
   useEffect(() => {
     initialize();
@@ -128,6 +133,7 @@ export function useDashboardLayout() {
     eventBus.on('command:submit', handleCommand);
     eventBus.on('app:closeAll', handleCloseAllAppInstances);
     eventBus.on('app:focusLatest', handleFocusLatestAppInstance);
+    eventBus.on('item:move', handleMoveItem);
 
     return () => {
       eventBus.off('panel:focus', handleBringToFront);
@@ -139,8 +145,9 @@ export function useDashboardLayout() {
       eventBus.off('command:submit', handleCommand);
       eventBus.off('app:closeAll', handleCloseAllAppInstances);
       eventBus.off('app:focusLatest', handleFocusLatestAppInstance);
+      eventBus.off('item:move', handleMoveItem);
     };
-  }, [initialize, initializeApps, handleBringToFront, handleAddCard, handleCloseItem, handleResetLayout, handleLaunchApp, handleCloneApp, handleCloseAllAppInstances, handleFocusLatestAppInstance]);
+  }, [initialize, initializeApps, handleBringToFront, handleAddCard, handleCloseItem, handleResetLayout, handleLaunchApp, handleCloneApp, handleCloseAllAppInstances, handleFocusLatestAppInstance, handleMoveItem]);
 
   // Expose the state and the composed controller functions
   return {
