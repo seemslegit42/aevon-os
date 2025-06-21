@@ -36,3 +36,11 @@ export const AiInsightsSchema = z.object({
   insights: z.array(z.string().describe("A short, actionable insight or recommendation based on the user's current workspace layout. Maximum of 3 insights.")).max(3),
 });
 export type AiInsights = z.infer<typeof AiInsightsSchema>;
+
+
+// Defines the structured output for the Content Creator micro-app.
+export const ContentGenerationSchema = z.object({
+  title: z.string().describe("A compelling, SEO-friendly title for the content."),
+  body: z.string().describe("The main body of the generated content, formatted appropriately for the selected content type (e.g., with markdown for a blog post)."),
+});
+export type ContentGeneration = z.infer<typeof ContentGenerationSchema>;

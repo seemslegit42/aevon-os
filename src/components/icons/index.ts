@@ -90,6 +90,7 @@ export * from './FishIcon';
 export * from './CloudCogIcon';
 export * from './LaptopIcon';
 export * from './LoaderIcon';
+export * from './PenSquareIcon';
 
 
 // Aliases for User Profile Dropdown for clarity, if needed, or use directly

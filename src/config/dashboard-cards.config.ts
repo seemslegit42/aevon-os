@@ -22,6 +22,7 @@ import {
   ShieldCheckIcon,
   BrainCircuitIcon,
   LayersIcon,
+  PenSquareIcon,
 } from '@/components/icons';
 
 
@@ -36,6 +37,16 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     permissions: ['sales:view', 'analytics:read'],
     tags: ['analytics', 'sales'],
     defaultSize: { width: 500, height: 600 },
+  },
+  {
+    id: 'app-content-creator',
+    title: 'Content Creator',
+    description: 'AI-powered assistant to generate marketing copy, blog posts, and more.',
+    icon: PenSquareIcon,
+    component: lazy(() => import('@/components/dashboard/micro-apps/content-creator-app')),
+    permissions: [], // No special permissions needed
+    tags: ['ai', 'writing', 'marketing'],
+    defaultSize: { width: 750, height: 450 },
   },
 ];
 
