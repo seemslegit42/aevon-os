@@ -1,5 +1,6 @@
 
 import { createOpenAI } from '@ai-sdk/openai';
+import { createGoogle } from '@ai-sdk/google';
 import Groq from 'groq-sdk';
 
 /**
@@ -10,6 +11,21 @@ export const groq = createOpenAI({
   baseURL: 'https://api.groq.com/openai/v1',
   apiKey: process.env.GROQ_API_KEY,
 });
+
+/**
+ * AI SDK client for interacting with Google's Gemini models.
+ */
+export const google = createGoogle({
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+});
+
+/**
+ * AI SDK client for interacting with OpenAI's models.
+ */
+export const openai = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
 
 /**
  * Direct Groq SDK client.
