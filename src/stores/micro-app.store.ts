@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import type { ComponentType, LazyExoticComponent } from 'react';
 
-// Define the shape of a micro-app's metadata
+// Define the shape of a micro-app's metadata, now with permissions
 export interface MicroApp {
   id: string;
   title: string;
@@ -10,6 +10,7 @@ export interface MicroApp {
   icon: ComponentType<{ className?: string }>;
   component: LazyExoticComponent<ComponentType<any>>; // The actual React component for the app, lazy loaded
   isActive: boolean;
+  permissions?: string[]; // Optional permissions required to use the app
 }
 
 export type MicroAppRegistration = Omit<MicroApp, 'isActive'>;
