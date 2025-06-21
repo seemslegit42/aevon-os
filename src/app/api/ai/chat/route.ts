@@ -1,10 +1,11 @@
 
-import { generateText } from 'ai';
+import { generateObject, generateText } from 'ai';
 import { z } from 'zod';
 import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
 import { type NextRequest } from 'next/server';
 import { rateLimiter } from '@/lib/rate-limiter';
 import { groq } from '@/lib/ai/groq';
+import { InvoiceDataSchema, TextCategorySchema } from '@/lib/ai-schemas';
 
 export const maxDuration = 60;
 
@@ -52,6 +53,7 @@ Available Micro-Apps:
 ${availableApps}`,
     messages,
     tools: {
+      // Client-side tools (no implementation here, will be sent to client)
       focusItem: {
         description: 'Brings a specific Panel or Micro-App into focus on the user\\'s canvas. Use this when the user asks to see or open an item that might already be present.',
         parameters: z.object({
@@ -82,17 +84,51 @@ ${availableApps}`,
         description: 'Resets the entire dashboard layout to its default configuration.',
         parameters: z.object({}),
       },
+      
+      // Server-side tools (with implementation)
       categorizeText: {
         description: 'Analyzes a piece of text and determines its category, such as Invoice, General Inquiry, or Spam.',
         parameters: z.object({
           text: z.string().describe('The text content to be categorized.'),
         }),
+        execute: async ({ text }) => {
+            const { object: category } = await generateObject({
+                model: groq('llama3-8b-8192'), // Use a smaller model for this simple task
+                schema: TextCategorySchema,
+                prompt: `You are an expert text classification agent. Analyze the following text and determine if it is an invoice.
+                If it is an invoice, set 'isMatch' to true and 'category' to 'Invoice'.
+                Otherwise, set 'isMatch' to false and provide a general category like 'General Inquiry', 'Spam', or 'Order Confirmation'.
+
+                Text to analyze:
+                ---
+                ${text}
+                ---
+                `,
+            });
+            return category;
+        }
       },
       extractInvoiceData: {
         description: 'Extracts structured data (invoice number, amount, due date) from a text that has been identified as an invoice.',
         parameters: z.object({
           text: z.string().describe('The full text of the invoice to extract data from.'),
         }),
+        execute: async ({ text }) => {
+            const { object: invoiceData } = await generateObject({
+                model: groq('llama3-70b-8192'), // Use a larger model for reliable extraction
+                schema: InvoiceDataSchema,
+                prompt: `You are a data extraction expert. Analyze the following invoice text and extract the required information into a structured JSON object.
+                If a field is not present, omit it from the output.
+                The due date should be in YYYY-MM-DD format if possible.
+
+                Invoice text to analyze:
+                ---
+                ${text}
+                ---
+                `,
+            });
+            return invoiceData;
+        }
       },
     }
   });

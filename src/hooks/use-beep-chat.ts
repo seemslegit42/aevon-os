@@ -2,14 +2,21 @@
 import { useChat } from 'ai/react';
 import eventBus from '@/lib/event-bus';
 import { ALL_MICRO_APPS, ALL_CARD_CONFIGS } from '@/config/dashboard-cards.config';
-import type { TextCategory, InvoiceData } from '@/lib/ai-schemas';
 
 export function useBeepChat() {
     const { messages, append, isLoading, setMessages, lastMessage } = useChat({
     api: '/api/ai/chat',
     onToolCall: async (toolCalls) => {
-      
-      const toolCallResults = await Promise.all(toolCalls.map(async (toolCall) => {
+      // Filter for client-side tools only. Server tools are handled by the API route.
+      const clientToolCalls = toolCalls.filter(tc => 
+        ['focusItem', 'addItem', 'moveItem', 'removeItem', 'resetLayout'].includes(tc.toolName)
+      );
+        
+      if (clientToolCalls.length === 0) {
+        return;
+      }
+
+      const toolCallResults = await Promise.all(clientToolCalls.map(async (toolCall) => {
         const { toolName, args } = toolCall;
         let result: any;
         const taskName = `BEEP: ${toolName}`;
@@ -65,38 +72,10 @@ export function useBeepChat() {
                   result = { success: true, message: details };
                   break;
               }
-              case 'categorizeText': {
-                  const { text } = args as { text: string };
-                  const response = await fetch('/api/ai/categorize-text', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text }),
-                  });
-                  if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Categorization API failed');
-                  }
-                  result = await response.json() as TextCategory;
-                  details = `Categorized text as: ${result.category}`;
-                  break;
-              }
-              case 'extractInvoiceData': {
-                  const { text } = args as { text: string };
-                  const response = await fetch('/api/ai/extract-invoice-data', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text }),
-                  });
-                  if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Extraction API failed');
-                  }
-                  result = await response.json() as InvoiceData;
-                  details = result.summary;
-                  break;
-              }
               default:
-                  throw new Error(`Unhandled tool call: ${toolName}`);
+                  // This case should not be hit if we filter correctly,
+                  // but it's good practice to have a fallback.
+                  throw new Error(`Unhandled client-side tool call: ${toolName}`);
           }
         } catch (error: any) {
           result = { error: error.message };
