@@ -298,3 +298,23 @@
 .notification-glow-animate {
   animation: notification-glow 2.5s ease-in-out;
 }
+
+/* Cyber Health Gauge Pulse Animation */
+@keyframes gauge-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 8px 28px hsl(275 45% 8% / 0.25),
+                0 3px 10px hsl(275 45% 8% / 0.2),
+                0 0 0px hsl(var(--destructive) / 0);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 10px 35px hsl(275 45% 8% / 0.3),
+                0 4px 12px hsl(275 45% 8% / 0.25),
+                0 0 20px hsl(var(--destructive) / 0.5);
+  }
+}
+
+.gauge-pulse-animate {
+    animation: gauge-pulse 10s ease-in-out infinite;
+}

@@ -7,7 +7,6 @@ const BeepCardContent = lazy(() => import('@/components/dashboard/beep-card-cont
 const LiveOrchestrationFeedCardContent = lazy(() => import('@/components/dashboard/live-orchestration-feed-card-content'));
 const MicroAppsCardContent = lazy(() => import('@/components/dashboard/micro-apps-card-content'));
 const LoomStudioCardContent = lazy(() => import('@/components/dashboard/loom-studio-card-content'));
-const AegisSecurityCardContent = lazy(() => import('@/components/dashboard/aegis-security-card-content'));
 const ArmoryMarketplaceCardContent = lazy(() => import('@/components/dashboard/armory-card-content'));
 const AiInsightsCardContent = lazy(() => import('@/components/dashboard/ai-insights-card-content'));
 
@@ -22,6 +21,7 @@ import {
   ShieldCheckIcon,
   BrainCircuitIcon,
   MailIcon,
+  LayersIcon,
 } from '@/components/icons';
 
 
@@ -46,6 +46,36 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     permissions: ['email:process', 'invoice:extract'],
     tags: ['automation', 'productivity'],
     defaultSize: { width: 450, height: 500 },
+  },
+  {
+    id: 'app-phishing-resilience',
+    title: 'Phishing Resilience',
+    description: 'Monitor and improve your team\'s phishing awareness.',
+    icon: ShieldCheckIcon,
+    component: lazy(() => import('@/components/dashboard/aegis/phishing-resilience-panel')),
+    permissions: ['security:view'],
+    tags: ['security', 'aegis'],
+    defaultSize: { width: 400, height: 450 },
+  },
+  {
+    id: 'app-cloud-security',
+    title: 'Cloud Security',
+    description: 'Monitor your cloud infrastructure for misconfigurations.',
+    icon: LayersIcon,
+    component: lazy(() => import('@/components/dashboard/aegis/cloud-security-panel')),
+    permissions: ['security:view', 'cloud:read'],
+    tags: ['security', 'aegis', 'cloud'],
+    defaultSize: { width: 400, height: 450 },
+  },
+    {
+    id: 'app-edr-summary',
+    title: 'EDR Summary',
+    description: 'Endpoint Detection & Response threat overview.',
+    icon: BrainCircuitIcon,
+    component: lazy(() => import('@/components/dashboard/aegis/edr-summary-panel')),
+    permissions: ['security:view', 'edr:read'],
+    tags: ['security', 'aegis', 'endpoint'],
+    defaultSize: { width: 500, height: 450 },
   }
 ];
 
@@ -98,13 +128,6 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     minWidth: 320, minHeight: 300,
   },
   {
-    id: 'aegisSecurity', title: 'Aegis AI Security', icon: ShieldCheckIcon, isDismissible: true,
-    description: "AI-powered cybersecurity. Analyzes alert data to provide summaries, identify threats, and recommend actions.",
-    content: AegisSecurityCardContent,
-    defaultLayout: { x: 870, y: 20, width: 380, height: 350, zIndex: 3 },
-    minWidth: 300, minHeight: 280,
-  },
-  {
     id: 'armoryMarketplace', title: 'ΛΞVON Λrmory', icon: CreditCardIcon, isDismissible: true,
     description: "Marketplace to discover, acquire, and manage AI micro-apps and intelligent agents for your OS.",
     content: ArmoryMarketplaceCardContent,
@@ -115,8 +138,8 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     id: 'aiInsights', title: 'AI Insights Engine', icon: BrainCircuitIcon, isDismissible: true,
     description: "Provides personalized recommendations and data-driven intelligence based on your OS activity.",
     content: AiInsightsCardContent,
-    defaultLayout: { x: 870, y: 380, width: 270, height: 80, zIndex: 5 },
-    minWidth: 250, minHeight: 80,
+    defaultLayout: { x: 870, y: 20, width: 270, height: 180, zIndex: 5 },
+    minWidth: 250, minHeight: 180,
   },
   {
     id: 'liveOrchestrationFeed', title: 'Live Orchestration Feed', icon: ListChecksIcon, isDismissible: true,
