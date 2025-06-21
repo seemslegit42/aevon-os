@@ -14,7 +14,6 @@ import { AlertTriangleIcon, ZapIcon } from '@/components/icons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-// Sample alert data for the manual trigger
 const MOCK_ALERT_DATA = JSON.stringify({
   alert: "Anomalous login detected",
   timestamp: new Date().toISOString(),
@@ -68,6 +67,8 @@ const AegisSecurityCardContent: React.FC = () => {
   }, [toast]);
 
   useEffect(() => {
+    // This listener allows other parts of the OS to trigger a security analysis.
+    // For example, the Loom Studio can fire this event after processing an invoice.
     eventBus.on('aegis:new-alert', handleAnalysis);
     return () => {
       eventBus.off('aegis:new-alert', handleAnalysis);

@@ -27,7 +27,6 @@ import { Badge } from '@/components/ui/badge';
 import { useChat } from 'ai/react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
-// Sample invoice text
 const sampleInvoiceText = `
 To: Aevon Corp
 From: Quantum Supplies Inc.
@@ -65,16 +64,12 @@ const initialWorkflow: NodeState[] = [
 const initialNodePositions: Record<string, { x: number; y: number }> = {
     trigger: { x: 50, y: 150 },
     condition: { x: 300, y: 150 },
-    'action-extract': { x: 550, y: 50 },
-    'action-log': { x: 550, y: 250 },
+    'action-extract': { x: 550, y: 150 },
+    'action-log': { x: 800, y: 150 },
 };
 
-const EXPAND_BREAKPOINT_WIDTH = 550; // Switch to expanded view when wider than this
+const EXPAND_BREAKPOINT_WIDTH = 700;
 
-// =================================================================
-// MAIN COMPONENT: LoomStudioCardContent
-// Manages state and logic, and conditionally renders the view.
-// =================================================================
 const LoomStudioCardContent: React.FC = () => {
     const [nodes, setNodes] = useState<NodeState[]>(initialWorkflow);
     const [nodePositions, setNodePositions] = useState(initialNodePositions);
@@ -84,7 +79,6 @@ const LoomStudioCardContent: React.FC = () => {
     const { toast } = useToast();
     const { messages, append, setMessages, isLoading } = useChat({ id: 'loom-simulation' });
 
-    // Size detection for responsive view
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
 
@@ -122,7 +116,8 @@ const LoomStudioCardContent: React.FC = () => {
     const runSimulation = useCallback(() => {
         setIsSimulating(true);
         setNodes(initialWorkflow);
-        setNodePositions(initialNodePositions);
+        // Do not reset positions to allow user customization
+        // setNodePositions(initialNodePositions); 
         setMessages([]);
         append({ role: 'user', content: `Please run the full analysis workflow on the following text: """${inputText}"""` });
         updateNodeState('trigger', { status: 'completed', output: { receivedAt: new Date().toISOString(), characters: inputText.length } });
@@ -131,7 +126,7 @@ const LoomStudioCardContent: React.FC = () => {
 
     const handleSendToBEEP = () => {
         if (!inputText || isSimulating) return;
-        eventBus.emit('command:submit', `Analyze the following text: """${inputText}"""`);
+        eventBus.emit('beep:submitQuery', `Analyze the following text: """${inputText}"""`);
         toast({ title: "Sent to BEEP", description: "The text has been sent to the BEEP interface for processing." });
     };
 
@@ -157,6 +152,8 @@ const LoomStudioCardContent: React.FC = () => {
                         const result = JSON.parse(lastMessage.content);
                         updateNodeState(nodeId, { status: 'completed', output: result });
                         eventBus.emit('orchestration:log', { task: `Loom: ${toolCall.toolName}`, status: 'success', details: `Tool executed successfully.` });
+                        
+                        // NEW: When data is extracted, fire an alert to Aegis
                         if (toolCall.toolName === 'extractInvoiceData' && result.summary) {
                            const securityAlert = { event: "Invoice Processed by Loom", source: "Loom Studio Workflow", timestamp: new Date().toISOString(), details: result.summary, extractedData: result };
                            eventBus.emit('aegis:new-alert', JSON.stringify(securityAlert, null, 2));
@@ -242,11 +239,6 @@ const LoomStudioCardContent: React.FC = () => {
     );
 };
 
-
-// =================================================================
-// COMPONENT: CompactLoomView
-// Vertical, simplified list for smaller viewports.
-// =================================================================
 const CompactLoomView = ({ nodes, inputText, setInputText, isSimulating, runSimulation, handleSendToBEEP, onInspectNode, findNode }: any) => (
     <ScrollArea className="h-full pr-2">
         <div className="space-y-4 h-full flex flex-col p-1">
@@ -293,19 +285,13 @@ const CompactLoomView = ({ nodes, inputText, setInputText, isSimulating, runSimu
     </ScrollArea>
 );
 
-
-// =================================================================
-// COMPONENT: ExpandedLoomView
-// n8n-style node editor for larger viewports.
-// =================================================================
 const ExpandedLoomView = ({ nodes, inputText, setInputText, isSimulating, runSimulation, handleSendToBEEP, onInspectNode, nodePositions, onNodePositionChange }: any) => {
     
     const getNodeById = (id: string) => nodes.find((n: NodeState) => n.id === id);
 
     return (
         <div className="h-full flex flex-row gap-4">
-             {/* Left Panel for Input and Controls */}
-            <div className="w-64 flex-shrink-0 flex flex-col gap-4">
+            <div className="w-72 flex-shrink-0 flex flex-col gap-4">
                 <div className="flex-shrink-0">
                     <label htmlFor="loom-input-expanded" className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
                        <FileTextIcon /> Input Text
@@ -331,9 +317,7 @@ const ExpandedLoomView = ({ nodes, inputText, setInputText, isSimulating, runSim
                 </div>
             </div>
 
-            {/* Node Canvas */}
             <div className="flex-grow relative border border-border/20 rounded-lg bg-background/20 overflow-hidden">
-                {/* SVG Layer for Connectors */}
                 <svg className="absolute top-0 left-0 w-full h-full pointer-events-none">
                     <defs>
                         <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
@@ -349,14 +333,12 @@ const ExpandedLoomView = ({ nodes, inputText, setInputText, isSimulating, runSim
                         nodeWidth={250} status={getNodeById('condition')?.status}
                         label="Yes"
                     />
-                    <WorkflowSVGConnectors
-                        from={nodePositions.condition} to={nodePositions['action-log']}
-                        nodeWidth={250} status={getNodeById('condition')?.status}
-                        label="Yes"
+                     <WorkflowSVGConnectors
+                        from={nodePositions['action-extract']} to={nodePositions['action-log']}
+                        nodeWidth={250} status={getNodeById('action-extract')?.status}
                     />
                 </svg>
 
-                {/* Draggable Nodes */}
                 {nodes.map((node: NodeState) => (
                     <motion.div
                         key={node.id}
@@ -377,9 +359,6 @@ const ExpandedLoomView = ({ nodes, inputText, setInputText, isSimulating, runSim
     );
 }
 
-// =================================================================
-// SUB-COMPONENTS for building the views
-// =================================================================
 interface WorkflowNodeProps {
   node: NodeState;
   onInspect: (node: NodeState) => void;
@@ -436,7 +415,7 @@ const WorkflowConnector: React.FC = () => (
 
 const WorkflowSVGConnectors = ({ from, to, nodeWidth, status, label }: any) => {
     const startX = from.x + nodeWidth;
-    const startY = from.y + 24; // Half of node height
+    const startY = from.y + 24;
     const endX = to.x;
     const endY = to.y + 24;
     

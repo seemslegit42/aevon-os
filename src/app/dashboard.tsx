@@ -7,11 +7,24 @@ import { useLayoutStore } from '@/stores/layout.store';
 import { Skeleton } from '@/components/ui/skeleton';
 import DashboardWindow from '@/components/dashboard-window';
 import { shallow } from 'zustand/shallow';
-import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config'; // Import configs
+import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
+import eventBus from '@/lib/event-bus';
 
 const Dashboard: React.FC = () => {
   useEffect(() => {
+    // Initialize the layout store which loads from localStorage or defaults.
     useLayoutStore.getState().initialize();
+
+    // Listen for global focus events, e.g., from notifications
+    const handleFocus = (id: string) => {
+        useLayoutStore.getState().bringToFront(id);
+    };
+    eventBus.on('panel:focus', handleFocus);
+
+    return () => {
+        // Clean up the event listener on unmount
+        eventBus.off('panel:focus', handleFocus);
+    }
   }, []);
 
   const {
@@ -54,12 +67,10 @@ const Dashboard: React.FC = () => {
   return (
     <div className="h-full w-full relative" onClick={handleCanvasClick}>
       {layoutItems.map(item => {
-          // Centralized config lookup
           const config = item.type === 'card'
             ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId)
             : ALL_MICRO_APPS.find(a => a.id === item.appId);
           
-          // Don't render if config is missing (robustness)
           if (!config) return null;
 
           return (

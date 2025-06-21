@@ -23,9 +23,6 @@ import {
 } from '@/config/dashboard-cards.config';
 import type { LayoutItem } from '@/types/dashboard';
 
-// === 1. DEFINE TOOLS ===
-
-// -- KNOWLEDGE BASE SIMULATION --
 const KNOWLEDGE_BASE = {
     'loom studio': 'Loom Studio is a visual workspace for designing, testing, and orchestrating complex AI workflows and prompt chains.',
     'aegis': 'Aegis is the security command center for AEVON OS. It provides a real-time overview of your security posture, including phishing resilience, cloud security, and endpoint detection.',
@@ -52,7 +49,6 @@ const searchKnowledgeBaseTool = new DynamicTool({
 });
 
 
-// -- SERVER-SIDE TOOLS --
 const categorizeTextTool = new DynamicTool({
   name: 'categorizeText',
   description:
@@ -108,10 +104,7 @@ const logAndAlertAegisTool = new DynamicTool({
         analysisSummary: z.string().describe('A brief summary of what was processed, e.g., "Invoice #123 extracted."'),
     }),
     func: async ({ analysisSummary }) => {
-        // This function runs on the server. It could log to a database or other service.
         console.log(`WORKFLOW LOG & ALERT: ${analysisSummary}`);
-        // The return value confirms to the agent that the step is complete.
-        // The client-side component will see this and trigger the actual UI alert.
         return JSON.stringify({ status: "Logged OK", summary: analysisSummary });
     },
 });
@@ -119,7 +112,7 @@ const logAndAlertAegisTool = new DynamicTool({
 const getSalesMetricsTool = new DynamicTool({
     name: "getSalesMetrics",
     description: "Retrieves key sales metrics, such as total revenue and top-selling products.",
-    schema: z.object({}), // No parameters needed for this summary tool
+    schema: z.object({}),
     func: async () => {
         const totalRevenue = await SalesDataService.getTotalRevenue();
         const topProducts = await SalesDataService.getTopProducts(3);
@@ -158,7 +151,6 @@ const serverTools = [
 ];
 const toolExecutor = new ToolNode(serverTools);
 
-// -- CLIENT-SIDE TOOLS --
 const staticItemIds = [
   ...ALL_CARD_CONFIGS.map((p) => p.id),
   ...ALL_MICRO_APPS.map((a) => a.id),
@@ -170,7 +162,7 @@ const focusItemTool = new DynamicTool({
     schema: z.object({
         instanceId: z.string().describe("The unique instance ID of the window to focus on."),
     }),
-    func: async () => '' // Dummy function, handled by client
+    func: async () => ''
 });
 
 const addItemTool = new DynamicTool({
@@ -218,7 +210,6 @@ const resetLayoutTool = new DynamicTool({
     func: async () => ''
 });
 
-// === 2. DEFINE THE AGENT'S BRAIN ===
 const allTools = [
   ...serverTools,
   focusItemTool,
@@ -291,16 +282,10 @@ const model = new ChatGoogleGenerativeAI({
   model: 'gemini-1.5-flash-latest',
 }).bindTools(allTools);
 
-
-// === 3. DEFINE THE GRAPH ===
 interface AgentState extends MessagesState {
     layout: LayoutItem[];
 }
 
-/**
- * The primary node for the agent. It receives the current state of the conversation
- * and calls the AI model to decide on the next action.
- */
 const callModel = async (state: AgentState) => {
   const { messages, layout } = state;
   const systemPrompt = getSystemPrompt(layout);
@@ -308,9 +293,6 @@ const callModel = async (state: AgentState) => {
   return { messages: [response] };
 };
 
-/**
- * A conditional edge that decides whether to call server-side tools or end the graph turn.
- */
 const shouldInvokeTools = (state: AgentState): 'tools' | '__end__' => {
   const { messages } = state;
   const lastMessage = messages[messages.length - 1] as AIMessage;
@@ -319,9 +301,6 @@ const shouldInvokeTools = (state: AgentState): 'tools' | '__end__' => {
     return '__end__';
   }
 
-  // The 'tools' node will only execute server-side tools.
-  // If the model calls a client-side tool, this edge will end the graph turn,
-  // and the tool call will be passed to the client via the stream.
   const hasServerToolCall = lastMessage.tool_calls.some(call => 
     serverTools.some(tool => tool.name === call.name)
   );
@@ -329,7 +308,6 @@ const shouldInvokeTools = (state: AgentState): 'tools' | '__end__' => {
   return hasServerToolCall ? 'tools' : '__end__';
 };
 
-// Define the graph structure.
 const workflow = new StateGraph<AgentState>({
     channels: { 
         messages: { 
@@ -337,7 +315,7 @@ const workflow = new StateGraph<AgentState>({
             default: () => [] 
         },
         layout: {
-            value: (x, y) => y, // Always take the latest layout provided in the input
+            value: (x, y) => y,
             default: () => []
         }
     }
@@ -353,5 +331,4 @@ workflow.addConditionalEdges('agent', shouldInvokeTools, {
 });
 workflow.addEdge('tools', 'agent');
 
-// Compile the graph into an executable object.
 export const agentGraph = workflow.compile();
