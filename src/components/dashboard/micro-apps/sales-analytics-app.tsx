@@ -1,7 +1,7 @@
 
 "use client"
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bar, BarChart, Line, LineChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import {
   ChartContainer,
@@ -12,27 +12,8 @@ import {
   type ChartConfig,
 } from '@/components/ui/chart';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-
-// Sample data for the charts
-const monthlySalesData = [
-  { month: "Jan", desktop: 186, mobile: 80 },
-  { month: "Feb", desktop: 305, mobile: 200 },
-  { month: "Mar", desktop: 237, mobile: 120 },
-  { month: "Apr", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "Jun", desktop: 214, mobile: 140 },
-];
-
-const salesTrendData = [
-  { date: '2024-01-01', sales: 2000 },
-  { date: '2024-02-01', sales: 2200 },
-  { date: '2024-03-01', sales: 3000 },
-  { date: '2024-04-01', sales: 2780 },
-  { date: '2024-05-01', sales: 3890 },
-  { date: '2024-06-01', sales: 3390 },
-  { date: '2024-07-01', sales: 4490 },
-];
-
+import { getMonthlySales, getSalesTrend, type MonthlySales, type SalesTrend } from '@/services/sales-data.service';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const barChartConfig = {
   desktop: { label: "Desktop", color: "hsl(var(--chart-1))" },
@@ -44,6 +25,20 @@ const lineChartConfig = {
 } satisfies ChartConfig;
 
 const SalesAnalyticsApp: React.FC = () => {
+    const [monthlySalesData, setMonthlySalesData] = useState<MonthlySales[] | null>(null);
+    const [salesTrendData, setSalesTrendData] = useState<SalesTrend[] | null>(null);
+    
+    useEffect(() => {
+        // Fetch data from the service on component mount
+        const fetchData = async () => {
+            const monthly = await getMonthlySales();
+            const trend = await getSalesTrend();
+            setMonthlySalesData(monthly);
+            setSalesTrendData(trend);
+        };
+        fetchData();
+    }, []);
+
   return (
     <div className="space-y-4 h-full flex flex-col">
         <div className="flex-1">
@@ -53,23 +48,25 @@ const SalesAnalyticsApp: React.FC = () => {
                     <CardDescription>January - June 2024</CardDescription>
                 </CardHeader>
                 <CardContent className="h-[calc(100%-4rem)] pb-0">
-                     <ChartContainer config={barChartConfig} className="h-full w-full">
-                        <BarChart accessibilityLayer data={monthlySalesData}>
-                            <CartesianGrid vertical={false} />
-                            <XAxis
-                                dataKey="month"
-                                tickLine={false}
-                                tickMargin={10}
-                                axisLine={false}
-                                tickFormatter={(value) => value.slice(0, 3)}
-                            />
-                            <YAxis />
-                            <ChartTooltip content={<ChartTooltipContent />} />
-                            <ChartLegend content={<ChartLegendContent />} />
-                            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
-                            <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
-                        </BarChart>
-                    </ChartContainer>
+                    {monthlySalesData ? (
+                         <ChartContainer config={barChartConfig} className="h-full w-full">
+                            <BarChart accessibilityLayer data={monthlySalesData}>
+                                <CartesianGrid vertical={false} />
+                                <XAxis
+                                    dataKey="month"
+                                    tickLine={false}
+                                    tickMargin={10}
+                                    axisLine={false}
+                                    tickFormatter={(value) => value.slice(0, 3)}
+                                />
+                                <YAxis />
+                                <ChartTooltip content={<ChartTooltipContent />} />
+                                <ChartLegend content={<ChartLegendContent />} />
+                                <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
+                                <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
+                            </BarChart>
+                        </ChartContainer>
+                    ) : <Skeleton className="w-full h-full" />}
                 </CardContent>
             </Card>
         </div>
@@ -80,22 +77,24 @@ const SalesAnalyticsApp: React.FC = () => {
                     <CardDescription>Last 7 Months</CardDescription>
                 </CardHeader>
                  <CardContent className="h-[calc(100%-4rem)] pb-0">
-                    <ChartContainer config={lineChartConfig} className="h-full w-full">
-                        <LineChart accessibilityLayer data={salesTrendData} margin={{ top: 5, right: 20, left: -10, bottom: 0 }}>
-                            <CartesianGrid vertical={false} />
-                            <XAxis
-                                dataKey="date"
-                                tickLine={false}
-                                axisLine={false}
-                                tickMargin={8}
-                                tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short' })}
-                            />
-                            <YAxis tickFormatter={(value) => `$${value/1000}k`} />
-                            <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
-                            <ChartLegend content={<ChartLegendContent />} />
-                            <Line type="monotone" dataKey="sales" stroke="var(--color-sales)" strokeWidth={2} dot={true} />
-                        </LineChart>
-                    </ChartContainer>
+                    {salesTrendData ? (
+                        <ChartContainer config={lineChartConfig} className="h-full w-full">
+                            <LineChart accessibilityLayer data={salesTrendData} margin={{ top: 5, right: 20, left: -10, bottom: 0 }}>
+                                <CartesianGrid vertical={false} />
+                                <XAxis
+                                    dataKey="date"
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickMargin={8}
+                                    tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short' })}
+                                />
+                                <YAxis tickFormatter={(value) => `$${value/1000}k`} />
+                                <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
+                                <ChartLegend content={<ChartLegendContent />} />
+                                <Line type="monotone" dataKey="sales" stroke="var(--color-sales)" strokeWidth={2} dot={true} />
+                            </LineChart>
+                        </ChartContainer>
+                    ) : <Skeleton className="w-full h-full" />}
                 </CardContent>
             </Card>
         </div>

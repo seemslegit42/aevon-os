@@ -51,3 +51,14 @@ export const KnowledgeBaseSearchResultSchema = z.object({
   answer: z.string().describe("The answer found in the knowledge base, or a message indicating no information was found."),
 });
 export type KnowledgeBaseSearchResult = z.infer<typeof KnowledgeBaseSearchResultSchema>;
+
+// Defines the structured output for the Sales Metrics tool.
+export const SalesMetricsSchema = z.object({
+    totalRevenue: z.number().describe("The total revenue for the period."),
+    topProducts: z.array(z.object({
+        name: z.string(),
+        revenue: z.number(),
+    })).describe("A list of the top-selling products and their revenue."),
+    trend: z.string().optional().describe("A brief, one-sentence textual summary of the sales trend."),
+});
+export type SalesMetrics = z.infer<typeof SalesMetricsSchema>;

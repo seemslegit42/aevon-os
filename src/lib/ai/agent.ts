@@ -13,7 +13,9 @@ import {
   TextCategorySchema,
   InvoiceDataSchema,
   KnowledgeBaseSearchResultSchema,
+  SalesMetricsSchema,
 } from '@/lib/ai-schemas';
+import * as SalesDataService from '@/services/sales-data.service';
 import {
   ALL_CARD_CONFIGS,
   ALL_MICRO_APPS,
@@ -112,7 +114,29 @@ const logAndAlertAegisTool = new DynamicTool({
     },
 });
 
-const serverTools = [categorizeTextTool, extractInvoiceDataTool, logAndAlertAegisTool, searchKnowledgeBaseTool];
+const getSalesMetricsTool = new DynamicTool({
+    name: "getSalesMetrics",
+    description: "Retrieves key sales metrics, such as total revenue and top-selling products.",
+    schema: z.object({}), // No parameters needed for this summary tool
+    func: async () => {
+        const totalRevenue = await SalesDataService.getTotalRevenue();
+        const topProducts = await SalesDataService.getTopProducts(3);
+        const result: z.infer<typeof SalesMetricsSchema> = {
+            totalRevenue,
+            topProducts,
+            trend: "Sales are showing a positive upward trend over the last several months.",
+        };
+        return JSON.stringify(result);
+    },
+});
+
+const serverTools = [
+    categorizeTextTool,
+    extractInvoiceDataTool,
+    logAndAlertAegisTool,
+    searchKnowledgeBaseTool,
+    getSalesMetricsTool
+];
 const toolExecutor = new ToolNode(serverTools);
 
 // -- CLIENT-SIDE TOOLS --
@@ -199,11 +223,11 @@ const getSystemPrompt = (layout: LayoutItem[]) => {
       }).join('\n')
     : 'No windows are currently open.';
 
-  return `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic. You have access to a suite of tools to manage the user's workspace and analyze text.
+  return `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic. You have access to a suite of tools to manage the user's workspace and analyze text and data.
 
-**RULES FOR QUESTION ANSWERING**
-- If the user asks a question about how a feature works (e.g., "What is Loom Studio?"), you MUST use the \`searchKnowledgeBase\` tool to find the answer.
-- If the knowledge base doesn't have an answer, inform the user you couldn't find the information.
+**RULES FOR QUESTION ANSWERING & DATA ANALYSIS**
+- For general questions about OS features (e.g., "What is Loom Studio?"), you MUST use the \`searchKnowledgeBase\` tool to find the answer.
+- For questions about sales data (e.g., "how are sales?", "show me revenue"), you MUST use the \`getSalesMetrics\` tool.
 - For simple, conversational questions (e.g., "How are you?"), just respond directly without calling any tools.
 
 **RULES FOR UI MANIPULATION**
@@ -213,7 +237,7 @@ const getSystemPrompt = (layout: LayoutItem[]) => {
 4.  **Single vs. All:** To close one window, use 'removeItem'. To close all windows of an app, use 'closeAllInstancesOfApp'.
 5.  **Confirm Your Actions:** After you call a UI tool (like 'addItem'), also generate a brief, confirmatory message for the user. E.g., "Done. I've added the Loom Studio." You can generate text and call tools in the same turn.
 
-**RULES FOR TEXT ANALYSIS**
+**RULES FOR TEXT ANALYSIS (INVOICE WORKFLOW)**
 1.  When given text to analyze, your first step is ALWAYS to use the 'categorizeText' tool.
 2.  Review the category result.
     - If it's **not** an invoice, your job is done. Respond with a message confirming the category you identified (e.g., "I've categorized that text as a General Inquiry."). Do not use any more tools.
