@@ -3,8 +3,6 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { generateText } from 'ai';
 import { z } from 'zod';
 import { ALL_CARD_CONFIGS } from '@/config/dashboard-cards.config';
-import { AppDescriptionInputSchema } from '@/lib/ai-schemas';
-import { generateAppDescriptionAction } from '@/lib/ai-actions';
 
 export const maxDuration = 60;
 
@@ -24,8 +22,6 @@ export async function POST(req: Request) {
     system: `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic. You are aware of the OS's components and can control the user interface.
     
 When a user asks you to show, open, or focus on a specific panel, use the 'focusPanel' tool to bring that panel to the front.
-
-When a user asks you to generate a description for a micro-app, use the 'generateAppDescription' tool. You must gather all the necessary information from the user first if it's not provided: the app name, its core functionality, its target audience, and its key features.
     
 Available Panels:
 ${availablePanels}`,
@@ -37,11 +33,6 @@ ${availablePanels}`,
           cardId: z.string().describe(`The unique ID of the card to focus on. Available IDs are: ${ALL_CARD_CONFIGS.map(p => p.id).join(', ')}`),
         }),
       },
-      generateAppDescription: {
-        description: 'Generates a compelling marketplace description for a micro-application. Gathers all necessary details from the user before executing.',
-        parameters: AppDescriptionInputSchema,
-        execute: async (args) => await generateAppDescriptionAction(args),
-      }
     }
   });
 

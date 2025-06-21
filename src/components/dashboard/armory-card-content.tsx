@@ -21,9 +21,14 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { AppDescriptionInputSchema } from '@/lib/ai-schemas';
 
-
+// Define a local schema since the central one is being cleared.
+const AppDescriptionInputSchema = z.object({
+  microAppName: z.string().min(3, "App name must be at least 3 characters"),
+  microAppFunctionality: z.string().min(20, "Functionality description must be at least 20 characters"),
+  targetAudience: z.string().min(10, "Target audience description must be at least 10 characters"),
+  keyFeatures: z.string().min(10, "Please list key features, separated by commas (e.g., Feature 1, Feature 2)"),
+});
 type AppDescriptionFormValues = z.infer<typeof AppDescriptionInputSchema>;
 
 interface ArmoryAppDisplay {
@@ -36,8 +41,6 @@ interface ArmoryAppDisplay {
 
 const ArmoryCardContent: React.FC = () => {
   const [apps, setApps] = useState<ArmoryAppDisplay[]>([]); // Simplified for card context
-  const [generatedDescription, setGeneratedDescription] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<AppDescriptionFormValues>({
@@ -46,32 +49,12 @@ const ArmoryCardContent: React.FC = () => {
   });
 
   const handleGenerateDescription = async (values: AppDescriptionFormValues) => {
-    setIsGenerating(true);
-    setGeneratedDescription(null); 
-
-    try {
-      const response = await fetch('/api/ai/generate-description', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Request failed with status ${response.status}`);
-      }
-
-      const { description } = await response.json();
-      setGeneratedDescription(description);
-    } catch (error) {
-      console.error("Error generating app description:", error);
-      let errorMessage = "Failed to generate app description.";
-      if (error instanceof Error) errorMessage = error.message;
-      setGeneratedDescription(null);
-      toast({ variant: "destructive", title: "Generation Error", description: errorMessage });
-    } finally {
-      setIsGenerating(false);
-    }
+    // This functionality is disabled as Genkit is not used in this project.
+    toast({ 
+        variant: "destructive", 
+        title: "Feature Disabled", 
+        description: "AI description generation is not configured for this application." 
+    });
   };
   
   return (
@@ -95,7 +78,7 @@ const ArmoryCardContent: React.FC = () => {
 
         <div>
           <p className="text-sm text-muted-foreground mb-4">
-            Have a micro-app idea? Use our AI to generate a compelling marketplace description.
+            Have a micro-app idea? Describe its features below.
           </p>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleGenerateDescription)} className="space-y-4">
@@ -127,23 +110,12 @@ const ArmoryCardContent: React.FC = () => {
                   <FormMessage className="text-xs"/>
                 </FormItem>
               )} />
-              <Button type="submit" disabled={isGenerating} size="sm" className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
-                {isGenerating ? 'Generating...' : 'Generate Description'}
+              <Button type="submit" disabled={true} size="sm" className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground">
+                Generate Description (Disabled)
                 <MagicWandIcon className="w-4 h-4 ml-2" />
               </Button>
             </form>
           </Form>
-
-          {generatedDescription && (
-            <Card className="mt-4 glassmorphism-panel">
-              <CardHeader className="py-2">
-                <CardTitle className="text-md font-headline text-primary">AI-Generated Description:</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-1 pb-3">
-                <ScrollArea className="h-24"><p className="text-xs text-foreground whitespace-pre-wrap">{generatedDescription}</p></ScrollArea>
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
     </ScrollArea>
