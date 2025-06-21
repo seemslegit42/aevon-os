@@ -40,18 +40,18 @@ import { useLayoutStore } from '@/stores/layout.store';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import NotificationCenter from './notification-center';
 import { cn } from '@/lib/utils';
+import { usePathname } from 'next/navigation';
 
 interface NavItemConfig {
-  id: string; // The card ID to focus on, or a URL slug
+  id: string; // The URL slug
   label: string;
   icon: ElementType;
-  isLink?: boolean;
 }
 
 const mainNavItems: NavItemConfig[] = [
-  { id: 'loomStudio', label: 'Loom', icon: LoomIcon },
-  { id: 'aegisSecurity', label: 'Λegis', icon: AegisIcon },
-  { id: '/armory', label: 'Armory', icon: ArmoryIcon, isLink: true },
+  { id: '/loom-studio', label: 'Loom', icon: LoomIcon },
+  { id: '/aegis-security', label: 'Λegis', icon: AegisIcon },
+  { id: '/armory', label: 'Armory', icon: ArmoryIcon },
 ];
 
 const TopBar: React.FC = () => {
@@ -60,8 +60,9 @@ const TopBar: React.FC = () => {
   const [commandValue, setCommandValue] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const { focusedItemId, bringToFront } = useLayoutStore();
+  const { focusedItemId } = useLayoutStore();
   const { setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
+  const pathname = usePathname();
   
   useEffect(() => {
     setIsMounted(true);
@@ -74,13 +75,6 @@ const TopBar: React.FC = () => {
     return () => clearInterval(timerId);
   }, []);
 
-  const handleNavClick = (item: NavItemConfig) => {
-    if (!item.isLink) {
-        bringToFront(item.id);
-    }
-    // Links are handled by the <Link> component
-  };
-  
   const handleCommandSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && commandValue.trim() && !isSubmitting) {
         e.preventDefault();
@@ -95,7 +89,7 @@ const TopBar: React.FC = () => {
   };
 
   const ContextualActions: React.FC = () => {
-    if (focusedItemId === 'loomStudio') {
+    if (focusedItemId === 'loomStudio' || pathname === '/loom-studio') {
       return (
         <div className="border-l border-white/10 ml-2 pl-2">
           <Tooltip>
@@ -133,25 +127,26 @@ const TopBar: React.FC = () => {
         {/* Center: Navigation & Command Bar */}
         <div className="flex-1 flex items-center justify-center space-x-6 px-4">
           <nav className="hidden md:flex items-center space-x-1">
-            {mainNavItems.map((item) => {
-                const navButton = (
-                     <Button
-                        key={item.id}
+            {mainNavItems.map((item) => (
+              <Tooltip key={item.id}>
+                <TooltipTrigger asChild>
+                  <Link href={item.id} passHref legacyBehavior>
+                    <Button
                         variant="ghost"
                         size="sm"
-                        className="font-body text-primary-foreground opacity-70 hover:text-primary-foreground hover:opacity-100"
-                        onClick={() => handleNavClick(item)}
+                        className={cn(
+                          "font-body text-primary-foreground opacity-70 hover:text-primary-foreground hover:opacity-100",
+                          pathname === item.id && "opacity-100 bg-primary/10"
+                        )}
                     >
                         <item.icon className="w-4 h-4 mr-2 aevos-icon-styling-override" />
                         <span>{item.label}</span>
                     </Button>
-                );
-
-                if (item.isLink) {
-                    return <Link href={item.id} key={item.id} passHref legacyBehavior>{navButton}</Link>;
-                }
-                return navButton;
-            })}
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="bottom"><p>{item.label}</p></TooltipContent>
+              </Tooltip>
+            ))}
             <ContextualActions />
           </nav>
           <div className="relative w-full max-w-md">

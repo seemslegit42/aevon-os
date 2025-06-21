@@ -7,15 +7,13 @@ import type { LayoutItem, CardConfig } from '@/types/dashboard';
 const BeepCardContent = lazy(() => import('@/components/dashboard/beep-card-content'));
 const LiveOrchestrationFeedCardContent = lazy(() => import('@/components/dashboard/live-orchestration-feed-card-content'));
 const MicroAppsCardContent = lazy(() => import('@/components/dashboard/micro-apps-card-content'));
-const LoomStudioCardContent = lazy(() => import('@/components/dashboard/loom-studio-card-content'));
 const AiInsightsCardContent = lazy(() => import('@/components/dashboard/ai-insights-card-content'));
-const AegisSecurityCardContent = lazy(() => import('@/components/dashboard/aegis-security-card-content'));
 const AgentPresenceCardContent = lazy(() => import('@/components/dashboard/agent-presence-card-content'));
 
 // Icons for card titles and content
 import {
-  MagicWandIcon, ListChecksIcon, LayoutGridIcon, ChartBarIcon, GitForkIcon, ShieldCheckIcon, BrainCircuitIcon,
-  LayersIcon, PenSquareIcon, CreditCardIcon, UsersRoundIcon, ClockIcon, CheckCircleIcon, LoaderIcon,
+  MagicWandIcon, ListChecksIcon, LayoutGridIcon, ChartBarIcon, PenSquareIcon, CreditCardIcon, BrainCircuitIcon,
+  UsersRoundIcon, ClockIcon, CheckCircleIcon, LoaderIcon,
 } from '@/components/icons';
 
 // Define all available micro-apps for registration
@@ -68,6 +66,7 @@ const mockAgents = [
 ];
 
 // This is the single source of truth for all dashboard panels (cards).
+// Loom and Aegis have been removed and promoted to standalone pages.
 export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'beep',
@@ -82,37 +81,15 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     cardClassName: "flex-grow flex flex-col",
   },
   {
-    id: 'loomStudio',
-    title: 'Loom Studio',
-    icon: GitForkIcon,
-    isDismissible: true,
-    description: "Visual workspace for designing, testing, and orchestrating complex AI agent workflows.",
-    content: LoomStudioCardContent,
-    defaultLayout: { x: 410, y: 20, width: 450, height: 500 },
-    minWidth: 320,
-    minHeight: 300,
-  },
-  {
     id: 'liveOrchestrationFeed',
     title: 'Live Orchestration Feed',
     icon: ListChecksIcon,
     isDismissible: true,
     description: "A real-time feed of events and actions performed by the AI agents.",
     content: LiveOrchestrationFeedCardContent,
-    defaultLayout: { x: 870, y: 20, width: 450, height: 500 },
+    defaultLayout: { x: 410, y: 20, width: 450, height: 250 },
     minWidth: 260,
     minHeight: 150,
-  },
-  {
-    id: 'aegisSecurity',
-    title: 'Aegis Security',
-    icon: ShieldCheckIcon,
-    isDismissible: true,
-    description: "Real-time security posture and threat analysis.",
-    content: AegisSecurityCardContent,
-    defaultLayout: { x: 1330, y: 20, width: 550, height: 720 },
-    minWidth: 450,
-    minHeight: 500,
   },
   {
     id: 'microApps',
@@ -121,7 +98,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     isDismissible: true,
     description: "Launch available micro-apps into the workspace.",
     content: MicroAppsCardContent,
-    defaultLayout: { x: 20, y: 530, width: 380, height: 210 }, 
+    defaultLayout: { x: 410, y: 280, width: 450, height: 240 }, 
     minWidth: 120,
     minHeight: 120,
   },
@@ -133,7 +110,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     description: "Monitor the real-time status and activity of your autonomous AI agents.",
     content: AgentPresenceCardContent,
     contentProps: { agents: mockAgents },
-    defaultLayout: { x: 410, y: 530, width: 450, height: 210 },
+    defaultLayout: { x: 870, y: 20, width: 450, height: 250 },
     minWidth: 280,
     minHeight: 180,
   },
@@ -144,7 +121,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     isDismissible: true,
     description: "Provides personalized recommendations and data-driven intelligence.",
     content: AiInsightsCardContent,
-    defaultLayout: { x: 870, y: 530, width: 450, height: 210 },
+    defaultLayout: { x: 870, y: 280, width: 450, height: 240 },
     minWidth: 250,
     minHeight: 180,
   },
