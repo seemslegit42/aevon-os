@@ -15,6 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { type ContentGeneration } from '@/lib/ai-schemas';
 import { ZapIcon, CopyIcon, FileTextIcon, AlertTriangleIcon } from '@/components/icons';
+import { generateContent } from '@/actions/generateContent';
 
 const formSchema = z.object({
   topic: z.string().min(5, { message: 'Topic must be at least 5 characters long.' }),
@@ -45,18 +46,7 @@ const ContentCreatorApp: React.FC = () => {
     setGeneratedContent(null);
 
     try {
-      const response = await fetch('/api/ai/generate-content', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to generate content.');
-      }
-
-      const result: ContentGeneration = await response.json();
+      const result: ContentGeneration = await generateContent(values);
       setGeneratedContent(result);
     } catch (err: any) {
       setError(err.message);

@@ -1,44 +1,16 @@
 
-import { type NextRequest } from 'next/server';
-import { rateLimiter } from '@/lib/rate-limiter';
-import { google } from '@/lib/ai/groq';
-import { generateObject } from 'ai';
-import { AegisSecurityAnalysisSchema } from '@/lib/ai-schemas';
+// This API route is deprecated as of the v2.1 architectural refactor.
+// AI-driven security analysis is now handled by the main agent graph
+// invoked via the `analyzeSecurityAlert` server action.
+// See /src/actions/analyzeSecurity.ts for the new implementation.
 
-export const maxDuration = 60;
+import { type NextRequest } from 'next/server';
 
 export async function POST(req: NextRequest) {
-  const rateLimitResponse = await rateLimiter(req);
-  if (rateLimitResponse) return rateLimitResponse;
-
-  try {
-    const { alertDetails } = await req.json();
-
-    if (!alertDetails) {
-      return new Response(JSON.stringify({ error: 'Alert details are required.' }), { status: 400 });
-    }
-
-    const { object: analysis } = await generateObject({
-        model: google('gemini-1.5-flash-latest'),
-        schema: AegisSecurityAnalysisSchema,
-        prompt: `You are a senior security analyst for the Aegis defense system. Your role is to analyze security alerts, determine their severity, identify the threats, and recommend clear, actionable steps for mitigation.
-
-Analyze the following security alert data:
----
-${alertDetails}
----
-
-Based on your analysis, provide a structured response with a summary, severity, identified threats, and suggested actions.`
-    });
-
-    return Response.json(analysis);
-
-  } catch (error) {
-    console.error('Error in security analysis API:', error);
-    let errorMessage = 'An unknown error occurred';
-    if (error instanceof Error) {
-        errorMessage = error.message;
-    }
-    return new Response(JSON.stringify({ error: errorMessage }), { status: 500 });
-  }
+    return new Response(
+        JSON.stringify({ 
+            error: "This endpoint is deprecated. Please use the appropriate server action." 
+        }), 
+        { status: 410, headers: { 'Content-Type': 'application/json' } }
+    );
 }

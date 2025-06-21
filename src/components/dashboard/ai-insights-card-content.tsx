@@ -8,6 +8,7 @@ import { type AiInsights } from '@/lib/ai-schemas';
 import { Skeleton } from '../ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { shallow } from 'zustand/shallow';
+import { generateInsights } from '@/actions/generateInsights';
 
 const AiInsightsCardContent: React.FC = () => {
     const [insights, setInsights] = useState<string[] | null>(null);
@@ -26,18 +27,7 @@ const AiInsightsCardContent: React.FC = () => {
         setError(null);
         
         try {
-            const response = await fetch('/api/ai/generate-insights', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ layoutItems }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to get insights.');
-            }
-            
-            const result: AiInsights = await response.json();
+            const result: AiInsights = await generateInsights(layoutItems);
             setInsights(result.insights);
 
         } catch (err: any) {

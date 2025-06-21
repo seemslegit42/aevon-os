@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { AlertTriangleIcon, ZapIcon } from '@/components/icons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { analyzeSecurityAlert } from '@/actions/analyzeSecurity';
 
 const MOCK_ALERT_DATA = JSON.stringify({
   alert: "Anomalous login detected",
@@ -34,16 +35,7 @@ const AegisSecurityPage: React.FC = () => {
     setAnalysis(null);
 
     try {
-      const response = await fetch('/api/ai/analyze-security', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ alertDetails }),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to analyze security data.');
-      }
-      const result: AegisSecurityAnalysis = await response.json();
+      const result = await analyzeSecurityAlert(alertDetails);
       setAnalysis(result);
       eventBus.emit('orchestration:log', { 
         task: 'Aegis: Analysis Complete', 

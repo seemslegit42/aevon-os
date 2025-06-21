@@ -5,10 +5,12 @@ import { StateGraph, END, START, type MessagesState } from '@langchain/langgraph
 import { ToolNode } from '@langchain/langgraph/prebuilt';
 import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
-import { generateObject } from 'ai';
 import { DynamicTool } from '@langchain/core/tools';
 import { z } from 'zod';
 import {
+  AegisSecurityAnalysisSchema,
+  ContentGenerationSchema,
+  AiInsightsSchema,
   TextCategorySchema,
   InvoiceDataSchema,
   KnowledgeBaseSearchResultSchema,
@@ -22,6 +24,11 @@ import {
   ALL_MICRO_APPS,
 } from '@/config/dashboard-cards.config';
 import type { LayoutItem } from '@/types/dashboard';
+
+
+// =================================================================
+// SERVER-SIDE BUSINESS LOGIC & KNOWLEDGE TOOLS
+// =================================================================
 
 const KNOWLEDGE_BASE = {
     'loom studio': 'Loom Studio is a visual workspace for designing, testing, and orchestrating complex AI workflows and prompt chains.',
@@ -46,67 +53,6 @@ const searchKnowledgeBaseTool = new DynamicTool({
         }
         return JSON.stringify({ found: false, answer: "I couldn't find any information on that topic in the knowledge base." });
     }
-});
-
-
-const categorizeTextTool = new DynamicTool({
-  name: 'categorizeText',
-  description:
-    'Analyzes a piece of text and determines its category. This should be the first step for any text analysis.',
-  schema: z.object({
-    text: z.string().describe('The text content to be categorized.'),
-  }),
-  func: async ({ text }) => {
-    const { object: category } = await generateObject({
-      model: new ChatGoogleGenerativeAI({ model: 'gemini-1.5-flash-latest' }).client,
-      schema: TextCategorySchema,
-      prompt: `You are an expert text classification agent. Analyze the following text and determine if it is an invoice.
-      If it is an invoice, set 'isMatch' to true and 'category' to 'Invoice'.
-      Otherwise, set 'isMatch' to false and provide a general category like 'General Inquiry', 'Spam', or 'Order Confirmation'.
-      Text to analyze:
-      ---
-      ${text}
-      ---
-      `,
-    });
-    return JSON.stringify(category);
-  },
-});
-
-const extractInvoiceDataTool = new DynamicTool({
-  name: 'extractInvoiceData',
-  description:
-    'Extracts structured data (invoice number, amount, due date) from a text that has been identified as an invoice. Should only be used AFTER categorizeText confirms the text is an invoice.',
-  schema: z.object({
-    text: z.string().describe('The full text of the invoice to extract data from.'),
-  }),
-  func: async ({ text }) => {
-    const { object: invoiceData } = await generateObject({
-      model: new ChatGoogleGenerativeAI({ model: 'gemini-1.5-flash-latest' }).client,
-      schema: InvoiceDataSchema,
-      prompt: `You are a data extraction expert. Analyze the following invoice text and extract the required information into a structured JSON object.
-      If a field is not present, omit it from the output.
-      The due date should be in YYYY-MM-DD format if possible.
-      Invoice text to analyze:
-      ---
-      ${text}
-      ---
-      `,
-    });
-    return JSON.stringify(invoiceData);
-  },
-});
-
-const logAndAlertAegisTool = new DynamicTool({
-    name: 'logAndAlertAegis',
-    description: 'Logs the result of a workflow and prepares an alert for the security system. This is the final step after all analysis is complete.',
-    schema: z.object({
-        analysisSummary: z.string().describe('A brief summary of what was processed, e.g., "Invoice #123 extracted."'),
-    }),
-    func: async ({ analysisSummary }) => {
-        console.log(`WORKFLOW LOG & ALERT: ${analysisSummary}`);
-        return JSON.stringify({ status: "Logged OK", summary: analysisSummary });
-    },
 });
 
 const getSalesMetricsTool = new DynamicTool({
@@ -141,87 +87,74 @@ const getSubscriptionStatusTool = new DynamicTool({
     }
 });
 
-const serverTools = [
-    categorizeTextTool,
-    extractInvoiceDataTool,
-    logAndAlertAegisTool,
-    searchKnowledgeBaseTool,
-    getSalesMetricsTool,
-    getSubscriptionStatusTool,
-];
+const categorizeTextTool = new DynamicTool({
+  name: 'categorizeText',
+  description: 'Analyzes a piece of text and determines its category. This should be the first step for any text analysis.',
+  schema: TextCategorySchema,
+  func: async ({ text }: { text: string }) => {
+      // This tool is now primarily handled client-side by the agent's reasoning,
+      // but the server implementation is kept for direct calls if needed.
+      return JSON.stringify({ category: 'Not Implemented on Server', isMatch: false });
+  },
+});
+
+const extractInvoiceDataTool = new DynamicTool({
+  name: 'extractInvoiceData',
+  description: 'Extracts structured data from invoice text.',
+  schema: InvoiceDataSchema,
+  func: async ({ text }: { text: string }) => {
+     return JSON.stringify({ summary: 'Not Implemented on Server' });
+  },
+});
+
+const logAndAlertAegisTool = new DynamicTool({
+    name: 'logAndAlertAegis',
+    description: 'Logs the result of a workflow and prepares an alert for the security system.',
+    schema: z.object({ analysisSummary: z.string() }),
+    func: async ({ analysisSummary }) => {
+        console.log(`WORKFLOW LOG & ALERT: ${analysisSummary}`);
+        return JSON.stringify({ status: "Logged OK", summary: analysisSummary });
+    },
+});
+
+
+// =================================================================
+// CLIENT-SIDE UI MANIPULATION TOOLS
+// =================================================================
+
+const staticItemIds = [...ALL_CARD_CONFIGS.map((p) => p.id), ...ALL_MICRO_APPS.map((a) => a.id)];
+const focusItemTool = new DynamicTool({ name: 'focusItem', description: "Brings a specific window into focus on the user's canvas.", schema: z.object({ instanceId: z.string() }), func: async () => '' });
+const addItemTool = new DynamicTool({ name: 'addItem', description: 'Adds a new Panel or launches a new Micro-App.', schema: z.object({ itemId: z.string().enum(staticItemIds as [string, ...string[]]) }), func: async () => '' });
+const moveItemTool = new DynamicTool({ name: 'moveItem', description: "Moves a specific window to new coordinates.", schema: z.object({ instanceId: z.string(), x: z.number(), y: z.number() }), func: async () => '' });
+const removeItemTool = new DynamicTool({ name: 'removeItem', description: "Closes a single, specific window.", schema: z.object({ instanceId: z.string() }), func: async () => '' });
+const closeAllInstancesOfAppTool = new DynamicTool({ name: 'closeAllInstancesOfApp', description: "Closes ALL open windows of a specific Micro-App.", schema: z.object({ appId: z.string() }), func: async () => '' });
+const resetLayoutTool = new DynamicTool({ name: 'resetLayout', description: 'Resets the entire dashboard layout to its default configuration.', schema: z.object({}), func: async () => '' });
+
+// =================================================================
+// AGENT SETUP
+// =================================================================
+
+const serverTools = [ getSalesMetricsTool, getSubscriptionStatusTool, searchKnowledgeBaseTool, logAndAlertAegisTool, categorizeTextTool, extractInvoiceDataTool ];
+const allTools = [ ...serverTools, focusItemTool, addItemTool, moveItemTool, removeItemTool, resetLayoutTool, closeAllInstancesOfAppTool ];
 const toolExecutor = new ToolNode(serverTools);
 
-const staticItemIds = [
-  ...ALL_CARD_CONFIGS.map((p) => p.id),
-  ...ALL_MICRO_APPS.map((a) => a.id),
-];
-
-const focusItemTool = new DynamicTool({
-    name: 'focusItem',
-    description: "Brings a specific window into focus on the user's canvas. Use the 'instanceId' from the list of open windows.",
-    schema: z.object({
-        instanceId: z.string().describe("The unique instance ID of the window to focus on."),
-    }),
-    func: async () => ''
-});
-
-const addItemTool = new DynamicTool({
-    name: 'addItem',
-    description: 'Adds a new Panel or launches a new Micro-App on the user\'s canvas. Use the static `itemId` for this.',
-    schema: z.object({
-        itemId: z.string().enum(staticItemIds as [string, ...string[]]).describe('The unique static ID of the item to add or launch.'),
-    }),
-    func: async () => ''
-});
-
-const moveItemTool = new DynamicTool({
-    name: 'moveItem',
-    description: "Moves a specific window to new coordinates. Use the 'instanceId' from the list of open windows.",
-    schema: z.object({
-        instanceId: z.string().describe("The unique instance ID of the window to move."),
-        x: z.number().describe('The new x-coordinate for the top-left corner of the item.'),
-        y: z.number().describe('The new y-coordinate for the top-left corner of the item.'),
-    }),
-    func: async () => ''
-});
-
-const removeItemTool = new DynamicTool({
-    name: 'removeItem',
-    description: "Closes a single, specific window. Use the 'instanceId' from the list of open windows.",
-    schema: z.object({
-        instanceId: z.string().describe("The unique instance ID of the window to remove or close."),
-    }),
-    func: async () => ''
-});
-
-const closeAllInstancesOfAppTool = new DynamicTool({
-    name: 'closeAllInstancesOfApp',
-    description: "Closes ALL open windows of a specific Micro-App. Use this when the user wants to remove an app entirely. Use the static 'appId'.",
-    schema: z.object({
-        appId: z.string().describe("The static ID of the app to close all instances of (e.g., 'app-analytics')."),
-    }),
-    func: async () => ''
-})
-
-const resetLayoutTool = new DynamicTool({
-    name: 'resetLayout',
-    description: 'Resets the entire dashboard layout to its default configuration.',
-    schema: z.object({}),
-    func: async () => ''
-});
-
-const allTools = [
-  ...serverTools,
-  focusItemTool,
-  addItemTool,
-  moveItemTool,
-  removeItemTool,
-  resetLayoutTool,
-  closeAllInstancesOfAppTool,
-];
+const model = new ChatGoogleGenerativeAI({
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+  model: 'gemini-1.5-flash-latest',
+}).bindTools(allTools);
 
 const availablePanels = ALL_CARD_CONFIGS.map(p => `- ${p.title} (id: ${p.id})`).join('\n');
 const availableApps = ALL_MICRO_APPS.map(a => `- ${a.title} (id: ${a.id})`).join('\n');
+
+// =================================================================
+// AGENT STATE & GRAPH
+// =================================================================
+
+interface AgentState extends MessagesState {
+  layout?: LayoutItem[];
+  task?: string;
+  data?: any;
+}
 
 const getSystemPrompt = (layout: LayoutItem[]) => {
   const openWindowsSummary = layout.length > 0
@@ -235,60 +168,35 @@ const getSystemPrompt = (layout: LayoutItem[]) => {
 
   return `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic. You have access to a suite of tools to manage the user's workspace and analyze text and data.
 
-**RULES FOR QUESTION ANSWERING & DATA ANALYSIS**
-- For general questions about OS features (e.g., "What is Loom Studio?"), you MUST use the \`searchKnowledgeBase\` tool to find the answer.
-- For questions about sales data (e.g., "how are sales?", "show me revenue"), you MUST use the \`getSalesMetrics\` tool.
-- For questions about the user's subscription or billing (e.g., "what's my plan?", "manage subscription"), you MUST use the \`getSubscriptionStatus\` tool.
-- For simple, conversational questions (e.g., "How are you?"), just respond directly without calling any tools.
-
-**RULES FOR UI MANIPULATION**
-1.  **Check Open Windows First:** Before taking any action, review the 'Open Windows' list below.
-2.  **Use Instance IDs vs. Item IDs:** For any action on a specific, *already open* window (focus, move, remove), you MUST use the unique 'instanceId' from the list. To add a *new* item, you must use its static 'itemId' from the "Available Items" list.
-3.  **Handle Ambiguity:** If a user's command is ambiguous (e.g., "close the sales app" when multiple are open), you MUST ask for clarification. Provide the instance IDs from the list so the user can specify which one to act on.
-4.  **Single vs. All:** To close one window, use 'removeItem' with its 'instanceId'. To close all windows of an app, use 'closeAllInstancesOfApp' with its static 'appId'.
-5.  **Confirm Your Actions:** After you call a UI tool (like 'addItem'), also generate a brief, confirmatory message for the user. E.g., "Done. I've added the Loom Studio." You can generate text and call tools in the same turn.
-
-**RULES FOR TEXT ANALYSIS (INVOICE WORKFLOW)**
-1.  When given text to analyze, your first step is ALWAYS to use the 'categorizeText' tool.
-2.  Review the category result.
-    - If it's **not** an invoice, your job is done. Respond with a message confirming the category you identified (e.g., "I've categorized that text as a General Inquiry."). Do not use any more tools.
-    - If it **is** an invoice, continue to the next step.
-3.  After confirming it's an invoice, use the 'extractInvoiceData' tool on the original text.
-4.  After extracting data, your final tool call should be to 'logAndAlertAegis'.
-5.  After all tools have run for the invoice workflow, you MUST provide a final summary message to the user. For example: "I've processed the invoice for Quantum Supplies. The total is $10,825.00, due on August 14, 2024. This event has been logged."
-
----
-**CONTEXT: AVAILABLE ITEMS**
-Here are the items you can add to the workspace. Use the static 'id' with the 'addItem' tool.
-
-Available Panels:
-${availablePanels}
-
-Available Micro-Apps:
-${availableApps}
-
----
 **CONTEXT: CURRENT WORKSPACE**
-Here are the windows currently open on the user's dashboard.
-
-Open Windows:
+Here are the windows currently open on the user's dashboard. Use the 'instanceId' to manipulate them.
 ${openWindowsSummary}
 ---
+**CONTEXT: AVAILABLE ITEMS**
+Here are the items you can add. Use the static 'id' with the 'addItem' tool.
+Available Panels:
+${availablePanels}
+Available Micro-Apps:
+${availableApps}
+---
+**RULES FOR UI MANIPULATION**
+1.  **Check Open Windows First:** Before taking any action, review the 'Open Windows' list.
+2.  **Use Instance IDs vs. Item IDs:** For any action on an *already open* window (focus, move, remove), you MUST use the unique 'instanceId'. To add a *new* item, use its static 'itemId'.
+3.  **Handle Ambiguity:** If a user's command is ambiguous (e.g., "close sales"), you MUST ask for clarification.
+4.  **Confirm Actions:** After you call a UI tool, also generate a brief, confirmatory message for the user. E.g., "Done. I've added the Loom Studio." You can generate text and call tools in the same turn.
+
+**RULES FOR DATA & KNOWLEDGE**
+- For questions about OS features (e.g., "what is loom"), use \`searchKnowledgeBase\`.
+- For questions about sales data or revenue, use \`getSalesMetrics\`.
+- For questions about billing or subscriptions, use \`getSubscriptionStatus\`.
+- For simple, conversational questions, just respond directly.
 `;
 }
 
-const model = new ChatGoogleGenerativeAI({
-  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-  model: 'gemini-1.5-flash-latest',
-}).bindTools(allTools);
-
-interface AgentState extends MessagesState {
-    layout: LayoutItem[];
-}
 
 const callModel = async (state: AgentState) => {
-  const { messages, layout } = state;
-  const systemPrompt = getSystemPrompt(layout);
+  const { messages, layout, task, data } = state;
+  const systemPrompt = getSystemPrompt(layout || []);
   const response = await model.invoke([new HumanMessage(systemPrompt), ...messages]);
   return { messages: [response] };
 };
@@ -301,12 +209,15 @@ const shouldInvokeTools = (state: AgentState): 'tools' | '__end__' => {
     return '__end__';
   }
 
+  // Only invoke the tool executor node if there's a server-side tool call.
+  // Client-side tools are handled by the 'onToolCall' callback in the useChat hook.
   const hasServerToolCall = lastMessage.tool_calls.some(call => 
     serverTools.some(tool => tool.name === call.name)
   );
 
   return hasServerToolCall ? 'tools' : '__end__';
 };
+
 
 const workflow = new StateGraph<AgentState>({
     channels: { 
@@ -315,8 +226,16 @@ const workflow = new StateGraph<AgentState>({
             default: () => [] 
         },
         layout: {
-            value: (x, y) => y,
+            value: (x, y) => y ?? x, // Update layout if provided, otherwise keep existing
             default: () => []
+        },
+        task: {
+            value: (x,y) => y,
+            default: () => undefined
+        },
+        data: {
+            value: (x,y) => y,
+            default: () => undefined
         }
     }
 });
