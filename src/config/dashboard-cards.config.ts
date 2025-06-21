@@ -131,8 +131,8 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     id: 'aegisSecurity', title: 'Aegis Command Center', icon: ShieldCheckIcon, isDismissible: true,
     description: "Your simple, real-time security overview.",
     content: AegisSecurityCardContent,
-    defaultLayout: { x: 410, y: 470, width: 910, height: 350, zIndex: 8 },
-    minWidth: 480, minHeight: 350,
+    defaultLayout: { x: 410, y: 470, width: 480, height: 500, zIndex: 8 },
+    minWidth: 400, minHeight: 480,
   },
 ];
 
