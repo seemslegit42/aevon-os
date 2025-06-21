@@ -1,21 +1,39 @@
 
 import { createOpenAI } from '@ai-sdk/openai';
-import { streamText } from 'ai';
+import { generateText } from 'ai';
+import { z } from 'zod';
+import { ALL_CARD_CONFIGS } from '@/config/dashboard-cards.config';
 
-export const maxDuration = 60; // Increased timeout for the larger model
+export const maxDuration = 60;
 
 const groq = createOpenAI({
   baseURL: 'https://api.groq.com/openai/v1',
   apiKey: process.env.GROQ_API_KEY,
 });
 
+// Create a string listing available panels for the AI's context
+const availablePanels = ALL_CARD_CONFIGS.map(p => `- ${p.title} (id: ${p.id})`).join('\n');
+
 export async function POST(req: Request) {
   const { messages } = await req.json();
 
-  const result = await streamText({
+  const result = await generateText({
     model: groq('llama3-70b-8192'),
-    system: `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic. You are aware of the OS's components like Aegis (security), Loom (workflows), and the Armory (marketplace). You are capable of complex reasoning and should provide insightful, clear, and concise responses. Always aim to be proactive and anticipate user needs.`,
+    system: `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic. You are aware of the OS's components and can control the user interface.
+    
+When a user asks you to show, open, or focus on a specific panel, use the 'focusPanel' tool to bring that panel to the front.
+    
+Available Panels:
+${availablePanels}`,
     messages,
+    tools: {
+      focusPanel: {
+        description: 'Brings a specific dashboard panel into focus on the user\'s canvas. Use this when the user asks to see or open a panel.',
+        parameters: z.object({
+          cardId: z.string().describe(`The unique ID of the card to focus on. Available IDs are: ${ALL_CARD_CONFIGS.map(p => p.id).join(', ')}`),
+        }),
+      }
+    }
   });
 
   return result.toAIStreamResponse();

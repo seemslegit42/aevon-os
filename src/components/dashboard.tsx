@@ -94,6 +94,11 @@ const Dashboard: React.FC = () => {
         
         return updatedAgents;
       });
+
+      // Periodically trigger a notification glow
+      if (Math.random() > 0.8) { // Approx. every 25 seconds
+        eventBus.emit('notification:new');
+      }
       
     }, 5000); // Update every 5 seconds
 
