@@ -1,3 +1,4 @@
+
 // src/components/icons/index.ts
 export * from './LogoSymbol';
 export * from './HomeIcon';
@@ -81,6 +82,7 @@ export * from './MagicWandIcon';
 export * from './ExternalLinkIcon';
 export * from './HelpCircleIcon';
 export * from './GearIcon';
+export * from './MicIcon';
 
 // Aliases for User Profile Dropdown for clarity, if needed, or use directly
 export { Settings2Icon as UserSettingsIcon } from './Settings2Icon';
