@@ -7,7 +7,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { SendIcon, MagicWandIcon, UserIcon } from '@/components/icons';
 import { cn } from '@/lib/utils';
-import { Card, CardContent } from '@/components/ui/card';
 
 interface BeepCardContentProps {
   aiPromptPlaceholder?: string;
@@ -21,9 +20,10 @@ const BeepCardContent: React.FC<BeepCardContentProps> = ({
   });
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    // Scroll to bottom when new messages are added
+    // Scroll chat to bottom when new messages are added
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTo({
         top: scrollAreaRef.current.scrollHeight,
@@ -35,16 +35,34 @@ const BeepCardContent: React.FC<BeepCardContentProps> = ({
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!input.trim()) return;
-    handleSubmit(e);
+    handleSubmit(e, {
+      options: {
+        body: {
+          // You can add extra data to the request body here if needed
+        }
+      }
+    });
+    // Reset textarea height after submission
+    if (inputRef.current) {
+      inputRef.current.style.height = '40px';
+    }
   };
   
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    handleInputChange(e);
+    // Auto-resize logic
+    if (inputRef.current) {
+        inputRef.current.style.height = 'auto'; // Reset height
+        inputRef.current.style.height = `${inputRef.current.scrollHeight}px`; // Set to scroll height
+    }
+  };
+
   const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      // Manually create a form event to pass to the hook's handleSubmit
       const form = event.currentTarget.closest('form');
       if (form) {
-        form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+        form.requestSubmit();
       }
     }
   };
@@ -87,12 +105,13 @@ const BeepCardContent: React.FC<BeepCardContentProps> = ({
       <form onSubmit={handleFormSubmit} className="flex-shrink-0">
         <div className="relative">
           <Textarea
+            ref={inputRef}
             placeholder={aiPromptPlaceholder}
             value={input}
-            onChange={handleInputChange}
+            onChange={handleTextareaChange}
             onKeyDown={handleKeyPress}
             rows={1}
-            className="bg-input border-input placeholder:text-muted-foreground text-sm pr-20 resize-none min-h-[40px]"
+            className="bg-input border-input placeholder:text-muted-foreground text-sm pr-20 min-h-[40px] max-h-[150px] overflow-y-auto"
             aria-label="BEEP prompt input"
             disabled={isLoading}
           />

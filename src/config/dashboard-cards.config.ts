@@ -3,39 +3,34 @@ import { lazy, type LazyExoticComponent, type FC, type ElementType } from 'react
 
 // Lazy loaded card content components
 const BeepCardContent = lazy(() => import('@/components/dashboard/beep-card-content'));
-const ApplicationViewCardContent = lazy(() => import('@/components/dashboard/application-view-card-content')); // Kept for potential future use by command palette
+const ApplicationViewCardContent = lazy(() => import('@/components/dashboard/application-view-card-content'));
 const AgentPresenceCardContent = lazy(() => import('@/components/dashboard/agent-presence-card-content'));
 const LiveOrchestrationFeedCardContent = lazy(() => import('@/components/dashboard/live-orchestration-feed-card-content'));
-const MicroAppsCardContent = lazy(() => import('@/components/dashboard/micro-apps-card-content')); // Palette for launching apps
+const MicroAppsCardContent = lazy(() => import('@/components/dashboard/micro-apps-card-content'));
 const SystemSnapshotCardContent = lazy(() => import('@/components/dashboard/system-snapshot-card-content'));
-
-// New core feature card contents
 const LoomStudioCardContent = lazy(() => import('@/components/dashboard/loom-studio-card-content'));
 const AegisSecurityCardContent = lazy(() => import('@/components/dashboard/aegis-security-card-content'));
 const ArmoryMarketplaceCardContent = lazy(() => import('@/components/dashboard/armory-card-content'));
 const AiInsightsCardContent = lazy(() => import('@/components/dashboard/ai-insights-card-content'));
 
-
 // Icons for card titles and content
 import {
-  MagicWandIcon, // BEEP
-  AppWindowIcon, // ApplicationView (generic)
-  UsersIcon, // AgentPresence, SystemSnapshot (agents part)
-  ListChecksIcon, // LiveOrchestrationFeed
-  LayoutGridIcon, // MicroApps (palette)
-  BarChartBigIcon, // SystemSnapshot (main icon)
+  MagicWandIcon,
+  AppWindowIcon,
+  UsersIcon,
+  ListChecksIcon,
+  LayoutGridIcon,
+  BarChartBigIcon,
   CpuIcon,
   DatabaseZapIcon,
   HardDriveIcon,
-  ZapIcon,
   ChartBarIcon,
-  CreditCardIcon, // Armory
-  Settings2Icon, // Loom Studio
-  ShieldCheckIcon, // Aegis Security
-  BrainCircuitIcon, // AI Insights
+  CreditCardIcon,
+  Settings2Icon,
+  ShieldCheckIcon,
+  BrainCircuitIcon,
   ClockIcon,
   RefreshCwIcon as LoaderCircleIcon,
-  AlertTriangleIcon,
 } from '@/components/icons';
 
 export interface CardLayoutInfo {
@@ -51,7 +46,7 @@ export interface CardConfig {
   id: string;
   title: string;
   icon: ElementType;
-  description?: string; // Added description field
+  description?: string;
   content: LazyExoticComponent<FC<any>>;
   contentProps?: any;
   defaultLayout: { x: number; y: number; width: number; height: number; zIndex: number };
@@ -64,15 +59,14 @@ export interface CardConfig {
 export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'beep', title: 'BEEP Interface', icon: MagicWandIcon, isDismissible: true,
-    description: "Your natural language command center. BEEP learns from interactions to streamline tasks and provide system-wide intelligence.",
+    description: "Natural language interface for tasking, automation, and information retrieval. Learns from your interactions.",
     content: BeepCardContent,
-    contentProps: { aiPromptPlaceholder: "BEEP learns from your interactions across ΛΞVON OS. Ask it to analyze system-wide data, automate complex workflows, or provide predictive insights." },
     defaultLayout: { x: 20, y: 20, width: 380, height: 280, zIndex: 1 },
     minWidth: 300, minHeight: 240, cardClassName: "flex-grow flex flex-col",
   },
   {
     id: 'systemSnapshot', title: 'System Snapshot', icon: BarChartBigIcon, isDismissible: true,
-    description: "Monitoring key system telemetry that feeds into ΛΞVON OS's adaptive learning core, ensuring optimal performance and proactive insights.",
+    description: "Displays key system metrics. This data feeds the adaptive AI core to ensure optimal performance.",
     content: SystemSnapshotCardContent,
     contentProps: {
       systemMetricsConfig: [
@@ -87,35 +81,35 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   },
   {
     id: 'loomStudio', title: 'Loom Studio', icon: Settings2Icon, isDismissible: true,
-    description: "Design, test, and orchestrate dynamic AI workflows. Weave together intelligent agents that learn and adapt.",
+    description: "Visual workspace for designing, testing, and orchestrating complex AI agent workflows and prompt chains.",
     content: LoomStudioCardContent,
     defaultLayout: { x: 20, y: 310, width: 450, height: 350, zIndex: 3 },
     minWidth: 320, minHeight: 300,
   },
   {
     id: 'aegisSecurity', title: 'Aegis AI Security', icon: ShieldCheckIcon, isDismissible: true,
-    description: "AI-powered cybersecurity, analyzing alert data to provide summaries, identify threats, and recommend adaptive actions.",
+    description: "AI-powered cybersecurity. Analyzes alert data to provide summaries, identify threats, and recommend actions.",
     content: AegisSecurityCardContent,
     defaultLayout: { x: 480, y: 310, width: 380, height: 350, zIndex: 4 },
     minWidth: 300, minHeight: 280,
   },
   {
     id: 'armoryMarketplace', title: 'ΛΞVON Λrmory', icon: CreditCardIcon, isDismissible: true,
-    description: "Discover, acquire, and manage AI micro-apps and intelligent agents that seamlessly integrate and adapt within your OS.",
+    description: "Marketplace to discover, acquire, and manage AI micro-apps and intelligent agents for your OS.",
     content: ArmoryMarketplaceCardContent,
     defaultLayout: { x: 740, y: 20, width: 400, height: 400, zIndex: 5 },
     minWidth: 300, minHeight: 300,
   },
   {
     id: 'aiInsights', title: 'AI Insights Engine', icon: BrainCircuitIcon, isDismissible: true,
-    description: "Leverages deep learning from all OS modules to deliver proactive, predictive intelligence and optimize operations.",
+    description: "Provides personalized recommendations and data-driven intelligence based on your OS activity.",
     content: AiInsightsCardContent,
     defaultLayout: { x: 870, y: 310, width: 270, height: 200, zIndex: 6 },
     minWidth: 250, minHeight: 180,
   },
   {
     id: 'agentPresence', title: 'Agent Presence', icon: UsersIcon, isDismissible: true,
-    description: "Oversee your dynamic collective of AI agents. Witness their real-time status and collaborative efforts, powered by seamless data exchange.",
+    description: "Monitor the real-time status and activity of your intelligent AI agents as they operate and collaborate.",
     content: AgentPresenceCardContent,
     contentProps: {
       agents: [
@@ -128,7 +122,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   },
   {
     id: 'liveOrchestrationFeed', title: 'Live Orchestration Feed', icon: ListChecksIcon, isDismissible: true,
-    description: "Real-time visibility into the dynamic interplay of your AI agents and automated workflows as they adapt and execute.",
+    description: "A real-time feed of events and actions performed by the orchestrated AI agents and system workflows.",
     content: LiveOrchestrationFeedCardContent,
     contentProps: {
       feedItems: [
@@ -140,10 +134,9 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     defaultLayout: { x: 580, y: 670, width: 560, height: 180, zIndex: 8 },
     minWidth: 260, minHeight: 150,
   },
-  // Kept for command palette, not active by default
   {
     id: 'microApps', title: 'Micro-Apps Palette', icon: LayoutGridIcon, isDismissible: true,
-    description: "Launch specialized AI micro-applications that integrate seamlessly into the ΛΞVON OS ecosystem.",
+    description: "A palette for launching available micro-apps into the Application View zone.",
     content: MicroAppsCardContent,
     contentProps: {
       availableApps: [
@@ -155,7 +148,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   },
   {
     id: 'applicationView', title: 'Active Micro-App View', icon: AppWindowIcon, isDismissible: true,
-    description: "View and interact with currently active micro-applications, benefiting from cross-app data synergy.",
+    description: "The active viewing area for any launched micro-app. Facilitates data synergy between OS modules.",
     content: ApplicationViewCardContent,
     defaultLayout: { x: 800, y: 520, width: 340, height: 200, zIndex: 10 }, 
     minWidth: 300, minHeight: 180,
