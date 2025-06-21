@@ -27,6 +27,8 @@ const toolIcons: Record<string, React.ElementType<IconProps>> = {
   categorizeText: GearIcon,
   extractInvoiceData: GearIcon,
   default: GearIcon,
+  closeAllInstancesOfApp: Trash2Icon,
+  logAndAlertAegis: CheckCircleIcon,
 };
 
 const toolFriendlyNames: Record<string, string> = {
@@ -37,6 +39,8 @@ const toolFriendlyNames: Record<string, string> = {
   resetLayout: 'Reset Layout',
   categorizeText: 'Categorize Text',
   extractInvoiceData: 'Extract Invoice Data',
+  closeAllInstancesOfApp: 'Close All',
+  logAndAlertAegis: 'Log Event',
 };
 
 
@@ -131,7 +135,7 @@ const BeepToolCallDisplay: React.FC<BeepToolCallDisplayProps> = ({ toolCall, all
 
     return (
       <div className={cn(
-        "my-3 mx-auto w-full max-w-md border rounded-lg p-3 text-xs shadow-md transition-all",
+        "glassmorphism-panel my-3 mx-auto w-full max-w-md p-3 text-xs transition-all",
         isLoading && "border-accent/50 bg-accent/10",
         !isLoading && isError && "border-destructive/50 bg-destructive/10",
         !isLoading && !isError && "border-chart-4/50 bg-chart-4/10",

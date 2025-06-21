@@ -7,7 +7,6 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
 import { Analyser } from '@/lib/analyser';
-import { vs as backdropVS, fs as backdropFS } from '@/lib/shaders/beep-3d-backdrop-shaders.glsl';
 import { vs as sphereVS } from '@/lib/shaders/beep-3d-sphere-vertex.glsl';
 
 interface BeepAvatar3DProps {
@@ -29,14 +28,14 @@ const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode }) =>
 
     // Scene setup
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x100c14);
     
     // Camera
     const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
-    camera.position.set(0, 0, 4);
+    camera.position.set(0, 0, 3.5);
 
     // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setClearColor(0x000000, 0); // Transparent background
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     currentMount.appendChild(renderer.domElement);
@@ -45,30 +44,15 @@ const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode }) =>
     // Analysers
     const inputAnalyser = new Analyser(inputNode);
     const outputAnalyser = new Analyser(outputNode);
-
-    // Backdrop
-    const backdrop = new THREE.Mesh(
-      new THREE.IcosahedronGeometry(10, 5),
-      new THREE.RawShaderMaterial({
-        uniforms: {
-          resolution: { value: new THREE.Vector2(currentMount.clientWidth, currentMount.clientHeight) },
-          rand: { value: 0 },
-        },
-        vertexShader: backdropVS,
-        fragmentShader: backdropFS,
-        side: THREE.BackSide,
-      })
-    );
-    scene.add(backdrop);
     
     // Sphere
     const sphereGeometry = new THREE.IcosahedronGeometry(1.5, 64);
     const sphereMaterial = new THREE.MeshStandardMaterial({
-      color: 0x87CEEB, // A light blue color
-      metalness: 0.1,
-      roughness: 0.5,
-      emissive: 0x4169E1, // Royal blue emissive
-      emissiveIntensity: 0.5
+      color: 0x87CEEB, // Light Sky Blue
+      metalness: 0.6,
+      roughness: 0.2,
+      emissive: 0x6f00ff, // A vibrant purple
+      emissiveIntensity: 0.8
     });
 
     let shaderRef: THREE.Shader | null = null;
@@ -83,60 +67,57 @@ const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode }) =>
     scene.add(sphere);
 
     // Lights
-    const pointLight1 = new THREE.PointLight(0x6a0dad, 2, 10); // Purple
-    pointLight1.position.set(-3, 3, 3);
+    const pointLight1 = new THREE.PointLight(0x00ffff, 3, 12); // Cyan
+    pointLight1.position.set(-4, 4, 4);
     scene.add(pointLight1);
     
-    const pointLight2 = new THREE.PointLight(0x00BFFF, 2, 10); // Deep Sky Blue
-    pointLight2.position.set(3, -3, 3);
+    const pointLight2 = new THREE.PointLight(0xff00ff, 3, 12); // Magenta
+    pointLight2.position.set(4, -4, 4);
     scene.add(pointLight2);
     
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
     scene.add(ambientLight);
 
     // Post-processing
     const composer = new EffectComposer(renderer);
     const renderPass = new RenderPass(scene, camera);
     composer.addPass(renderPass);
-    const bloomPass = new UnrealBloomPass(new THREE.Vector2(currentMount.clientWidth, currentMount.clientHeight), 1.2, 0.6, 0.8);
+    // Adjusted bloom pass for a stronger, more refined glow
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(currentMount.clientWidth, currentMount.clientHeight), 1.5, 0.4, 0.85);
     composer.addPass(bloomPass);
 
     // Animation loop
-    let prevTime = performance.now();
+    const clock = new THREE.Clock();
 
     const animate = () => {
       requestAnimationFrame(animate);
 
-      const t = performance.now();
-      const dt = (t - prevTime) / (1000 / 60);
-      prevTime = t;
-
+      const elapsedTime = clock.getElapsedTime();
+      
       inputAnalyser.update();
       outputAnalyser.update();
       
       const inputAvg = inputAnalyser.data.reduce((a, b) => a + b) / inputAnalyser.data.length / 255;
       const outputAvg = outputAnalyser.data.reduce((a, b) => a + b) / outputAnalyser.data.length / 255;
 
-      sphere.rotation.y += 0.001 + (outputAvg * 0.01);
-      sphere.rotation.x += 0.0005 + (inputAvg * 0.005);
+      sphere.rotation.y += 0.0015 + (outputAvg * 0.008);
+      sphere.rotation.x += 0.0008 + (inputAvg * 0.004);
       
       if (shaderRef) {
-        shaderRef.uniforms.time.value = t * 0.001;
+        shaderRef.uniforms.time.value = elapsedTime;
         shaderRef.uniforms.inputData.value.set(
-            inputAvg * 2,
-            inputAnalyser.data[1] / 255 * 0.5,
-            inputAnalyser.data[2] / 255 * 10,
+            inputAvg * 2.5,
+            inputAnalyser.data[1] / 255 * 0.6,
+            inputAnalyser.data[2] / 255 * 12,
             0
         );
         shaderRef.uniforms.outputData.value.set(
-            outputAvg * 3,
-            outputAnalyser.data[1] / 255 * 0.5,
-            outputAnalyser.data[2] / 255 * 10,
+            outputAvg * 3.5,
+            outputAnalyser.data[1] / 255 * 0.6,
+            outputAnalyser.data[2] / 255 * 12,
             0
         );
       }
-      
-      (backdrop.material as THREE.ShaderMaterial).uniforms.rand.value = Math.random() * 1000;
 
       composer.render();
     };
