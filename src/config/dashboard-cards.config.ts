@@ -1,6 +1,7 @@
 
 import { lazy, type LazyExoticComponent, type FC, type ElementType } from 'react';
 import type { MicroAppRegistration } from '@/stores/micro-app.store';
+import type { LayoutItem, CardConfig } from '@/types/dashboard';
 
 // Lazy loaded card content components
 const BeepCardContent = lazy(() => import('@/components/dashboard/beep-card-content'));
@@ -37,39 +38,6 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     defaultSize: { width: 500, height: 600 },
   },
 ];
-
-export interface CardConfig {
-  id: string;
-  title: string;
-  icon: ElementType;
-  description?: string;
-  content: LazyExoticComponent<FC<any>>;
-  contentProps?: any;
-  defaultLayout: { x: number; y: number; width: number; height: number; zIndex: number };
-  minWidth: number;
-  minHeight: number;
-  isDismissible?: boolean;
-  cardClassName?: string;
-}
-
-export type LayoutItem = {
-    id: string; // Unique ID for the item on the dashboard (can be card ID or app instance ID)
-    type: 'card' | 'app';
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    zIndex: number;
-    isMinimized?: boolean;
-    lastHeight?: number;
-} & ({
-    type: 'card';
-    cardId: string; // The ID from ALL_CARD_CONFIGS
-} | {
-    type: 'app';
-    appId: string; // The ID from ALL_MICRO_APPS
-});
-
 
 export const ALL_CARD_CONFIGS: CardConfig[] = [
   {

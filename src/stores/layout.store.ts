@@ -1,7 +1,7 @@
 
 import { create } from 'zustand';
 import type { Position, Size } from 'react-rnd';
-import type { LayoutItem } from '@/config/dashboard-cards.config';
+import type { LayoutItem } from '@/types/dashboard';
 import { ALL_CARD_CONFIGS, ALL_MICRO_APPS, DEFAULT_LAYOUT_CONFIG } from '@/config/dashboard-cards.config';
 import type { MicroApp } from './micro-app.store';
 

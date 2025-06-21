@@ -7,7 +7,8 @@ import MicroAppCard from '@/components/micro-app-card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PinIcon, XIcon, MinimizeIcon, RestoreIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
-import { ALL_CARD_CONFIGS, ALL_MICRO_APPS, type LayoutItem } from '@/config/dashboard-cards.config';
+import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
+import type { LayoutItem } from '@/types/dashboard';
 import type { Position, Size } from 'react-rnd';
 import { cn } from '@/lib/utils';
 
