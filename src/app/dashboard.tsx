@@ -11,6 +11,7 @@ import { useDashboardLayout } from '@/hooks/use-dashboard-layout';
 import { ALL_CARD_CONFIGS, DEFAULT_ACTIVE_CARD_IDS } from '@/config/dashboard-cards.config';
 import CommandPalette from '@/components/command-palette';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
+import eventBus from '@/lib/event-bus';
 
 // Data for dynamic updates
 const sampleFeedItems = [
@@ -55,7 +56,11 @@ const Dashboard: React.FC = () => {
     
     const initialAgentConfig = ALL_CARD_CONFIGS.find(c => c.id === 'agentPresence');
     if (initialAgentConfig && initialAgentConfig.contentProps?.agents) {
-      setAgentPresenceData(initialAgentConfig.contentProps.agents);
+      const agents = initialAgentConfig.contentProps.agents;
+      setAgentPresenceData(agents);
+      // Emit initial status
+      const activeAgents = agents.filter((a: any) => a.isSpinning).length;
+      eventBus.emit('agents:statusUpdate', { activeCount: activeAgents, totalCount: agents.length });
     }
     
     // Set up interval for live updates
@@ -71,18 +76,44 @@ const Dashboard: React.FC = () => {
         return updatedItems;
       });
       
-      // Update Agent Presence
-      setAgentPresenceData(prevAgents => 
-        prevAgents.map(agent => ({
+      // Update Agent Presence and emit status
+      setAgentPresenceData(prevAgents => {
+        const updatedAgents = prevAgents.map(agent => ({
             ...agent,
             ...sampleAgentStatuses[Math.floor(Math.random() * sampleAgentStatuses.length)]
-        }))
-      );
+        }));
+        
+        // Calculate active agents and emit event
+        const activeAgents = updatedAgents.filter(a => a.isSpinning);
+        eventBus.emit('agents:statusUpdate', {
+            activeCount: activeAgents.length,
+            totalCount: updatedAgents.length,
+        });
+        
+        return updatedAgents;
+      });
       
     }, 5000); // Update every 5 seconds
 
     return () => clearInterval(intervalId);
   }, []);
+
+  // Listen for focus requests from the event bus (e.g., from the TopBar)
+  useEffect(() => {
+    const focusPanel = (cardId: string) => {
+      // If card is not active, add it. In all cases, bring it to front.
+      if (!activeCardIds.includes(cardId)) {
+        handleAddCard(cardId);
+      } else {
+        handleBringToFront(cardId);
+      }
+    };
+
+    eventBus.on('panel:focus', focusPanel);
+    return () => {
+      eventBus.off('panel:focus', focusPanel);
+    };
+  }, [activeCardIds, handleAddCard, handleBringToFront]);
 
 
   if (!isInitialized) {

@@ -4,7 +4,6 @@
 import React, { useState, useEffect, type ElementType } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -16,6 +15,7 @@ import {
   GearIcon,
   ClockIcon,
   ChevronDownIcon,
+  UsersIcon,
 } from '@/components/icons';
 import {
   Tooltip,
@@ -37,17 +37,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from '@/lib/utils';
+import eventBus from '@/lib/event-bus';
 
 interface NavItemConfig {
-  href: string;
+  id: string; // The card ID to focus on
   label: string;
   icon: ElementType;
 }
 
 const mainNavItems: NavItemConfig[] = [
-  { href: '/loom-studio', label: 'Loom', icon: LoomIcon },
-  { href: '/aegis-security', label: 'Λegis', icon: AegisIcon },
-  { href: '/armory', label: 'Λrmory', icon: ArmoryIcon },
+  { id: 'loomStudio', label: 'Loom', icon: LoomIcon },
+  { id: 'aegisSecurity', label: 'Λegis', icon: AegisIcon },
+  { id: 'armoryMarketplace', label: 'Λrmory', icon: ArmoryIcon },
 ];
 
 interface TopBarProps {
@@ -55,9 +56,9 @@ interface TopBarProps {
 }
 
 const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
-  const pathname = usePathname();
   const [currentTime, setCurrentTime] = useState("--:--");
   const [isMounted, setIsMounted] = useState(false);
+  const [agentStatus, setAgentStatus] = useState<{ activeCount: number, totalCount: number } | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -70,9 +71,18 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
     return () => clearInterval(timerId);
   }, []);
 
-  const isActive = (href: string) => {
-    if (href === '/') return pathname === '/';
-    return pathname.startsWith(href);
+  useEffect(() => {
+    const handleStatusUpdate = (status: { activeCount: number, totalCount: number }) => {
+        setAgentStatus(status);
+    };
+    eventBus.on('agents:statusUpdate', handleStatusUpdate);
+    return () => {
+        eventBus.off('agents:statusUpdate', handleStatusUpdate);
+    };
+  }, []);
+
+  const handleNavClick = (cardId: string) => {
+    eventBus.emit('panel:focus', cardId);
   };
 
   return (
@@ -96,21 +106,16 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
         <div className="flex-1 flex items-center justify-center space-x-6 px-4">
           <nav className="hidden md:flex items-center space-x-1">
             {mainNavItems.map((item) => (
-              <Link key={item.href} href={item.href} passHref>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={cn(
-                    "font-body",
-                    isActive(item.href)
-                      ? "bg-white/5 text-primary-foreground font-semibold" 
-                      : "text-primary-foreground opacity-70 hover:text-primary-foreground hover:opacity-100"
-                  )}
-                >
-                  <item.icon className="w-4 h-4 mr-2 aevos-icon-styling-override" />
-                  <span className={cn(isActive(item.href) ? "text-primary-foreground" : "text-primary-foreground opacity-70")}>{item.label}</span>
-                </Button>
-              </Link>
+              <Button
+                key={item.id}
+                variant="ghost"
+                size="sm"
+                className="font-body text-primary-foreground opacity-70 hover:text-primary-foreground hover:opacity-100"
+                onClick={() => handleNavClick(item.id)}
+              >
+                <item.icon className="w-4 h-4 mr-2 aevos-icon-styling-override" />
+                <span>{item.label}</span>
+              </Button>
             ))}
           </nav>
           <div className="relative w-full max-w-md">
@@ -150,8 +155,22 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
             <ClockIcon className="h-4 w-4 mr-1.5 aevos-icon-styling-override text-primary-foreground" />
             {isMounted ? currentTime : "--:--"}
           </div>
-           <div className="hidden md:flex items-center text-xs px-1 h-9 border-l border-white/10 ml-1 pl-2.5 font-body text-primary-foreground opacity-80">
-              Admin User <span className="mx-1 text-primary-foreground/70">|</span> Session: <span className="text-primary-foreground font-medium ml-1">Active</span>
+           <div className="hidden md:flex items-center text-xs px-2 h-9 border-l border-white/10 ml-1 pl-3 space-x-2 font-body text-primary-foreground opacity-80">
+             <Tooltip>
+                <TooltipTrigger asChild>
+                    <div className="flex items-center">
+                        <UsersIcon className="h-4 w-4 mr-1.5 aevos-icon-styling-override" />
+                        <span>
+                            {agentStatus ? `${agentStatus.activeCount}/${agentStatus.totalCount} Active` : '...'}
+                        </span>
+                    </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="font-body"><p>Agent Status</p></TooltipContent>
+            </Tooltip>
+            <span className="text-primary-foreground/30">|</span>
+            <div className="flex items-center">
+                <span>Admin User</span>
+            </div>
           </div>
 
           <DropdownMenu>
