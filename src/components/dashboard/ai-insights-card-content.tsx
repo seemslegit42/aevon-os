@@ -1,20 +1,104 @@
 
 "use client";
-import React from 'react';
-import { BrainCircuitIcon } from '@/components/icons'; 
+import React, { useState, useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import { BrainCircuitIcon, RefreshCwIcon, AlertTriangleIcon } from '@/components/icons';
+import { useLayoutStore } from '@/stores/layout.store';
+import { type AiInsights } from '@/lib/ai-schemas';
+import { Skeleton } from '../ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
+import { shallow } from 'zustand/shallow';
 
 const AiInsightsCardContent: React.FC = () => {
-  return (
-    <div className="flex flex-col items-center justify-center h-full text-center p-4">
-      <BrainCircuitIcon className="w-12 h-12 text-primary mb-3" />
-      <h3 className="text-md font-headline text-primary-foreground mb-1">Adaptive AI Insights</h3>
-      <p className="text-xs text-muted-foreground">
-        The AI Insights Engine continuously learns from your activities across all ΛΞVON OS modules. 
-        It proactively identifies patterns, anticipates needs, and delivers predictive intelligence to optimize your operations. 
-        Expect dynamic, context-aware insights here.
-      </p>
-    </div>
-  );
+    const [insights, setInsights] = useState<string[] | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const { toast } = useToast();
+
+    // Selectively subscribe to layoutItems to trigger refetch on change
+    const layoutItems = useLayoutStore(state => state.layoutItems, shallow);
+
+    const fetchInsights = useCallback(async () => {
+        setIsLoading(true);
+        setError(null);
+        
+        try {
+            const response = await fetch('/api/ai/generate-insights', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ layoutItems }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to get insights.');
+            }
+            
+            const result: AiInsights = await response.json();
+            setInsights(result.insights);
+
+        } catch (err: any) {
+            setError(err.message);
+            toast({ 
+                variant: "destructive", 
+                title: "Insight Generation Failed", 
+                description: err.message
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    }, [layoutItems, toast]);
+
+    // Fetch insights on initial mount and whenever layoutItems change
+    useEffect(() => {
+        fetchInsights();
+    }, [fetchInsights]);
+    
+    const LoadingSkeleton = () => (
+        <div className="space-y-3">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-4 w-full" />
+        </div>
+    );
+
+    const ErrorDisplay = () => (
+        <div className="text-center text-destructive">
+            <AlertTriangleIcon className="mx-auto h-8 w-8 mb-2" />
+            <p className="font-semibold">Could not fetch insights</p>
+            <p className="text-xs">{error}</p>
+        </div>
+    );
+    
+    const InsightList = () => (
+        <ul className="space-y-3 text-left">
+            {insights?.map((insight, index) => (
+                <li key={index} className="flex items-start gap-2 text-xs text-muted-foreground">
+                   <BrainCircuitIcon className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                   <span>{insight}</span>
+                </li>
+            ))}
+        </ul>
+    );
+
+    return (
+        <div className="flex flex-col h-full text-center p-2">
+            <div className="flex-grow flex items-center justify-center">
+                 {isLoading && <LoadingSkeleton />}
+                 {!isLoading && error && <ErrorDisplay />}
+                 {!isLoading && !error && insights && insights.length > 0 && <InsightList />}
+                 {!isLoading && !error && (!insights || insights.length === 0) && (
+                     <p className="text-sm text-muted-foreground">No insights available at the moment.</p>
+                 )}
+            </div>
+            <div className="flex-shrink-0 pt-2">
+                <Button variant="ghost" size="sm" onClick={fetchInsights} disabled={isLoading}>
+                    <RefreshCwIcon className={isLoading ? 'animate-spin' : ''}/>
+                    Refresh
+                </Button>
+            </div>
+        </div>
+    );
 };
 
 export default AiInsightsCardContent;

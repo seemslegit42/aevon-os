@@ -30,3 +30,9 @@ export const InvoiceDataSchema = z.object({
     summary: z.string().describe("A brief summary of the extracted data."),
 });
 export type InvoiceData = z.infer<typeof InvoiceDataSchema>;
+
+// Defines the structured output for the AI Insights engine.
+export const AiInsightsSchema = z.object({
+  insights: z.array(z.string().describe("A short, actionable insight or recommendation based on the user's current workspace layout. Maximum of 3 insights.")).max(3),
+});
+export type AiInsights = z.infer<typeof AiInsightsSchema>;
