@@ -17,6 +17,7 @@ const Dashboard: React.FC = () => {
     updateItemLayout,
     handleBringToFront,
     closeItem,
+    toggleMinimizeItem,
   } = useDashboardLayout();
 
   const { isOpen: isCommandPaletteOpen, setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
@@ -58,6 +59,7 @@ const Dashboard: React.FC = () => {
             onLayoutChange={updateItemLayout}
             onFocus={handleBringToFront}
             onClose={closeItem}
+            onToggleMinimize={toggleMinimizeItem}
           />
       ))}
        <CommandPalette />

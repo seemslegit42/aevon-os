@@ -22,7 +22,8 @@ export function useDashboardLayout() {
     initialize,
     updateItemLayout: updateStoreLayout,
     bringToFront,
-    closeItem,
+    closeItem: closeItemInStore,
+    toggleMinimizeItem: toggleMinimizeItemInStore,
     addCard,
     launchApp,
     cloneApp,
@@ -43,9 +44,13 @@ export function useDashboardLayout() {
   }, [updateStoreLayout, handleBringToFront]);
 
   const handleCloseItem = useCallback((itemId: string) => {
-    closeItem(itemId);
+    closeItemInStore(itemId);
     toast({ title: "Item Closed", description: `The window has been removed from your dashboard.` });
-  }, [closeItem, toast]);
+  }, [closeItemInStore, toast]);
+
+  const handleToggleMinimizeItem = useCallback((itemId: string) => {
+    toggleMinimizeItemInStore(itemId);
+  }, [toggleMinimizeItemInStore]);
 
   const handleAddCard = useCallback((cardId: string) => {
     const { layoutItems: currentItems } = useLayoutStore.getState(); // Get fresh state
@@ -153,5 +158,6 @@ export function useDashboardLayout() {
     updateItemLayout,
     handleBringToFront,
     closeItem: handleCloseItem,
+    toggleMinimizeItem: handleToggleMinimizeItem,
   };
 }

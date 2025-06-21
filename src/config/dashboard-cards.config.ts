@@ -71,6 +71,8 @@ export type LayoutItem = {
     width: number;
     height: number;
     zIndex: number;
+    isMinimized?: boolean;
+    lastHeight?: number;
 } & ({
     type: 'card';
     cardId: string; // The ID from ALL_CARD_CONFIGS

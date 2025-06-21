@@ -5,7 +5,7 @@ import React, { Suspense, useState } from 'react';
 import { Rnd } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { PinIcon, XIcon } from '@/components/icons';
+import { PinIcon, XIcon, MinimizeIcon, RestoreIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { ALL_CARD_CONFIGS, ALL_MICRO_APPS, type LayoutItem } from '@/config/dashboard-cards.config';
 import type { Position, Size } from 'react-rnd';
@@ -17,9 +17,10 @@ interface DashboardWindowProps {
   onLayoutChange: (id: string, pos: Position, size?: Size) => void;
   onFocus: (id: string) => void;
   onClose: (id: string) => void;
+  onToggleMinimize: (id: string) => void;
 }
 
-const DashboardWindow: React.FC<DashboardWindowProps> = ({ item, isFocused, onLayoutChange, onFocus, onClose }) => {
+const DashboardWindow: React.FC<DashboardWindowProps> = ({ item, isFocused, onLayoutChange, onFocus, onClose, onToggleMinimize }) => {
     const [isClosing, setIsClosing] = useState(false);
     let title, Icon, Content, contentProps, minWidth, minHeight, cardClassName, isDismissible;
 
@@ -69,6 +70,11 @@ const DashboardWindow: React.FC<DashboardWindowProps> = ({ item, isFocused, onLa
         }, 200); // Corresponds to animation duration
     };
 
+    const resizeHandles = {
+        top: !item.isMinimized, right: !item.isMinimized, bottom: !item.isMinimized, left: !item.isMinimized,
+        topRight: !item.isMinimized, bottomRight: !item.isMinimized, bottomLeft: !item.isMinimized, topLeft: !item.isMinimized,
+    };
+
     return (
         <Rnd
             key={item.id}
@@ -79,7 +85,7 @@ const DashboardWindow: React.FC<DashboardWindowProps> = ({ item, isFocused, onLa
             onResizeStart={() => onFocus(item.id)}
             onResizeStop={handleResizeStop}
             minWidth={minWidth}
-            minHeight={minHeight}
+            minHeight={item.isMinimized ? 44 : minHeight}
             style={{ zIndex: item.zIndex }}
             className={cn(
                 "react-draggable animate-window-mount",
@@ -90,6 +96,7 @@ const DashboardWindow: React.FC<DashboardWindowProps> = ({ item, isFocused, onLa
             onMouseDownCapture={() => onFocus(item.id)}
             dragGrid={[20, 20]}
             resizeGrid={[20, 20]}
+            enableResizing={resizeHandles}
         >
             <MicroAppCard
                 title={title}
@@ -97,6 +104,9 @@ const DashboardWindow: React.FC<DashboardWindowProps> = ({ item, isFocused, onLa
                 className={cardClassName}
                 actions={
                   <>
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onToggleMinimize(item.id)}>
+                        {item.isMinimized ? <RestoreIcon className="w-4 h-4" /> : <MinimizeIcon className="w-4 h-4" />}
+                    </Button>
                     <Button variant="ghost" size="icon" className="h-6 w-6">
                       <PinIcon className="w-4 h-4" />
                     </Button>
@@ -109,7 +119,7 @@ const DashboardWindow: React.FC<DashboardWindowProps> = ({ item, isFocused, onLa
                 }
             >
                 <Suspense fallback={<div className="p-4"><Skeleton className="h-full w-full" /></div>}>
-                    <Content {...contentProps} />
+                    {!item.isMinimized && <Content {...contentProps} />}
                 </Suspense>
             </MicroAppCard>
         </Rnd>

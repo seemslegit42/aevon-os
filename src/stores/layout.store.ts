@@ -16,6 +16,7 @@ interface LayoutState {
   updateItemLayout: (id: string, newPos: Position, newSize?: Size) => void;
   bringToFront: (id: string) => void;
   closeItem: (id: string) => void;
+  toggleMinimizeItem: (id: string) => void;
   addCard: (cardId: string) => string | undefined;
   launchApp: (app: MicroApp) => string;
   cloneApp: (appId: string) => string | undefined;
@@ -110,6 +111,38 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
     const newFocusedId = state.focusedItemId === itemId ? null : state.focusedItemId;
     saveStateToLocalStorage({ layoutItems: newItems, focusedItemId: newFocusedId });
     return { layoutItems: newItems, focusedItemId: newFocusedId };
+  }),
+
+  toggleMinimizeItem: (id) => set(state => {
+    const newItems = state.layoutItems.map(item => {
+      if (item.id === id) {
+        const isNowMinimized = !item.isMinimized;
+        if (isNowMinimized) {
+          // Minimizing
+          return {
+            ...item,
+            isMinimized: true,
+            lastHeight: item.height, // Store current height
+            height: 44, // Header height
+          };
+        } else {
+          // Restoring
+          const cardConfig = item.type === 'card' ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId) : null;
+          const appConfig = item.type === 'app' ? ALL_MICRO_APPS.find(a => a.id === item.appId) : null;
+          const defaultHeight = cardConfig ? cardConfig.minHeight : (appConfig ? appConfig.defaultSize.height : 200);
+
+          return {
+            ...item,
+            isMinimized: false,
+            height: item.lastHeight || defaultHeight,
+            lastHeight: undefined,
+          };
+        }
+      }
+      return item;
+    });
+    saveStateToLocalStorage({ layoutItems: newItems, focusedItemId: state.focusedItemId });
+    return { layoutItems: newItems };
   }),
 
   addCard: (cardId) => {

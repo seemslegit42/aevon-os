@@ -14,6 +14,7 @@ export * from './MoreHorizontalIcon';
 export * from './PinIcon';
 export * from './MinimizeIcon';
 export * from './MaximizeIcon';
+export * from './RestoreIcon';
 export * from './AppWindowIcon';
 export * from './CpuIcon';
 export * from './MemoryChipIcon';
