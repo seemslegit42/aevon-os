@@ -12,7 +12,7 @@ import { groq } from '@/lib/ai/groq';
 import {
   TextCategorySchema,
   InvoiceDataSchema,
-} from './ai-schemas';
+} from '@/lib/ai-schemas';
 import {
   ALL_CARD_CONFIGS,
   ALL_MICRO_APPS,
