@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { Suspense, useState } from 'react';
+import React, { Suspense } from 'react';
 import { Rnd } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { useDashboardLayout } from '@/hooks/use-dashboard-layout';
 import { ALL_CARD_CONFIGS, DEFAULT_ACTIVE_CARD_IDS } from '@/config/dashboard-cards.config';
 import CommandPalette from '@/components/command-palette';
-import TopBar from '@/components/layout/top-bar';
+import { useCommandPaletteStore } from '@/stores/command-palette.store';
 
 const Dashboard: React.FC = () => {
   const {
@@ -24,7 +24,7 @@ const Dashboard: React.FC = () => {
     handleResetLayout,
   } = useDashboardLayout(ALL_CARD_CONFIGS, DEFAULT_ACTIVE_CARD_IDS);
 
-  const [isCommandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const { isOpen: isCommandPaletteOpen, setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
 
   if (!isInitialized) {
     return (
@@ -44,7 +44,6 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="h-full w-full relative">
-       <TopBar onSettingsClick={() => setCommandPaletteOpen(true)} />
       {cardLayouts
         .filter(layout => activeCardIds.includes(layout.id))
         .map(layout => {

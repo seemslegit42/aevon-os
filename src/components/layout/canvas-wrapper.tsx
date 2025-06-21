@@ -11,9 +11,7 @@ const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
   return (
     <main
       className={cn(
-        "flex-grow w-full p-4 md:p-0 overflow-y-auto relative text-foreground"
-        // Removed direct background classes from here, will be handled by .dark on body
-        // and the aurora container for dark mode.
+        "flex-grow w-full overflow-y-auto relative text-foreground pt-20" // Added pt-20 to account for fixed TopBar height
       )}
     >
       {/* This container will hold the gradient and the dark overlay for dark mode */}
