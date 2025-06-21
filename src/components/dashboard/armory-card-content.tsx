@@ -21,15 +21,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { generateAppDescription } from '@/ai/flows/generate-app-description';
+import { AppDescriptionInputSchema } from '@/ai/schemas';
 
-const formSchema = z.object({
-  microAppName: z.string().min(3, "App name must be at least 3 characters"),
-  microAppFunctionality: z.string().min(20, "Functionality description must be at least 20 characters"),
-  targetAudience: z.string().min(10, "Target audience description must be at least 10 characters"),
-  keyFeatures: z.string().min(10, "Please list key features, separated by commas (e.g., Feature 1, Feature 2)"),
-});
 
-type AppDescriptionFormValues = z.infer<typeof formSchema>;
+type AppDescriptionFormValues = z.infer<typeof AppDescriptionInputSchema>;
 
 interface ArmoryAppDisplay {
   id: string;
@@ -46,7 +42,7 @@ const ArmoryCardContent: React.FC = () => {
   const { toast } = useToast();
 
   const form = useForm<AppDescriptionFormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(AppDescriptionInputSchema),
     defaultValues: { microAppName: "", microAppFunctionality: "", targetAudience: "", keyFeatures: "" },
   });
 
@@ -55,29 +51,8 @@ const ArmoryCardContent: React.FC = () => {
     setGeneratedDescription(null); 
 
     try {
-      const response = await fetch('/api/ai/app-description', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: "Failed to parse error response" }));
-        throw new Error(errorData.error || `API request failed with status ${response.status}`);
-      }
-      
-      if (!response.body) throw new Error('Response body is null');
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let currentDescription = "";
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        currentDescription += decoder.decode(value, { stream: true });
-        setGeneratedDescription(currentDescription);
-      }
+      const description = await generateAppDescription(values);
+      setGeneratedDescription(description);
     } catch (error) {
       console.error("Error generating app description:", error);
       let errorMessage = "Failed to generate app description.";

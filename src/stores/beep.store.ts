@@ -1,6 +1,9 @@
 
+"use client";
+
 import { create } from 'zustand';
 import { toast } from "@/hooks/use-toast";
+import { generateBriefing } from '@/ai/flows/generate-briefing';
 
 interface BeepState {
   aiPrompt: string;
@@ -26,35 +29,11 @@ export const useBeepStore = create<BeepState>((set, get) => ({
       return;
     }
 
-    set({ isAiLoading: true, aiResponse: "" }); // Initialize for streaming
+    set({ isAiLoading: true, aiResponse: null }); 
 
     try {
-      const response = await fetch('/api/ai/briefing', { // Using the same briefing API for now
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: userPrompt, systemSnapshotData }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: "Failed to parse error response" }));
-        throw new Error(errorData.error || `API request failed with status ${response.status}`);
-      }
-      
-      if (!response.body) {
-        throw new Error('Response body is null');
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        set((state) => ({ aiResponse: (state.aiResponse || "") + chunk }));
-      }
-
+      const response = await generateBriefing({ prompt: userPrompt, systemSnapshotData: systemSnapshotData || 'Not available' });
+      set({ aiResponse: response });
     } catch (error) {
       console.error("Error submitting prompt to BEEP:", error);
       let errorMessage = "Failed to get response from BEEP.";

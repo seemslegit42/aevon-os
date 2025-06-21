@@ -7,16 +7,13 @@ import { AlertTriangleIcon, CheckCircleIcon, ShieldCheckIcon, InfoIcon } from '@
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { analyzeSecurityAlert } from '@/ai/flows/analyze-security-alert';
+import type { SecurityAlertOutput } from '@/ai/schemas';
 
-interface AnalyzeSecurityAlertsOutput {
-  summary: string;
-  potentialThreats?: string[];
-  recommendedActions?: string[];
-}
 
 const AegisSecurityCardContent: React.FC = () => {
   const [alertDetails, setAlertDetails] = useState('');
-  const [analysisResult, setAnalysisResult] = useState<AnalyzeSecurityAlertsOutput | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<SecurityAlertOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -29,20 +26,8 @@ const AegisSecurityCardContent: React.FC = () => {
     setAnalysisResult(null);
 
     try {
-      const response = await fetch('/api/ai/security-analysis', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ alertDetails }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: "Failed to parse error response" }));
-        throw new Error(errorData.error || `API request failed with status ${response.status}`);
-      }
-
-      const result: AnalyzeSecurityAlertsOutput = await response.json();
+      const result = await analyzeSecurityAlert({ alertDetails });
       setAnalysisResult(result);
-
     } catch (error) {
       console.error("Error analyzing security alerts:", error);
       let errorMessage = "Failed to analyze security alerts.";
