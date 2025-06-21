@@ -1,3 +1,4 @@
+
 /**
  * @fileOverview Defines Zod schemas and TypeScript types for AI interactions.
  * This file centralizes all data structures used for AI interactions,
@@ -13,6 +14,7 @@ export type SecurityAlertInput = z.infer<typeof SecurityAlertInputSchema>;
 
 export const SecurityAlertOutputSchema = z.object({
   summary: z.string().describe('A concise summary of the security alert.'),
+  severity: z.enum(['Low', 'Medium', 'High', 'Critical']).describe('The assessed severity level of the alert.'),
   potentialThreats: z.array(z.string()).describe('A list of potential threats identified from the alert data.'),
   recommendedActions: z.array(z.string()).describe('A list of recommended actions to mitigate the threats.'),
 });

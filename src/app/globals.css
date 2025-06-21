@@ -203,6 +203,28 @@
   color: hsl(var(--primary-foreground)) !important;
 }
 
+/* Severity Badges for Aegis Security */
+.badge-critical {
+  background-color: hsl(var(--destructive)) !important;
+  color: hsl(var(--destructive-foreground)) !important;
+  border-color: hsl(var(--destructive) / 0.5) !important;
+}
+.badge-high {
+  background-color: hsl(var(--accent)) !important; /* Yellow/Gold */
+  color: hsl(0 0% 0%) !important; /* Black text */
+  border-color: hsl(var(--accent) / 0.5) !important;
+}
+.badge-medium {
+  background-color: hsl(var(--secondary)) !important; /* Cyan */
+  color: hsl(var(--destructive-foreground)) !important;
+  border-color: hsl(var(--secondary) / 0.5) !important;
+}
+.badge-low {
+  background-color: hsl(var(--chart-4)) !important; /* Green */
+  color: hsl(0 0% 0%) !important; /* Black text */
+  border-color: hsl(var(--chart-4) / 0.5) !important;
+}
+
 
 @keyframes aurora-glow-subtle-dark {
   0% {

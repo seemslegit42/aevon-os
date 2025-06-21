@@ -1,9 +1,10 @@
+
 import { createOpenAI } from '@ai-sdk/openai';
 import { generateObject } from 'ai';
 import { AppDescriptionInputSchema } from '@/lib/ai-schemas';
 import { z } from 'zod';
 
-export const maxDuration = 30;
+export const maxDuration = 60; // Increased timeout for the larger model
 
 const groq = createOpenAI({
   baseURL: 'https://api.groq.com/openai/v1',
@@ -19,16 +20,18 @@ export async function POST(req: Request) {
     const json = await req.json();
     const { microAppName, microAppFunctionality, targetAudience, keyFeatures } = AppDescriptionInputSchema.parse(json);
 
-    const prompt = `Generate a compelling and concise marketplace description for a micro-application.
-      - App Name: ${microAppName}
-      - Functionality: ${microAppFunctionality}
-      - Target Audience: ${targetAudience}
-      - Key Features: ${keyFeatures}
+    const prompt = `Act as an expert marketing and product copywriter. Generate a compelling, engaging, and concise marketplace description for a new micro-application for the ΛΞVON OS.
 
-      The description should be engaging, clear, and highlight the primary benefits for the target audience.`;
+The description should be market-ready, highlighting the primary benefits for the specified target audience in a punchy and professional tone.
+
+App Details:
+- App Name: ${microAppName}
+- Core Functionality: ${microAppFunctionality}
+- Target Audience: ${targetAudience}
+- Key Features: ${keyFeatures}`;
 
     const { object } = await generateObject({
-      model: groq('llama3-8b-8192'),
+      model: groq('llama3-70b-8192'),
       schema: DescriptionOutputSchema,
       prompt,
     });

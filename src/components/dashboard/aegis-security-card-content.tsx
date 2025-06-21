@@ -6,9 +6,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { AlertTriangleIcon, CheckCircleIcon, ShieldCheckIcon, InfoIcon } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { SecurityAlertOutput } from '@/lib/ai-schemas';
-
+import { cn } from '@/lib/utils';
 
 const AegisSecurityCardContent: React.FC = () => {
   const [alertDetails, setAlertDetails] = useState('');
@@ -51,6 +52,16 @@ const AegisSecurityCardContent: React.FC = () => {
     }
   };
 
+  const getSeverityBadgeClass = (severity?: 'Low' | 'Medium' | 'High' | 'Critical') => {
+    switch (severity) {
+      case 'Critical': return 'badge-critical';
+      case 'High': return 'badge-high';
+      case 'Medium': return 'badge-medium';
+      case 'Low': return 'badge-low';
+      default: return 'badge-secondary';
+    }
+  };
+
   return (
     <div className="space-y-4 h-full flex flex-col p-2">
       <Textarea
@@ -70,6 +81,15 @@ const AegisSecurityCardContent: React.FC = () => {
         {analysisResult ? (
           <ScrollArea className="h-full pr-3">
             <div className="space-y-3 text-sm">
+                <Alert variant="default" className={cn(getSeverityBadgeClass(analysisResult.severity), "border-opacity-50")}>
+                    <ShieldCheckIcon className="h-4 w-4" />
+                    <AlertTitle className="flex items-center gap-x-2">
+                      Severity: 
+                      <Badge variant="outline" className={cn("border-none", getSeverityBadgeClass(analysisResult.severity))}>
+                        {analysisResult.severity || 'Unknown'}
+                      </Badge>
+                    </AlertTitle>
+                </Alert>
                 <Alert variant="destructive">
                   <AlertTriangleIcon className="h-4 w-4" />
                   <AlertTitle>Potential Threats</AlertTitle>
