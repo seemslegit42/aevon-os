@@ -1,9 +1,9 @@
 
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { ShieldCheckIcon, AlertTriangleIcon, BrainCircuitIcon, CheckCircleIcon } from '@/components/icons';
+import { ShieldCheckIcon, AlertTriangleIcon, BrainCircuitIcon } from '@/components/icons';
 import { useToast } from "@/hooks/use-toast";
 import { type AegisSecurityAnalysis } from '@/lib/ai-schemas';
 import { Badge } from '@/components/ui/badge';
@@ -19,8 +19,8 @@ const AegisSecurityCardContent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const handleAnalyze = async () => {
-    if (!alertDetails.trim()) {
+  const handleAnalyze = useCallback(async (detailsToAnalyze: string) => {
+    if (!detailsToAnalyze.trim()) {
       toast({ 
         variant: "destructive", 
         title: "Input Required", 
@@ -37,7 +37,7 @@ const AegisSecurityCardContent: React.FC = () => {
       const response = await fetch('/api/ai/analyze-security', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ alertDetails }),
+        body: JSON.stringify({ alertDetails: detailsToAnalyze }),
       });
 
       if (!response.ok) {
@@ -68,7 +68,19 @@ const AegisSecurityCardContent: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [toast]);
+  
+  useEffect(() => {
+    const handleNewAlert = (data: string) => {
+      setAlertDetails(data);
+      handleAnalyze(data);
+      eventBus.emit('panel:focus', 'aegisSecurity');
+    };
+    eventBus.on('aegis:new-alert', handleNewAlert);
+    return () => {
+      eventBus.off('aegis:new-alert', handleNewAlert);
+    };
+  }, [handleAnalyze]);
   
   const getSeverityBadgeClass = (severity?: AegisSecurityAnalysis['severity']) => {
     switch (severity) {
@@ -129,7 +141,7 @@ const AegisSecurityCardContent: React.FC = () => {
   return (
     <div className="space-y-3 h-full flex flex-col p-1">
       <Textarea
-        placeholder="Paste security alert details here... e.g., logs, error messages, SIEM output."
+        placeholder="Paste security alert details here, or run the Loom Studio simulation to generate an event automatically."
         value={alertDetails}
         onChange={(e) => setAlertDetails(e.target.value)}
         rows={5}
@@ -137,7 +149,7 @@ const AegisSecurityCardContent: React.FC = () => {
         className="bg-input border-input placeholder:text-muted-foreground text-sm flex-shrink-0"
         disabled={isLoading}
       />
-      <Button onClick={handleAnalyze} disabled={isLoading || !alertDetails} className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground flex-shrink-0">
+      <Button onClick={() => handleAnalyze(alertDetails)} disabled={isLoading || !alertDetails} className="w-full md:w-auto bg-primary hover:bg-primary/90 text-primary-foreground flex-shrink-0">
         {isLoading ? 'Analyzing...' : 'Analyze Alerts'}
         <ShieldCheckIcon className="w-4 h-4 ml-2" />
       </Button>
@@ -158,7 +170,7 @@ const AegisSecurityCardContent: React.FC = () => {
                   <div className="flex flex-col items-center">
                     <BrainCircuitIcon className="w-10 h-10 mb-2 opacity-50"/>
                     <p className="text-sm">Awaiting analysis...</p>
-                    <p className="text-xs max-w-xs">Paste security data above and click "Analyze" for an AI-powered assessment and mitigation plan.</p>
+                    <p className="text-xs max-w-xs">Paste security data above or run the Loom Studio simulation to generate an event.</p>
                   </div>
               </div>
             )}

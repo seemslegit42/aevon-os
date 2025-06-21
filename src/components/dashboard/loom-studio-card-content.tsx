@@ -55,7 +55,7 @@ const initialWorkflow: NodeState[] = [
     { id: 'trigger', label: 'Trigger: New Text Input', icon: LogInIcon, status: 'idle' },
     { id: 'condition', label: 'AI: Is Invoice?', icon: GitForkIcon, status: 'idle', isCondition: true },
     { id: 'action-extract', label: 'AI: Extract Data', icon: DatabaseZapIcon, status: 'idle' },
-    { id: 'action-log', label: 'Log to System', icon: BrainCircuitIcon, status: 'idle' },
+    { id: 'action-log', label: 'Log & Alert Aegis', icon: BrainCircuitIcon, status: 'idle' },
 ];
 
 interface WorkflowNodeProps {
@@ -147,19 +147,39 @@ const LoomStudioCardContent: React.FC = () => {
         
         updateNodeState('action-extract', { status: 'completed', output: extractResult });
         eventBus.emit('orchestration:log', { task: 'Loom: Extracted', status: 'success', details: extractResult.summary });
+        return extractResult;
     }, [inputText, updateNodeState]);
     
-    const runLoggingStep = useCallback(async () => {
+    const runLoggingStep = useCallback(async (extractedData: InvoiceData | null) => {
         updateNodeState('action-log', { status: 'running' });
         await sleep(300);
-        updateNodeState('action-log', { status: 'completed', output: { status: "Logged OK", loggedAt: new Date().toISOString() } });
+        const logOutput = { status: "Logged OK", loggedAt: new Date().toISOString() };
+        updateNodeState('action-log', { status: 'completed', output: logOutput });
         eventBus.emit('orchestration:log', { task: 'Loom: Logged', status: 'success', details: 'Workflow results logged to system.' });
+        
+        // Fire the alert to Aegis
+        const securityAlert = {
+          event: "External Document Processed",
+          source: "Loom Studio Workflow",
+          timestamp: new Date().toISOString(),
+          details: "An external document was processed and identified as an invoice.",
+          extractedData: extractedData ? {
+              invoiceNumber: extractedData.invoiceNumber,
+              amount: extractedData.amount,
+              dueDate: extractedData.dueDate,
+          } : "No data extracted."
+        };
+        
+        eventBus.emit('aegis:new-alert', JSON.stringify(securityAlert, null, 2));
+        eventBus.emit('orchestration:log', { task: 'Aegis Alert Sent', status: 'success', details: 'Forwarded processing log to Aegis Security.' });
+
     }, [updateNodeState]);
 
 
     const runSimulation = useCallback(async () => {
         setIsSimulating(true);
         setNodes(initialWorkflow);
+        let extractedData: InvoiceData | null = null;
 
         try {
             await runTriggerStep();
@@ -169,13 +189,13 @@ const LoomStudioCardContent: React.FC = () => {
             await sleep(400);
 
             if (categoryResult.isMatch) {
-                await runExtractionStep();
+                extractedData = await runExtractionStep();
             } else {
                 updateNodeState('action-extract', { status: 'failed', error: "Skipped: Text was not categorized as an invoice." });
             }
             await sleep(400);
             
-            await runLoggingStep();
+            await runLoggingStep(extractedData);
 
         } catch (error: any) {
             const errorMessage = error.message || "An unknown error occurred during simulation.";

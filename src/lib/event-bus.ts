@@ -21,6 +21,9 @@ type AppEvents = {
   'command:submit': string; // payload is the query from the top bar
   'beep:submitQuery': string; // payload is the query to be appended to BEEP
   
+  // Inter-component communication events
+  'aegis:new-alert': string; // payload is the alert data string for Aegis to analyze
+  
   // Notification Events - Fired whenever an agentic action completes
   'orchestration:log': { task: string; status: 'success' | 'failure'; details: string; };
   
