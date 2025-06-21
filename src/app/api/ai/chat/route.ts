@@ -1,137 +1,47 @@
 
-import { generateObject, generateText } from 'ai';
-import { z } from 'zod';
-import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
+import { LangChainAdapter, StreamingTextResponse } from 'ai';
+import { agentGraph } from '@/lib/ai/agent';
+import { AIMessage, HumanMessage } from '@langchain/core/messages';
 import { type NextRequest } from 'next/server';
 import { rateLimiter } from '@/lib/rate-limiter';
-import { groq } from '@/lib/ai/groq';
-import { InvoiceDataSchema, TextCategorySchema } from '@/lib/ai-schemas';
+import { type Message } from 'ai';
+
 
 export const maxDuration = 60;
 
-// Create strings listing available items for the AI's context
-const availablePanels = ALL_CARD_CONFIGS.map(p => `- ${p.title} (id: ${p.id})`).join('\n');
-const availableApps = ALL_MICRO_APPS.map(a => `- ${a.title} (id: ${a.id})`).join('\n');
+/**
+ * Converts a Vercel AI SDK message to a LangChain message.
+ * @param message The Vercel AI SDK message.
+ * @returns The LangChain message.
+ */
+const toLangChainMessage = (message: Message) => {
+    if (message.role === 'user') {
+        return new HumanMessage(message.content);
+    } else if (message.role === 'assistant') {
+        // Note: We are not including tool calls here because the agent will regenerate them.
+        return new AIMessage(message.content);
+    }
+    // We will ignore tool messages for now as the agent will re-execute them.
+    // In a more stateful implementation, you might pass tool results here.
+    return new HumanMessage(message.content);
+}
 
-// Combine IDs for tool validation
-const availableItemIds = [
-    ...ALL_CARD_CONFIGS.map(p => p.id),
-    ...ALL_MICRO_APPS.map(a => a.id)
-];
 
 export async function POST(req: NextRequest) {
-  const rateLimitResponse = await rateLimiter(req);
-  if (rateLimitResponse) return rateLimitResponse;
+    const rateLimitResponse = await rateLimiter(req);
+    if (rateLimitResponse) return rateLimitResponse;
 
-  const { messages } = await req.json();
+    const { messages }: { messages: Message[] } = await req.json();
+    
+    // Invoke the LangGraph agent with the current chat history.
+    const stream = await agentGraph.stream({
+        messages: messages.map(toLangChainMessage),
+    });
 
-  const result = await generateText({
-    model: groq('llama3-70b-8192'),
-    system: `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic. You are aware of the OS's components and can control the user interface AND analyze text by using the tools provided.
+    // The LangChainAdapter gracefully handles converting the LangGraph stream,
+    // which includes text and tool calls, into the format expected by the useChat hook.
+    const aiStream = LangChainAdapter.toAIStream(stream);
 
-Your purpose is to manage the user's workspace and process information. This includes "Panels" (core OS components) and "Micro-Apps".
-
-To manage the UI, use the following tools:
-- To show, open, or focus on an item, use the 'focusItem' tool.
-- To add, create, or launch something new, use the 'addItem' tool.
-- To move an item, use the 'moveItem' tool.
-- To remove, delete, or close something, use the 'removeItem' tool.
-- To reset the workspace or layout, use the 'resetLayout' tool.
-
-To analyze text provided by the user:
-1. First, ALWAYS use the 'categorizeText' tool to determine what the text is.
-2. After you get the category, respond to the user with the category.
-3. If AND ONLY IF the category is 'Invoice', then you should ALSO use the 'extractInvoiceData' tool on the *same text* and include the extracted details in your final response.
-Do not try to extract invoice data from text that is not an invoice.
-
-If the user is asking about an app, use the app's ID. If they are asking about a panel, use the panel's ID.
-
-Available Panels:
-${availablePanels}
-
-Available Micro-Apps:
-${availableApps}`,
-    messages,
-    tools: {
-      // Client-side tools (no implementation here, will be sent to client)
-      focusItem: {
-        description: 'Brings a specific Panel or Micro-App into focus on the user\\'s canvas. Use this when the user asks to see or open an item that might already be present.',
-        parameters: z.object({
-          itemId: z.string().describe(`The unique ID of the item to focus on. Available IDs are: ${availableItemIds.join(', ')}`),
-        }),
-      },
-      addItem: {
-        description: 'Adds a new Panel or launches a new Micro-App on the user\\'s canvas.',
-        parameters: z.object({
-          itemId: z.string().enum(availableItemIds as [string, ...string[]]).describe('The unique ID of the item to add or launch.'),
-        }),
-      },
-      moveItem: {
-        description: 'Moves a specific Panel or Micro-App to a new position (x, y coordinates) on the user\\'s canvas.',
-        parameters: z.object({
-            itemId: z.string().enum(availableItemIds as [string, ...string[]]).describe('The unique ID of the item to move.'),
-            x: z.number().describe('The new x-coordinate for the top-left corner of the item.'),
-            y: z.number().describe('The new y-coordinate for the top-left corner of the item.'),
-        }),
-      },
-      removeItem: {
-          description: 'Removes a Panel or closes all instances of a Micro-App from the user\\'s canvas.',
-          parameters: z.object({
-            itemId: z.string().enum(availableItemIds as [string, ...string[]]).describe('The unique ID of the item to remove or close.'),
-        }),
-      },
-      resetLayout: {
-        description: 'Resets the entire dashboard layout to its default configuration.',
-        parameters: z.object({}),
-      },
-      
-      // Server-side tools (with implementation)
-      categorizeText: {
-        description: 'Analyzes a piece of text and determines its category, such as Invoice, General Inquiry, or Spam.',
-        parameters: z.object({
-          text: z.string().describe('The text content to be categorized.'),
-        }),
-        execute: async ({ text }) => {
-            const { object: category } = await generateObject({
-                model: groq('llama3-8b-8192'), // Use a smaller model for this simple task
-                schema: TextCategorySchema,
-                prompt: `You are an expert text classification agent. Analyze the following text and determine if it is an invoice.
-                If it is an invoice, set 'isMatch' to true and 'category' to 'Invoice'.
-                Otherwise, set 'isMatch' to false and provide a general category like 'General Inquiry', 'Spam', or 'Order Confirmation'.
-
-                Text to analyze:
-                ---
-                ${text}
-                ---
-                `,
-            });
-            return category;
-        }
-      },
-      extractInvoiceData: {
-        description: 'Extracts structured data (invoice number, amount, due date) from a text that has been identified as an invoice.',
-        parameters: z.object({
-          text: z.string().describe('The full text of the invoice to extract data from.'),
-        }),
-        execute: async ({ text }) => {
-            const { object: invoiceData } = await generateObject({
-                model: groq('llama3-70b-8192'), // Use a larger model for reliable extraction
-                schema: InvoiceDataSchema,
-                prompt: `You are a data extraction expert. Analyze the following invoice text and extract the required information into a structured JSON object.
-                If a field is not present, omit it from the output.
-                The due date should be in YYYY-MM-DD format if possible.
-
-                Invoice text to analyze:
-                ---
-                ${text}
-                ---
-                `,
-            });
-            return invoiceData;
-        }
-      },
-    }
-  });
-
-  return result.toAIStreamResponse();
+    return new StreamingTextResponse(aiStream);
 }
+
