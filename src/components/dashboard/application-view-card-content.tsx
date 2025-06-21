@@ -17,7 +17,7 @@ const ApplicationViewCardContent: React.FC = () => {
 
     // Effect to manage the selected tab when apps are opened or closed
     useEffect(() => {
-        // If there are active apps but no selected tab, select the last one (most recent)
+        // If there are active apps but the selected tab is no longer active, select the last one (most recent)
         if (activeApps.length > 0 && !activeApps.some(app => app.id === selectedTab)) {
             setSelectedTab(activeApps[activeApps.length - 1].id);
         }
@@ -33,8 +33,7 @@ const ApplicationViewCardContent: React.FC = () => {
             setSelectedTab(appId);
             eventBus.emit('panel:focus', 'applicationView');
         };
-        // This is a simplified way to detect a new app launch.
-        // A more robust system might use a dedicated event.
+        // This subscribes to the store to detect when a new app is added.
         const unSub = useMicroAppStore.subscribe(
             (state, prevState) => {
                 const newActiveApps = state.getActiveApps();
@@ -52,7 +51,7 @@ const ApplicationViewCardContent: React.FC = () => {
 
 
     const handleCloseTab = (e: React.MouseEvent, appId: string) => {
-        e.stopPropagation(); // Prevent the tab from being selected
+        e.stopPropagation(); // Prevent the tab from being selected when closing it
         deactivateApp(appId);
     };
 
