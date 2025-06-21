@@ -13,5 +13,20 @@ export const AegisSecurityAnalysisSchema = z.object({
   identifiedThreats: z.array(z.string()).describe("A list of specific threats or vulnerabilities identified from the data."),
   suggestedActions: z.array(z.string()).describe("A list of concrete, actionable steps to mitigate the identified threats."),
 });
-
 export type AegisSecurityAnalysis = z.infer<typeof AegisSecurityAnalysisSchema>;
+
+// Defines the output for the text categorization feature in Loom Studio.
+export const TextCategorySchema = z.object({
+    isMatch: z.boolean().describe("Set to true if the text matches the category, otherwise false."),
+    category: z.string().describe("The determined category of the text. e.g., 'Invoice', 'General Inquiry', 'Spam'."),
+});
+export type TextCategory = z.infer<typeof TextCategorySchema>;
+
+// Defines the structured output for invoice data extraction in Loom Studio.
+export const InvoiceDataSchema = z.object({
+    invoiceNumber: z.string().optional().describe("The invoice number or ID."),
+    amount: z.number().optional().describe("The total amount due on the invoice."),
+    dueDate: z.string().optional().describe("The due date of the invoice in YYYY-MM-DD format."),
+    summary: z.string().describe("A brief summary of the extracted data."),
+});
+export type InvoiceData = z.infer<typeof InvoiceDataSchema>;
