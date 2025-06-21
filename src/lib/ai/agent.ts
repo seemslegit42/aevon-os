@@ -4,14 +4,15 @@
 import { StateGraph, END, START, type MessagesState } from '@langchain/langgraph';
 import { ToolNode } from '@langchain/langgraph/prebuilt';
 import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages';
-import { ChatGroq } from '@langchain/groq';
+import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import { DynamicTool } from '@langchain/core/tools';
 import { z } from 'zod';
 import { generateObject } from 'ai';
-import { groq } from '@/lib/ai/groq';
+import { google } from '@/lib/ai/groq';
 import {
   TextCategorySchema,
   InvoiceDataSchema,
+  KnowledgeBaseSearchResultSchema,
 } from '@/lib/ai-schemas';
 import {
   ALL_CARD_CONFIGS,
@@ -57,7 +58,7 @@ const categorizeTextTool = new DynamicTool({
   }),
   func: async ({ text }) => {
     const { object: category } = await generateObject({
-      model: groq('llama3-8b-8192'),
+      model: google('gemini-1.5-flash-latest'),
       schema: TextCategorySchema,
       prompt: `You are an expert text classification agent. Analyze the following text and determine if it is an invoice.
       If it is an invoice, set 'isMatch' to true and 'category' to 'Invoice'.
@@ -81,7 +82,7 @@ const extractInvoiceDataTool = new DynamicTool({
   }),
   func: async ({ text }) => {
     const { object: invoiceData } = await generateObject({
-      model: groq('llama3-70b-8192'),
+      model: google('gemini-1.5-flash-latest'),
       schema: InvoiceDataSchema,
       prompt: `You are a data extraction expert. Analyze the following invoice text and extract the required information into a structured JSON object.
       If a field is not present, omit it from the output.
@@ -241,9 +242,9 @@ ${openWindowsSummary}
 `;
 }
 
-const model = new ChatGroq({
-  apiKey: process.env.GROQ_API_KEY,
-  modelName: 'llama3-70b-8192',
+const model = new ChatGoogleGenerativeAI({
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+  model: 'gemini-1.5-flash-latest',
 }).bindTools(allTools);
 
 
