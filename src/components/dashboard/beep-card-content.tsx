@@ -79,7 +79,7 @@ const BeepCardContent: React.FC<BeepCardContentProps> = ({
                   <div className={cn(
                     "p-3 rounded-lg max-w-sm whitespace-pre-wrap text-sm",
                     m.role === 'user'
-                      ? 'bg-primary/80 text-primary-foreground'
+                      ? 'btn-gradient-primary-accent text-primary-foreground'
                       : 'bg-muted/50 text-foreground'
                   )}>
                     {m.content}

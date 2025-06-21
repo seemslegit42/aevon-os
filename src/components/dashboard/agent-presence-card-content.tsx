@@ -13,6 +13,7 @@ interface Agent {
   statusColor: string;
   statusIcon: ElementType;
   time: string;
+  isSpinning?: boolean;
 }
 
 interface AgentPresenceCardContentProps {
@@ -27,7 +28,7 @@ const AgentPresenceCardContent: React.FC<AgentPresenceCardContentProps> = ({ age
           const StatusIcon = agent.statusIcon;
           return (
             <div key={agent.id} className="flex items-start space-x-3 p-2 rounded-lg bg-card/60">
-              <StatusIcon className={cn("w-5 h-5 mt-1 shrink-0", agent.statusColor)} />
+              <StatusIcon className={cn("w-5 h-5 mt-1 shrink-0", agent.statusColor, agent.isSpinning && "animate-spin")} />
               <div className="flex-1">
                 <p className="text-sm font-semibold text-foreground">{agent.name}</p>
                 <p className="text-xs text-muted-foreground">{agent.description}</p>

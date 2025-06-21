@@ -4,6 +4,8 @@ import React from 'react';
 import { CheckCircleIcon, AlertTriangleIcon, ArrowRightIcon } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
+import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 interface FeedItem {
   task: string;
@@ -17,6 +19,26 @@ interface LiveOrchestrationFeedCardContentProps {
 }
 
 const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardContentProps> = ({ feedItems = [] }) => {
+  const { toast } = useToast();
+
+  const handleViewDetails = (item: FeedItem) => {
+    toast({
+      title: `Feed Event: ${item.task}`,
+      description: (
+        <div className="mt-2 w-full text-foreground space-y-2 text-sm">
+          <div className="flex items-center gap-2">
+            <strong>Status:</strong>
+            <Badge variant={item.status === 'success' ? "default" : "destructive"} className={cn("border-none", item.status === 'success' ? 'badge-success' : 'badge-failure')}>
+              {item.status}
+            </Badge>
+          </div>
+          <p><strong>Timestamp:</strong> {item.time}</p>
+          <p><strong>Details:</strong> {item.details}</p>
+        </div>
+      ),
+    });
+  };
+
   return (
     <ScrollArea className="h-full pr-3">
         <div className="space-y-3">
@@ -35,9 +57,9 @@ const LiveOrchestrationFeedCardContent: React.FC<LiveOrchestrationFeedCardConten
                     <p className="text-muted-foreground">{item.time}</p>
                 </div>
                 <p className="text-muted-foreground mt-0.5">{item.details}</p>
-                 <a href="#" className={cn("inline-flex items-center text-xs mt-1", item.status === 'success' ? 'details-link-success' : 'details-link-failure')}>
+                 <button onClick={() => handleViewDetails(item)} className={cn("inline-flex items-center text-xs mt-1 hover:underline", item.status === 'success' ? 'details-link-success' : 'details-link-failure')}>
                      View Details <ArrowRightIcon className="w-3 h-3 ml-1" />
-                </a>
+                </button>
             </div>
             </div>
         ))}
