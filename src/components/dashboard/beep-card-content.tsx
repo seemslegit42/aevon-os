@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAudioRecorder } from '@/hooks/use-audio-recorder';
 import { useTTS } from '@/hooks/use-tts';
 import { useBeepChat } from '@/hooks/use-beep-chat';
+import BeepToolResult from './beep-tool-result';
 
 const BeepCardContent: React.FC = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -90,7 +91,9 @@ const BeepCardContent: React.FC = () => {
           <div className="space-y-4">
             {messages.length > 0 ? (
               messages.map(m => {
-                if (m.role === 'tool') return null;
+                if (m.role === 'tool') {
+                   return <BeepToolResult key={m.id} message={m} />;
+                }
                 return (
                   <div key={m.id} className={cn("flex items-start gap-3", m.role === 'user' ? 'justify-end' : '')}>
                     {m.role === 'assistant' && (

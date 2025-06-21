@@ -66,10 +66,17 @@ export function useBeepChat() {
                 resultMessage = `Tool ${toolName} not implemented.`;
         }
 
+        // Pass a structured object as a string for the frontend to parse and render
+        const toolExecutionResult = {
+            toolName,
+            args,
+            message: resultMessage,
+        };
+
         appendToolCallMessage({
             toolCallId: toolCall.toolCallId,
             toolName: toolName,
-            result: resultMessage,
+            result: JSON.stringify(toolExecutionResult),
         });
       }
       return hasHandledTool;
