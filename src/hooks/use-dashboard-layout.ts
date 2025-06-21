@@ -51,6 +51,16 @@ export function useDashboardLayout() {
 
     initializeApps(ALL_MICRO_APPS);
 
+    // Listener for bringing a panel to the front
+    const handlePanelFocus = (cardId: string) => {
+      // Check if the card/app exists before trying to focus
+      if (layoutItems.some(item => (item.type === 'card' && item.cardId === cardId) || item.id === cardId)) {
+        handleBringToFront(cardId);
+      }
+    };
+    eventBus.on('panel:focus', handlePanelFocus);
+
+
     // Listener for submitting a command from the TopBar
     const handleCommand = (query: string) => {
        setTimeout(() => {
@@ -67,9 +77,10 @@ export function useDashboardLayout() {
 
     return () => {
       eventBus.off('command:submit', handleCommand);
+      eventBus.off('panel:focus', handlePanelFocus);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run only ONCE on mount.
+  }, [isInitialized]); // Rerun if layoutItems change to re-bind focus listener with fresh state
 
   // Effect for persisting state to localStorage whenever it changes.
   useEffect(() => {
@@ -132,10 +143,11 @@ export function useDashboardLayout() {
     const cardConfig = ALL_CARD_CONFIGS.find(c => c.id === cardId);
     if (!cardConfig) return;
 
+    // Check if a card with this ID (which is the unique ID for cards) already exists
     if (!layoutItems.some(item => item.id === cardId)) {
         const maxZ = getMaxZIndex();
         const newCard: LayoutItem = {
-            id: cardId,
+            id: cardId, // Use cardId as the unique layout item ID for cards
             type: 'card',
             cardId: cardId,
             ...cardConfig.defaultLayout,
@@ -143,8 +155,10 @@ export function useDashboardLayout() {
         }
       setLayoutItems(prev => [...prev, newCard]);
       toast({ title: "Zone Added", description: `The zone "${cardConfig.title}" has been added.` });
+       handleBringToFront(cardId);
+    } else {
+      handleBringToFront(cardId);
     }
-    handleBringToFront(cardId);
   }, [layoutItems, getMaxZIndex, handleBringToFront, toast]);
   
   const launchApp = useCallback((app: MicroApp) => {
