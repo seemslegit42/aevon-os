@@ -17,36 +17,47 @@ export type MicroAppRegistration = Omit<MicroApp, 'isActive'>;
 // Define the shape of the store's state and actions
 interface MicroAppStoreState {
   apps: MicroApp[];
-  registerApps: (newApps: MicroAppRegistration[]) => void;
+  _hasHydrated: boolean;
+  initializeApps: (initialApps: MicroAppRegistration[]) => void;
   activateApp: (appId: string) => void;
   deactivateApp: (appId: string) => void;
   deactivateAllApps: () => void;
   getActiveApps: () => MicroApp[];
 }
 
+const ACTIVE_APPS_STORAGE_KEY = 'aevonActiveMicroAppIds_v1';
+
 export const useMicroAppStore = create<MicroAppStoreState>((set, get) => ({
   apps: [],
+  _hasHydrated: false, // Flag to prevent saving to storage before hydration is complete
 
-  /**
-   * Registers a list of micro-apps, adding them to the store.
-   * Ensures no duplicate apps are added based on their ID.
-   * @param newApps - An array of app objects to register.
-   */
-  registerApps: (newApps) => {
-    set((state) => {
-      const existingAppIds = new Set(state.apps.map(app => app.id));
-      const filteredNewApps = newApps
-        .filter(app => !existingAppIds.has(app.id))
-        .map(app => ({ ...app, isActive: false }));
-      
-      return { apps: [...state.apps, ...filteredNewApps] };
-    });
+  initializeApps: (initialApps) => {
+    if (get()._hasHydrated) return; // Prevent re-initialization
+
+    let activeIds: string[] = [];
+    if (typeof window !== 'undefined') {
+        try {
+            const savedActiveIdsJSON = localStorage.getItem(ACTIVE_APPS_STORAGE_KEY);
+            if (savedActiveIdsJSON) {
+                const parsedIds = JSON.parse(savedActiveIdsJSON);
+                if (Array.isArray(parsedIds)) {
+                    activeIds = parsedIds;
+                }
+            }
+        } catch (e) {
+            console.error("Could not read active micro-apps from localStorage", e);
+            localStorage.removeItem(ACTIVE_APPS_STORAGE_KEY);
+        }
+    }
+    
+    const allApps = initialApps.map(app => ({
+        ...app,
+        isActive: activeIds.includes(app.id)
+    }));
+    
+    set({ apps: allApps, _hasHydrated: true });
   },
 
-  /**
-   * Activates a single micro-app by its ID. Does not deactivate others.
-   * @param appId - The ID of the app to activate.
-   */
   activateApp: (appId) => {
     set((state) => ({
       apps: state.apps.map(app => 
@@ -55,10 +66,6 @@ export const useMicroAppStore = create<MicroAppStoreState>((set, get) => ({
     }));
   },
 
-  /**
-   * Deactivates a single micro-app by its ID.
-   * @param appId - The ID of the app to deactivate.
-   */
   deactivateApp: (appId) => {
     set((state) => ({
       apps: state.apps.map(app =>
@@ -67,9 +74,6 @@ export const useMicroAppStore = create<MicroAppStoreState>((set, get) => ({
     }));
   },
 
-  /**
-   * Deactivates all currently active micro-apps.
-   */
   deactivateAllApps: () => {
     set((state) => ({
       apps: state.apps.map(app => ({
@@ -79,11 +83,19 @@ export const useMicroAppStore = create<MicroAppStoreState>((set, get) => ({
     }));
   },
 
-  /**
-   * A convenience getter to find all currently active apps.
-   * @returns An array of active app objects.
-   */
   getActiveApps: () => {
     return get().apps.filter(app => app.isActive);
   }
 }));
+
+// Subscribe to store changes to save active apps to localStorage
+useMicroAppStore.subscribe((state) => {
+    if (state._hasHydrated && typeof window !== 'undefined') {
+        try {
+            const activeIds = state.apps.filter(app => app.isActive).map(app => app.id);
+            localStorage.setItem(ACTIVE_APPS_STORAGE_KEY, JSON.stringify(activeIds));
+        } catch (e) {
+            console.error("Could not save active micro-apps to localStorage", e);
+        }
+    }
+});

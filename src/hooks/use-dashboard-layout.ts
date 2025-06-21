@@ -23,7 +23,7 @@ export function useDashboardLayout(
   const [cardLayouts, setCardLayouts] = useState<CardLayoutInfo[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
   const { focusedCardId, setFocusedCardId } = useDashboardStore();
-  const registerApps = useMicroAppStore(state => state.registerApps);
+  const initializeApps = useMicroAppStore(state => state.initializeApps);
 
   // Effect for initializing state from localStorage and setting up listeners
   useEffect(() => {
@@ -78,8 +78,8 @@ export function useDashboardLayout(
     }
 
     // --- SETUP LOGIC MOVED FROM DASHBOARD COMPONENT ---
-    // Register all micro-apps on initial load
-    registerApps(ALL_MICRO_APPS);
+    // Initialize micro-apps, which includes registering them and hydrating their active state from localStorage.
+    initializeApps(ALL_MICRO_APPS);
 
     // Listener for focusing a panel
     const focusPanel = (cardId: string) => {
