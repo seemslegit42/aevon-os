@@ -15,12 +15,18 @@ import {
 import { Badge } from '../ui/badge';
 import { RocketIcon } from '../icons';
 import { useDashboardLayout } from '@/hooks/use-dashboard-layout';
+import eventBus from '@/lib/event-bus';
+import type { MicroApp } from '@/stores/micro-app.store';
 
 const MicroAppsCardContent: React.FC = () => {
-  const { launchApp, layoutItems } = useDashboardLayout();
+  const { layoutItems } = useDashboardLayout();
   const apps = useMicroApps();
   
   const openAppInstances = layoutItems.filter(item => item.type === 'app').map(item => item.type === 'app' && item.appId);
+
+  const handleLaunch = (app: MicroApp) => {
+    eventBus.emit('app:launch', app);
+  }
 
   return (
     <TooltipProvider delayDuration={300}>
@@ -39,7 +45,7 @@ const MicroAppsCardContent: React.FC = () => {
                       "relative flex flex-col items-center justify-center h-20 p-2 space-y-1 bg-card/60 hover:bg-primary/10 border-border/50 hover:border-primary/50 transition-all",
                       isActive && "border-secondary/60 ring-1 ring-secondary/50"
                     )}
-                    onClick={() => launchApp(app)}
+                    onClick={() => handleLaunch(app)}
                   >
                     {isActive && (
                       <div className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
