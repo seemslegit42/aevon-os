@@ -17,6 +17,7 @@ import {
   ALL_CARD_CONFIGS,
   ALL_MICRO_APPS,
 } from '@/config/dashboard-cards.config';
+import type { LayoutItem } from '@/types/dashboard';
 
 // === 1. DEFINE TOOLS ===
 
@@ -88,34 +89,34 @@ const serverTools = [categorizeTextTool, extractInvoiceDataTool, logAndAlertAegi
 const toolExecutor = new ToolNode(serverTools);
 
 // -- CLIENT-SIDE TOOLS --
-const availableItemIds = [
+const staticItemIds = [
   ...ALL_CARD_CONFIGS.map((p) => p.id),
   ...ALL_MICRO_APPS.map((a) => a.id),
 ];
 
 const focusItemTool = new DynamicTool({
     name: 'focusItem',
-    description: 'Brings a specific Panel or Micro-App into focus on the user\'s canvas. Use this when the user asks to see or open an item that might already be present.',
+    description: "Brings a specific window into focus on the user's canvas. Use the 'instanceId' from the list of open windows.",
     schema: z.object({
-        itemId: z.string().describe(`The unique ID of the item to focus on. Available IDs are: ${availableItemIds.join(', ')}`),
+        instanceId: z.string().describe("The unique instance ID of the window to focus on."),
     }),
-    func: async () => '' // Dummy function
+    func: async () => '' // Dummy function, handled by client
 });
 
 const addItemTool = new DynamicTool({
     name: 'addItem',
-    description: 'Adds a new Panel or launches a new Micro-App on the user\'s canvas.',
+    description: 'Adds a new Panel or launches a new Micro-App on the user\'s canvas. Use the static `itemId` for this.',
     schema: z.object({
-        itemId: z.string().enum(availableItemIds as [string, ...string[]]).describe('The unique ID of the item to add or launch.'),
+        itemId: z.string().enum(staticItemIds as [string, ...string[]]).describe('The unique static ID of the item to add or launch.'),
     }),
     func: async () => ''
 });
 
 const moveItemTool = new DynamicTool({
     name: 'moveItem',
-    description: 'Moves a specific Panel or Micro-App to a new position (x, y coordinates) on the user\'s canvas.',
+    description: "Moves a specific window to new coordinates. Use the 'instanceId' from the list of open windows.",
     schema: z.object({
-        itemId: z.string().enum(availableItemIds as [string, ...string[]]).describe('The unique ID of the item to move.'),
+        instanceId: z.string().describe("The unique instance ID of the window to move."),
         x: z.number().describe('The new x-coordinate for the top-left corner of the item.'),
         y: z.number().describe('The new y-coordinate for the top-left corner of the item.'),
     }),
@@ -124,12 +125,21 @@ const moveItemTool = new DynamicTool({
 
 const removeItemTool = new DynamicTool({
     name: 'removeItem',
-    description: 'Removes a Panel or closes all instances of a Micro-App from the user\'s canvas.',
+    description: "Closes a single, specific window. Use the 'instanceId' from the list of open windows.",
     schema: z.object({
-        itemId: z.string().enum(availableItemIds as [string, ...string[]]).describe('The unique ID of the item to remove or close.'),
+        instanceId: z.string().describe("The unique instance ID of the window to remove or close."),
     }),
     func: async () => ''
 });
+
+const closeAllInstancesOfAppTool = new DynamicTool({
+    name: 'closeAllInstancesOfApp',
+    description: "Closes ALL open windows of a specific Micro-App. Use this when the user wants to remove an app entirely. Use the static 'appId'.",
+    schema: z.object({
+        appId: z.string().describe("The static ID of the app to close all instances of (e.g., 'app-analytics')."),
+    }),
+    func: async () => ''
+})
 
 const resetLayoutTool = new DynamicTool({
     name: 'resetLayout',
@@ -146,27 +156,59 @@ const allTools = [
   moveItemTool,
   removeItemTool,
   resetLayoutTool,
+  closeAllInstancesOfAppTool,
 ];
 
 const availablePanels = ALL_CARD_CONFIGS.map(p => `- ${p.title} (id: ${p.id})`).join('\n');
 const availableApps = ALL_MICRO_APPS.map(a => `- ${a.title} (id: ${a.id})`).join('\n');
 
-const systemPrompt = `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic.
+const getSystemPrompt = (layout: LayoutItem[]) => {
+  const openWindowsSummary = layout.length > 0
+    ? layout.map(item => {
+        const config = item.type === 'card' 
+          ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId)
+          : ALL_MICRO_APPS.find(a => a.id === item.appId);
+        return `- ${config?.title || 'Unknown Item'} (instance id: ${item.id})`;
+      }).join('\n')
+    : 'No windows are currently open.';
 
-You have access to a suite of tools to manage the user's workspace and analyze text. Your reasoning process is as follows:
+  return `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic.
+
+You have access to a suite of tools to manage the user's workspace and analyze text.
+
+**VERY IMPORTANT RULES FOR UI MANIPULATION:**
+1.  **Check Open Windows First:** Before taking any action, review the 'Open Windows' list below.
+2.  **Use Instance IDs:** For any action on a specific window (focus, move, remove), you MUST use the unique 'instance id' from the list.
+3.  **Handle Ambiguity:** If a user's command is ambiguous (e.g., "close the sales app" when multiple are open), you MUST ask for clarification. Provide the instance IDs from the list so the user can specify which one to act on.
+4.  **Single vs. All:** To close one window, use 'removeItem'. To close all windows of an app, use 'closeAllInstancesOfApp'.
+
+**RULES FOR TEXT ANALYSIS:**
 1.  **If the user provides text for analysis**, your FIRST and ONLY action is to use the 'categorizeText' tool.
 2.  **After receiving the result from 'categorizeText'**, look at the category.
     - If the category is 'Invoice', your next action is to use the 'extractInvoiceData' tool on the *same original text*.
     - If the category is anything else, your job is done. Synthesize a final response for the user telling them the category you found. Do not call any more tools.
 3.  **After extracting invoice data**, your FINAL action is to call the 'logAndAlertAegis' tool to log the event.
-4.  **If the user asks to manage their UI**, use the appropriate UI management tool ('focusItem', 'addItem', etc.).
-5.  **For simple conversation**, just respond directly without calling any tools.
+4.  **For simple conversation**, just respond directly without calling any tools.
+
+---
+**CONTEXT: AVAILABLE ITEMS**
+Here are the items you can add to the workspace. Use the static 'id' with the 'addItem' tool.
 
 Available Panels:
 ${availablePanels}
 
 Available Micro-Apps:
-${availableApps}`;
+${availableApps}
+
+---
+**CONTEXT: CURRENT WORKSPACE**
+Here are the windows currently open on the user's dashboard.
+
+Open Windows:
+${openWindowsSummary}
+---
+`;
+}
 
 const model = new ChatGroq({
   apiKey: process.env.GROQ_API_KEY,
@@ -175,22 +217,25 @@ const model = new ChatGroq({
 
 
 // === 3. DEFINE THE GRAPH ===
+interface AgentState extends MessagesState {
+    layout: LayoutItem[];
+}
 
 /**
  * The primary node for the agent. It receives the current state of the conversation
  * and calls the AI model to decide on the next action.
  */
-const callModel = async (state: MessagesState) => {
-  const { messages } = state;
-  const systemMessage = new HumanMessage(systemPrompt);
-  const response = await model.invoke([systemMessage, ...messages]);
+const callModel = async (state: AgentState) => {
+  const { messages, layout } = state;
+  const systemPrompt = getSystemPrompt(layout);
+  const response = await model.invoke([new HumanMessage(systemPrompt), ...messages]);
   return { messages: [response] };
 };
 
 /**
  * A conditional edge that decides whether to call server-side tools or end the graph turn.
  */
-const shouldInvokeTools = (state: MessagesState): 'tools' | '__end__' => {
+const shouldInvokeTools = (state: AgentState): 'tools' | '__end__' => {
   const { messages } = state;
   const lastMessage = messages[messages.length - 1] as AIMessage;
   
@@ -209,8 +254,17 @@ const shouldInvokeTools = (state: MessagesState): 'tools' | '__end__' => {
 };
 
 // Define the graph structure.
-const workflow = new StateGraph({
-    channels: { messages: { value: (x: BaseMessage[], y: BaseMessage[]) => x.concat(y), default: () => [] } }
+const workflow = new StateGraph<AgentState>({
+    channels: { 
+        messages: { 
+            value: (x: BaseMessage[], y: BaseMessage[]) => x.concat(y), 
+            default: () => [] 
+        },
+        layout: {
+            value: (x, y) => y, // Always take the latest layout provided in the input
+            default: () => []
+        }
+    }
 });
 
 workflow.addNode('agent', callModel);

@@ -9,7 +9,7 @@ export function useBeepChat() {
     onToolCall: async (toolCalls) => {
       // Filter for client-side tools only. Server tools are handled by the API route.
       const clientToolCalls = toolCalls.filter(tc => 
-        ['focusItem', 'addItem', 'moveItem', 'removeItem', 'resetLayout'].includes(tc.toolName)
+        ['focusItem', 'addItem', 'moveItem', 'removeItem', 'resetLayout', 'closeAllInstancesOfApp'].includes(tc.toolName)
       );
         
       if (clientToolCalls.length === 0) {
@@ -26,9 +26,9 @@ export function useBeepChat() {
         try {
           switch (toolName) {
               case 'focusItem': {
-                  const { itemId } = args;
-                  eventBus.emit('panel:focus', itemId);
-                  details = `Focused on item: ${itemId}`;
+                  const { instanceId } = args;
+                  eventBus.emit('panel:focus', instanceId as string);
+                  details = `Focused on item: ${instanceId}`;
                   result = { success: true, message: details };
                   break;
               }
@@ -39,7 +39,7 @@ export function useBeepChat() {
                       eventBus.emit('app:launch', appToAdd);
                       details = `Launched Micro-App "${appToAdd.title}".`;
                   } else {
-                      eventBus.emit('panel:add', itemId);
+                      eventBus.emit('panel:add', itemId as string);
                       const card = ALL_CARD_CONFIGS.find(c => c.id === itemId);
                       details = `Added Panel "${card?.title || itemId}".`;
                   }
@@ -47,22 +47,24 @@ export function useBeepChat() {
                   break;
               }
               case 'moveItem': {
-                  const { itemId, x, y } = args as { itemId: string; x: number; y: number; };
-                  eventBus.emit('item:move', { itemId, x, y });
-                  details = `Moved item "${itemId}" to position (${x}, ${y}).`;
+                  const { instanceId, x, y } = args as { instanceId: string; x: number; y: number; };
+                  eventBus.emit('item:move', { itemId: instanceId, x, y });
+                  details = `Moved item "${instanceId}" to position (${x}, ${y}).`;
                   result = { success: true, message: details };
                   break;
               }
               case 'removeItem': {
-                  const { itemId } = args;
-                  const isApp = ALL_MICRO_APPS.some(app => app.id === itemId);
-                  if (isApp) {
-                      eventBus.emit('app:closeAll', itemId);
-                      details = `Closing all instances of "${itemId}".`;
-                  } else {
-                      eventBus.emit('panel:remove', itemId);
-                      details = `Removed Panel "${itemId}".`;
-                  }
+                  const { instanceId } = args as { instanceId: string };
+                  eventBus.emit('panel:remove', instanceId);
+                  details = `Removed window "${instanceId}".`;
+                  result = { success: true, message: details };
+                  break;
+              }
+              case 'closeAllInstancesOfApp': {
+                  const { appId } = args as { appId: string };
+                  const app = ALL_MICRO_APPS.find(a => a.id === appId);
+                  eventBus.emit('app:closeAll', appId);
+                  details = `Closing all instances of "${app?.title || appId}".`;
                   result = { success: true, message: details };
                   break;
               }
@@ -73,8 +75,6 @@ export function useBeepChat() {
                   break;
               }
               default:
-                  // This case should not be hit if we filter correctly,
-                  // but it's good practice to have a fallback.
                   throw new Error(`Unhandled client-side tool call: ${toolName}`);
           }
         } catch (error: any) {

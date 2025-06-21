@@ -12,10 +12,13 @@ import { useAudioRecorder } from '@/hooks/use-audio-recorder';
 import { useTTS } from '@/hooks/use-tts';
 import { useBeepChat } from '@/hooks/use-beep-chat';
 import BeepToolCallDisplay from './beep-tool-call';
+import { useLayoutStore } from '@/stores/layout.store';
+import { shallow } from 'zustand/shallow';
 
 const BeepCardContent: React.FC = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const layoutItems = useLayoutStore(state => state.layoutItems, shallow);
 
   // Audio nodes for visualization
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -44,7 +47,7 @@ const BeepCardContent: React.FC = () => {
   const { playAudio } = useTTS({ outputNode });
   const { isRecording, isTranscribing, startRecording, stopRecording } = useAudioRecorder({ 
     onTranscriptionComplete: (text) => {
-      append({ role: 'user', content: text });
+      append({ role: 'user', content: text }, { body: { layoutItems }});
     },
     inputNode,
   });
@@ -70,14 +73,14 @@ const BeepCardContent: React.FC = () => {
   useEffect(() => {
     const handleQuerySubmit = (query: string) => {
       if (query) {
-        append({ role: 'user', content: query });
+        append({ role: 'user', content: query }, { body: { layoutItems } });
       }
     };
     eventBus.on('beep:submitQuery', handleQuerySubmit);
     return () => {
       eventBus.off('beep:submitQuery', handleQuerySubmit);
     };
-  }, [append]);
+  }, [append, layoutItems]);
 
   const isProcessing = isLoading || isTranscribing;
 

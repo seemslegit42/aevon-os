@@ -1,10 +1,11 @@
 
 import { LangChainAdapter, StreamingTextResponse } from 'ai';
 import { agentGraph } from '@/lib/ai/agent';
-import { AIMessage, HumanMessage } from '@langchain/core/messages';
+import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages';
 import { type NextRequest } from 'next/server';
 import { rateLimiter } from '@/lib/rate-limiter';
 import { type Message } from 'ai';
+import type { LayoutItem } from '@/types/dashboard';
 
 
 export const maxDuration = 60;
@@ -14,12 +15,19 @@ export const maxDuration = 60;
  * @param message The Vercel AI SDK message.
  * @returns The LangChain message.
  */
-const toLangChainMessage = (message: Message) => {
+const toLangChainMessage = (message: Message): BaseMessage => {
     if (message.role === 'user') {
         return new HumanMessage(message.content);
     } else if (message.role === 'assistant') {
         // Note: We are not including tool calls here because the agent will regenerate them.
-        return new AIMessage(message.content);
+        return new AIMessage({
+            content: message.content,
+            tool_calls: message.tool_calls?.map(tc => ({
+                id: tc.toolCallId,
+                name: tc.toolName,
+                args: tc.args,
+            }))
+        });
     }
     // We will ignore tool messages for now as the agent will re-execute them.
     // In a more stateful implementation, you might pass tool results here.
@@ -31,11 +39,12 @@ export async function POST(req: NextRequest) {
     const rateLimitResponse = await rateLimiter(req);
     if (rateLimitResponse) return rateLimitResponse;
 
-    const { messages }: { messages: Message[] } = await req.json();
+    const { messages, layoutItems }: { messages: Message[], layoutItems?: LayoutItem[] } = await req.json();
     
-    // Invoke the LangGraph agent with the current chat history.
+    // Invoke the LangGraph agent with the current chat history and layout context.
     const stream = await agentGraph.stream({
         messages: messages.map(toLangChainMessage),
+        layout: layoutItems ?? [],
     });
 
     // The LangChainAdapter gracefully handles converting the LangGraph stream,
@@ -44,4 +53,3 @@ export async function POST(req: NextRequest) {
 
     return new StreamingTextResponse(aiStream);
 }
-
