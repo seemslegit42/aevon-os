@@ -4,10 +4,6 @@ import { type NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'edge';
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
-
 interface AnalyzeSecurityAlertsOutput {
   summary: string;
   potentialThreats: string[];
@@ -15,6 +11,10 @@ interface AnalyzeSecurityAlertsOutput {
 }
 
 export async function POST(req: NextRequest) {
+  const groq = new Groq({
+    apiKey: process.env.GROQ_API_KEY,
+  });
+
   try {
     const { alertDetails } = await req.json();
 
