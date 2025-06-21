@@ -84,5 +84,26 @@ export function useDynamicData() {
     return () => clearInterval(intervalId);
   }, []);
 
+  // Listen for real-time orchestration events
+  useEffect(() => {
+    const handleOrchestrationLog = (logData: { task: string; status: 'success' | 'failure'; details: string; }) => {
+      setLiveFeedData(prevItems => {
+        const newItem = {
+          ...logData,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        };
+        const updatedItems = [newItem, ...prevItems];
+        if (updatedItems.length > 10) updatedItems.pop();
+        return updatedItems;
+      });
+    };
+
+    eventBus.on('orchestration:log', handleOrchestrationLog);
+
+    return () => {
+      eventBus.off('orchestration:log', handleOrchestrationLog);
+    };
+  }, []); // Run once on mount
+
   return { liveFeedData, agentPresenceData };
 }

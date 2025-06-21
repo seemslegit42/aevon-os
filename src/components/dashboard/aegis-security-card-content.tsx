@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type { SecurityAlertOutput } from '@/lib/ai-schemas';
 import { cn } from '@/lib/utils';
+import eventBus from '@/lib/event-bus';
 
 const AegisSecurityCardContent: React.FC = () => {
   const [alertDetails, setAlertDetails] = useState('');
@@ -39,6 +40,12 @@ const AegisSecurityCardContent: React.FC = () => {
       
       const result: SecurityAlertOutput = await response.json();
       setAnalysisResult(result);
+      eventBus.emit('orchestration:log', {
+        task: 'Aegis Security Scan',
+        status: 'success',
+        details: `Severity assessed as ${result.severity}. ${result.potentialThreats.length} threats found.`
+      });
+
     } catch (error) {
       console.error("Error analyzing security alerts:", error);
       let errorMessage = "Failed to analyze security alerts.";
@@ -47,6 +54,11 @@ const AegisSecurityCardContent: React.FC = () => {
       }
       setAnalysisResult(null);
       toast({ variant: "destructive", title: "Analysis Error", description: errorMessage });
+      eventBus.emit('orchestration:log', {
+        task: 'Aegis Security Scan',
+        status: 'failure',
+        details: 'AI analysis failed to complete.'
+      });
     } finally {
       setIsLoading(false);
     }
