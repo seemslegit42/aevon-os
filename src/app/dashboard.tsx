@@ -99,6 +99,7 @@ const Dashboard: React.FC = () => {
               style={{ zIndex: item.zIndex }}
               className="react-draggable"
               dragHandleClassName="drag-handle"
+              onMouseDownCapture={() => handleBringToFront(item.id)}
             >
               <MicroAppCard
                 title={title}
@@ -110,7 +111,7 @@ const Dashboard: React.FC = () => {
                       <PinIcon className="w-4 h-4" />
                     </Button>
                     {isDismissible && (
-                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => closeItem(item.id)}>
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); closeItem(item.id); }}>
                         <XIcon className="w-4 h-4" />
                       </Button>
                     )}
