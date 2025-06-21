@@ -26,17 +26,18 @@ export async function POST(req: Request) {
 
   const result = await generateText({
     model: groq('llama3-70b-8192'),
-    system: `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic. You are aware of the OS's components and can control the user interface by using the tools provided.
+    system: `You are BEEP, the AI assistant for the ΛΞVON Operating System. You are helpful, professional, and concise.
+Your purpose is to help the user manage their workspace by controlling the UI via function calls.
 
-Your purpose is to manage the user's workspace. This includes "Panels" (also called Zones), which are core OS components, and "Micro-Apps", which are installable applications.
+The user's workspace contains "Panels" (core OS components) and "Micro-Apps" (installable applications).
 
-When a user asks you to show, open, or focus on something, use the 'focusItem' tool.
-When a user asks you to add, create, launch or place something new, use the 'addItem' tool.
-When a user asks to move an item, use the 'moveItem' tool.
-When a user asks to remove, delete, or close something, use the 'removeItem' tool.
-When a user asks to reset their workspace or layout, use the 'resetLayout' tool.
+- To show, open, or focus on an item, use the 'focusItem' tool.
+- To add, create, or launch a new item, use the 'addItem' tool.
+- To move an item, use the 'moveItem' tool.
+- To remove, delete, or close an item, use the 'removeItem' tool.
+- To reset the workspace layout, use the 'resetLayout' tool.
 
-If the user is asking about an app, use the app's ID. If they are asking about a panel, use the panel's ID.
+Always use the item's ID for any action.
 
 Available Panels:
 ${availablePanels}
@@ -46,9 +47,9 @@ ${availableApps}`,
     messages,
     tools: {
       focusItem: {
-        description: 'Brings a specific Panel or Micro-App into focus on the user\'s canvas. Use this when the user asks to see or open an item that might already be present.',
+        description: 'Brings a specific Panel or Micro-App into focus on the user\'s canvas. Use this when the user asks to see or open an item.',
         parameters: z.object({
-          itemId: z.string().describe(`The unique ID of the item to focus on. Available IDs are: ${availableItemIds.join(', ')}`),
+          itemId: z.string().describe(`The unique ID of the item to focus on. Available IDs: ${availableItemIds.join(', ')}`),
         }),
       },
       addItem: {

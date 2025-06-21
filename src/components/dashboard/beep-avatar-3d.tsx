@@ -13,10 +13,9 @@ import { vs as sphereVS } from '@/lib/shaders/beep-3d-sphere-vertex.glsl';
 interface BeepAvatar3DProps {
   inputNode: AudioNode | null;
   outputNode: AudioNode | null;
-  isThinking: boolean;
 }
 
-const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode, isThinking }) => {
+const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
 
@@ -104,7 +103,6 @@ const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode, isTh
 
     // Animation loop
     let prevTime = performance.now();
-    const rotation = new THREE.Vector3(0, 0, 0);
 
     const animate = () => {
       requestAnimationFrame(animate);

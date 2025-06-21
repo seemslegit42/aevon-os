@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import eventBus from '@/lib/event-bus';
 import { useLayoutStore } from '@/stores/layout.store';
+import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { cn } from '@/lib/utils';
 
 interface NavItemConfig {
@@ -53,16 +54,13 @@ const mainNavItems: NavItemConfig[] = [
   { id: 'armoryMarketplace', label: 'Λrmory', icon: ArmoryIcon },
 ];
 
-interface TopBarProps {
-  onSettingsClick?: () => void;
-}
-
-const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
+const TopBar: React.FC = () => {
   const [currentTime, setCurrentTime] = useState("--:--");
   const [isMounted, setIsMounted] = useState(false);
   const [commandValue, setCommandValue] = useState('');
   const focusedItemId = useLayoutStore((state) => state.focusedItemId);
   const [isNotifying, setIsNotifying] = useState(false);
+  const { toggle: toggleCommandPalette } = useCommandPaletteStore();
 
 
   useEffect(() => {
@@ -185,7 +183,7 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80" onClick={onSettingsClick}>
+              <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80" onClick={toggleCommandPalette}>
                 <GearIcon className="h-5 w-5 aevos-icon-styling-override" />
                 <span className="sr-only">Settings</span>
               </Button>
