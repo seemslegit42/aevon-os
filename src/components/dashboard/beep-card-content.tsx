@@ -7,17 +7,42 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { UserIcon, MicIcon } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import eventBus from '@/lib/event-bus';
-import type { Message } from 'ai';
 import { useToast } from '@/hooks/use-toast';
-import BeepAvatar from './beep-avatar';
+import BeepAvatar3D from './beep-avatar-3d';
 
 const BeepCardContent: React.FC = () => {
   const { toast } = useToast();
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
+
+  // Audio nodes for visualization
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const inputNodeRef = useRef<GainNode | null>(null);
+  const outputNodeRef = useRef<GainNode | null>(null);
+  const micSourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const ttsSourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
+
+  // Initialize audio context and nodes
+  useEffect(() => {
+    if (!audioContextRef.current) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) {
+            const context = new AudioContext();
+            audioContextRef.current = context;
+            inputNodeRef.current = context.createGain();
+            outputNodeRef.current = context.createGain();
+            // Connect output node to destination to hear TTS
+            outputNodeRef.current.connect(context.destination);
+        } else {
+             toast({ variant: "destructive", title: "Audio Error", description: "Browser does not support Web Audio API." });
+        }
+    }
+  }, [toast]);
+
 
   const { messages, append, isLoading, setMessages } = useChat({
     api: '/api/ai/chat',
@@ -40,10 +65,11 @@ const BeepCardContent: React.FC = () => {
   const lastMessage = messages[messages.length - 1];
 
   const playAudio = async (text: string) => {
-    // Stop any currently playing audio
     if (audioPlayerRef.current) {
       audioPlayerRef.current.pause();
     }
+    if (!audioContextRef.current || !outputNodeRef.current) return;
+
     try {
       const response = await fetch('/api/ai/tts', {
         method: 'POST',
@@ -54,17 +80,17 @@ const BeepCardContent: React.FC = () => {
       if (!response.ok) {
         throw new Error(`TTS request failed with status ${response.status}`);
       }
-
-      const audioBlob = await response.blob();
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
-      audioPlayerRef.current = audio;
-      audio.play();
       
-      audio.onended = () => {
-        URL.revokeObjectURL(audioUrl);
-        audioPlayerRef.current = null;
-      };
+      const audioData = await response.arrayBuffer();
+      const audioBuffer = await audioContextRef.current.decodeAudioData(audioData);
+      
+      const source = audioContextRef.current.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(outputNodeRef.current);
+      source.start(0);
+
+      ttsSourceNodeRef.current = source;
+      
     } catch (error) {
       console.error("Error playing TTS audio:", error);
       toast({ variant: "destructive", title: "Audio Error", description: "Failed to play AI response." });
@@ -99,8 +125,20 @@ const BeepCardContent: React.FC = () => {
   }, [append]);
 
   const startRecording = async () => {
+    if (!audioContextRef.current || !inputNodeRef.current) {
+        toast({ variant: "destructive", title: "Audio Error", description: "Audio context not initialized." });
+        return;
+    }
+
     try {
+      await audioContextRef.current.resume();
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      
+      // Connect mic stream to input node for visualization
+      const source = audioContextRef.current.createMediaStreamSource(stream);
+      source.connect(inputNodeRef.current);
+      micSourceNodeRef.current = source;
+
       mediaRecorderRef.current = new MediaRecorder(stream);
       audioChunksRef.current = [];
 
@@ -111,6 +149,8 @@ const BeepCardContent: React.FC = () => {
       mediaRecorderRef.current.onstop = async () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         stream.getTracks().forEach(track => track.stop());
+        micSourceNodeRef.current?.disconnect();
+        micSourceNodeRef.current = null;
         handleTranscription(audioBlob);
       };
 
@@ -165,8 +205,12 @@ const BeepCardContent: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full p-1">
-      <div className="relative w-full h-32 md:h-40 mb-2 flex-shrink-0">
-        <BeepAvatar isThinking={isProcessing || isRecording} />
+      <div className="relative w-full h-40 md:h-56 mb-2 flex-shrink-0">
+        <BeepAvatar3D 
+            inputNode={inputNodeRef.current} 
+            outputNode={outputNodeRef.current}
+            isThinking={isProcessing || isRecording} 
+        />
       </div>
 
       <div className="flex-grow mb-2 min-h-0">
