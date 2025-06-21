@@ -13,7 +13,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Badge } from '../ui/badge';
-import { RocketIcon, TargetIcon, XIcon } from '../icons';
+import { RocketIcon, TargetIcon, XIcon, PinIcon, Trash2Icon } from '../icons';
 import eventBus from '@/lib/event-bus';
 import type { MicroApp } from '@/stores/micro-app.store';
 import {
@@ -117,6 +117,10 @@ const MicroAppsCardContent: React.FC = () => {
               <TargetIcon />
             <span>Focus Latest</span>
           </DropdownMenuItem>
+           <DropdownMenuItem disabled>
+            <PinIcon />
+            <span>Pin to Top</span>
+          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="text-destructive focus:text-destructive focus:bg-destructive/10"
@@ -125,6 +129,10 @@ const MicroAppsCardContent: React.FC = () => {
           >
             <XIcon />
             <span>Close All Instances</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" disabled>
+            <Trash2Icon />
+            <span>Remove from Launcher</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
