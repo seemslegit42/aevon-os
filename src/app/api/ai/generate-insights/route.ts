@@ -4,6 +4,8 @@ import { generateObject } from 'ai';
 import { z } from 'zod';
 import { AiInsightsSchema } from '@/lib/ai-schemas';
 import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
+import { type NextRequest } from 'next/server';
+import { rateLimiter } from '@/lib/rate-limiter';
 
 export const maxDuration = 60;
 
@@ -12,7 +14,10 @@ const groq = createOpenAI({
   apiKey: process.env.GROQ_API_KEY,
 });
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  const rateLimitResponse = await rateLimiter(req);
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     const { layoutItems } = await req.json();
 
