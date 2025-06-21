@@ -10,7 +10,8 @@ import {
     CheckCircleIcon,
     AlertCircleIcon,
     FileTextIcon,
-    InfoIcon
+    InfoIcon,
+    LoaderIcon
 } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -65,24 +66,32 @@ interface WorkflowNodeProps {
 
 const WorkflowNode: React.FC<WorkflowNodeProps> = ({ node, onInspect }) => {
     const canInspect = node.status === 'completed' || node.status === 'failed';
+    const NodeIcon = node.icon;
     return (
         <div className="flex items-center w-full group">
             <div className={cn(
-                "flex-grow flex items-center gap-2 bg-card border border-border/50 text-foreground text-xs rounded-lg px-3 py-1.5 shadow-sm transition-all duration-300 w-full justify-center", 
-                node.status === 'running' && 'animate-pulse border-accent/50 bg-accent/10',
-                node.status === 'completed' && 'border-chart-4/50 bg-chart-4/10',
-                node.status === 'failed' && 'border-destructive/50 bg-destructive/10',
-                node.isCondition && "bg-secondary/20 border-secondary/50 text-secondary-foreground"
+                "flex-grow flex items-center gap-3 border text-foreground text-sm rounded-lg px-3 py-2 shadow-sm transition-all duration-300 w-full",
+                {
+                  'bg-card border-border/50': node.status === 'idle',
+                  'border-accent bg-accent/10 animate-pulse': node.status === 'running',
+                  'border-chart-4 bg-chart-4/10': node.status === 'completed',
+                  'border-destructive bg-destructive/10': node.status === 'failed',
+                  'bg-secondary/10 border-secondary/50 font-semibold': node.isCondition
+                }
             )}>
-                {node.status === 'completed' ? <CheckCircleIcon className="w-3 h-3 text-chart-4" />
-                : node.status === 'failed' ? <AlertCircleIcon className="w-3 h-3 text-destructive" />
-                : <node.icon className="w-3 h-3 text-primary" />}
+                {node.status === 'running' ? <LoaderIcon className="w-4 h-4 text-accent" /> : <NodeIcon className="w-4 h-4 text-primary" />}
                 <span className="font-medium">{node.label}</span>
+                <div className="flex-grow" />
+                {node.status === 'completed' && <CheckCircleIcon className="w-4 h-4 text-chart-4" />}
+                {node.status === 'failed' && <AlertCircleIcon className="w-4 h-4 text-destructive" />}
             </div>
              <Button 
                 variant="ghost" 
                 size="icon" 
-                className={cn("ml-2 h-6 w-6 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity", canInspect ? "opacity-60" : "invisible")} 
+                className={cn(
+                    "ml-2 h-8 w-8 flex-shrink-0 transition-opacity", 
+                    canInspect ? "opacity-40 group-hover:opacity-100" : "opacity-0 invisible"
+                )} 
                 onClick={() => canInspect && onInspect(node)}
                 disabled={!canInspect}
                 >
@@ -93,8 +102,8 @@ const WorkflowNode: React.FC<WorkflowNodeProps> = ({ node, onInspect }) => {
     );
 };
 
-const WorkflowConnector: React.FC<{ vertical?: boolean; className?: string }> = ({ vertical, className }) => (
-  <div className={cn("bg-border/70 transition-colors", vertical ? "w-px h-4" : "h-px flex-1", className)} />
+const WorkflowConnector: React.FC = () => (
+  <div className="w-px h-6 bg-border/30 mx-auto" />
 );
 
 const LoomStudioCardContent: React.FC = () => {
@@ -178,7 +187,7 @@ const LoomStudioCardContent: React.FC = () => {
 
     const runSimulation = useCallback(async () => {
         setIsSimulating(true);
-        setNodes(initialWorkflow);
+        setNodes(initialWorkflow.map(n => ({...n, status: 'idle', output: null, error: null})));
         let extractedData: InvoiceData | null = null;
 
         try {
@@ -205,7 +214,7 @@ const LoomStudioCardContent: React.FC = () => {
         } finally {
             setIsSimulating(false);
         }
-    }, [toast, runTriggerStep, runCategorizationStep, runExtractionStep, runLoggingStep, updateNodeState]);
+    }, [toast, runTriggerStep, runCategorizationStep, runExtractionStep, runLoggingStep, updateNodeState, inputText]);
 
     const findNode = (id: string) => nodes.find(n => n.id === id)!;
 
@@ -227,22 +236,22 @@ const LoomStudioCardContent: React.FC = () => {
                 />
             </div>
             
-            <div className="flex-grow w-full border border-dashed border-border/30 rounded-lg bg-background/20 flex flex-col items-center p-4 space-y-2 min-h-[250px]">
+            <div className="flex-grow w-full border border-border/20 rounded-lg bg-background/20 flex flex-col p-4 space-y-2 min-h-[300px]">
                 <div className="flex justify-between items-center w-full mb-3">
-                    <p className="text-xs text-muted-foreground font-semibold">Live Agentic Workflow</p>
-                    <Button size="sm" variant="outline" onClick={runSimulation} disabled={isSimulating || !inputText}>
+                    <p className="text-sm text-muted-foreground font-semibold">Workflow Simulation</p>
+                    <Button size="sm" className="btn-gradient-primary-secondary" onClick={runSimulation} disabled={isSimulating || !inputText}>
                         <PlayIcon className="w-4 h-4 mr-2" />
                         {isSimulating ? 'Simulating...' : 'Run Simulation'}
                     </Button>
                 </div>
                 
-                <div className="w-full max-w-xs mx-auto flex flex-col items-center space-y-2">
+                <div className="w-full max-w-md mx-auto flex flex-col items-center">
                     <WorkflowNode node={findNode('trigger')} onInspect={handleInspectNode} />
-                    <WorkflowConnector vertical />
+                    <WorkflowConnector />
                     <WorkflowNode node={findNode('condition')} onInspect={handleInspectNode} />
-                    <WorkflowConnector vertical />
+                    <WorkflowConnector />
                     <WorkflowNode node={findNode('action-extract')} onInspect={handleInspectNode} />
-                    <WorkflowConnector vertical />
+                    <WorkflowConnector />
                     <WorkflowNode node={findNode('action-log')} onInspect={handleInspectNode} />
                 </div>
             </div>
@@ -268,13 +277,13 @@ const LoomStudioCardContent: React.FC = () => {
                         <h4 className="font-semibold text-muted-foreground">Result Data</h4>
                         {detailedNode.output && (
                             <ScrollArea className="max-h-64">
-                                <pre className="text-xs bg-muted/50 text-foreground p-3 rounded-md overflow-x-auto">
+                                <pre className="text-xs bg-black/20 text-foreground p-3 rounded-md overflow-x-auto font-mono">
                                     <code>{JSON.stringify(detailedNode.output, null, 2)}</code>
                                 </pre>
                             </ScrollArea>
                         )}
                         {detailedNode.error && (
-                            <pre className="text-xs bg-destructive/10 text-destructive p-3 rounded-md overflow-x-auto">
+                            <pre className="text-xs bg-destructive/10 text-destructive-foreground p-3 rounded-md overflow-x-auto font-mono">
                                 <code>{detailedNode.error}</code>
                             </pre>
                         )}
