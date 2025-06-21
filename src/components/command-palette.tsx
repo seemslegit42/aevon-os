@@ -38,7 +38,8 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredCards = allPossibleCards.filter(card =>
-    card.title.toLowerCase().includes(searchTerm.toLowerCase())
+    card.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    card.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   useEffect(() => {
@@ -70,7 +71,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="Search zones..."
+              placeholder="Search zones by name or description..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 bg-input border-input"
@@ -96,33 +97,40 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
               return (
                 <div
                   key={card.id}
-                  className="flex items-center justify-between p-3 rounded-md bg-card/70 dark:bg-card/80 hover:bg-primary/10 transition-colors"
+                  className="flex items-start justify-between p-3 rounded-md bg-card/70 dark:bg-card/80 hover:bg-primary/10 transition-colors"
                 >
-                  <div className="flex items-center space-x-3">
-                    <Icon className="w-5 h-5 text-primary" />
-                    <span className="text-sm font-medium text-foreground">{card.title}</span>
+                  <div className="flex items-start space-x-3 flex-1 mr-4">
+                    <Icon className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-foreground">{card.title}</span>
+                      {card.description && (
+                        <p className="text-xs text-muted-foreground mt-1">{card.description}</p>
+                      )}
+                    </div>
                   </div>
-                  {isActive ? (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onRemoveCard(card.id)}
-                      className="text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive"
-                    >
-                      <Trash2Icon className="w-4 h-4 mr-2" />
-                      Remove
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onAddCard(card.id)}
-                      className="text-primary border-primary/50 hover:bg-primary/10"
-                    >
-                      <PlusCircleIcon className="w-4 h-4 mr-2" />
-                      Add
-                    </Button>
-                  )}
+                  <div className="flex-shrink-0">
+                    {isActive ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onRemoveCard(card.id)}
+                        className="text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive w-[90px]"
+                      >
+                        <Trash2Icon className="w-4 h-4 mr-2" />
+                        Remove
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onAddCard(card.id)}
+                        className="text-primary border-primary/50 hover:bg-primary/10 w-[90px]"
+                      >
+                        <PlusCircleIcon className="w-4 h-4 mr-2" />
+                        Add
+                      </Button>
+                    )}
+                  </div>
                 </div>
               );
             })}
