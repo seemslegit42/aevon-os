@@ -20,7 +20,7 @@ const Dashboard: React.FC = () => {
   } = useDashboardLayout();
 
   const { isOpen: isCommandPaletteOpen, setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
-  const { setFocusedCardId } = useDashboardStore();
+  const { focusedCardId, setFocusedCardId } = useDashboardStore();
   
   const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
@@ -50,6 +50,7 @@ const Dashboard: React.FC = () => {
           <DashboardWindow
             key={item.id}
             item={item}
+            isFocused={item.id === focusedCardId}
             onLayoutChange={updateItemLayout}
             onFocus={handleBringToFront}
             onClose={closeItem}

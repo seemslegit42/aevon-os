@@ -141,6 +141,13 @@
   transition: box-shadow 0.2s ease-out, border-color 0.2s ease-out;
 }
 
+.react-draggable.is-focused .glassmorphism-panel {
+  border-color: hsl(var(--ring) / 0.4);
+  box-shadow: 0 8px 32px hsl(var(--primary) / 0.25), 
+              0 0 40px hsl(var(--accent) / 0.15),
+              0 4px 12px hsl(275 45% 8% / 0.2);
+}
+
 
 /* AEVOS TopBar Glass Effect */
 .topbar-aevos-glass-override {

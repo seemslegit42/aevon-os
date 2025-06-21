@@ -9,15 +9,17 @@ import { PinIcon, XIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { ALL_CARD_CONFIGS, ALL_MICRO_APPS, type LayoutItem } from '@/config/dashboard-cards.config';
 import type { Position, Size } from 'react-rnd';
+import { cn } from '@/lib/utils';
 
 interface DashboardWindowProps {
   item: LayoutItem;
+  isFocused: boolean;
   onLayoutChange: (id: string, pos: Position, size?: Size) => void;
   onFocus: (id: string) => void;
   onClose: (id: string) => void;
 }
 
-const DashboardWindow: React.FC<DashboardWindowProps> = ({ item, onLayoutChange, onFocus, onClose }) => {
+const DashboardWindow: React.FC<DashboardWindowProps> = ({ item, isFocused, onLayoutChange, onFocus, onClose }) => {
     let title, Icon, Content, contentProps, minWidth, minHeight, cardClassName, isDismissible;
 
     if (item.type === 'card') {
@@ -75,7 +77,7 @@ const DashboardWindow: React.FC<DashboardWindowProps> = ({ item, onLayoutChange,
             minWidth={minWidth}
             minHeight={minHeight}
             style={{ zIndex: item.zIndex }}
-            className="react-draggable"
+            className={cn("react-draggable", isFocused && "is-focused")}
             dragHandleClassName="drag-handle"
             onMouseDownCapture={() => onFocus(item.id)}
         >
