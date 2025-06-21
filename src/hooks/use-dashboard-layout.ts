@@ -4,6 +4,9 @@ import type { Position, Size } from 'react-rnd';
 import type { CardConfig, CardLayoutInfo } from '@/config/dashboard-cards.config';
 import { useToast } from "@/hooks/use-toast";
 import { useDashboardStore } from '@/stores/dashboard.store';
+import { useMicroAppStore } from '@/stores/micro-app.store';
+import eventBus from '@/lib/event-bus';
+import { ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
 
 const LAYOUT_STORAGE_KEY = 'dashboardCardLayouts_v4_minimal';
 const ACTIVE_IDS_STORAGE_KEY = 'dashboardActiveCardIds_v4_minimal';
@@ -20,8 +23,9 @@ export function useDashboardLayout(
   const [cardLayouts, setCardLayouts] = useState<CardLayoutInfo[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
   const { focusedCardId, setFocusedCardId } = useDashboardStore();
+  const registerApps = useMicroAppStore(state => state.registerApps);
 
-  // Effect for initializing state from localStorage, runs only once on mount.
+  // Effect for initializing state from localStorage and setting up listeners
   useEffect(() => {
     try {
       const savedLayoutsJSON = localStorage.getItem(LAYOUT_STORAGE_KEY);
@@ -48,7 +52,6 @@ export function useDashboardLayout(
         const defaultConfig = allCardConfigs.find(c => c.id === id)!;
         const savedConfig = layoutsMap.get(id);
         
-        // Build a safe layout, falling back to the default for any invalid or missing properties
         return {
           id: id,
           x: isValidNumber(savedConfig?.x) ? savedConfig.x : defaultConfig.defaultLayout.x,
@@ -62,19 +65,47 @@ export function useDashboardLayout(
 
     } catch (error) {
       console.error("Error initializing dashboard from localStorage, resetting to default:", error);
-      // If any part of loading/parsing fails, reset to a clean default state.
       setActiveCardIds(defaultActiveCardIds);
       setCardLayouts(
         allCardConfigs
           .filter(config => defaultActiveCardIds.includes(config.id))
           .map(config => ({ id: config.id, ...config.defaultLayout }))
       );
-      // Clear potentially corrupted storage to prevent future errors
       localStorage.removeItem(LAYOUT_STORAGE_KEY);
       localStorage.removeItem(ACTIVE_IDS_STORAGE_KEY);
     } finally {
       setIsInitialized(true);
     }
+
+    // --- SETUP LOGIC MOVED FROM DASHBOARD COMPONENT ---
+    // Register all micro-apps on initial load
+    registerApps(ALL_MICRO_APPS);
+
+    // Listener for focusing a panel
+    const focusPanel = (cardId: string) => {
+      // Defer state updates slightly to avoid React update-during-render errors
+      setTimeout(() => handleAddCard(cardId), 0);
+    };
+    eventBus.on('panel:focus', focusPanel);
+
+    // Listener for submitting a command from the TopBar
+    const handleCommand = (query: string) => {
+       setTimeout(() => {
+        if (!activeCardIds.includes('beep')) {
+          handleAddCard('beep');
+        } else {
+          handleBringToFront('beep');
+        }
+        setTimeout(() => eventBus.emit('beep:submitQuery', query), 100);
+      }, 0);
+    };
+    eventBus.on('command:submit', handleCommand);
+
+    // Cleanup listeners on unmount
+    return () => {
+      eventBus.off('panel:focus', focusPanel);
+      eventBus.off('command:submit', handleCommand);
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run only ONCE on mount.
 
@@ -102,10 +133,11 @@ export function useDashboardLayout(
 
   const handleBringToFront = useCallback((id: string) => {
     setFocusedCardId(id);
+    const maxZ = getMaxZIndex();
     setCardLayouts(prevLayouts =>
       prevLayouts.map(layout =>
         layout.id === id
-          ? { ...layout, zIndex: getMaxZIndex() + 1 }
+          ? { ...layout, zIndex: maxZ + 1 }
           : layout
       )
     );
@@ -143,24 +175,22 @@ export function useDashboardLayout(
     if (!activeCardIds.includes(cardId)) {
       setActiveCardIds(prev => [...prev, cardId]);
       setCardLayouts(prev => {
-        // If layout doesn't exist, add it. Otherwise, update it.
+        const maxZ = Math.max(0, ...prev.map(l => l.zIndex || 0));
         const layoutExists = prev.some(l => l.id === cardId);
         if (layoutExists) {
-            return prev.map(l => l.id === cardId ? { ...l, zIndex: getMaxZIndex() + 1 } : l);
+            return prev.map(l => l.id === cardId ? { ...l, zIndex: maxZ + 1 } : l);
         }
-        return [...prev, { ...cardConfig.defaultLayout, id: cardId, zIndex: getMaxZIndex() + 1 }];
+        return [...prev, { ...cardConfig.defaultLayout, id: cardId, zIndex: maxZ + 1 }];
       });
       toast({ title: "Zone Added", description: `The zone "${cardConfig.title}" has been added.` });
     }
     handleBringToFront(cardId);
-  }, [activeCardIds, allCardConfigs, getMaxZIndex, handleBringToFront, toast]);
+  }, [activeCardIds, allCardConfigs, handleBringToFront, toast]);
 
   const handleResetLayout = useCallback(() => {
-    // Clear storage first for a clean reset
     localStorage.removeItem(LAYOUT_STORAGE_KEY);
     localStorage.removeItem(ACTIVE_IDS_STORAGE_KEY);
     
-    // Reset state to defaults
     setFocusedCardId(null);
     setActiveCardIds([...defaultActiveCardIds]);
     setCardLayouts(
