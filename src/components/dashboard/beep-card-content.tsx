@@ -47,17 +47,46 @@ const BeepCardContent: React.FC = () => {
   const { messages, append, isLoading, setMessages } = useChat({
     api: '/api/ai/chat',
     experimental_onToolCall: async (toolCalls, appendToolCallMessage) => {
+      let hasHandledTool = false;
       for (const toolCall of toolCalls) {
-        if (toolCall.toolName === 'focusPanel') {
-          const { cardId } = toolCall.args;
-          eventBus.emit('panel:focus', cardId);
-          appendToolCallMessage({
-            toolCallId: toolCall.toolCallId,
-            toolName: 'focusPanel',
-            result: `Panel "${cardId}" has been brought into focus.`,
-          });
+        let resultMessage = `Tool ${toolCall.toolName} called successfully.`;
+        hasHandledTool = true;
+
+        switch (toolCall.toolName) {
+            case 'focusPanel': {
+                const { cardId } = toolCall.args;
+                eventBus.emit('panel:focus', cardId);
+                resultMessage = `Panel "${cardId}" has been brought into focus.`;
+                break;
+            }
+            case 'addPanel': {
+                const { cardId } = toolCall.args;
+                eventBus.emit('panel:add', cardId);
+                resultMessage = `Panel "${cardId}" has been added to the workspace.`;
+                break;
+            }
+            case 'removePanel': {
+                const { cardId } = toolCall.args;
+                eventBus.emit('panel:remove', cardId);
+                resultMessage = `Panel "${cardId}" has been removed from the workspace.`;
+                break;
+            }
+            case 'resetLayout': {
+                eventBus.emit('layout:reset');
+                resultMessage = `The workspace layout has been reset to default.`;
+                break;
+            }
+            default:
+                resultMessage = `Tool ${toolCall.toolName} not implemented.`;
         }
+
+        appendToolCallMessage({
+            toolCallId: toolCall.toolCallId,
+            toolName: toolCall.toolName,
+            result: resultMessage,
+        });
       }
+      return hasHandledTool;
     },
   });
 

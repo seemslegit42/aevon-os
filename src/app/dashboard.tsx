@@ -20,9 +20,6 @@ const Dashboard: React.FC = () => {
     updateItemLayout,
     handleBringToFront,
     closeItem,
-    addCard,
-    launchApp,
-    handleResetLayout,
   } = useDashboardLayout();
 
   const { isOpen: isCommandPaletteOpen, setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
@@ -132,10 +129,6 @@ const Dashboard: React.FC = () => {
         onOpenChange={setCommandPaletteOpen}
         allPossibleCards={ALL_CARD_CONFIGS}
         layoutItems={layoutItems}
-        onAddCard={addCard}
-        onLaunchApp={launchApp}
-        onCloseItem={closeItem}
-        onResetLayout={handleResetLayout}
       />
     </div>
   );

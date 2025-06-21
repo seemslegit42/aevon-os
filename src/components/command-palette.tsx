@@ -17,32 +17,38 @@ import type { CardConfig, LayoutItem } from '@/config/dashboard-cards.config';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { useMicroApps } from '@/hooks/use-micro-apps';
 import type { MicroApp } from '@/stores/micro-app.store';
+import eventBus from '@/lib/event-bus';
 
 interface CommandPaletteProps {
+  // All event handlers are now managed via the event bus, so no props are needed for actions
   allPossibleCards: CardConfig[];
   layoutItems: LayoutItem[];
-  onAddCard: (cardId: string) => void;
-  onLaunchApp: (app: MicroApp) => void;
-  onCloseItem: (itemId: string) => void;
-  onResetLayout: () => void;
 }
 
 const CommandPalette: React.FC<CommandPaletteProps> = ({
   allPossibleCards,
   layoutItems,
-  onAddCard,
-  onLaunchApp,
-  onCloseItem,
-  onResetLayout,
 }) => {
   const { isOpen, setOpen } = useCommandPaletteStore();
   const [searchTerm, setSearchTerm] = useState('');
   const allMicroApps = useMicroApps();
 
   const handleLaunchApp = (app: MicroApp) => {
-    onLaunchApp(app);
+    eventBus.emit('app:launch', app);
     setOpen(false); // Close palette after launching
   };
+
+  const handleAddCard = (cardId: string) => {
+      eventBus.emit('panel:add', cardId);
+  }
+
+  const handleCloseItem = (itemId: string) => {
+      eventBus.emit('panel:remove', itemId);
+  }
+
+  const handleResetLayout = () => {
+      eventBus.emit('layout:reset');
+  }
   
   const activeCardIds = layoutItems.filter(i => i.type === 'card').map(i => i.id);
 
@@ -163,7 +169,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => onCloseItem(card.id)}
+                        onClick={() => handleCloseItem(card.id)}
                         className="text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive w-[90px]"
                       >
                         <Trash2Icon className="w-4 h-4 mr-2" />
@@ -173,7 +179,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => onAddCard(card.id)}
+                        onClick={() => handleAddCard(card.id)}
                         className="text-primary border-primary/50 hover:bg-primary/10 w-[90px]"
                       >
                         <PlusCircleIcon className="w-4 h-4 mr-2" />
@@ -193,7 +199,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
           </div>
         </ScrollArea>
         <DialogFooter className="p-4 border-t border-border/30">
-          <Button variant="outline" onClick={onResetLayout}>Reset Layout</Button>
+          <Button variant="outline" onClick={handleResetLayout}>Reset Layout</Button>
           <Button onClick={() => setOpen(false)} className="bg-primary hover:bg-primary/90 text-primary-foreground">Done</Button>
         </DialogFooter>
       </DialogContent>

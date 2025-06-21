@@ -20,83 +20,6 @@ export function useDashboardLayout() {
   const { focusedCardId, setFocusedCardId } = useDashboardStore();
   const initializeApps = useMicroAppStore(state => state.initializeApps);
 
-  // Effect for initializing state from localStorage and setting up listeners
-  useEffect(() => {
-    try {
-      const savedLayoutsJSON = localStorage.getItem(LAYOUT_STORAGE_KEY);
-      let finalLayouts: LayoutItem[] = DEFAULT_LAYOUT_CONFIG;
-
-      if (savedLayoutsJSON) {
-        const parsedLayouts = JSON.parse(savedLayoutsJSON);
-        if (Array.isArray(parsedLayouts)) {
-          // Basic validation for saved layouts
-          const validLayouts = parsedLayouts.filter(item => 
-             item && typeof item.id === 'string' && typeof item.type === 'string' &&
-             (item.type === 'card' ? ALL_CARD_CONFIGS.some(c => c.id === item.cardId) : ALL_MICRO_APPS.some(a => a.id === item.appId))
-          );
-           if (validLayouts.length > 0) {
-              finalLayouts = validLayouts;
-           }
-        }
-      }
-      setLayoutItems(finalLayouts);
-
-    } catch (error) {
-      console.error("Error initializing dashboard from localStorage, resetting to default:", error);
-      setLayoutItems(DEFAULT_LAYOUT_CONFIG);
-      localStorage.removeItem(LAYOUT_STORAGE_KEY);
-    } finally {
-      setIsInitialized(true);
-    }
-
-    initializeApps(ALL_MICRO_APPS);
-
-    // Listener for bringing a panel to the front
-    const handlePanelFocus = (cardId: string) => {
-      // Check if the card/app exists before trying to focus
-      if (layoutItems.some(item => (item.type === 'card' && item.cardId === cardId) || item.id === cardId)) {
-        handleBringToFront(cardId);
-      }
-    };
-    eventBus.on('panel:focus', handlePanelFocus);
-
-
-    // Listener for submitting a command from the TopBar
-    const handleCommand = (query: string) => {
-       setTimeout(() => {
-        let beepItem = layoutItems.find(item => item.type === 'card' && item.cardId === 'beep');
-        if (!beepItem) {
-          addCard('beep');
-        } else {
-          handleBringToFront('beep');
-        }
-        setTimeout(() => eventBus.emit('beep:submitQuery', query), 100);
-      }, 0);
-    };
-    eventBus.on('command:submit', handleCommand);
-
-    return () => {
-      eventBus.off('command:submit', handleCommand);
-      eventBus.off('panel:focus', handlePanelFocus);
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isInitialized]); // Rerun if layoutItems change to re-bind focus listener with fresh state
-
-  // Effect for persisting state to localStorage whenever it changes.
-  useEffect(() => {
-    if (!isInitialized) return;
-    try {
-      localStorage.setItem(LAYOUT_STORAGE_KEY, JSON.stringify(layoutItems));
-    } catch (error) {
-      console.error("Failed to save dashboard state to localStorage:", error);
-      toast({
-        variant: "destructive",
-        title: "Layout not saved",
-        description: "Your dashboard layout changes could not be saved to local storage.",
-      });
-    }
-  }, [layoutItems, isInitialized, toast]);
-
   const getMaxZIndex = useCallback(() => {
     if (layoutItems.length === 0) return 0;
     return Math.max(0, ...layoutItems.map(item => item.zIndex || 0));
@@ -113,31 +36,6 @@ export function useDashboardLayout() {
       )
     );
   }, [getMaxZIndex, setFocusedCardId]);
-
-  const updateItemLayout = useCallback((id: string, newPos: Position, newSize?: Size) => {
-    setLayoutItems(prevLayouts =>
-      prevLayouts.map(layout =>
-        layout.id === id
-          ? {
-              ...layout,
-              x: newPos.x,
-              y: newPos.y,
-              width: newSize ? parseInt(String(newSize.width)) : layout.width,
-              height: newSize ? parseInt(String(newSize.height)) : layout.height,
-            }
-          : layout
-      )
-    );
-    handleBringToFront(id);
-  }, [handleBringToFront]);
-
-  const closeItem = useCallback((itemId: string) => {
-    if (focusedCardId === itemId) {
-        setFocusedCardId(null);
-    }
-    setLayoutItems(prev => prev.filter(item => item.id !== itemId));
-    toast({ title: "Item Closed", description: `The window has been removed from your dashboard.` });
-  }, [toast, setFocusedCardId, focusedCardId]);
 
   const addCard = useCallback((cardId: string) => {
     const cardConfig = ALL_CARD_CONFIGS.find(c => c.id === cardId);
@@ -186,6 +84,14 @@ export function useDashboardLayout() {
 
   }, [getMaxZIndex, handleBringToFront, layoutItems, toast]);
 
+  const closeItem = useCallback((itemId: string) => {
+    if (focusedCardId === itemId) {
+        setFocusedCardId(null);
+    }
+    setLayoutItems(prev => prev.filter(item => item.id !== itemId));
+    toast({ title: "Item Closed", description: `The window has been removed from your dashboard.` });
+  }, [toast, setFocusedCardId, focusedCardId]);
+
   const handleResetLayout = useCallback(() => {
     localStorage.removeItem(LAYOUT_STORAGE_KEY);
     setFocusedCardId(null);
@@ -193,14 +99,109 @@ export function useDashboardLayout() {
     toast({ title: "Layout Reset", description: "Dashboard layout has been reset to default." });
   }, [toast, setFocusedCardId]);
 
+  // Effect for initializing state from localStorage and setting up listeners
+  useEffect(() => {
+    try {
+      const savedLayoutsJSON = localStorage.getItem(LAYOUT_STORAGE_KEY);
+      let finalLayouts: LayoutItem[] = DEFAULT_LAYOUT_CONFIG;
+
+      if (savedLayoutsJSON) {
+        const parsedLayouts = JSON.parse(savedLayoutsJSON);
+        if (Array.isArray(parsedLayouts)) {
+          // Basic validation for saved layouts
+          const validLayouts = parsedLayouts.filter(item => 
+             item && typeof item.id === 'string' && typeof item.type === 'string' &&
+             (item.type === 'card' ? ALL_CARD_CONFIGS.some(c => c.id === item.cardId) : ALL_MICRO_APPS.some(a => a.id === item.appId))
+          );
+           if (validLayouts.length > 0) {
+              finalLayouts = validLayouts;
+           }
+        }
+      }
+      setLayoutItems(finalLayouts);
+
+    } catch (error) {
+      console.error("Error initializing dashboard from localStorage, resetting to default:", error);
+      setLayoutItems(DEFAULT_LAYOUT_CONFIG);
+      localStorage.removeItem(LAYOUT_STORAGE_KEY);
+    } finally {
+      setIsInitialized(true);
+    }
+
+    initializeApps(ALL_MICRO_APPS);
+
+    // --- Event Bus Listeners for Layout Control ---
+    eventBus.on('panel:focus', handleBringToFront);
+    eventBus.on('panel:add', addCard);
+    eventBus.on('panel:remove', closeItem);
+    eventBus.on('layout:reset', handleResetLayout);
+    eventBus.on('app:launch', launchApp);
+
+    // Listener for submitting a command from the TopBar
+    const handleCommand = (query: string) => {
+       setTimeout(() => {
+        let beepItem = layoutItems.find(item => item.type === 'card' && item.cardId === 'beep');
+        if (!beepItem) {
+          addCard('beep');
+        } else {
+          handleBringToFront('beep');
+        }
+        setTimeout(() => eventBus.emit('beep:submitQuery', query), 100);
+      }, 0);
+    };
+    eventBus.on('command:submit', handleCommand);
+
+    return () => {
+      eventBus.off('command:submit', handleCommand);
+      eventBus.off('panel:focus', handleBringToFront);
+      eventBus.off('panel:add', addCard);
+      eventBus.off('panel:remove', closeItem);
+      eventBus.off('layout:reset', handleResetLayout);
+      eventBus.off('app:launch', launchApp);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isInitialized]); // Rerun if layoutItems change to re-bind focus listener with fresh state
+
+  // Effect for persisting state to localStorage whenever it changes.
+  useEffect(() => {
+    if (!isInitialized) return;
+    try {
+      localStorage.setItem(LAYOUT_STORAGE_KEY, JSON.stringify(layoutItems));
+    } catch (error) {
+      console.error("Failed to save dashboard state to localStorage:", error);
+      toast({
+        variant: "destructive",
+        title: "Layout not saved",
+        description: "Your dashboard layout changes could not be saved to local storage.",
+      });
+    }
+  }, [layoutItems, isInitialized, toast]);
+
+  const updateItemLayout = useCallback((id: string, newPos: Position, newSize?: Size) => {
+    setLayoutItems(prevLayouts =>
+      prevLayouts.map(layout =>
+        layout.id === id
+          ? {
+              ...layout,
+              x: newPos.x,
+              y: newPos.y,
+              width: newSize ? parseInt(String(newSize.width)) : layout.width,
+              height: newSize ? parseInt(String(newSize.height)) : layout.height,
+            }
+          : layout
+      )
+    );
+    handleBringToFront(id);
+  }, [handleBringToFront]);
+
   return {
     layoutItems,
     isInitialized,
     updateItemLayout,
     handleBringToFront,
     closeItem,
-    addCard,
-    launchApp,
-    handleResetLayout,
+    addCard, // still exported for direct use if needed
+    launchApp, // still exported for direct use if needed
+    handleResetLayout, // still exported for direct use if needed
   };
 }
