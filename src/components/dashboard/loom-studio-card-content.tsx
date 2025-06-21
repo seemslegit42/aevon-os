@@ -11,7 +11,8 @@ import {
     AlertCircleIcon,
     FileTextIcon,
     InfoIcon,
-    LoaderIcon
+    LoaderIcon,
+    SendIcon
 } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -144,6 +145,15 @@ const LoomStudioCardContent: React.FC = () => {
         eventBus.emit('orchestration:log', { task: 'Loom: Triggered', status: 'success', details: `Processing ${inputText.length} characters.`, targetId: 'loomStudio' });
     }, [inputText, append, setMessages, updateNodeState]);
 
+    const handleSendToBEEP = () => {
+        if (!inputText || isSimulating) return;
+        eventBus.emit('command:submit', `Analyze the following text: """${inputText}"""`);
+        toast({
+            title: "Sent to BEEP",
+            description: "The text has been sent to the BEEP interface for processing.",
+        });
+    };
+
     useEffect(() => {
         if (!isSimulating) return;
 
@@ -217,11 +227,17 @@ const LoomStudioCardContent: React.FC = () => {
             
             <div className="flex-grow w-full border border-border/20 rounded-lg bg-background/20 flex flex-col p-4 space-y-2 min-h-[300px]">
                 <div className="flex justify-between items-center w-full mb-3">
-                    <p className="text-sm text-muted-foreground font-semibold">Workflow Simulation</p>
-                    <Button size="sm" className="btn-gradient-primary-secondary" onClick={runSimulation} disabled={isSimulating || !inputText}>
-                        <PlayIcon className="w-4 h-4 mr-2" />
-                        {isSimulating ? 'Simulating...' : 'Run Simulation'}
-                    </Button>
+                    <p className="text-sm text-muted-foreground font-semibold">Workflow Tools</p>
+                    <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" onClick={runSimulation} disabled={isSimulating || !inputText}>
+                            <PlayIcon className="w-4 h-4 mr-2" />
+                            {isSimulating ? 'Simulating...' : 'Run Sim'}
+                        </Button>
+                         <Button size="sm" className="btn-gradient-primary-accent" onClick={handleSendToBEEP} disabled={isSimulating || !inputText}>
+                            <SendIcon className="w-4 h-4 mr-2" />
+                            Send to BEEP
+                        </Button>
+                    </div>
                 </div>
                 
                 <div className="w-full max-w-md mx-auto flex flex-col items-center">
