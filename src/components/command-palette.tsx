@@ -13,41 +13,38 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PlusCircleIcon, Trash2Icon, SearchIcon, XIcon, GearIcon, RocketIcon } from '@/components/icons';
-import type { CardConfig } from '@/config/dashboard-cards.config';
-import type { CardLayoutInfo } from '@/hooks/use-dashboard-layout';
+import type { CardConfig, LayoutItem } from '@/config/dashboard-cards.config';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
-import { useMicroAppStore } from '@/stores/micro-app.store';
-import eventBus from '@/lib/event-bus';
 import { useMicroApps } from '@/hooks/use-micro-apps';
+import type { MicroApp } from '@/stores/micro-app.store';
 
 interface CommandPaletteProps {
   allPossibleCards: CardConfig[];
-  activeCardIds: string[];
-  cardLayouts: CardLayoutInfo[];
+  layoutItems: LayoutItem[];
   onAddCard: (cardId: string) => void;
-  onRemoveCard: (cardId: string) => void;
+  onLaunchApp: (app: MicroApp) => void;
+  onCloseItem: (itemId: string) => void;
   onResetLayout: () => void;
 }
 
 const CommandPalette: React.FC<CommandPaletteProps> = ({
   allPossibleCards,
-  activeCardIds,
-  cardLayouts,
+  layoutItems,
   onAddCard,
-  onRemoveCard,
+  onLaunchApp,
+  onCloseItem,
   onResetLayout,
 }) => {
   const { isOpen, setOpen } = useCommandPaletteStore();
   const [searchTerm, setSearchTerm] = useState('');
-  const { activateApp } = useMicroAppStore();
   const allMicroApps = useMicroApps();
 
-
-  const handleLaunchApp = (appId: string) => {
-    activateApp(appId);
-    eventBus.emit('panel:focus', 'applicationView');
+  const handleLaunchApp = (app: MicroApp) => {
+    onLaunchApp(app);
     setOpen(false); // Close palette after launching
   };
+  
+  const activeCardIds = layoutItems.filter(i => i.type === 'card').map(i => i.id);
 
   const filteredCards = allPossibleCards.filter(card =>
     !searchTerm ||
@@ -129,7 +126,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleLaunchApp(app.id)}
+                      onClick={() => handleLaunchApp(app)}
                       className="text-secondary border-secondary/50 hover:bg-secondary/10 hover:text-secondary w-[90px]"
                     >
                       <RocketIcon className="w-4 h-4 mr-2" />
@@ -166,7 +163,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => onRemoveCard(card.id)}
+                        onClick={() => onCloseItem(card.id)}
                         className="text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive w-[90px]"
                       >
                         <Trash2Icon className="w-4 h-4 mr-2" />

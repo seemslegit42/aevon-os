@@ -4,7 +4,6 @@ import type { MicroAppRegistration } from '@/stores/micro-app.store';
 
 // Lazy loaded card content components
 const BeepCardContent = lazy(() => import('@/components/dashboard/beep-card-content'));
-const ApplicationViewCardContent = lazy(() => import('@/components/dashboard/application-view-card-content'));
 const LiveOrchestrationFeedCardContent = lazy(() => import('@/components/dashboard/live-orchestration-feed-card-content'));
 const MicroAppsCardContent = lazy(() => import('@/components/dashboard/micro-apps-card-content'));
 const LoomStudioCardContent = lazy(() => import('@/components/dashboard/loom-studio-card-content'));
@@ -15,7 +14,6 @@ const AiInsightsCardContent = lazy(() => import('@/components/dashboard/ai-insig
 // Icons for card titles and content
 import {
   MagicWandIcon,
-  AppWindowIcon,
   ListChecksIcon,
   LayoutGridIcon,
   ChartBarIcon,
@@ -37,6 +35,7 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     component: lazy(() => import('@/components/dashboard/micro-apps/sales-analytics-app')),
     permissions: ['sales:view', 'analytics:read'],
     tags: ['analytics', 'sales'],
+    defaultSize: { width: 500, height: 600 },
   },
   {
     id: 'app-email-processor',
@@ -46,17 +45,9 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     component: lazy(() => import('@/components/dashboard/micro-apps/email-processor-app')),
     permissions: ['email:process', 'invoice:extract'],
     tags: ['automation', 'productivity'],
+    defaultSize: { width: 450, height: 500 },
   }
 ];
-
-export interface CardLayoutInfo {
-  id: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  zIndex: number;
-}
 
 export interface CardConfig {
   id: string;
@@ -71,6 +62,23 @@ export interface CardConfig {
   isDismissible?: boolean;
   cardClassName?: string;
 }
+
+export type LayoutItem = {
+    id: string; // Unique ID for the item on the dashboard (can be card ID or app instance ID)
+    type: 'card' | 'app';
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    zIndex: number;
+} & ({
+    type: 'card';
+    cardId: string; // The ID from ALL_CARD_CONFIGS
+} | {
+    type: 'app';
+    appId: string; // The ID from ALL_MICRO_APPS
+});
+
 
 export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
@@ -91,7 +99,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     id: 'aegisSecurity', title: 'Aegis AI Security', icon: ShieldCheckIcon, isDismissible: true,
     description: "AI-powered cybersecurity. Analyzes alert data to provide summaries, identify threats, and recommend actions.",
     content: AegisSecurityCardContent,
-    defaultLayout: { x: 870, y: 520, width: 380, height: 350, zIndex: 6 },
+    defaultLayout: { x: 870, y: 20, width: 380, height: 350, zIndex: 6 },
     minWidth: 300, minHeight: 280,
   },
   {
@@ -105,14 +113,14 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     id: 'aiInsights', title: 'AI Insights Engine', icon: BrainCircuitIcon, isDismissible: true,
     description: "Provides personalized recommendations and data-driven intelligence based on your OS activity.",
     content: AiInsightsCardContent,
-    defaultLayout: { x: 870, y: 430, width: 270, height: 80, zIndex: 6 },
+    defaultLayout: { x: 870, y: 380, width: 270, height: 80, zIndex: 6 },
     minWidth: 250, minHeight: 80,
   },
   {
     id: 'liveOrchestrationFeed', title: 'Live Orchestration Feed', icon: ListChecksIcon, isDismissible: true,
     description: "A real-time feed of events and actions performed by the orchestrated AI agents and system workflows.",
     content: LiveOrchestrationFeedCardContent,
-    defaultLayout: { x: 480, y: 670, width: 660, height: 180, zIndex: 8 },
+    defaultLayout: { x: 480, y: 310, width: 380, height: 200, zIndex: 8 },
     minWidth: 260, minHeight: 150,
   },
   {
@@ -122,22 +130,11 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     defaultLayout: { x: 20, y: 670, width: 450, height: 120, zIndex: 9 }, 
     minWidth: 120, minHeight: 120,
   },
-  {
-    id: 'applicationView', title: 'Active Micro-App View', icon: AppWindowIcon, isDismissible: true,
-    description: "The active viewing area for launched micro-apps. Supports multiple apps via tabs.",
-    content: ApplicationViewCardContent,
-    defaultLayout: { x: 480, y: 310, width: 450, height: 350, zIndex: 4 }, 
-    minWidth: 300, minHeight: 250,
-  },
 ];
 
-export const DEFAULT_ACTIVE_CARD_IDS = [
-  'beep',
-  'loomStudio',
-  'aegisSecurity',
-  'armoryMarketplace',
-  'aiInsights',
-  'liveOrchestrationFeed',
-  'microApps',
-  'applicationView'
-];
+export const DEFAULT_LAYOUT_CONFIG: LayoutItem[] = ALL_CARD_CONFIGS.map(card => ({
+    id: card.id,
+    type: 'card',
+    cardId: card.id,
+    ...card.defaultLayout
+}));

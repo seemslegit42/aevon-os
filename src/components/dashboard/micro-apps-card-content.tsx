@@ -3,9 +3,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { useMicroAppStore } from '@/stores/micro-app.store';
 import { ScrollArea } from '../ui/scroll-area';
-import eventBus from '@/lib/event-bus';
 import { cn } from '@/lib/utils';
 import { useMicroApps } from '@/hooks/use-micro-apps';
 import {
@@ -16,15 +14,13 @@ import {
 } from "@/components/ui/tooltip";
 import { Badge } from '../ui/badge';
 import { RocketIcon } from '../icons';
+import { useDashboardLayout } from '@/hooks/use-dashboard-layout';
 
 const MicroAppsCardContent: React.FC = () => {
-  const { activateApp } = useMicroAppStore();
+  const { launchApp, layoutItems } = useDashboardLayout();
   const apps = useMicroApps();
-
-  const handleLaunchApp = (appId: string) => {
-    activateApp(appId);
-    eventBus.emit('panel:focus', 'applicationView');
-  };
+  
+  const openAppInstances = layoutItems.filter(item => item.type === 'app').map(item => item.type === 'app' && item.appId);
 
   return (
     <TooltipProvider delayDuration={300}>
@@ -32,6 +28,8 @@ const MicroAppsCardContent: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           {apps.map((app) => {
             const AppIcon = app.icon;
+            const isActive = openAppInstances.includes(app.id);
+
             return (
               <Tooltip key={app.id}>
                 <TooltipTrigger asChild>
@@ -39,11 +37,11 @@ const MicroAppsCardContent: React.FC = () => {
                     variant="outline"
                     className={cn(
                       "relative flex flex-col items-center justify-center h-20 p-2 space-y-1 bg-card/60 hover:bg-primary/10 border-border/50 hover:border-primary/50 transition-all",
-                      app.isActive && "border-secondary/60 ring-1 ring-secondary/50"
+                      isActive && "border-secondary/60 ring-1 ring-secondary/50"
                     )}
-                    onClick={() => handleLaunchApp(app.id)}
+                    onClick={() => launchApp(app)}
                   >
-                    {app.isActive && (
+                    {isActive && (
                       <div className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary"></span>

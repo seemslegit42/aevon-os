@@ -8,34 +8,31 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { PinIcon, XIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { useDashboardLayout } from '@/hooks/use-dashboard-layout';
-import { ALL_CARD_CONFIGS, DEFAULT_ACTIVE_CARD_IDS } from '@/config/dashboard-cards.config';
+import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
 import CommandPalette from '@/components/command-palette';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { useDashboardStore } from '@/stores/dashboard.store';
 
-
 const Dashboard: React.FC = () => {
   const {
-    activeCardIds,
-    cardLayouts,
+    layoutItems,
     isInitialized,
-    updateCardLayout,
+    updateItemLayout,
     handleBringToFront,
-    handleRemoveCard,
-    handleAddCard,
+    closeItem,
+    addCard,
+    launchApp,
     handleResetLayout,
-  } = useDashboardLayout(ALL_CARD_CONFIGS, DEFAULT_ACTIVE_CARD_IDS);
+  } = useDashboardLayout();
 
   const { isOpen: isCommandPaletteOpen, setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
   const { setFocusedCardId } = useDashboardStore();
   
   const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // If the click is on the direct background, clear the focus
     if (e.target === e.currentTarget) {
         setFocusedCardId(null);
     }
   };
-
 
   if (!isInitialized) {
     return (
@@ -55,47 +52,68 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="h-full w-full relative" onClick={handleCanvasClick}>
-      {cardLayouts
-        .filter(layout => activeCardIds.includes(layout.id))
-        .map(layout => {
-          const cardConfig = ALL_CARD_CONFIGS.find(c => c.id === layout.id);
-          if (!cardConfig) return null;
+      {layoutItems.map(item => {
+          let title, Icon, Content, contentProps, minWidth, minHeight, cardClassName, isDismissible;
 
-          const CardContent = cardConfig.content;
-          const mergedProps = { ...cardConfig.contentProps };
+          if (item.type === 'card') {
+            const cardConfig = ALL_CARD_CONFIGS.find(c => c.id === item.cardId);
+            if (!cardConfig) return null;
+            
+            title = cardConfig.title;
+            Icon = cardConfig.icon;
+            Content = cardConfig.content;
+            contentProps = { ...cardConfig.contentProps };
+            minWidth = cardConfig.minWidth;
+            minHeight = cardConfig.minHeight;
+            cardClassName = cardConfig.cardClassName;
+            isDismissible = cardConfig.isDismissible;
+
+          } else { // item.type === 'app'
+            const appConfig = ALL_MICRO_APPS.find(a => a.id === item.appId);
+            if (!appConfig) return null;
+
+            title = appConfig.title;
+            Icon = appConfig.icon;
+            Content = appConfig.component;
+            contentProps = {};
+            minWidth = 300;
+            minHeight = 250;
+            cardClassName = "";
+            isDismissible = true;
+          }
 
           return (
             <Rnd
-              key={cardConfig.id}
-              size={{ width: layout.width, height: layout.height }}
-              position={{ x: layout.x, y: layout.y }}
-              onDragStart={() => handleBringToFront(cardConfig.id)}
-              onDragStop={(e, d) => updateCardLayout(cardConfig.id, { x: d.x, y: d.y })}
-              onResizeStart={() => handleBringToFront(cardConfig.id)}
+              key={item.id}
+              size={{ width: item.width, height: item.height }}
+              position={{ x: item.x, y: item.y }}
+              onDragStart={() => handleBringToFront(item.id)}
+              onDragStop={(e, d) => updateItemLayout(item.id, { x: d.x, y: d.y })}
+              onResizeStart={() => handleBringToFront(item.id)}
               onResizeStop={(e, direction, ref, delta, position) => {
-                updateCardLayout(
-                  cardConfig.id,
+                updateItemLayout(
+                  item.id,
                   position,
                   { width: ref.style.width, height: ref.style.height }
                 );
               }}
-              minWidth={cardConfig.minWidth}
-              minHeight={cardConfig.minHeight}
-              style={{ zIndex: layout.zIndex }}
+              minWidth={minWidth}
+              minHeight={minHeight}
+              style={{ zIndex: item.zIndex }}
               className="react-draggable"
               dragHandleClassName="drag-handle"
             >
               <MicroAppCard
-                title={cardConfig.title}
-                icon={cardConfig.icon}
-                className={cardConfig.cardClassName}
+                title={title}
+                icon={Icon}
+                className={cardClassName}
                 actions={
                   <>
                     <Button variant="ghost" size="icon" className="h-6 w-6">
                       <PinIcon className="w-4 h-4" />
                     </Button>
-                    {cardConfig.isDismissible && (
-                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleRemoveCard(cardConfig.id)}>
+                    {isDismissible && (
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => closeItem(item.id)}>
                         <XIcon className="w-4 h-4" />
                       </Button>
                     )}
@@ -103,7 +121,7 @@ const Dashboard: React.FC = () => {
                 }
               >
                 <Suspense fallback={<div className="p-4"><Skeleton className="h-full w-full" /></div>}>
-                  <CardContent {...mergedProps} />
+                  <Content {...contentProps} />
                 </Suspense>
               </MicroAppCard>
             </Rnd>
@@ -113,10 +131,10 @@ const Dashboard: React.FC = () => {
         isOpen={isCommandPaletteOpen}
         onOpenChange={setCommandPaletteOpen}
         allPossibleCards={ALL_CARD_CONFIGS}
-        activeCardIds={activeCardIds}
-        cardLayouts={cardLayouts}
-        onAddCard={handleAddCard}
-        onRemoveCard={handleRemoveCard}
+        layoutItems={layoutItems}
+        onAddCard={addCard}
+        onLaunchApp={launchApp}
+        onCloseItem={closeItem}
         onResetLayout={handleResetLayout}
       />
     </div>
