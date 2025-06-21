@@ -1,16 +1,33 @@
 
 "use client";
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import { Rnd } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { PinIcon, XIcon } from '@/components/icons';
+import { PinIcon, XIcon, ClockIcon, RefreshCwIcon as LoaderCircleIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { useDashboardLayout } from '@/hooks/use-dashboard-layout';
 import { ALL_CARD_CONFIGS, DEFAULT_ACTIVE_CARD_IDS } from '@/config/dashboard-cards.config';
 import CommandPalette from '@/components/command-palette';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
+
+// Data for dynamic updates
+const sampleFeedItems = [
+    { task: 'System Integrity Check', status: 'success', details: 'All core modules passed verification.' },
+    { task: 'AI Insight Generated', status: 'success', details: 'New efficiency pattern identified in Loom.' },
+    { task: 'Authentication Failure', status: 'failure', details: 'Failed login attempt detected from new IP.' },
+    { task: 'Market Data Sync', status: 'success', details: 'Pulled latest stock and market trends.' },
+    { task: 'Agent Self-Correction', status: 'success', details: 'Aegis agent adapted to new data pattern.'},
+];
+
+const sampleAgentStatuses = [
+    { status: 'Adapting', statusColor: 'text-primary-foreground', statusIcon: LoaderCircleIcon, isSpinning: true },
+    { status: 'Learning', statusColor: 'text-primary-foreground', statusIcon: ClockIcon, isSpinning: false },
+    { status: 'Executing', statusColor: 'text-chart-4', statusIcon: LoaderCircleIcon, isSpinning: true },
+    { status: 'Idle', statusColor: 'text-muted-foreground', statusIcon: ClockIcon, isSpinning: false },
+];
+
 
 const Dashboard: React.FC = () => {
   const {
@@ -25,6 +42,48 @@ const Dashboard: React.FC = () => {
   } = useDashboardLayout(ALL_CARD_CONFIGS, DEFAULT_ACTIVE_CARD_IDS);
 
   const { isOpen: isCommandPaletteOpen, setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
+  
+  const [liveFeedData, setLiveFeedData] = useState<any[]>([]);
+  const [agentPresenceData, setAgentPresenceData] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Initialize state from config on mount
+    const initialFeedConfig = ALL_CARD_CONFIGS.find(c => c.id === 'liveOrchestrationFeed');
+    if (initialFeedConfig && initialFeedConfig.contentProps?.feedItems) {
+      setLiveFeedData(initialFeedConfig.contentProps.feedItems);
+    }
+    
+    const initialAgentConfig = ALL_CARD_CONFIGS.find(c => c.id === 'agentPresence');
+    if (initialAgentConfig && initialAgentConfig.contentProps?.agents) {
+      setAgentPresenceData(initialAgentConfig.contentProps.agents);
+    }
+    
+    // Set up interval for live updates
+    const intervalId = setInterval(() => {
+      // Update Live Feed
+      setLiveFeedData(prevItems => {
+        const newItem = { 
+            ...sampleFeedItems[Math.floor(Math.random() * sampleFeedItems.length)],
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        };
+        const updatedItems = [newItem, ...prevItems];
+        if (updatedItems.length > 10) updatedItems.pop(); // Keep list from getting too long
+        return updatedItems;
+      });
+      
+      // Update Agent Presence
+      setAgentPresenceData(prevAgents => 
+        prevAgents.map(agent => ({
+            ...agent,
+            ...sampleAgentStatuses[Math.floor(Math.random() * sampleAgentStatuses.length)]
+        }))
+      );
+      
+    }, 5000); // Update every 5 seconds
+
+    return () => clearInterval(intervalId);
+  }, []);
+
 
   if (!isInitialized) {
     return (
@@ -42,6 +101,12 @@ const Dashboard: React.FC = () => {
     );
   }
 
+  // Map of dynamic props to inject into cards
+  const dynamicCardProps: { [key: string]: any } = {
+    liveOrchestrationFeed: { feedItems: liveFeedData },
+    agentPresence: { agents: agentPresenceData },
+  };
+
   return (
     <div className="h-full w-full relative">
       {cardLayouts
@@ -51,6 +116,7 @@ const Dashboard: React.FC = () => {
           if (!cardConfig) return null;
 
           const CardContent = cardConfig.content;
+          const mergedProps = { ...cardConfig.contentProps, ...dynamicCardProps[cardConfig.id] };
 
           return (
             <Rnd
@@ -91,7 +157,7 @@ const Dashboard: React.FC = () => {
                 }
               >
                 <Suspense fallback={<div className="p-4"><Skeleton className="h-full w-full" /></div>}>
-                  <CardContent {...cardConfig.contentProps} />
+                  <CardContent {...mergedProps} />
                 </Suspense>
               </MicroAppCard>
             </Rnd>
