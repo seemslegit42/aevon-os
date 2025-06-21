@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAudioRecorder } from '@/hooks/use-audio-recorder';
 import { useTTS } from '@/hooks/use-tts';
 import { useBeepChat } from '@/hooks/use-beep-chat';
-import BeepToolResult from './beep-tool-result';
+import BeepToolCallDisplay from './beep-tool-call';
 
 const BeepCardContent: React.FC = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -92,15 +92,27 @@ const BeepCardContent: React.FC = () => {
           <div className="space-y-4">
             {messages.length > 0 ? (
               messages.map(m => {
-                if (m.tool_calls) {
-                   return m.tool_calls.map(toolCall => (
-                       <BeepToolResult key={toolCall.toolCallId} toolCall={toolCall} />
-                    ));
-                }
+                // We don't render the raw tool result messages. Their data is used inside BeepToolCallDisplay.
                 if (m.role === 'tool') {
-                  // This can be a fallback or hidden, as we now render from `tool_calls`
                   return null;
                 }
+
+                if (m.role === 'assistant' && m.tool_calls) {
+                  // This message is a container for tool calls. Render each tool call.
+                  return (
+                    <div key={m.id} className="space-y-2">
+                      {m.tool_calls.map(toolCall => (
+                        <BeepToolCallDisplay
+                          key={toolCall.toolCallId}
+                          toolCall={toolCall}
+                          allMessages={messages}
+                        />
+                      ))}
+                    </div>
+                  );
+                }
+
+                // This is a regular text message from user or assistant.
                 return (
                   <div key={m.id} className={cn("flex items-start gap-3", m.role === 'user' ? 'justify-end' : '')}>
                     {m.role === 'assistant' && (
@@ -114,7 +126,7 @@ const BeepCardContent: React.FC = () => {
                     </div>
                     {m.role === 'user' && <UserIcon className="w-5 h-5 text-primary flex-shrink-0 mt-1" />}
                   </div>
-                )
+                );
               })
             ) : (
               <div className="flex-grow flex h-full items-center justify-center text-muted-foreground text-center">
