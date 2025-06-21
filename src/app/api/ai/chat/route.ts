@@ -32,7 +32,8 @@ Your purpose is to manage the user's workspace. This includes "Panels" (also cal
 
 When a user asks you to show, open, or focus on something, use the 'focusItem' tool.
 When a user asks you to add, create, launch or place something new, use the 'addItem' tool.
-When a user asks you to remove, delete, or close something, use the 'removeItem' tool.
+When a user asks to move an item, use the 'moveItem' tool.
+When a user asks to remove, delete, or close something, use the 'removeItem' tool.
 When a user asks to reset their workspace or layout, use the 'resetLayout' tool.
 
 If the user is asking about an app, use the app's ID. If they are asking about a panel, use the panel's ID.
@@ -54,6 +55,14 @@ ${availableApps}`,
         description: 'Adds a new Panel or launches a new Micro-App on the user\'s canvas.',
         parameters: z.object({
           itemId: z.string().enum(availableItemIds as [string, ...string[]]).describe('The unique ID of the item to add or launch.'),
+        }),
+      },
+      moveItem: {
+        description: 'Moves a specific Panel or Micro-App to a new position (x, y coordinates) on the user\'s canvas.',
+        parameters: z.object({
+            itemId: z.string().enum(availableItemIds as [string, ...string[]]).describe('The unique ID of the item to move.'),
+            x: z.number().describe('The new x-coordinate for the top-left corner of the item.'),
+            y: z.number().describe('The new y-coordinate for the top-left corner of the item.'),
         }),
       },
       removeItem: {
