@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import type { ComponentType, LazyExoticComponent } from 'react';
 
-// Define the shape of a micro-app's metadata, now with permissions
+// Define the shape of a micro-app's metadata, now with permissions and tags
 export interface MicroApp {
   id: string;
   title: string;
@@ -11,6 +11,7 @@ export interface MicroApp {
   component: LazyExoticComponent<ComponentType<any>>; // The actual React component for the app, lazy loaded
   isActive: boolean;
   permissions: string[]; // Permissions required to use the app
+  tags: string[]; // Tags for filtering and discovery
 }
 
 export type MicroAppRegistration = Omit<MicroApp, 'isActive'>;
@@ -25,7 +26,6 @@ interface MicroAppStoreState {
   deactivateApp: (appId: string) => void;
   deactivateAllApps: () => void;
   getActiveApps: () => MicroApp[];
-  getPermittedApps: (userPermissions: string[]) => MicroApp[];
 }
 
 const ACTIVE_APPS_STORAGE_KEY = 'aevonActiveMicroAppIds_v1';
@@ -103,16 +103,6 @@ export const useMicroAppStore = create<MicroAppStoreState>((set, get) => ({
   getActiveApps: () => {
     return get().apps.filter(app => app.isActive);
   },
-  
-  getPermittedApps: (userPermissions) => {
-    return get().apps.filter(app => {
-      if (!app.permissions || app.permissions.length === 0) {
-        return true; // No permissions required, so it's allowed
-      }
-      // User must have all permissions required by the app
-      return app.permissions.every(p => userPermissions.includes(p));
-    });
-  }
 }));
 
 // Subscribe to store changes to save active apps to localStorage

@@ -7,16 +7,11 @@ import { useMicroAppStore } from '@/stores/micro-app.store';
 import { ScrollArea } from '../ui/scroll-area';
 import eventBus from '@/lib/event-bus';
 import { cn } from '@/lib/utils';
-
-// Mock user object - in a real app, this would come from an auth context
-const currentUser = {
-  name: 'Admin User',
-  permissions: ['sales:view', 'analytics:read', 'email:process', 'invoice:extract'], // Has all permissions
-};
+import { useMicroApps } from '@/hooks/use-micro-apps';
 
 const MicroAppsCardContent: React.FC = () => {
-  const { getPermittedApps, activateApp } = useMicroAppStore();
-  const apps = getPermittedApps(currentUser.permissions);
+  const { activateApp } = useMicroAppStore();
+  const apps = useMicroApps();
 
   const handleLaunchApp = (appId: string) => {
     activateApp(appId);

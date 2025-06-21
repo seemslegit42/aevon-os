@@ -2,22 +2,15 @@
 "use client";
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { useMicroAppStore } from '@/stores/micro-app.store';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { RocketIcon } from '@/components/icons';
-
-// Mock user object - in a real app, this would come from an auth context
-const currentUser = {
-  name: 'Admin User',
-  permissions: ['sales:view', 'analytics:read', 'email:process', 'invoice:extract'], // Has all permissions
-};
+import { useMicroApps } from '@/hooks/use-micro-apps';
 
 const ArmoryCardContent: React.FC = () => {
-  const { getPermittedApps } = useMicroAppStore();
   const { setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
-  const apps = getPermittedApps(currentUser.permissions);
+  const apps = useMicroApps();
 
   return (
     <ScrollArea className="h-full pr-2">

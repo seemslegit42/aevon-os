@@ -36,6 +36,7 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     icon: ChartBarIcon,
     component: lazy(() => import('@/components/dashboard/micro-apps/sales-analytics-app')),
     permissions: ['sales:view', 'analytics:read'],
+    tags: ['analytics', 'sales'],
   },
   {
     id: 'app-email-processor',
@@ -44,6 +45,7 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     icon: MailIcon,
     component: lazy(() => import('@/components/dashboard/micro-apps/email-processor-app')),
     permissions: ['email:process', 'invoice:extract'],
+    tags: ['automation', 'productivity'],
   }
 ];
 

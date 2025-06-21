@@ -18,6 +18,7 @@ import type { CardLayoutInfo } from '@/hooks/use-dashboard-layout';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { useMicroAppStore } from '@/stores/micro-app.store';
 import eventBus from '@/lib/event-bus';
+import { useMicroApps } from '@/hooks/use-micro-apps';
 
 interface CommandPaletteProps {
   allPossibleCards: CardConfig[];
@@ -27,18 +28,6 @@ interface CommandPaletteProps {
   onRemoveCard: (cardId: string) => void;
   onResetLayout: () => void;
 }
-
-// Mock user object - in a real app, this would come from an auth context
-const currentUser = {
-  name: 'Admin User',
-  permissions: ['sales:view', 'analytics:read', 'email:process', 'invoice:extract'], // Has all permissions
-};
-
-// Example of a more restricted user:
-// const currentUser = {
-//   name: 'Sales Rep',
-//   permissions: ['sales:view', 'analytics:read'], // Can only see sales analytics
-// };
 
 const CommandPalette: React.FC<CommandPaletteProps> = ({
   allPossibleCards,
@@ -50,8 +39,8 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
 }) => {
   const { isOpen, setOpen } = useCommandPaletteStore();
   const [searchTerm, setSearchTerm] = useState('');
-  const { activateApp, getPermittedApps } = useMicroAppStore();
-  const allMicroApps = getPermittedApps(currentUser.permissions);
+  const { activateApp } = useMicroAppStore();
+  const allMicroApps = useMicroApps();
 
 
   const handleLaunchApp = (appId: string) => {
