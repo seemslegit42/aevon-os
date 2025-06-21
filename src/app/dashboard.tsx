@@ -1,17 +1,14 @@
 
 "use client";
 
-import React, { Suspense } from 'react';
-import { Rnd } from 'react-rnd';
-import MicroAppCard from '@/components/micro-app-card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { PinIcon, XIcon } from '@/components/icons';
-import { Button } from '@/components/ui/button';
+import React from 'react';
 import { useDashboardLayout } from '@/hooks/use-dashboard-layout';
-import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
+import { ALL_CARD_CONFIGS } from '@/config/dashboard-cards.config';
 import CommandPalette from '@/components/command-palette';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { useDashboardStore } from '@/stores/dashboard.store';
+import { Skeleton } from '@/components/ui/skeleton';
+import DashboardWindow from '@/components/dashboard-window';
 
 const Dashboard: React.FC = () => {
   const {
@@ -49,82 +46,15 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="h-full w-full relative" onClick={handleCanvasClick}>
-      {layoutItems.map(item => {
-          let title, Icon, Content, contentProps, minWidth, minHeight, cardClassName, isDismissible;
-
-          if (item.type === 'card') {
-            const cardConfig = ALL_CARD_CONFIGS.find(c => c.id === item.cardId);
-            if (!cardConfig) return null;
-            
-            title = cardConfig.title;
-            Icon = cardConfig.icon;
-            Content = cardConfig.content;
-            contentProps = { ...cardConfig.contentProps };
-            minWidth = cardConfig.minWidth;
-            minHeight = cardConfig.minHeight;
-            cardClassName = cardConfig.cardClassName;
-            isDismissible = cardConfig.isDismissible;
-
-          } else { // item.type === 'app'
-            const appConfig = ALL_MICRO_APPS.find(a => a.id === item.appId);
-            if (!appConfig) return null;
-
-            title = appConfig.title;
-            Icon = appConfig.icon;
-            Content = appConfig.component;
-            contentProps = {};
-            minWidth = 300;
-            minHeight = 250;
-            cardClassName = "";
-            isDismissible = true;
-          }
-
-          return (
-            <Rnd
-              key={item.id}
-              size={{ width: item.width, height: item.height }}
-              position={{ x: item.x, y: item.y }}
-              onDragStart={() => handleBringToFront(item.id)}
-              onDragStop={(e, d) => updateItemLayout(item.id, { x: d.x, y: d.y })}
-              onResizeStart={() => handleBringToFront(item.id)}
-              onResizeStop={(e, direction, ref, delta, position) => {
-                updateItemLayout(
-                  item.id,
-                  position,
-                  { width: ref.style.width, height: ref.style.height }
-                );
-              }}
-              minWidth={minWidth}
-              minHeight={minHeight}
-              style={{ zIndex: item.zIndex }}
-              className="react-draggable"
-              dragHandleClassName="drag-handle"
-              onMouseDownCapture={() => handleBringToFront(item.id)}
-            >
-              <MicroAppCard
-                title={title}
-                icon={Icon}
-                className={cardClassName}
-                actions={
-                  <>
-                    <Button variant="ghost" size="icon" className="h-6 w-6">
-                      <PinIcon className="w-4 h-4" />
-                    </Button>
-                    {isDismissible && (
-                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); closeItem(item.id); }}>
-                        <XIcon className="w-4 h-4" />
-                      </Button>
-                    )}
-                  </>
-                }
-              >
-                <Suspense fallback={<div className="p-4"><Skeleton className="h-full w-full" /></div>}>
-                  <Content {...contentProps} />
-                </Suspense>
-              </MicroAppCard>
-            </Rnd>
-          );
-      })}
+      {layoutItems.map(item => (
+          <DashboardWindow
+            key={item.id}
+            item={item}
+            onLayoutChange={updateItemLayout}
+            onFocus={handleBringToFront}
+            onClose={closeItem}
+          />
+      ))}
        <CommandPalette
         isOpen={isCommandPaletteOpen}
         onOpenChange={setCommandPaletteOpen}
