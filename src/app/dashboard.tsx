@@ -7,13 +7,12 @@ import { useLayoutStore } from '@/stores/layout.store';
 import { Skeleton } from '@/components/ui/skeleton';
 import DashboardWindow from '@/components/dashboard-window';
 import { shallow } from 'zustand/shallow';
+import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config'; // Import configs
 
 const Dashboard: React.FC = () => {
-  // Directly initialize the layout from within the main dashboard component.
-  // This removes the need for the `useDashboardLayout` custom hook, simplifying the architecture.
   useEffect(() => {
     useLayoutStore.getState().initialize();
-  }, []); // Run only once on mount
+  }, []);
 
   const {
     layoutItems,
@@ -31,7 +30,6 @@ const Dashboard: React.FC = () => {
   );
   
   const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // If the click is on the canvas itself and not a child element (a window)
     if (e.target === e.currentTarget) {
         setFocusedItemId(null);
     }
@@ -55,13 +53,24 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="h-full w-full relative" onClick={handleCanvasClick}>
-      {layoutItems.map(item => (
-          <DashboardWindow
-            key={item.id}
-            item={item}
-            isFocused={item.id === focusedItemId}
-          />
-      ))}
+      {layoutItems.map(item => {
+          // Centralized config lookup
+          const config = item.type === 'card'
+            ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId)
+            : ALL_MICRO_APPS.find(a => a.id === item.appId);
+          
+          // Don't render if config is missing (robustness)
+          if (!config) return null;
+
+          return (
+              <DashboardWindow
+                key={item.id}
+                item={item}
+                config={config}
+                isFocused={item.id === focusedItemId}
+              />
+          );
+      })}
        <CommandPalette />
     </div>
   );

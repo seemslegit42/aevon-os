@@ -118,7 +118,7 @@ const TopBar: React.FC = () => {
       <header className="topbar-aevos-glass-override flex items-center justify-between">
         {/* Left Side: Branding */}
         <div className="flex items-center">
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center" legacyBehavior>
             <Image
               src="/aevon-logo.png"
               alt="Aevon OS Logo"

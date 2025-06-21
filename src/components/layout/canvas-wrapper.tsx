@@ -2,8 +2,6 @@
 "use client";
 import React from 'react';
 import { cn } from '@/lib/utils';
-// Note: BackgroundGlyphs is now an empty component.
-import BackgroundGlyphs from './background-glyphs';
 
 type CanvasWrapperProps = {
   children: React.ReactNode;
@@ -22,7 +20,6 @@ const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
       )}
     >
       {/* Background effects are positioned absolutely to fill this container */}
-      <BackgroundGlyphs />
       <div className="canvas-aurora-background-dark-container"></div>
       
       {/* 
