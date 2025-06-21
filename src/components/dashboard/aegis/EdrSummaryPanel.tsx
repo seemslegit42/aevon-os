@@ -1,12 +1,12 @@
 
 "use client"
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { LaptopIcon, BrainCircuitIcon } from '@/components/icons';
 
-const edrData = [
+const initialEdrData = [
   { day: 'Mon', Malware: 2, Ransomware: 0, LateralMovement: 1 },
   { day: 'Tue', Malware: 3, Ransomware: 1, LateralMovement: 2 },
   { day: 'Wed', Malware: 1, Ransomware: 0, LateralMovement: 0 },
@@ -17,6 +17,22 @@ const edrData = [
 ];
 
 const EdrSummaryPanel: React.FC = () => {
+    const [edrData, setEdrData] = useState(initialEdrData);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+        setEdrData(prevData =>
+            prevData.map(item => ({
+            ...item,
+            Malware: Math.max(0, item.Malware + Math.floor(Math.random() * 3) - 1),
+            LateralMovement: Math.max(0, item.LateralMovement + Math.floor(Math.random() * 3) - 1),
+            Ransomware: Math.random() > 0.9 ? Math.max(0, item.Ransomware + (Math.random() > 0.6 ? 1 : -1)) : item.Ransomware,
+            }))
+        );
+        }, 7000); // Update every 7 seconds
+        return () => clearInterval(interval);
+    }, []);
+
   return (
     <Card className="glassmorphism-panel h-full flex flex-col">
       <CardHeader>

@@ -1,6 +1,6 @@
 
 "use client"
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { CloudCogIcon, AlertTriangleIcon } from '@/components/icons';
@@ -12,21 +12,29 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const cloudSecurityData = [
+const initialCloudSecurityData = [
   { id: 'iam', title: 'IAM Hygiene', value: 92, status: 'Optimized', details: 'Identity and Access Management policies are well-configured.' },
   { id: 's3', title: 'S3 Bucket Exposure', value: 100, status: 'Secure', details: 'No public-facing S3 buckets found.' },
   { id: 'misconfig', title: 'Misconfigured Resources', value: 75, status: 'Action Required', details: '3 resources have non-standard configurations.' },
   { id: 'network', title: 'Network Security', value: 80, status: 'Good', details: 'Firewall rules are mostly compliant.' },
 ];
 
-const totalRisks = cloudSecurityData.filter(d => d.value < 90).length;
-
 const CloudSecurityPanel: React.FC = () => {
-  const getProgressColor = (value: number) => {
-    if (value >= 90) return 'progress-success'; // Custom class
-    if (value >= 75) return 'progress-warning';
-    return 'progress-danger';
-  };
+    const [cloudSecurityData, setCloudSecurityData] = useState(initialCloudSecurityData);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCloudSecurityData(prevData =>
+                prevData.map(item => ({
+                    ...item,
+                    value: Math.min(100, Math.max(70, item.value + Math.floor(Math.random() * 5) - 2)),
+                }))
+            );
+        }, 5000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const totalRisks = cloudSecurityData.filter(d => d.value < 90).length;
 
   return (
     <TooltipProvider>
@@ -65,7 +73,7 @@ const CloudSecurityPanel: React.FC = () => {
         <CardFooter className="justify-center">
             {totalRisks > 0 ? (
                 <p className="text-sm font-semibold text-accent flex items-center gap-2">
-                    <AlertTriangleIcon /> {totalRisks} Risk{totalRisks > 1 ? 's' : ''} Found - Tap to investigate
+                    <AlertTriangleIcon /> {totalRisks} Risk{totalRisks > 1 ? 's' : ''} Found
                 </p>
             ) : (
                 <p className="text-sm font-semibold text-chart-4">No outstanding risks found.</p>

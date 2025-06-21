@@ -11,12 +11,6 @@ interface AegisAnalysisResultProps {
   result: AegisSecurityAnalysis;
 }
 
-const severityVariantMap: { [key: string]: 'destructive' | 'secondary' | 'default' } = {
-  'Critical': 'destructive',
-  'High': 'destructive',
-  'Medium': 'secondary',
-  'Low': 'default',
-};
 const severityClassMap: { [key: string]: string } = {
   'Critical': 'badge-critical',
   'High': 'badge-high',

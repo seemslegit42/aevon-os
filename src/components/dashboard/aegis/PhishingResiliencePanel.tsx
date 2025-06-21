@@ -1,13 +1,13 @@
 
 "use client"
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, RadialBarChart, RadialBar, PolarAngleAxis } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { FishIcon } from '@/components/icons';
 
-const phishingData = {
+const initialPhishingData = {
   clickResistance: 82,
   emailsBlocked: [
     { day: "Mon", count: 12 },
@@ -28,6 +28,30 @@ const getTrainingColor = (level: string) => {
 };
 
 const PhishingResiliencePanel: React.FC = () => {
+    const [phishingData, setPhishingData] = useState(initialPhishingData);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setPhishingData(prevData => {
+                const newResistance = Math.min(100, Math.max(60, prevData.clickResistance + Math.floor(Math.random() * 7) - 3));
+                let newTrainingStatus = 'Low';
+                if (newResistance < 75) newTrainingStatus = 'High';
+                else if (newResistance < 85) newTrainingStatus = 'Medium';
+
+                return {
+                    ...prevData,
+                    clickResistance: newResistance,
+                    trainingRequired: newTrainingStatus,
+                    emailsBlocked: prevData.emailsBlocked.map(day => ({
+                        ...day,
+                        count: Math.max(2, day.count + Math.floor(Math.random() * 5) - 2)
+                    }))
+                }
+            });
+        }, 6000);
+        return () => clearInterval(interval);
+    }, []);
+
   return (
     <Card className="glassmorphism-panel h-full flex flex-col">
       <CardHeader className="flex flex-row items-center gap-2">
