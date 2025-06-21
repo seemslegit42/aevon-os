@@ -374,3 +374,35 @@
   opacity: 0.4;
   animation-duration: 10s;
 }
+
+/* Loom Studio Simulation Styles */
+@keyframes workflow-node-glow {
+  from {
+    box-shadow: 0 0 0px hsl(var(--accent) / 0.4);
+  }
+  to {
+    box-shadow: 0 0 8px 2px hsl(var(--accent) / 0.7);
+  }
+}
+
+.workflow-node-running {
+  border-color: hsl(var(--accent)) !important;
+  animation: workflow-node-glow 1.5s ease-in-out infinite alternate;
+}
+.workflow-node-running > span {
+  color: hsl(var(--accent-foreground)) !important;
+}
+.workflow-node-running > svg {
+  color: hsl(var(--accent)) !important;
+}
+
+.workflow-node-completed {
+  border-color: hsl(var(--chart-4)) !important;
+  background-color: hsl(var(--chart-4) / 0.15) !important;
+}
+.workflow-node-completed > span {
+  color: hsl(var(--primary-foreground)) !important;
+}
+.workflow-node-completed > svg {
+  color: hsl(var(--chart-4)) !important;
+}
