@@ -25,10 +25,7 @@ export type LayoutItem = {
     zIndex: number;
     isMinimized?: boolean;
     lastHeight?: number;
-} & ({
-    type: 'card';
-    cardId: string; // The ID from ALL_CARD_CONFIGS
-} | {
-    type: 'app';
-    appId: string; // The ID from ALL_MICRO_APPS
-});
+    cardId?: string; // The ID from ALL_CARD_CONFIGS
+    appId?: string; // The ID from ALL_MICRO_APPS
+};
+
