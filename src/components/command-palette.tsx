@@ -13,23 +13,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PlusCircleIcon, Trash2Icon, SearchIcon, XIcon, GearIcon, RocketIcon } from '@/components/icons';
-import type { CardConfig, LayoutItem } from '@/config/dashboard-cards.config';
+import { ALL_CARD_CONFIGS } from '@/config/dashboard-cards.config';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { useMicroApps } from '@/hooks/use-micro-apps';
 import type { MicroApp } from '@/stores/micro-app.store';
 import eventBus from '@/lib/event-bus';
+import { useLayoutStore } from '@/stores/layout.store';
 
 interface CommandPaletteProps {
-  // All event handlers are now managed via the event bus, so no props are needed for actions
-  allPossibleCards: CardConfig[];
-  layoutItems: LayoutItem[];
+  // All props are now derived from global state via hooks
 }
 
-const CommandPalette: React.FC<CommandPaletteProps> = ({
-  allPossibleCards,
-  layoutItems,
-}) => {
+const CommandPalette: React.FC<CommandPaletteProps> = () => {
   const { isOpen, setOpen } = useCommandPaletteStore();
+  const { layoutItems } = useLayoutStore();
   const [searchTerm, setSearchTerm] = useState('');
   const allMicroApps = useMicroApps();
 
@@ -52,7 +49,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
   
   const activeCardIds = layoutItems.filter(i => i.type === 'card').map(i => i.id);
 
-  const filteredCards = allPossibleCards.filter(card =>
+  const filteredCards = ALL_CARD_CONFIGS.filter(card =>
     !searchTerm ||
     card.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     card.description?.toLowerCase().includes(searchTerm.toLowerCase())

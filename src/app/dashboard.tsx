@@ -3,7 +3,6 @@
 
 import React from 'react';
 import { useDashboardLayout } from '@/hooks/use-dashboard-layout';
-import { ALL_CARD_CONFIGS } from '@/config/dashboard-cards.config';
 import CommandPalette from '@/components/command-palette';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { useDashboardStore } from '@/stores/dashboard.store';
@@ -59,8 +58,6 @@ const Dashboard: React.FC = () => {
        <CommandPalette
         isOpen={isCommandPaletteOpen}
         onOpenChange={setCommandPaletteOpen}
-        allPossibleCards={ALL_CARD_CONFIGS}
-        layoutItems={layoutItems}
       />
     </div>
   );
