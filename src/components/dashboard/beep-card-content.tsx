@@ -7,6 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { SendIcon, MagicWandIcon, UserIcon } from '@/components/icons';
 import { cn } from '@/lib/utils';
+import eventBus from '@/lib/event-bus';
+import type { Message } from 'ai';
 
 interface BeepCardContentProps {
   aiPromptPlaceholder?: string;
@@ -15,7 +17,7 @@ interface BeepCardContentProps {
 const BeepCardContent: React.FC<BeepCardContentProps> = ({ 
   aiPromptPlaceholder = "Ask BEEP anything..." 
 }) => {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading, append } = useChat({
     api: '/api/ai/chat'
   });
 
@@ -31,6 +33,24 @@ const BeepCardContent: React.FC<BeepCardContentProps> = ({
       });
     }
   }, [messages]);
+
+  // Listen for queries submitted from the TopBar
+  useEffect(() => {
+    const handleQuerySubmit = (query: string) => {
+        if (query) {
+            append({
+                role: 'user',
+                content: query,
+            } as Message);
+        }
+    };
+
+    eventBus.on('beep:submitQuery', handleQuerySubmit);
+
+    return () => {
+        eventBus.off('beep:submitQuery', handleQuerySubmit);
+    };
+  }, [append]);
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

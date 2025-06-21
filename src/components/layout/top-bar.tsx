@@ -59,6 +59,7 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
   const [currentTime, setCurrentTime] = useState("--:--");
   const [isMounted, setIsMounted] = useState(false);
   const [agentStatus, setAgentStatus] = useState<{ activeCount: number, totalCount: number } | null>(null);
+  const [commandValue, setCommandValue] = useState('');
 
   useEffect(() => {
     setIsMounted(true);
@@ -83,6 +84,14 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
 
   const handleNavClick = (cardId: string) => {
     eventBus.emit('panel:focus', cardId);
+  };
+  
+  const handleCommandSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && commandValue.trim()) {
+        e.preventDefault();
+        eventBus.emit('command:submit', commandValue);
+        setCommandValue(''); // Clear input after submission
+    }
   };
 
   return (
@@ -125,6 +134,9 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
               placeholder="Search or ask 'show my tasks'..."
               className="command-bar-input-aevos-override w-full h-9 pl-10 pr-4 text-sm"
               aria-label="Command or search input"
+              value={commandValue}
+              onChange={(e) => setCommandValue(e.target.value)}
+              onKeyDown={handleCommandSubmit}
             />
           </div>
         </div>

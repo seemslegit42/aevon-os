@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { Suspense, useState, useEffect } from 'react';
+import React, { Suspense, useState, useEffect, useCallback } from 'react';
 import { Rnd } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -114,6 +114,24 @@ const Dashboard: React.FC = () => {
       eventBus.off('panel:focus', focusPanel);
     };
   }, [activeCardIds, handleAddCard, handleBringToFront]);
+
+  // Listen for commands from the TopBar
+  useEffect(() => {
+    const handleCommand = (query: string) => {
+      // Ensure BEEP panel is active and in front
+      handleAddCard('beep');
+      
+      // Give a slight delay to ensure the panel is ready before sending the query
+      setTimeout(() => {
+        eventBus.emit('beep:submitQuery', query);
+      }, 100);
+    };
+
+    eventBus.on('command:submit', handleCommand);
+    return () => {
+      eventBus.off('command:submit', handleCommand);
+    };
+  }, [handleAddCard]);
 
 
   if (!isInitialized) {
