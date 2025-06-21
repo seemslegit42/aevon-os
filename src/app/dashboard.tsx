@@ -1,8 +1,7 @@
 
 "use client";
 
-import React from 'react';
-import { useDashboardLayout } from '@/hooks/use-dashboard-layout';
+import React, { useEffect } from 'react';
 import CommandPalette from '@/components/command-palette';
 import { useLayoutStore } from '@/stores/layout.store';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -10,11 +9,12 @@ import DashboardWindow from '@/components/dashboard-window';
 import { shallow } from 'zustand/shallow';
 
 const Dashboard: React.FC = () => {
-  // The useDashboardLayout hook now simply initializes the layout.
-  useDashboardLayout();
+  // Directly initialize the layout from within the main dashboard component.
+  // This removes the need for the `useDashboardLayout` custom hook, simplifying the architecture.
+  useEffect(() => {
+    useLayoutStore.getState().initialize();
+  }, []); // Run only once on mount
 
-  // We select the state needed for rendering directly from the store.
-  // Actions are now called directly from the components that need them.
   const {
     layoutItems,
     isInitialized,
