@@ -90,76 +90,85 @@ const LoomStudioCardContent: React.FC = () => {
     const [isSimulating, setIsSimulating] = useState(false);
     const [inputText, setInputText] = useState(sampleInvoiceText);
     const { toast } = useToast();
+    const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-    const updateNodeState = (nodeId: string, newState: Partial<NodeState>) => {
+    const updateNodeState = useCallback((nodeId: string, newState: Partial<NodeState>) => {
         setNodes(prev => prev.map(n => n.id === nodeId ? { ...n, ...newState } : n));
-    };
+    }, []);
+
+    const runTriggerStep = useCallback(async () => {
+        updateNodeState('trigger', { status: 'running' });
+        await sleep(300);
+        updateNodeState('trigger', { status: 'completed', output: { characters: inputText.length } });
+        eventBus.emit('orchestration:log', { task: 'Loom: Triggered', status: 'success', details: `Processing ${inputText.length} characters.` });
+    }, [inputText, updateNodeState]);
+
+    const runCategorizationStep = useCallback(async (): Promise<TextCategory> => {
+        updateNodeState('condition', { status: 'running' });
+        const catResponse = await fetch('/api/ai/categorize-text', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: inputText }),
+        });
+        if (!catResponse.ok) throw new Error('Categorization API failed');
+        const categoryResult: TextCategory = await catResponse.json();
+        
+        updateNodeState('condition', { status: 'completed', output: categoryResult });
+        eventBus.emit('orchestration:log', { task: 'Loom: Categorized', status: 'success', details: `Text classified as: ${categoryResult.category}` });
+        return categoryResult;
+    }, [inputText, updateNodeState]);
+
+    const runExtractionStep = useCallback(async () => {
+        updateNodeState('action-extract', { status: 'running' });
+        const extractResponse = await fetch('/api/ai/extract-invoice-data', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: inputText }),
+        });
+        if (!extractResponse.ok) throw new Error('Extraction API failed');
+        const extractResult: InvoiceData = await extractResponse.json();
+        
+        updateNodeState('action-extract', { status: 'completed', output: extractResult });
+        eventBus.emit('orchestration:log', { task: 'Loom: Extracted', status: 'success', details: extractResult.summary });
+    }, [inputText, updateNodeState]);
+    
+    const runLoggingStep = useCallback(async () => {
+        updateNodeState('action-log', { status: 'running' });
+        await sleep(300);
+        updateNodeState('action-log', { status: 'completed', output: { status: "Logged OK" } });
+        eventBus.emit('orchestration:log', { task: 'Loom: Logged', status: 'success', details: 'Workflow results logged to system.' });
+    }, [updateNodeState]);
+
 
     const runSimulation = useCallback(async () => {
         setIsSimulating(true);
-        setNodes(initialWorkflow); // Reset on new run
-        const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
+        setNodes(initialWorkflow);
 
         try {
-            // 1. Trigger
-            updateNodeState('trigger', { status: 'running' });
-            await sleep(500);
-            updateNodeState('trigger', { status: 'completed', output: { characters: inputText.length } });
-            eventBus.emit('orchestration:log', { task: 'Loom: Triggered', status: 'success', details: `Processing ${inputText.length} characters.` });
-            
-            await sleep(500);
+            await runTriggerStep();
+            await sleep(400);
 
-            // 2. Condition (Categorization)
-            updateNodeState('condition', { status: 'running' });
-            const catResponse = await fetch('/api/ai/categorize-text', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: inputText }),
-            });
-            if (!catResponse.ok) throw new Error('Categorization API failed');
-            const categoryResult: TextCategory = await catResponse.json();
-            
-            updateNodeState('condition', { status: 'completed', output: categoryResult });
-            eventBus.emit('orchestration:log', { task: 'Loom: Categorized', status: 'success', details: `Text classified as: ${categoryResult.category}` });
-            
-            await sleep(500);
+            const categoryResult = await runCategorizationStep();
+            await sleep(400);
 
-            // 3. Action (Extraction) - only if it's an invoice
             if (categoryResult.isMatch) {
-                updateNodeState('action-extract', { status: 'running' });
-                const extractResponse = await fetch('/api/ai/extract-invoice-data', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: inputText }),
-                });
-                if (!extractResponse.ok) throw new Error('Extraction API failed');
-                const extractResult: InvoiceData = await extractResponse.json();
-                
-                updateNodeState('action-extract', { status: 'completed', output: extractResult });
-                eventBus.emit('orchestration:log', { task: 'Loom: Extracted', status: 'success', details: extractResult.summary });
-
+                await runExtractionStep();
             } else {
-                 updateNodeState('action-extract', { status: 'failed', error: "Skipped: Not an invoice." });
+                updateNodeState('action-extract', { status: 'failed', error: "Skipped: Not an invoice." });
             }
-
-            await sleep(500);
+            await sleep(400);
             
-            // 4. Final Action
-            updateNodeState('action-log', { status: 'running' });
-            await sleep(500);
-            updateNodeState('action-log', { status: 'completed', output: { status: "Logged OK" } });
-            eventBus.emit('orchestration:log', { task: 'Loom: Logged', status: 'success', details: 'Workflow results logged to system.' });
+            await runLoggingStep();
 
         } catch (error: any) {
             const errorMessage = error.message || "An unknown error occurred during simulation.";
             toast({ variant: "destructive", title: "Simulation Failed", description: errorMessage });
             eventBus.emit('orchestration:log', { task: 'Loom: Workflow Failed', status: 'failure', details: errorMessage });
-            // Mark running node as failed
             setNodes(prev => prev.map(n => n.status === 'running' ? { ...n, status: 'failed', error: errorMessage } : n));
         } finally {
             setIsSimulating(false);
         }
-    }, [inputText, toast]);
+    }, [toast, runTriggerStep, runCategorizationStep, runExtractionStep, runLoggingStep, updateNodeState]);
 
     const findNode = (id: string) => nodes.find(n => n.id === id)!;
 

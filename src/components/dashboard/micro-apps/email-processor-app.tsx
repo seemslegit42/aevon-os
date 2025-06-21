@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,6 +29,38 @@ Best,
 Quantum Supplies Inc.
 `;
 
+
+// --- API Helper Functions ---
+
+async function categorizeText(text: string): Promise<TextCategory> {
+    const response = await fetch('/api/ai/categorize-text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Categorization API failed');
+    }
+    return response.json();
+}
+
+async function extractInvoiceData(text: string): Promise<InvoiceData> {
+    const response = await fetch('/api/ai/extract-invoice-data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Extraction API failed');
+    }
+    return response.json();
+}
+
+
+// --- Component ---
+
 const EmailProcessorApp: React.FC = () => {
     const [inputText, setInputText] = useState(sampleEmail);
     const [isLoading, setIsLoading] = useState(false);
@@ -37,7 +69,7 @@ const EmailProcessorApp: React.FC = () => {
     const [invoiceResult, setInvoiceResult] = useState<InvoiceData | null>(null);
     const { toast } = useToast();
 
-    const handleProcessEmail = async () => {
+    const handleProcessEmail = useCallback(async () => {
         if (!inputText.trim()) {
             toast({ variant: "destructive", title: "Input Required", description: "Please provide email text to process." });
             return;
@@ -51,25 +83,13 @@ const EmailProcessorApp: React.FC = () => {
 
         try {
             // Step 1: Categorize Text
-            const catResponse = await fetch('/api/ai/categorize-text', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: inputText }),
-            });
-            if (!catResponse.ok) throw new Error('Categorization failed.');
-            const categoryData: TextCategory = await catResponse.json();
+            const categoryData = await categorizeText(inputText);
             setCategoryResult(categoryData);
             eventBus.emit('orchestration:log', { task: 'Email Categorized', status: 'success', details: `Category: ${categoryData.category}` });
 
             // Step 2: Extract Invoice Data if applicable
             if (categoryData.isMatch && categoryData.category === 'Invoice') {
-                const extractResponse = await fetch('/api/ai/extract-invoice-data', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text: inputText }),
-                });
-                if (!extractResponse.ok) throw new Error('Invoice data extraction failed.');
-                const invoiceData: InvoiceData = await extractResponse.json();
+                const invoiceData = await extractInvoiceData(inputText);
                 setInvoiceResult(invoiceData);
                 eventBus.emit('orchestration:log', { task: 'Invoice Data Extracted', status: 'success', details: invoiceData.summary });
             }
@@ -82,7 +102,7 @@ const EmailProcessorApp: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [inputText, toast]);
 
     const LoadingSkeleton = () => (
         <div className="space-y-4">
