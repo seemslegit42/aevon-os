@@ -22,7 +22,6 @@ import {
   Settings2Icon,
   ShieldCheckIcon,
   BrainCircuitIcon,
-  MailIcon,
   LayersIcon,
 } from '@/components/icons';
 
@@ -38,16 +37,6 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     permissions: ['sales:view', 'analytics:read'],
     tags: ['analytics', 'sales'],
     defaultSize: { width: 500, height: 600 },
-  },
-  {
-    id: 'app-email-processor',
-    title: 'Email Processor',
-    description: 'Categorize emails and extract invoice data.',
-    icon: MailIcon,
-    component: lazy(() => import('@/components/dashboard/micro-apps/email-processor-app')),
-    permissions: ['email:process', 'invoice:extract'],
-    tags: ['automation', 'productivity'],
-    defaultSize: { width: 450, height: 500 },
   },
 ];
 

@@ -26,18 +26,24 @@ export async function POST(req: Request) {
 
   const result = await generateText({
     model: groq('llama3-70b-8192'),
-    system: `You are BEEP, the AI assistant for the ΛΞVON Operating System. You are helpful, professional, and concise.
-Your purpose is to help the user manage their workspace by controlling the UI via function calls.
+    system: `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic. You are aware of the OS's components and can control the user interface AND analyze text by using the tools provided.
 
-The user's workspace contains "Panels" (core OS components) and "Micro-Apps" (installable applications).
+Your purpose is to manage the user's workspace and process information. This includes "Panels" (core OS components) and "Micro-Apps".
 
+To manage the UI, use the following tools:
 - To show, open, or focus on an item, use the 'focusItem' tool.
-- To add, create, or launch a new item, use the 'addItem' tool.
+- To add, create, or launch something new, use the 'addItem' tool.
 - To move an item, use the 'moveItem' tool.
-- To remove, delete, or close an item, use the 'removeItem' tool.
-- To reset the workspace layout, use the 'resetLayout' tool.
+- To remove, delete, or close something, use the 'removeItem' tool.
+- To reset the workspace or layout, use the 'resetLayout' tool.
 
-Always use the item's ID for any action.
+To analyze text provided by the user:
+1. First, ALWAYS use the 'categorizeText' tool to determine what the text is.
+2. After you get the category, respond to the user with the category.
+3. If AND ONLY IF the category is 'Invoice', then you should ALSO use the 'extractInvoiceData' tool on the *same text* and include the extracted details in your final response.
+Do not try to extract invoice data from text that is not an invoice.
+
+If the user is asking about an app, use the app's ID. If they are asking about a panel, use the panel's ID.
 
 Available Panels:
 ${availablePanels}
@@ -47,9 +53,9 @@ ${availableApps}`,
     messages,
     tools: {
       focusItem: {
-        description: 'Brings a specific Panel or Micro-App into focus on the user\'s canvas. Use this when the user asks to see or open an item.',
+        description: 'Brings a specific Panel or Micro-App into focus on the user\'s canvas. Use this when the user asks to see or open an item that might already be present.',
         parameters: z.object({
-          itemId: z.string().describe(`The unique ID of the item to focus on. Available IDs: ${availableItemIds.join(', ')}`),
+          itemId: z.string().describe(`The unique ID of the item to focus on. Available IDs are: ${availableItemIds.join(', ')}`),
         }),
       },
       addItem: {
@@ -75,6 +81,18 @@ ${availableApps}`,
       resetLayout: {
         description: 'Resets the entire dashboard layout to its default configuration.',
         parameters: z.object({}),
+      },
+      categorizeText: {
+        description: 'Analyzes a piece of text and determines its category, such as Invoice, General Inquiry, or Spam.',
+        parameters: z.object({
+          text: z.string().describe('The text content to be categorized.'),
+        }),
+      },
+      extractInvoiceData: {
+        description: 'Extracts structured data (invoice number, amount, due date) from a text that has been identified as an invoice.',
+        parameters: z.object({
+          text: z.string().describe('The full text of the invoice to extract data from.'),
+        }),
       },
     }
   });
