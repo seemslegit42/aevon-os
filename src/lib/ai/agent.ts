@@ -21,6 +21,32 @@ import type { LayoutItem } from '@/types/dashboard';
 
 // === 1. DEFINE TOOLS ===
 
+// -- KNOWLEDGE BASE SIMULATION --
+const KNOWLEDGE_BASE = {
+    'loom studio': 'Loom Studio is a visual workspace for designing, testing, and orchestrating complex AI workflows and prompt chains.',
+    'aegis': 'Aegis is the security command center for AEVON OS. It provides a real-time overview of your security posture, including phishing resilience, cloud security, and endpoint detection.',
+    'beep': 'BEEP (Behavioral Event & Execution Processor) is your natural language interface for tasking, information retrieval, and personalized briefings.',
+    'micro-apps': 'Micro-apps are small, single-purpose applications that can be launched into the workspace for specific tasks, like sales analytics or content creation.'
+};
+
+const searchKnowledgeBaseTool = new DynamicTool({
+    name: 'searchKnowledgeBase',
+    description: 'Searches the AEVON OS internal knowledge base for information about its features.',
+    schema: z.object({
+        query: z.string().describe("The user's question about an OS feature."),
+    }),
+    func: async ({ query }) => {
+        const lowerQuery = query.toLowerCase();
+        for (const key in KNOWLEDGE_BASE) {
+            if (lowerQuery.includes(key)) {
+                return JSON.stringify({ found: true, answer: KNOWLEDGE_BASE[key as keyof typeof KNOWLEDGE_BASE] });
+            }
+        }
+        return JSON.stringify({ found: false, answer: "I couldn't find any information on that topic in the knowledge base." });
+    }
+});
+
+
 // -- SERVER-SIDE TOOLS --
 const categorizeTextTool = new DynamicTool({
   name: 'categorizeText',
@@ -85,7 +111,7 @@ const logAndAlertAegisTool = new DynamicTool({
     },
 });
 
-const serverTools = [categorizeTextTool, extractInvoiceDataTool, logAndAlertAegisTool];
+const serverTools = [categorizeTextTool, extractInvoiceDataTool, logAndAlertAegisTool, searchKnowledgeBaseTool];
 const toolExecutor = new ToolNode(serverTools);
 
 // -- CLIENT-SIDE TOOLS --
@@ -174,8 +200,10 @@ const getSystemPrompt = (layout: LayoutItem[]) => {
 
   return `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic. You have access to a suite of tools to manage the user's workspace and analyze text.
 
-**RULE FOR ALL INTERACTIONS**
-- For simple conversation, just respond directly without calling any tools.
+**RULES FOR QUESTION ANSWERING**
+- If the user asks a question about how a feature works (e.g., "What is Loom Studio?"), you MUST use the \`searchKnowledgeBase\` tool to find the answer.
+- If the knowledge base doesn't have an answer, inform the user you couldn't find the information.
+- For simple, conversational questions (e.g., "How are you?"), just respond directly without calling any tools.
 
 **RULES FOR UI MANIPULATION**
 1.  **Check Open Windows First:** Before taking any action, review the 'Open Windows' list below.

@@ -44,3 +44,10 @@ export const ContentGenerationSchema = z.object({
   body: z.string().describe("The main body of the generated content, formatted appropriately for the selected content type (e.g., with markdown for a blog post)."),
 });
 export type ContentGeneration = z.infer<typeof ContentGenerationSchema>;
+
+// Defines the structured output for the Knowledge Base search tool.
+export const KnowledgeBaseSearchResultSchema = z.object({
+  found: z.boolean().describe("Whether a relevant answer was found."),
+  answer: z.string().describe("The answer found in the knowledge base, or a message indicating no information was found."),
+});
+export type KnowledgeBaseSearchResult = z.infer<typeof KnowledgeBaseSearchResultSchema>;

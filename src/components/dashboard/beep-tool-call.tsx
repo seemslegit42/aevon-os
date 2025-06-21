@@ -13,10 +13,11 @@ import {
   CheckCircleIcon,
   AlertCircleIcon,
   LoaderIcon,
+  BookOpenIcon,
 } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import type { IconProps } from '@/types/icon';
-import { TextCategorySchema, InvoiceDataSchema, type TextCategory, type InvoiceData } from '@/lib/ai-schemas';
+import { TextCategorySchema, InvoiceDataSchema, KnowledgeBaseSearchResultSchema } from '@/lib/ai-schemas';
 
 const toolIcons: Record<string, React.ElementType<IconProps>> = {
   focusItem: TargetIcon,
@@ -29,6 +30,7 @@ const toolIcons: Record<string, React.ElementType<IconProps>> = {
   default: GearIcon,
   closeAllInstancesOfApp: Trash2Icon,
   logAndAlertAegis: CheckCircleIcon,
+  searchKnowledgeBase: BookOpenIcon,
 };
 
 const toolFriendlyNames: Record<string, string> = {
@@ -41,6 +43,7 @@ const toolFriendlyNames: Record<string, string> = {
   extractInvoiceData: 'Extract Invoice Data',
   closeAllInstancesOfApp: 'Close All',
   logAndAlertAegis: 'Log Event',
+  searchKnowledgeBase: 'Search Knowledge Base',
 };
 
 
@@ -50,19 +53,18 @@ const toolFriendlyNames: Record<string, string> = {
  */
 const ToolResultContent: React.FC<{ toolName: string; result: any }> = ({ toolName, result }) => {
   try {
-    const parsedResult = typeof result === 'string' ? JSON.parse(result) : result;
-
     switch (toolName) {
-      case 'categorizeText':
-        const { category, isMatch } = TextCategorySchema.parse(parsedResult);
+      case 'categorizeText': {
+        const { category, isMatch } = TextCategorySchema.parse(result);
         return (
           <div className="text-foreground font-sans text-xs space-y-1">
             <p><strong>Category:</strong> {category}</p>
             <p><strong>Is Match:</strong> {isMatch ? 'Yes' : 'No'}</p>
           </div>
         );
-      case 'extractInvoiceData':
-        const data = InvoiceDataSchema.parse(parsedResult);
+      }
+      case 'extractInvoiceData': {
+        const data = InvoiceDataSchema.parse(result);
         return (
           <div className="text-foreground font-sans text-xs space-y-1">
             {data.invoiceNumber && <p><strong>Invoice #:</strong> {data.invoiceNumber}</p>}
@@ -71,12 +73,22 @@ const ToolResultContent: React.FC<{ toolName: string; result: any }> = ({ toolNa
             {data.summary && <p className="pt-1 italic text-muted-foreground">{data.summary}</p>}
           </div>
         );
+      }
+      case 'searchKnowledgeBase': {
+          const { answer } = KnowledgeBaseSearchResultSchema.parse(result);
+           return (
+            <div className="text-foreground font-sans text-xs space-y-1">
+                <p>{answer}</p>
+            </div>
+           );
+      }
       default:
         // Fallback for other tools (e.g. client-side simple messages) or unknown tools
-        return <code className="text-xs">{JSON.stringify(parsedResult, null, 2)}</code>;
+        return <code className="text-xs">{JSON.stringify(result, null, 2)}</code>;
     }
   } catch (e) {
     // If parsing fails, just show the raw string
+    console.error("Failed to parse tool result content:", e);
     return <code>{String(result)}</code>;
   }
 };
