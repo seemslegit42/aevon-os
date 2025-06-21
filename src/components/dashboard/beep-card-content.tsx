@@ -5,11 +5,12 @@ import { useChat } from 'ai/react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { SendIcon, MagicWandIcon, UserIcon } from '@/components/icons';
+import { SendIcon, UserIcon } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import eventBus from '@/lib/event-bus';
 import type { Message } from 'ai';
 import { useToast } from '@/hooks/use-toast';
+import BeepAvatar from './beep-avatar';
 
 interface BeepCardContentProps {
   aiPromptPlaceholder?: string;
@@ -102,6 +103,10 @@ const BeepCardContent: React.FC<BeepCardContentProps> = ({
 
   return (
     <div className="flex flex-col h-full p-1">
+      <div className="relative w-full h-32 md:h-40 mb-2 flex-shrink-0">
+        <BeepAvatar isThinking={isLoading} />
+      </div>
+
       <div className="flex-grow mb-2 min-h-0">
         <ScrollArea className="h-full pr-2" ref={scrollAreaRef}>
           <div className="space-y-4">
@@ -113,7 +118,9 @@ const BeepCardContent: React.FC<BeepCardContentProps> = ({
                 }
                 return (
                   <div key={m.id} className={cn("flex items-start gap-3", m.role === 'user' ? 'justify-end' : '')}>
-                    {m.role === 'assistant' && <MagicWandIcon className="w-5 h-5 text-primary flex-shrink-0 mt-1" />}
+                    {m.role === 'assistant' && (
+                      <div className="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0" />
+                    )}
                     <div className={cn(
                       "p-3 rounded-lg max-w-sm whitespace-pre-wrap text-sm",
                       m.role === 'user'
@@ -128,12 +135,12 @@ const BeepCardContent: React.FC<BeepCardContentProps> = ({
               })
             ) : (
               <div className="flex-grow flex h-full items-center justify-center text-muted-foreground text-center">
-                <p className="text-sm">BEEP's responses will appear here. <br /> Ask me to "show the loom studio".</p>
+                <p className="text-sm">BEEP is online. <br /> Ask me to "show the loom studio".</p>
               </div>
             )}
             {isLoading && messages[messages.length-1]?.role === 'user' && (
               <div className="flex items-start gap-3">
-                <MagicWandIcon className="w-5 h-5 text-primary flex-shrink-0 mt-1 animate-pulse" />
+                 <div className="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0" />
                 <div className="p-3 rounded-lg bg-muted/50 text-foreground text-sm">...</div>
               </div>
             )}
