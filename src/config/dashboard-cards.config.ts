@@ -10,6 +10,7 @@ const MicroAppsCardContent = lazy(() => import('@/components/dashboard/micro-app
 const LoomStudioCardContent = lazy(() => import('@/components/dashboard/loom-studio-card-content'));
 const AiInsightsCardContent = lazy(() => import('@/components/dashboard/ai-insights-card-content'));
 const AegisSecurityCardContent = lazy(() => import('@/components/dashboard/aegis-security-card-content'));
+const AgentPresenceCardContent = lazy(() => import('@/components/dashboard/agent-presence-card-content'));
 
 
 // Icons for card titles and content
@@ -24,6 +25,10 @@ import {
   LayersIcon,
   PenSquareIcon,
   CreditCardIcon,
+  UsersRoundIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  LoaderIcon,
 } from '@/components/icons';
 
 
@@ -60,6 +65,22 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     defaultSize: { width: 400, height: 420 },
   },
 ];
+
+const mockAgents = [
+    { 
+        id: 'agent1', name: 'Invoice Processor', description: 'Monitoring incoming documents.', 
+        status: 'Idle', statusColor: 'text-chart-4', statusIcon: ClockIcon, time: '1m ago' 
+    },
+    { 
+        id: 'agent2', name: 'Security Analyst', description: 'Analyzing login patterns.', 
+        status: 'Processing', statusColor: 'text-accent', statusIcon: LoaderIcon, isSpinning: true, time: 'Just now' 
+    },
+    { 
+        id: 'agent3', name: 'Data Synchronizer', description: 'Last sync successful.', 
+        status: 'Completed', statusColor: 'text-chart-2', statusIcon: CheckCircleIcon, time: '15m ago' 
+    },
+];
+
 
 export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
@@ -98,11 +119,16 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     minWidth: 120, minHeight: 120,
   },
   {
-    id: 'aegisSecurity', title: 'Aegis Command Center', icon: ShieldCheckIcon, isDismissible: true,
-    description: "Your simple, real-time security overview.",
-    content: AegisSecurityCardContent,
+    id: 'agentPresence',
+    title: 'Agent Presence & Status',
+    icon: UsersRoundIcon,
+    isDismissible: true,
+    description: "Monitor the real-time status and activity of your autonomous AI agents.",
+    content: AgentPresenceCardContent,
+    contentProps: { agents: mockAgents },
     defaultLayout: { x: 410, y: 530, width: 450, height: 210, zIndex: 8 },
-    minWidth: 400, minHeight: 210,
+    minWidth: 280,
+    minHeight: 180,
   },
 ];
 
