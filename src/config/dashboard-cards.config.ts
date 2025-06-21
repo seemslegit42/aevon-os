@@ -1,5 +1,6 @@
 
 import { lazy, type LazyExoticComponent, type FC, type ElementType } from 'react';
+import type { MicroAppRegistration } from '@/stores/micro-app.store';
 
 // Lazy loaded card content components
 const BeepCardContent = lazy(() => import('@/components/dashboard/beep-card-content'));
@@ -32,6 +33,18 @@ import {
   ClockIcon,
   RefreshCwIcon as LoaderCircleIcon,
 } from '@/components/icons';
+
+
+// Define all available micro-apps for registration
+export const ALL_MICRO_APPS: MicroAppRegistration[] = [
+  {
+    id: 'app-analytics',
+    title: 'Sales Analytics',
+    description: 'Detailed sales analytics and trends.',
+    icon: ChartBarIcon,
+    component: lazy(() => import('@/components/dashboard/micro-apps/sales-analytics-app')),
+  }
+];
 
 export interface CardLayoutInfo {
   id: string;
@@ -138,11 +151,6 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     id: 'microApps', title: 'Micro-Apps Palette', icon: LayoutGridIcon, isDismissible: true,
     description: "A palette for launching available micro-apps into the Application View zone.",
     content: MicroAppsCardContent,
-    contentProps: {
-      availableApps: [
-        { id: 'app-analytics', icon: ChartBarIcon, label: 'Sales Analytics' },
-      ]
-    },
     defaultLayout: { x: 740, y: 430, width: 120, height: 230, zIndex: 9 }, 
     minWidth: 120, minHeight: 120,
   },

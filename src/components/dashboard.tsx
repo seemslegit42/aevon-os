@@ -8,11 +8,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { PinIcon, XIcon, ClockIcon, RefreshCwIcon as LoaderCircleIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { useDashboardLayout } from '@/hooks/use-dashboard-layout';
-import { ALL_CARD_CONFIGS, DEFAULT_ACTIVE_CARD_IDS } from '@/config/dashboard-cards.config';
+import { ALL_CARD_CONFIGS, DEFAULT_ACTIVE_CARD_IDS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
 import CommandPalette from '@/components/command-palette';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import eventBus from '@/lib/event-bus';
 import { useDashboardStore } from '@/stores/dashboard.store';
+import { useMicroAppStore } from '@/stores/micro-app.store';
 
 // Data for dynamic updates
 const sampleFeedItems = [
@@ -45,9 +46,14 @@ const Dashboard: React.FC = () => {
 
   const { isOpen: isCommandPaletteOpen, setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
   const { setFocusedCardId } = useDashboardStore();
+  const registerApps = useMicroAppStore(state => state.registerApps);
   
   const [liveFeedData, setLiveFeedData] = useState<any[]>([]);
   const [agentPresenceData, setAgentPresenceData] = useState<any[]>([]);
+
+  useEffect(() => {
+    registerApps(ALL_MICRO_APPS);
+  }, [registerApps]);
 
   useEffect(() => {
     // Initialize state from config on mount
@@ -126,7 +132,11 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     const handleCommand = (query: string) => {
       // Ensure BEEP panel is active and in front
-      handleAddCard('beep');
+      if (!activeCardIds.includes('beep')) {
+        handleAddCard('beep');
+      } else {
+        handleBringToFront('beep');
+      }
       
       // Give a slight delay to ensure the panel is ready before sending the query
       setTimeout(() => {
@@ -138,7 +148,7 @@ const Dashboard: React.FC = () => {
     return () => {
       eventBus.off('command:submit', handleCommand);
     };
-  }, [handleAddCard]);
+  }, [handleAddCard, activeCardIds, handleBringToFront]);
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // If the click is on the direct background, clear the focus
