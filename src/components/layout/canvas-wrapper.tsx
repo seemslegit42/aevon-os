@@ -8,18 +8,27 @@ type CanvasWrapperProps = {
   children: React.ReactNode;
 };
 
+/**
+ * The main content area of the OS. It's a relative container
+ * that holds the background effects and the main children content
+ * (the dashboard itself).
+ */
 const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
   return (
     <main
       className={cn(
-        "flex-grow w-full overflow-y-auto relative text-foreground pt-20" // Added pt-20 to account for fixed TopBar height
+        "flex-grow w-full relative"
       )}
     >
+      {/* Background effects are positioned absolutely to fill this container */}
       <BackgroundGlyphs />
-      {/* This container will hold the gradient and the dark overlay for dark mode */}
       <div className="canvas-aurora-background-dark-container"></div>
       
-      <div className="relative z-10 h-full"> {/* Main content, z-index ensures it's on top */}
+      {/* 
+        The main content (Dashboard) is also positioned absolutely to fill the container.
+        This ensures it sits on top of the background layers and occupies the full space.
+      */}
+      <div className="absolute inset-0 z-10">
         {children}
       </div>
     </main>
@@ -27,5 +36,3 @@ const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
 };
 
 export default CanvasWrapper;
-
-    

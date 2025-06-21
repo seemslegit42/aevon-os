@@ -5,7 +5,7 @@ import type { LayoutItem } from '@/types/dashboard';
 import { ALL_CARD_CONFIGS, ALL_MICRO_APPS, DEFAULT_LAYOUT_CONFIG } from '@/config/dashboard-cards.config';
 import type { MicroApp } from './micro-app.store';
 
-const LAYOUT_STORAGE_KEY = 'dashboardLayout_v5_unified';
+const LAYOUT_STORAGE_KEY = 'dashboardLayout_v6_repaired';
 
 interface LayoutState {
   layoutItems: LayoutItem[];
@@ -28,8 +28,11 @@ interface LayoutState {
 
 const saveStateToLocalStorage = (state: Pick<LayoutState, 'layoutItems' | 'focusedItemId'>) => {
   try {
-    if (Array.isArray(state.layoutItems)) {
+    if (Array.isArray(state.layoutItems) && state.layoutItems.length > 0) {
       localStorage.setItem(LAYOUT_STORAGE_KEY, JSON.stringify(state));
+    } else {
+      // If layout is empty, clear storage to allow reset on next load
+      localStorage.removeItem(LAYOUT_STORAGE_KEY);
     }
   } catch (error) {
     console.error("Failed to save dashboard state to localStorage:", error);
@@ -44,32 +47,37 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
   initialize: () => {
     if (get().isInitialized) return;
 
+    let finalState = {
+        layoutItems: DEFAULT_LAYOUT_CONFIG,
+        focusedItemId: null
+    };
+
     try {
       const savedStateJSON = localStorage.getItem(LAYOUT_STORAGE_KEY);
-      let finalState = {
-          layoutItems: DEFAULT_LAYOUT_CONFIG,
-          focusedItemId: null
-      };
-
       if (savedStateJSON) {
         const parsedState = JSON.parse(savedStateJSON);
-        if (parsedState && Array.isArray(parsedState.layoutItems)) {
+        
+        // Validate the loaded state to prevent chaos
+        if (parsedState && Array.isArray(parsedState.layoutItems) && parsedState.layoutItems.length > 0) {
           const validLayouts = parsedState.layoutItems.filter((item: LayoutItem) => 
              item && typeof item.id === 'string' && typeof item.type === 'string' &&
-             (item.type === 'card' ? ALL_CARD_CONFIGS.some(c => c.id === item.cardId) : ALL_MICRO_APPS.some(a => a.id === item.appId))
+             (item.type === 'card' 
+                ? ALL_CARD_CONFIGS.some(c => c.id === item.cardId) 
+                : ALL_MICRO_APPS.some(a => a.id === item.appId))
           );
           
-          finalState.layoutItems = validLayouts;
-          finalState.focusedItemId = validLayouts.some((item: LayoutItem) => item.id === parsedState.focusedItemId) ? parsedState.focusedItemId : null;
+          if(validLayouts.length > 0) {
+            finalState.layoutItems = validLayouts;
+            finalState.focusedItemId = validLayouts.some((item: LayoutItem) => item.id === parsedState.focusedItemId) ? parsedState.focusedItemId : null;
+          }
         }
       }
-      set(finalState);
     } catch (error) {
       console.error("Error initializing dashboard from localStorage, resetting to default:", error);
-      set({ layoutItems: DEFAULT_LAYOUT_CONFIG, focusedItemId: null });
+      finalState = { layoutItems: DEFAULT_LAYOUT_CONFIG, focusedItemId: null };
       localStorage.removeItem(LAYOUT_STORAGE_KEY);
     } finally {
-      set({ isInitialized: true });
+      set({ ...finalState, isInitialized: true });
     }
   },
   
@@ -146,6 +154,7 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
   addCard: (cardId) => {
     const currentItems = get().layoutItems;
     if (currentItems.some(item => item.id === cardId)) {
+        get().bringToFront(cardId);
         return cardId;
     }
 

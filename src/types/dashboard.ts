@@ -1,14 +1,14 @@
 
-import type { LazyExoticComponent, FC, ElementType } from 'react';
+import type { ElementType, LazyExoticComponent } from 'react';
 
 export interface CardConfig {
   id: string;
   title: string;
   icon: ElementType;
   description?: string;
-  content: LazyExoticComponent<FC<any>>;
+  content: LazyExoticComponent<any>;
   contentProps?: any;
-  defaultLayout: { x: number; y: number; width: number; height: number; zIndex: number };
+  defaultLayout: { x: number; y: number; width: number; height: number; };
   minWidth: number;
   minHeight: number;
   isDismissible?: boolean;

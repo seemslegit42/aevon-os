@@ -50,6 +50,9 @@
   * {
     @apply border-border;
   }
+  html, body, #__next {
+    @apply h-full w-full;
+  }
   body {
     @apply bg-background text-foreground;
     font-family: 'Lexend', sans-serif;
@@ -75,19 +78,19 @@
 }
 
 /* Custom Scrollbar */
-::-webkit-scrollbar {
+.pretty-scrollbar::-webkit-scrollbar {
   width: 5px;
   height: 5px;
 }
-::-webkit-scrollbar-track {
+.pretty-scrollbar::-webkit-scrollbar-track {
   background: hsl(var(--background) / 0.2);
   border-radius: 10px;
 }
-::-webkit-scrollbar-thumb {
+.pretty-scrollbar::-webkit-scrollbar-thumb {
   background: hsl(var(--muted) / 0.5);
   border-radius: 10px;
 }
-::-webkit-scrollbar-thumb:hover {
+.pretty-scrollbar::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted));
 }
 
@@ -161,31 +164,25 @@
 
 /* TopBar Overrides */
 .topbar-aevos-glass-override {
-  background-color: rgba(245, 255, 250, 0.10) !important;
+  background-color: hsla(275, 25%, 15%, 0.15); /* Slightly darker, more purple tint */
   backdrop-filter: blur(25px) !important;
   -webkit-backdrop-filter: blur(25px) !important;
-  border: 1px solid rgba(245, 255, 250, 0.25) !important;
-  box-shadow: 0 4px 24px 0 rgba(28, 25, 52, 0.1) !important;
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  z-index: 1000 !important;
-  padding: 1rem 2rem !important;
+  border-bottom: 1px solid hsla(var(--border), 0.3) !important;
+  box-shadow: 0 4px 24px 0 hsla(275, 45%, 8%, 0.1) !important;
   font-family: 'Lexend', sans-serif !important;
   color: hsl(var(--foreground)) !important;
 }
 
 .command-bar-input-aevos-override {
-  background-color: rgba(40, 35, 60, 0.3) !important;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15) !important;
-  border-color: rgba(245, 255, 250, 0.1) !important;
+  background-color: hsla(var(--muted), 0.3) !important;
+  box-shadow: inset 0 1px 2px hsla(0, 0%, 0%, 0.15) !important;
+  border-color: hsla(var(--border), 0.2) !important;
   color: hsl(var(--foreground)) !important;
   font-family: 'Lexend', sans-serif !important;
 }
 .command-bar-input-aevos-override::placeholder {
    font-family: 'Lexend', sans-serif !important;
-   color: hsl(var(--muted-foreground) / 0.7) !important;
+   color: hsla(var(--muted-foreground), 0.7) !important;
 }
 
 .aevos-icon-styling-override {
@@ -294,7 +291,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background-color: rgba(28, 25, 52, 0.3);
+  background-color: hsla(var(--background), 0.3);
   z-index: 2;
 }
 
@@ -345,4 +342,20 @@
 }
 .badge-glow-animate {
     animation: badge-glow 3.5s ease-in-out infinite;
+}
+
+@keyframes window-mount {
+  from { opacity: 0; transform: scale(0.97) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes window-unmount {
+  from { opacity: 1; transform: scale(1) translateY(0); }
+  to { opacity: 0; transform: scale(0.97) translateY(10px); }
+}
+
+.animate-window-mount {
+  animation: window-mount 200ms ease-out;
+}
+.animate-window-unmount {
+  animation: window-unmount 200ms ease-out forwards;
 }

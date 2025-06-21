@@ -1,5 +1,5 @@
 
-import { lazy, type LazyExoticComponent, type FC, type ElementType } from 'react';
+import { lazy, type ElementType } from 'react';
 import type { MicroAppRegistration } from '@/stores/micro-app.store';
 import type { LayoutItem, CardConfig } from '@/types/dashboard';
 
@@ -12,25 +12,11 @@ const AiInsightsCardContent = lazy(() => import('@/components/dashboard/ai-insig
 const AegisSecurityCardContent = lazy(() => import('@/components/dashboard/aegis-security-card-content'));
 const AgentPresenceCardContent = lazy(() => import('@/components/dashboard/agent-presence-card-content'));
 
-
 // Icons for card titles and content
 import {
-  MagicWandIcon,
-  ListChecksIcon,
-  LayoutGridIcon,
-  ChartBarIcon,
-  GitForkIcon,
-  ShieldCheckIcon,
-  BrainCircuitIcon,
-  LayersIcon,
-  PenSquareIcon,
-  CreditCardIcon,
-  UsersRoundIcon,
-  ClockIcon,
-  CheckCircleIcon,
-  LoaderIcon,
+  MagicWandIcon, ListChecksIcon, LayoutGridIcon, ChartBarIcon, GitForkIcon, ShieldCheckIcon, BrainCircuitIcon,
+  LayersIcon, PenSquareIcon, CreditCardIcon, UsersRoundIcon, ClockIcon, CheckCircleIcon, LoaderIcon,
 } from '@/components/icons';
-
 
 // Define all available micro-apps for registration
 export const ALL_MICRO_APPS: MicroAppRegistration[] = [
@@ -81,53 +67,63 @@ const mockAgents = [
     },
 ];
 
-
+// This is the single source of truth for all dashboard panels (cards).
 export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
-    id: 'beep', title: 'BEEP Interface', icon: MagicWandIcon, isDismissible: true,
-    description: "Natural language interface for tasking, automation, and information retrieval. Learns from your interactions.",
+    id: 'beep',
+    title: 'BEEP Interface',
+    icon: MagicWandIcon,
+    isDismissible: true,
+    description: "Natural language interface for tasking, automation, and information retrieval.",
     content: BeepCardContent,
-    defaultLayout: { x: 20, y: 20, width: 380, height: 500, zIndex: 1 },
-    minWidth: 300, minHeight: 480, cardClassName: "flex-grow flex flex-col",
+    defaultLayout: { x: 20, y: 20, width: 380, height: 500 },
+    minWidth: 300,
+    minHeight: 480,
+    cardClassName: "flex-grow flex flex-col",
   },
   {
-    id: 'loomStudio', title: 'Loom Studio', icon: GitForkIcon, isDismissible: true,
-    description: "Visual workspace for designing, testing, and orchestrating complex AI agent workflows and prompt chains.",
+    id: 'loomStudio',
+    title: 'Loom Studio',
+    icon: GitForkIcon,
+    isDismissible: true,
+    description: "Visual workspace for designing, testing, and orchestrating complex AI agent workflows.",
     content: LoomStudioCardContent,
-    defaultLayout: { x: 410, y: 20, width: 450, height: 500, zIndex: 2 },
-    minWidth: 320, minHeight: 300,
+    defaultLayout: { x: 410, y: 20, width: 450, height: 500 },
+    minWidth: 320,
+    minHeight: 300,
   },
   {
-    id: 'aiInsights', title: 'AI Insights Engine', icon: BrainCircuitIcon, isDismissible: true,
-    description: "Provides personalized recommendations and data-driven intelligence based on your OS activity.",
-    content: AiInsightsCardContent,
-    defaultLayout: { x: 870, y: 530, width: 450, height: 210, zIndex: 5 },
-    minWidth: 250, minHeight: 180,
+    id: 'liveOrchestrationFeed',
+    title: 'Live Orchestration Feed',
+    icon: ListChecksIcon,
+    isDismissible: true,
+    description: "A real-time feed of events and actions performed by the AI agents.",
+    content: LiveOrchestrationFeedCardContent,
+    defaultLayout: { x: 870, y: 20, width: 450, height: 500 },
+    minWidth: 260,
+    minHeight: 150,
   },
-    {
+  {
     id: 'aegisSecurity',
     title: 'Aegis Security',
     icon: ShieldCheckIcon,
     isDismissible: true,
     description: "Real-time security posture and threat analysis.",
     content: AegisSecurityCardContent,
-    defaultLayout: { x: 1330, y: 20, width: 550, height: 720, zIndex: 9 },
+    defaultLayout: { x: 1330, y: 20, width: 550, height: 720 },
     minWidth: 450,
     minHeight: 500,
   },
   {
-    id: 'liveOrchestrationFeed', title: 'Live Orchestration Feed', icon: ListChecksIcon, isDismissible: true,
-    description: "A real-time feed of events and actions performed by the orchestrated AI agents and system workflows.",
-    content: LiveOrchestrationFeedCardContent,
-    defaultLayout: { x: 870, y: 20, width: 450, height: 500, zIndex: 6 },
-    minWidth: 260, minHeight: 150,
-  },
-  {
-    id: 'microApps', title: 'Micro-Apps Palette', icon: LayoutGridIcon, isDismissible: true,
-    description: "A palette for launching available micro-apps into the Application View zone.",
+    id: 'microApps',
+    title: 'Micro-Apps Palette',
+    icon: LayoutGridIcon,
+    isDismissible: true,
+    description: "Launch available micro-apps into the workspace.",
     content: MicroAppsCardContent,
-    defaultLayout: { x: 20, y: 530, width: 380, height: 210, zIndex: 7 }, 
-    minWidth: 120, minHeight: 120,
+    defaultLayout: { x: 20, y: 530, width: 380, height: 210 }, 
+    minWidth: 120,
+    minHeight: 120,
   },
   {
     id: 'agentPresence',
@@ -137,15 +133,28 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     description: "Monitor the real-time status and activity of your autonomous AI agents.",
     content: AgentPresenceCardContent,
     contentProps: { agents: mockAgents },
-    defaultLayout: { x: 410, y: 530, width: 450, height: 210, zIndex: 8 },
+    defaultLayout: { x: 410, y: 530, width: 450, height: 210 },
     minWidth: 280,
+    minHeight: 180,
+  },
+  {
+    id: 'aiInsights',
+    title: 'AI Insights Engine',
+    icon: BrainCircuitIcon,
+    isDismissible: true,
+    description: "Provides personalized recommendations and data-driven intelligence.",
+    content: AiInsightsCardContent,
+    defaultLayout: { x: 870, y: 530, width: 450, height: 210 },
+    minWidth: 250,
     minHeight: 180,
   },
 ];
 
-export const DEFAULT_LAYOUT_CONFIG: LayoutItem[] = ALL_CARD_CONFIGS.map(card => ({
+// Generates the default layout by mapping over the configs.
+export const DEFAULT_LAYOUT_CONFIG: LayoutItem[] = ALL_CARD_CONFIGS.map((card, index) => ({
     id: card.id,
     type: 'card',
     cardId: card.id,
-    ...card.defaultLayout
+    ...card.defaultLayout,
+    zIndex: index + 1 // Ensure a default stacking order
 }));
