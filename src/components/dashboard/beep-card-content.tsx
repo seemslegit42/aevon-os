@@ -17,6 +17,7 @@ const BeepCardContent: React.FC = () => {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
 
   const { messages, append, isLoading, setMessages } = useChat({
     api: '/api/ai/chat',
@@ -36,6 +37,39 @@ const BeepCardContent: React.FC = () => {
   });
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const lastMessage = messages[messages.length - 1];
+
+  const playAudio = async (text: string) => {
+    // Stop any currently playing audio
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.pause();
+    }
+    try {
+      const response = await fetch('/api/ai/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`TTS request failed with status ${response.status}`);
+      }
+
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audioPlayerRef.current = audio;
+      audio.play();
+      
+      audio.onended = () => {
+        URL.revokeObjectURL(audioUrl);
+        audioPlayerRef.current = null;
+      };
+    } catch (error) {
+      console.error("Error playing TTS audio:", error);
+      toast({ variant: "destructive", title: "Audio Error", description: "Failed to play AI response." });
+    }
+  };
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -44,7 +78,13 @@ const BeepCardContent: React.FC = () => {
         behavior: 'smooth',
       });
     }
-  }, [messages]);
+    
+    if (lastMessage?.role === 'assistant' && lastMessage.content && !isLoading) {
+      const plainTextContent = lastMessage.content.replace(/`+/g, '');
+      playAudio(plainTextContent);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages, isLoading]); // Rerun on messages change
 
   useEffect(() => {
     const handleQuerySubmit = (query: string) => {
