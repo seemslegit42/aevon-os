@@ -60,7 +60,6 @@ const TopBar: React.FC = () => {
   const [commandValue, setCommandValue] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Use store actions directly
   const { focusedItemId, bringToFront } = useLayoutStore();
   const { setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
   
@@ -85,7 +84,7 @@ const TopBar: React.FC = () => {
   const handleCommandSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && commandValue.trim() && !isSubmitting) {
         e.preventDefault();
-        eventBus.emit('command:submit', commandValue);
+        eventBus.emit('beep:submitQuery', commandValue);
         setIsSubmitting(true);
         // This gives the user time to see their command was accepted.
         setTimeout(() => {
@@ -229,5 +228,3 @@ const TopBar: React.FC = () => {
 };
 
 export default TopBar;
-
-    

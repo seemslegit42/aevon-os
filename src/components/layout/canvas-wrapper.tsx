@@ -2,6 +2,7 @@
 "use client";
 import React from 'react';
 import { cn } from '@/lib/utils';
+// Note: BackgroundGlyphs is now an empty component.
 import BackgroundGlyphs from './background-glyphs';
 
 type CanvasWrapperProps = {
@@ -17,7 +18,7 @@ const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
   return (
     <main
       className={cn(
-        "flex-grow w-full relative"
+        "flex-grow w-full h-full relative"
       )}
     >
       {/* Background effects are positioned absolutely to fill this container */}
@@ -28,7 +29,7 @@ const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
         The main content (Dashboard) is also positioned absolutely to fill the container.
         This ensures it sits on top of the background layers and occupies the full space.
       */}
-      <div className="absolute inset-0 z-10">
+      <div className="absolute inset-0 z-10 h-full w-full">
         {children}
       </div>
     </main>

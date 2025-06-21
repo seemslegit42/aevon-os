@@ -4,35 +4,26 @@
 import React from 'react';
 import { useDashboardLayout } from '@/hooks/use-dashboard-layout';
 import CommandPalette from '@/components/command-palette';
-import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { useLayoutStore } from '@/stores/layout.store';
 import { Skeleton } from '@/components/ui/skeleton';
 import DashboardWindow from '@/components/dashboard-window';
 import { shallow } from 'zustand/shallow';
 
 const Dashboard: React.FC = () => {
-  // The useDashboardLayout hook now acts as a controller,
-  // initializing the layout and setting up event listeners.
+  // The useDashboardLayout hook now simply initializes the layout.
   useDashboardLayout();
 
   // We select the state needed for rendering directly from the store.
+  // Actions are now called directly from the components that need them.
   const {
     layoutItems,
     isInitialized,
-    updateItemLayout,
-    bringToFront,
-    closeItem,
-    toggleMinimizeItem,
     focusedItemId,
     setFocusedItemId
   } = useLayoutStore(
     (state) => ({
       layoutItems: state.layoutItems,
       isInitialized: state.isInitialized,
-      updateItemLayout: state.updateItemLayout,
-      bringToFront: state.bringToFront,
-      closeItem: state.closeItem,
-      toggleMinimizeItem: state.toggleMinimizeItem,
       focusedItemId: state.focusedItemId,
       setFocusedItemId: state.setFocusedItemId,
     }),
@@ -69,10 +60,6 @@ const Dashboard: React.FC = () => {
             key={item.id}
             item={item}
             isFocused={item.id === focusedItemId}
-            onLayoutChange={updateItemLayout}
-            onFocus={bringToFront}
-            onClose={closeItem}
-            onToggleMinimize={toggleMinimizeItem}
           />
       ))}
        <CommandPalette />

@@ -26,6 +26,7 @@ const CommandPalette: React.FC = () => {
   const appMap = new Map(allMicroApps.map(app => [app.id, app]));
 
   // Directly use actions and state from the layout store
+  // No more event bus for UI actions
   const {
     layoutItems,
     launchApp,

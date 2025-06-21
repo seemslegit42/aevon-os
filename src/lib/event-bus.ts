@@ -1,27 +1,13 @@
 
 import mitt, { type Emitter } from 'mitt';
-import type { MicroApp } from '@/stores/micro-app.store';
 
-// Define event types and their payloads
+// Define event types and their payloads. This event bus is now used for
+// inter-component communication that doesn't directly involve core layout state.
 type AppEvents = {
-  // Panel/Card Events
-  'panel:focus': string; // payload is the cardId or instanceId
-  'panel:add': string; // payload is cardId
-  'panel:remove': string; // payload is itemId (cardId or app instance id)
-  'layout:reset': undefined;
-  'item:move': { itemId: string; x: number; y: number; }; // payload to move an item
-
-  // App Events
-  'app:launch': MicroApp; // payload is the app object to launch
-  'app:clone': string; // payload is the appId of the app to clone
-  'app:closeAll': string; // payload is appId
-  'app:focusLatest': string; // payload is appId
-
-  // AI Command Events
-  'command:submit': string; // payload is the query from the top bar
+  // AI Command Events - used to decouple the command source from the BEEP receiver
   'beep:submitQuery': string; // payload is the query to be appended to BEEP
   
-  // Inter-component communication events
+  // Inter-component communication events for AI-driven workflows
   'aegis:new-alert': string; // payload is the alert data string for Aegis to analyze
   
   // Notification Events - Fired whenever an agentic action completes

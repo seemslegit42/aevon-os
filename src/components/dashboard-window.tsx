@@ -11,17 +11,21 @@ import type { LayoutItem } from '@/types/dashboard';
 import type { Position, Size } from 'react-rnd';
 import { cn } from '@/lib/utils';
 import { WindowContent } from './dashboard-window-content';
+import { useLayoutStore } from '@/stores/layout.store';
 
 interface DashboardWindowProps {
   item: LayoutItem;
   isFocused: boolean;
-  onLayoutChange: (id: string, pos: Position, size?: Size) => void;
-  onFocus: (id: string) => void;
-  onClose: (id: string) => void;
-  onToggleMinimize: (id: string) => void;
 }
 
-const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocused, onLayoutChange, onFocus, onClose, onToggleMinimize }) => {
+const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocused }) => {
+    const { 
+        updateItemLayout, 
+        bringToFront, 
+        closeItem, 
+        toggleMinimizeItem 
+    } = useLayoutStore.getState();
+
     const [isClosing, setIsClosing] = useState(false);
     let title: string | undefined, Icon: ElementType | undefined, minWidth: number | undefined, minHeight: number | undefined, cardClassName: string | undefined, isDismissible: boolean | undefined;
 
@@ -50,11 +54,11 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
     }
 
     const handleDragStop = (e: any, d: { x: number, y: number }) => {
-        onLayoutChange(item.id, { x: d.x, y: d.y });
+        updateItemLayout(item.id, { x: d.x, y: d.y });
     };
 
     const handleResizeStop = (e: any, direction: any, ref: { style: { width: string, height: string } }, delta: any, position: Position) => {
-        onLayoutChange(
+        updateItemLayout(
             item.id,
             position,
             { width: ref.style.width, height: ref.style.height }
@@ -65,7 +69,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
         e.stopPropagation();
         setIsClosing(true);
         setTimeout(() => {
-            onClose(item.id);
+            closeItem(item.id);
         }, 200); // Corresponds to animation duration
     };
 
@@ -79,9 +83,9 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
             key={item.id}
             size={{ width: item.width, height: item.height }}
             position={{ x: item.x, y: item.y }}
-            onDragStart={() => onFocus(item.id)}
+            onDragStart={() => bringToFront(item.id)}
             onDragStop={handleDragStop}
-            onResizeStart={() => onFocus(item.id)}
+            onResizeStart={() => bringToFront(item.id)}
             onResizeStop={handleResizeStop}
             minWidth={minWidth}
             minHeight={item.isMinimized ? 44 : minHeight}
@@ -92,7 +96,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
                 isClosing && "animate-window-unmount pointer-events-none"
             )}
             dragHandleClassName="drag-handle"
-            onMouseDownCapture={() => onFocus(item.id)}
+            onMouseDownCapture={() => bringToFront(item.id)}
             dragGrid={[20, 20]}
             resizeGrid={[20, 20]}
             enableResizing={resizeHandles}
@@ -103,7 +107,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
                 className={cardClassName}
                 actions={
                   <>
-                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onToggleMinimize(item.id)}>
+                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => toggleMinimizeItem(item.id)}>
                         {item.isMinimized ? <RestoreIcon className="w-4 h-4" /> : <MinimizeIcon className="w-4 h-4" />}
                     </Button>
                     <Button variant="ghost" size="icon" className="h-6 w-6">
