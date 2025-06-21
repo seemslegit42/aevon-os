@@ -7,7 +7,6 @@ const BeepCardContent = lazy(() => import('@/components/dashboard/beep-card-cont
 const LiveOrchestrationFeedCardContent = lazy(() => import('@/components/dashboard/live-orchestration-feed-card-content'));
 const MicroAppsCardContent = lazy(() => import('@/components/dashboard/micro-apps-card-content'));
 const LoomStudioCardContent = lazy(() => import('@/components/dashboard/loom-studio-card-content'));
-const ArmoryMarketplaceCardContent = lazy(() => import('@/components/dashboard/armory-card-content'));
 const AiInsightsCardContent = lazy(() => import('@/components/dashboard/ai-insights-card-content'));
 const AegisSecurityCardContent = lazy(() => import('@/components/dashboard/aegis-security-card-content'));
 
@@ -18,7 +17,6 @@ import {
   ListChecksIcon,
   LayoutGridIcon,
   ChartBarIcon,
-  CreditCardIcon,
   Settings2Icon,
   ShieldCheckIcon,
   BrainCircuitIcon,
@@ -89,17 +87,10 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     minWidth: 320, minHeight: 300,
   },
   {
-    id: 'armoryMarketplace', title: 'ΛΞVON Λrmory', icon: CreditCardIcon, isDismissible: true,
-    description: "Marketplace to discover, acquire, and manage AI micro-apps and intelligent agents for your OS.",
-    content: ArmoryMarketplaceCardContent,
-    defaultLayout: { x: 870, y: 20, width: 450, height: 280, zIndex: 4 },
-    minWidth: 300, minHeight: 280,
-  },
-  {
     id: 'aiInsights', title: 'AI Insights Engine', icon: BrainCircuitIcon, isDismissible: true,
     description: "Provides personalized recommendations and data-driven intelligence based on your OS activity.",
     content: AiInsightsCardContent,
-    defaultLayout: { x: 1330, y: 20, width: 270, height: 280, zIndex: 5 },
+    defaultLayout: { x: 870, y: 20, width: 270, height: 280, zIndex: 5 },
     minWidth: 250, minHeight: 180,
   },
   {

@@ -86,7 +86,6 @@ export * from './GearIcon';
 export * from './MicIcon';
 export * from './RocketIcon';
 export * from './CopyIcon';
-export * from './TargetIcon';
 export * from './FishIcon';
 export * from './CloudCogIcon';
 export * from './LaptopIcon';
