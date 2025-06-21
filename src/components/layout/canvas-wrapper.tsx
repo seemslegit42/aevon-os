@@ -27,3 +27,5 @@ const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
 };
 
 export default CanvasWrapper;
+
+    
