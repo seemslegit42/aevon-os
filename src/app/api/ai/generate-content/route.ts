@@ -1,7 +1,9 @@
 
 import { type NextRequest } from 'next/server';
 import { rateLimiter } from '@/lib/rate-limiter';
-import { generateContent } from '@/ai/flows/generate-content-flow';
+import { google } from '@/lib/ai/groq';
+import { generateObject } from 'ai';
+import { ContentGenerationSchema } from '@/lib/ai-schemas';
 
 export const maxDuration = 60;
 
@@ -16,7 +18,17 @@ export async function POST(req: NextRequest) {
       return new Response(JSON.stringify({ error: 'Topic, content type, and tone are required.' }), { status: 400 });
     }
 
-    const content = await generateContent({ topic, contentType, tone });
+    const { object: content } = await generateObject({
+        model: google('gemini-1.5-flash-latest'),
+        schema: ContentGenerationSchema,
+        prompt: `You are an expert content creator specializing in writing compelling marketing copy. Your task is to generate a piece of content based on the provided topic, content type, and tone.
+
+Topic: ${topic}
+Content Type: ${contentType}
+Tone: ${tone}
+
+Generate a title and the main body for the content. The body should be appropriately formatted, using markdown if necessary (e.g., for blog posts).`
+    });
 
     return Response.json(content);
 

@@ -2,7 +2,9 @@
 import { type NextRequest } from 'next/server';
 import { rateLimiter } from '@/lib/rate-limiter';
 import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
-import { generateInsights } from '@/ai/flows/generate-insights-flow';
+import { google } from '@/lib/ai/groq';
+import { generateObject } from 'ai';
+import { AiInsightsSchema } from '@/lib/ai-schemas';
 
 export const maxDuration = 60;
 
@@ -17,7 +19,6 @@ export async function POST(req: NextRequest) {
       return new Response(JSON.stringify({ error: 'Layout items are required.' }), { status: 400 });
     }
 
-    // Process layout items into a readable summary for the prompt
     const openItemsSummary = layoutItems.map(item => {
         if (item.type === 'card') {
             const card = ALL_CARD_CONFIGS.find(c => c.id === item.cardId);
@@ -30,9 +31,20 @@ export async function POST(req: NextRequest) {
     
     const allAvailableItems = [...ALL_CARD_CONFIGS.map(c => c.title), ...ALL_MICRO_APPS.map(a => a.title)].join(', ');
 
-    const insights = await generateInsights({ 
-        layoutItemsSummary: openItemsSummary || 'The user has an empty workspace.',
-        allAvailableItemsSummary: allAvailableItems,
+    const { object: insights } = await generateObject({
+        model: google('gemini-1.5-flash-latest'),
+        schema: AiInsightsSchema,
+        prompt: `You are an AI assistant for the AEVON OS, tasked with providing contextual insights to help the user optimize their workflow.
+
+Here is a list of all items available in the OS:
+${allAvailableItems}
+
+Here is a summary of the user's current workspace layout (the panels and apps they have open):
+---
+${openItemsSummary || 'The user has an empty workspace.'}
+---
+
+Based on the user's current layout, provide a maximum of 3 short, actionable insights or recommendations. For example, if they have sales data open, you might suggest opening a related analytics app. If their workspace is empty, suggest some common starting panels.`
     });
 
     return Response.json(insights);
