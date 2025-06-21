@@ -104,6 +104,8 @@ const BeepToolCallDisplay: React.FC<BeepToolCallDisplayProps> = ({ toolCall, all
     const isLoading = !result;
     const isError = result && (result.error || result.success === false);
     const friendlyName = toolFriendlyNames[toolName] || toolName;
+    const Icon = toolIcons[toolName] || toolIcons.default;
+
 
     const getTitle = () => {
         if (isLoading) return `Running: ${friendlyName}`;
