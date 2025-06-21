@@ -14,7 +14,7 @@ interface MicroAppCardProps {
 
 const MicroAppCardComponent: React.FC<MicroAppCardProps> = ({ title, description, icon: Icon, children, className, actions }) => {
   return (
-    <Card className={cn("glassmorphism-panel overflow-hidden flex flex-col", className)}>
+    <Card className={cn("h-full w-full glassmorphism-panel overflow-hidden flex flex-col", className)}>
       <CardHeader className="drag-handle flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b border-border/10 dark:border-white/5 bg-foreground/[.02] dark:bg-card/90 cursor-grab active:cursor-grabbing">
         <div className="flex items-center">
           {Icon && <Icon className="h-5 w-5 text-primary dark:text-primary-foreground mr-3" />}
