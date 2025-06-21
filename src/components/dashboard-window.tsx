@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, memo } from 'react';
 import { Rnd } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -21,7 +21,7 @@ interface DashboardWindowProps {
   onToggleMinimize: (id: string) => void;
 }
 
-const DashboardWindow: React.FC<DashboardWindowProps> = ({ item, isFocused, onLayoutChange, onFocus, onClose, onToggleMinimize }) => {
+const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocused, onLayoutChange, onFocus, onClose, onToggleMinimize }) => {
     const [isClosing, setIsClosing] = useState(false);
     let title, Icon, Content, contentProps, minWidth, minHeight, cardClassName, isDismissible;
 
@@ -126,5 +126,7 @@ const DashboardWindow: React.FC<DashboardWindowProps> = ({ item, isFocused, onLa
         </Rnd>
     );
 };
+
+const DashboardWindow = memo(DashboardWindowComponent);
 
 export default DashboardWindow;

@@ -43,6 +43,9 @@
   }
 }
 
+/* =================================================================
+   BASE STYLES & TYPOGRAPHY
+   ================================================================= */
 @layer base {
   * {
     @apply border-border;
@@ -56,6 +59,9 @@
   }
 }
 
+/* =================================================================
+   CUSTOM COMPONENTS & UTILITIES
+   ================================================================= */
 
 /* Glassmorphism Panel Style */
 .glassmorphism-panel {
@@ -68,7 +74,7 @@
   border-radius: var(--radius);
 }
 
-
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -85,6 +91,7 @@
   background: hsl(var(--muted));
 }
 
+/* Custom Button Gradients */
 .btn-gradient-primary-accent {
   background: linear-gradient(to right, hsl(275 70% 50%), hsl(var(--primary)));
   color: hsl(var(--primary-foreground));
@@ -115,7 +122,7 @@
   @apply opacity-60 cursor-not-allowed filter-none transform-none shadow-none;
 }
 
-
+/* Special Button Style */
 .btn-wabi-sabi {
   @apply px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center transition-colors duration-150 ease-in-out;
   background-color: hsl(177 100% 30%); /* Darker Cyan */
@@ -134,7 +141,11 @@
   color: hsl(177 100% 50%);
 }
 
+/* =================================================================
+   COMPONENT-SPECIFIC STYLES & OVERRIDES
+   ================================================================= */
 
+/* Dashboard Window (RND) */
 .react-draggable-dragging {
   border: 2px dashed hsl(var(--accent) / 0.7) !important;
   box-shadow: 0 0 25px hsl(var(--accent) / 0.4);
@@ -148,8 +159,7 @@
               0 4px 12px hsl(275 45% 8% / 0.2);
 }
 
-
-/* AEVOS TopBar Glass Effect */
+/* TopBar Overrides */
 .topbar-aevos-glass-override {
   background-color: rgba(245, 255, 250, 0.10) !important;
   backdrop-filter: blur(25px) !important;
@@ -166,8 +176,6 @@
   color: hsl(var(--foreground)) !important;
 }
 
-
-/* AEVOS Command Bar Input Style */
 .command-bar-input-aevos-override {
   background-color: rgba(40, 35, 60, 0.3) !important;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15) !important;
@@ -180,37 +188,19 @@
    color: hsl(var(--muted-foreground) / 0.7) !important;
 }
 
-
-/* AEVOS Icon Style */
 .aevos-icon-styling-override {
   filter: drop-shadow(0px 0.5px 1px rgba(0, 0, 0, 0.3));
 }
 
-
-/* Progress bar custom color */
-.progress-custom {
-  background-color: hsl(var(--chart-2)) !important;
-}
-
-/* Status badges for Live Orchestration Feed */
+/* Badge Overrides */
 .badge-success {
   background-color: hsl(var(--chart-4)) !important;
   color: hsl(0 0% 0%) !important; /* Black text on green badge */
 }
-
 .badge-failure {
   background-color: hsl(var(--chart-5)) !important;
   color: hsl(var(--destructive-foreground)) !important;
 }
-.details-link-success {
-  color: hsl(var(--primary-foreground)) !important;
-}
-
-.details-link-failure {
-  color: hsl(var(--primary-foreground)) !important;
-}
-
-/* Severity Badges for Aegis Security */
 .badge-critical {
   background-color: hsl(var(--destructive)) !important;
   color: hsl(var(--destructive-foreground)) !important;
@@ -232,7 +222,22 @@
   border-color: hsl(var(--chart-4) / 0.5) !important;
 }
 
-/* Background Glyphs Animation */
+/* Link Overrides */
+.details-link-success {
+  color: hsl(var(--primary-foreground)) !important;
+}
+.details-link-failure {
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+/* Progress Bar Override */
+.progress-custom {
+  background-color: hsl(var(--chart-2)) !important;
+}
+
+/* =================================================================
+   ANIMATIONS & EFFECTS
+   ================================================================= */
 @keyframes glyph-pulse {
   0%, 100% {
     opacity: 0.02;
@@ -245,7 +250,6 @@
     filter: blur(1px) brightness(1.2);
   }
 }
-
 .glyph-pulse-animate {
   animation: glyph-pulse 20s ease-in-out infinite alternate;
 }
@@ -264,7 +268,6 @@
     opacity: 0.3;
   }
 }
-
 .canvas-aurora-background-dark-container {
   position: absolute;
   inset: 0;
@@ -272,7 +275,6 @@
   z-index: 0;
   display: block;
 }
-
 .canvas-aurora-background-dark-container::before {
   content: "";
   position: absolute;
@@ -288,7 +290,6 @@
   animation: aurora-glow-subtle-dark 35s ease-in-out infinite alternate;
   z-index: 1;
 }
-
 .canvas-aurora-background-dark-container::after {
   content: "";
   position: absolute;
@@ -297,7 +298,6 @@
   z-index: 2;
 }
 
-/* Notification Bell Animation */
 @keyframes notification-glow {
   0% {
     filter: drop-shadow(0 0 0px hsl(var(--accent) / 0));
@@ -311,12 +311,10 @@
     transform: scale(1);
   }
 }
-
 .notification-glow-animate {
   animation: notification-glow 2.5s ease-in-out;
 }
 
-/* Cyber Health Gauge Pulse Animation */
 @keyframes gauge-pulse {
   0%, 100% {
     transform: scale(1);
@@ -331,12 +329,10 @@
                 0 0 20px hsl(var(--destructive) / 0.5);
   }
 }
-
 .gauge-pulse-animate {
     animation: gauge-pulse 10s ease-in-out infinite;
 }
 
-/* EDR Badge Glow Animation */
 @keyframes badge-glow {
   0%, 100% {
     box-shadow: 0 0 3px hsl(var(--chart-4) / 0.6), 0 0 6px hsl(var(--chart-4) / 0.4);
@@ -347,7 +343,6 @@
     filter: brightness(1.2);
   }
 }
-
 .badge-glow-animate {
     animation: badge-glow 3.5s ease-in-out infinite;
 }
