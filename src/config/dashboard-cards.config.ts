@@ -9,6 +9,8 @@ const MicroAppsCardContent = lazy(() => import('@/components/dashboard/micro-app
 const LoomStudioCardContent = lazy(() => import('@/components/dashboard/loom-studio-card-content'));
 const ArmoryMarketplaceCardContent = lazy(() => import('@/components/dashboard/armory-card-content'));
 const AiInsightsCardContent = lazy(() => import('@/components/dashboard/ai-insights-card-content'));
+const AegisSecurityCardContent = lazy(() => import('@/components/dashboard/aegis-security-card-content'));
+
 
 // Icons for card titles and content
 import {
@@ -47,36 +49,6 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     tags: ['automation', 'productivity'],
     defaultSize: { width: 450, height: 500 },
   },
-  {
-    id: 'app-phishing-resilience',
-    title: 'Phishing Resilience',
-    description: 'Monitor and improve your team\'s phishing awareness.',
-    icon: ShieldCheckIcon,
-    component: lazy(() => import('@/components/dashboard/aegis/phishing-resilience-panel')),
-    permissions: ['security:view'],
-    tags: ['security', 'aegis'],
-    defaultSize: { width: 400, height: 450 },
-  },
-  {
-    id: 'app-cloud-security',
-    title: 'Cloud Security',
-    description: 'Monitor your cloud infrastructure for misconfigurations.',
-    icon: LayersIcon,
-    component: lazy(() => import('@/components/dashboard/aegis/cloud-security-panel')),
-    permissions: ['security:view', 'cloud:read'],
-    tags: ['security', 'aegis', 'cloud'],
-    defaultSize: { width: 400, height: 450 },
-  },
-    {
-    id: 'app-edr-summary',
-    title: 'EDR Summary',
-    description: 'Endpoint Detection & Response threat overview.',
-    icon: BrainCircuitIcon,
-    component: lazy(() => import('@/components/dashboard/aegis/edr-summary-panel')),
-    permissions: ['security:view', 'edr:read'],
-    tags: ['security', 'aegis', 'endpoint'],
-    defaultSize: { width: 500, height: 450 },
-  }
 ];
 
 export interface CardConfig {
@@ -117,43 +89,50 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     id: 'beep', title: 'BEEP Interface', icon: MagicWandIcon, isDismissible: true,
     description: "Natural language interface for tasking, automation, and information retrieval. Learns from your interactions.",
     content: BeepCardContent,
-    defaultLayout: { x: 20, y: 20, width: 380, height: 280, zIndex: 1 },
+    defaultLayout: { x: 20, y: 20, width: 380, height: 500, zIndex: 1 },
     minWidth: 300, minHeight: 240, cardClassName: "flex-grow flex flex-col",
   },
   {
     id: 'loomStudio', title: 'Loom Studio', icon: Settings2Icon, isDismissible: true,
     description: "Visual workspace for designing, testing, and orchestrating complex AI agent workflows and prompt chains.",
     content: LoomStudioCardContent,
-    defaultLayout: { x: 20, y: 310, width: 450, height: 350, zIndex: 2 },
+    defaultLayout: { x: 410, y: 20, width: 450, height: 440, zIndex: 2 },
     minWidth: 320, minHeight: 300,
   },
   {
     id: 'armoryMarketplace', title: 'ΛΞVON Λrmory', icon: CreditCardIcon, isDismissible: true,
     description: "Marketplace to discover, acquire, and manage AI micro-apps and intelligent agents for your OS.",
     content: ArmoryMarketplaceCardContent,
-    defaultLayout: { x: 410, y: 20, width: 450, height: 280, zIndex: 4 },
+    defaultLayout: { x: 870, y: 20, width: 450, height: 280, zIndex: 4 },
     minWidth: 300, minHeight: 280,
   },
   {
     id: 'aiInsights', title: 'AI Insights Engine', icon: BrainCircuitIcon, isDismissible: true,
     description: "Provides personalized recommendations and data-driven intelligence based on your OS activity.",
     content: AiInsightsCardContent,
-    defaultLayout: { x: 870, y: 20, width: 270, height: 180, zIndex: 5 },
+    defaultLayout: { x: 1330, y: 20, width: 270, height: 280, zIndex: 5 },
     minWidth: 250, minHeight: 180,
   },
   {
     id: 'liveOrchestrationFeed', title: 'Live Orchestration Feed', icon: ListChecksIcon, isDismissible: true,
     description: "A real-time feed of events and actions performed by the orchestrated AI agents and system workflows.",
     content: LiveOrchestrationFeedCardContent,
-    defaultLayout: { x: 480, y: 310, width: 380, height: 200, zIndex: 6 },
+    defaultLayout: { x: 870, y: 310, width: 450, height: 210, zIndex: 6 },
     minWidth: 260, minHeight: 150,
   },
   {
     id: 'microApps', title: 'Micro-Apps Palette', icon: LayoutGridIcon, isDismissible: true,
     description: "A palette for launching available micro-apps into the Application View zone.",
     content: MicroAppsCardContent,
-    defaultLayout: { x: 20, y: 670, width: 450, height: 120, zIndex: 7 }, 
+    defaultLayout: { x: 20, y: 530, width: 380, height: 120, zIndex: 7 }, 
     minWidth: 120, minHeight: 120,
+  },
+  {
+    id: 'aegisSecurity', title: 'Aegis Command Center', icon: ShieldCheckIcon, isDismissible: true,
+    description: "Your simple, real-time security overview.",
+    content: AegisSecurityCardContent,
+    defaultLayout: { x: 410, y: 470, width: 910, height: 350, zIndex: 8 },
+    minWidth: 480, minHeight: 350,
   },
 ];
 

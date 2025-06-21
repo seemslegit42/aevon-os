@@ -4,25 +4,18 @@ import eventBus from '@/lib/event-bus';
 import { ALL_MICRO_APPS, ALL_CARD_CONFIGS } from '@/config/dashboard-cards.config';
 
 export function useBeepChat() {
-    const { messages, append, isLoading, setMessages } = useChat({
+    const { messages, append, isLoading, setMessages, lastMessage } = useChat({
     api: '/api/ai/chat',
-    experimental_onToolCall: async (toolCalls, appendToolCallMessage) => {
-      let hasHandledTool = false;
-
+    onToolCall: async (toolCalls) => {
       for (const toolCall of toolCalls) {
-        let resultMessage = `Tool ${toolCall.toolName} called successfully.`;
-        hasHandledTool = true;
         const { toolName, args } = toolCall;
+        
+        let resultMessage = `Tool ${toolName} called successfully.`; // Default message
 
         switch (toolName) {
             case 'focusItem': {
                 const { itemId } = args;
-                const isApp = ALL_MICRO_APPS.some(app => app.id === itemId);
-                if (isApp) {
-                    eventBus.emit('app:focusLatest', itemId);
-                } else {
-                    eventBus.emit('panel:focus', itemId);
-                }
+                eventBus.emit('panel:focus', itemId); // This works for both apps and panels
                 resultMessage = `Item "${itemId}" has been brought into focus.`;
                 break;
             }
@@ -63,23 +56,18 @@ export function useBeepChat() {
                 break;
             }
             default:
+                console.warn(`[BeepChat] Unhandled tool call: ${toolName}`);
                 resultMessage = `Tool ${toolName} not implemented.`;
         }
 
-        // Pass a structured object as a string for the frontend to parse and render
-        const toolExecutionResult = {
-            toolName,
-            args,
-            message: resultMessage,
-        };
+        // Log the final result to the orchestration feed for user visibility
+        eventBus.emit('orchestration:log', { task: `BEEP: ${toolName}`, status: 'success', details: resultMessage });
 
-        appendToolCallMessage({
-            toolCallId: toolCall.toolCallId,
-            toolName: toolName,
-            result: JSON.stringify(toolExecutionResult),
-        });
       }
-      return hasHandledTool;
+
+      // The 'ai' package requires returning the toolCalls to signal they were received.
+      // The actual results are handled via the event bus.
+      return toolCalls;
     },
   });
 

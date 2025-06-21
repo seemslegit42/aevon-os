@@ -2,7 +2,7 @@
 "use client";
 
 import React, { type ElementType } from 'react';
-import type { Message } from 'ai/react';
+import type { ToolCall } from 'ai';
 import {
   TargetIcon,
   PlusCircleIcon,
@@ -24,15 +24,22 @@ const toolIcons: Record<string, ElementType<IconProps>> = {
 };
 
 interface BeepToolResultProps {
-  message: Message;
+  toolCall: ToolCall;
 }
 
-const BeepToolResult: React.FC<BeepToolResultProps> = ({ message }) => {
-  try {
-    const content = JSON.parse(message.content);
-    const { toolName, message: resultMessage } = content;
-
+const BeepToolResult: React.FC<BeepToolResultProps> = ({ toolCall }) => {
+    const { toolName, args } = toolCall;
     const Icon = toolIcons[toolName] || GearIcon;
+    let message = `Executing ${toolName}...`;
+
+    // Create more user-friendly messages based on tool and args
+    switch (toolName) {
+        case 'focusItem': message = `Focusing on ${args.itemId}`; break;
+        case 'addItem': message = `Adding ${args.itemId}`; break;
+        case 'moveItem': message = `Moving ${args.itemId}`; break;
+        case 'removeItem': message = `Removing ${args.itemId}`; break;
+        case 'resetLayout': message = 'Resetting workspace layout'; break;
+    }
 
     return (
       <div className="flex justify-center items-center my-3">
@@ -40,25 +47,11 @@ const BeepToolResult: React.FC<BeepToolResultProps> = ({ message }) => {
             "flex items-center gap-2 text-xs text-muted-foreground p-2 rounded-full",
             "border border-dashed border-border/50 bg-card/50"
         )}>
-          <Icon className="w-3.5 h-3.5 text-primary" />
-          <span>{resultMessage}</span>
+          <Icon className="w-3.5 h-3.5 text-primary animate-spin" />
+          <span>{message}</span>
         </div>
       </div>
     );
-  } catch (error) {
-    // Fallback for non-JSON or malformed tool results
-    return (
-      <div className="flex justify-center items-center my-3">
-         <div className={cn(
-            "flex items-center gap-2 text-xs text-muted-foreground p-2 rounded-full",
-            "border border-dashed border-border/50 bg-card/50"
-        )}>
-          <GearIcon className="w-3.5 h-3.5 text-primary" />
-          <span>Tool action completed.</span>
-        </div>
-      </div>
-    );
-  }
 };
 
 export default BeepToolResult;

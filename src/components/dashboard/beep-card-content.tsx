@@ -57,7 +57,8 @@ const BeepCardContent: React.FC = () => {
       });
     }
     
-    if (lastMessage?.role === 'assistant' && lastMessage.content && !isLoading) {
+    // Check if the last message is from the assistant, contains text, and no tool calls are being processed.
+    if (lastMessage?.role === 'assistant' && lastMessage.content && !isLoading && lastMessage.tool_calls?.length === 0) {
       const plainTextContent = lastMessage.content.replace(/`+/g, '');
       playAudio(plainTextContent);
     }
@@ -91,8 +92,14 @@ const BeepCardContent: React.FC = () => {
           <div className="space-y-4">
             {messages.length > 0 ? (
               messages.map(m => {
+                if (m.tool_calls) {
+                   return m.tool_calls.map(toolCall => (
+                       <BeepToolResult key={toolCall.toolCallId} toolCall={toolCall} />
+                    ));
+                }
                 if (m.role === 'tool') {
-                   return <BeepToolResult key={m.id} message={m} />;
+                  // This can be a fallback or hidden, as we now render from `tool_calls`
+                  return null;
                 }
                 return (
                   <div key={m.id} className={cn("flex items-start gap-3", m.role === 'user' ? 'justify-end' : '')}>
@@ -150,5 +157,3 @@ const BeepCardContent: React.FC = () => {
     </div>
   );
 };
-
-export default BeepCardContent;
