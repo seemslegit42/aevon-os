@@ -16,6 +16,7 @@ import {
   ClockIcon,
   ChevronDownIcon,
   UsersIcon,
+  ZapIcon,
 } from '@/components/icons';
 import {
   Tooltip,
@@ -36,8 +37,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { cn } from '@/lib/utils';
 import eventBus from '@/lib/event-bus';
+import { useDashboardStore } from '@/stores/dashboard.store';
 
 interface NavItemConfig {
   id: string; // The card ID to focus on
@@ -60,6 +61,7 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
   const [isMounted, setIsMounted] = useState(false);
   const [agentStatus, setAgentStatus] = useState<{ activeCount: number, totalCount: number } | null>(null);
   const [commandValue, setCommandValue] = useState('');
+  const { focusedCardId } = useDashboardStore();
 
   useEffect(() => {
     setIsMounted(true);
@@ -94,6 +96,27 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
     }
   };
 
+  const ContextualActions: React.FC = () => {
+    if (focusedCardId === 'loomStudio') {
+      return (
+        <div className="border-l border-white/10 ml-2 pl-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="sm" className="font-body text-primary-foreground opacity-80 hover:text-primary-foreground hover:opacity-100">
+                <ZapIcon className="w-4 h-4 mr-2 aevos-icon-styling-override" />
+                New Workflow
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom"><p>Create a new workflow in Loom Studio</p></TooltipContent>
+          </Tooltip>
+        </div>
+      );
+    }
+    // Add other contextual actions here for other focusedCardId values
+    // e.g., if (focusedCardId === 'aegisSecurity') { ... }
+    return null;
+  };
+
   return (
     <TooltipProvider delayDuration={0}>
       <header className="topbar-aevos-glass-override flex items-center justify-between">
@@ -126,6 +149,7 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
                 <span>{item.label}</span>
               </Button>
             ))}
+            <ContextualActions />
           </nav>
           <div className="relative w-full max-w-md">
             <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 aevos-icon-styling-override text-primary-foreground" />
