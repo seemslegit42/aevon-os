@@ -24,7 +24,6 @@ export function useDashboardLayout(
     if (savedActiveIds) {
       try {
         const parsedActiveIds = JSON.parse(savedActiveIds) as string[];
-        // Filter to ensure only valid card IDs are loaded
         currentActiveIds = parsedActiveIds.filter(id => allCardConfigs.some(c => c.id === id));
         if (currentActiveIds.length === 0 && allCardConfigs.length > 0) {
           currentActiveIds = [...defaultActiveCardIds];
@@ -41,18 +40,22 @@ export function useDashboardLayout(
       try {
         const parsedLayouts = JSON.parse(savedLayouts) as CardLayoutInfo[];
         initialLayouts = currentActiveIds.map(id => {
-          const existingLayout = parsedLayouts.find(l => l.id === id);
-          if (existingLayout) return existingLayout;
           const defaultConfig = allCardConfigs.find(c => c.id === id);
-          return defaultConfig ? { ...defaultConfig.defaultLayout, id } : null;
+          if (!defaultConfig) return null; // Should not happen if currentActiveIds is correct
+
+          const existingLayout = parsedLayouts.find(l => l.id === id);
+          // Merge default with existing to ensure all properties are present
+          return { ...defaultConfig.defaultLayout, ...existingLayout, id };
         }).filter(Boolean) as CardLayoutInfo[];
       } catch (e) {
         console.error("Failed to parse layouts from localStorage", e);
+        // Fallback to all defaults if parsing fails
         initialLayouts = allCardConfigs
           .filter(c => currentActiveIds.includes(c.id))
           .map(c => ({ ...c.defaultLayout, id: c.id }));
       }
     } else {
+      // First time load, use all defaults
       initialLayouts = allCardConfigs
         .filter(c => currentActiveIds.includes(c.id))
         .map(c => ({ ...c.defaultLayout, id: c.id }));
@@ -60,6 +63,7 @@ export function useDashboardLayout(
     setCardLayouts(initialLayouts);
     setIsInitialized(true);
   }, [allCardConfigs, defaultActiveCardIds]);
+
 
   useEffect(() => {
     if (!isInitialized) return;
@@ -106,8 +110,6 @@ export function useDashboardLayout(
 
   const handleRemoveCard = useCallback((cardId: string) => {
     setActiveCardIds(prev => prev.filter(id => id !== cardId));
-    // Optional: Remove layout info for the card if desired, or let it persist if re-added
-    // setCardLayouts(prev => prev.filter(l => l.id !== cardId)); 
     toast({ title: "Zone Removed", description: `The zone has been removed from your dashboard.` });
   }, [toast]);
 
@@ -120,12 +122,10 @@ export function useDashboardLayout(
       if (!cardLayouts.find(l => l.id === cardId)) {
         setCardLayouts(prev => [...prev, { ...cardConfig.defaultLayout, id: cardId, zIndex: getMaxZIndex() + 1 }]);
       } else {
-        // If layout exists but card was inactive, just bring it to front
         handleBringToFront(cardId);
       }
       toast({ title: "Zone Added", description: `The zone "${cardConfig.title}" has been added.` });
     } else {
-      // If card is already active, just bring it to front
       handleBringToFront(cardId);
     }
   }, [activeCardIds, cardLayouts, getMaxZIndex, handleBringToFront, toast, allCardConfigs]);
@@ -149,6 +149,6 @@ export function useDashboardLayout(
     handleRemoveCard,
     handleAddCard,
     handleResetLayout,
-    getMaxZIndex, // Exposing this if needed by the page directly, e.g. for initial zIndex
+    getMaxZIndex,
   };
 }
