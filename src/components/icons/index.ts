@@ -80,7 +80,7 @@ export * from './AlertTriangleIcon';
 export * from './MagicWandIcon';
 export * from './ExternalLinkIcon';
 export * from './HelpCircleIcon';
-export * from './GearIcon'; // Added GearIcon
+export * from './GearIcon';
 
 // Aliases for User Profile Dropdown for clarity, if needed, or use directly
 export { Settings2Icon as UserSettingsIcon } from './Settings2Icon';

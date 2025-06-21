@@ -12,13 +12,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlusCircleIcon, Trash2Icon, SearchIcon, XIcon } from '@/components/icons';
+import { PlusCircleIcon, Trash2Icon, SearchIcon, XIcon, GearIcon } from '@/components/icons';
 import type { CardConfig } from '@/config/dashboard-cards.config';
 import type { CardLayoutInfo } from '@/hooks/use-dashboard-layout';
+import { useCommandPaletteStore } from '@/stores/command-palette.store';
 
 interface CommandPaletteProps {
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
   allPossibleCards: CardConfig[];
   activeCardIds: string[];
   cardLayouts: CardLayoutInfo[];
@@ -28,8 +27,6 @@ interface CommandPaletteProps {
 }
 
 const CommandPalette: React.FC<CommandPaletteProps> = ({
-  isOpen,
-  onOpenChange,
   allPossibleCards,
   activeCardIds,
   cardLayouts,
@@ -37,6 +34,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
   onRemoveCard,
   onResetLayout,
 }) => {
+  const { isOpen, setOpen } = useCommandPaletteStore();
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredCards = allPossibleCards.filter(card =>
@@ -47,23 +45,23 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        onOpenChange(!isOpen);
+        setOpen(!isOpen);
       }
       if (e.key === "Escape" && isOpen) {
         e.preventDefault();
-        onOpenChange(false);
+        setOpen(false);
       }
     };
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
-  }, [isOpen, onOpenChange]);
+  }, [isOpen, setOpen]);
 
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[600px] p-0 max-h-[80vh] flex flex-col">
         <DialogHeader className="p-4 border-b border-border/30">
-          <DialogTitle className="font-headline text-primary">Manage Dashboard Zones</DialogTitle>
+          <DialogTitle className="font-headline text-primary flex items-center gap-2"><GearIcon /> Manage Dashboard Zones</DialogTitle>
           <DialogDescription>Add, remove, or rearrange dashboard zones.</DialogDescription>
         </DialogHeader>
 
@@ -135,7 +133,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({
         </ScrollArea>
         <DialogFooter className="p-4 border-t border-border/30">
           <Button variant="outline" onClick={onResetLayout}>Reset Layout</Button>
-          <Button onClick={() => onOpenChange(false)} className="bg-primary hover:bg-primary/90 text-primary-foreground">Done</Button>
+          <Button onClick={() => setOpen(false)} className="bg-primary hover:bg-primary/90 text-primary-foreground">Done</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -181,4 +181,3 @@ const TopBar: React.FC<TopBarProps> = ({ onSettingsClick }) => {
 };
 
 export default TopBar;
-    
