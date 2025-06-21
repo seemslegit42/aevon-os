@@ -122,7 +122,7 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
   },
 
   launchApp: (app) => {
-    const instanceId = `${app.id}-${Date.now()}`;
+    const instanceId = `${app.id}-${crypto.randomUUID()}`;
     const currentItems = get().layoutItems;
     const maxZ = currentItems.length > 0 ? Math.max(0, ...currentItems.map(item => item.zIndex || 0)) : 0;
     const existingAppWindows = currentItems.filter(item => item.type === 'app' && item.appId === app.id);
