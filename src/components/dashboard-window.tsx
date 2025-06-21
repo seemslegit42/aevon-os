@@ -1,12 +1,13 @@
 
 "use client";
 
-import React, { useState, memo, type ElementType } from 'react';
+import React, { useState, memo } from 'react';
 import { Rnd } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { PinIcon, XIcon, MinimizeIcon, RestoreIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
-import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
+import type { CardConfig } from '@/types/dashboard';
+import type { MicroApp } from '@/stores/micro-app.store';
 import type { LayoutItem } from '@/types/dashboard';
 import type { Position, Size } from 'react-rnd';
 import { cn } from '@/lib/utils';
@@ -15,10 +16,11 @@ import { useLayoutStore } from '@/stores/layout.store';
 
 interface DashboardWindowProps {
   item: LayoutItem;
+  config: CardConfig | MicroApp; // Receive the pre-fetched config
   isFocused: boolean;
 }
 
-const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocused }) => {
+const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, config, isFocused }) => {
     const { 
         updateItemLayout, 
         bringToFront, 
@@ -27,31 +29,16 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
     } = useLayoutStore.getState();
 
     const [isClosing, setIsClosing] = useState(false);
-    let title: string | undefined, Icon: ElementType | undefined, minWidth: number | undefined, minHeight: number | undefined, cardClassName: string | undefined, isDismissible: boolean | undefined;
 
-    // This block now only fetches metadata for the window frame.
-    // The actual content rendering is delegated to the <WindowContent /> component.
-    if (item.type === 'card') {
-        const cardConfig = ALL_CARD_CONFIGS.find(c => c.id === item.cardId);
-        if (!cardConfig) return null;
-        
-        title = cardConfig.title;
-        Icon = cardConfig.icon;
-        minWidth = cardConfig.minWidth;
-        minHeight = cardConfig.minHeight;
-        cardClassName = cardConfig.cardClassName;
-        isDismissible = cardConfig.isDismissible;
-    } else { // item.type === 'app'
-        const appConfig = ALL_MICRO_APPS.find(a => a.id === item.appId);
-        if (!appConfig) return null;
-
-        title = appConfig.title;
-        Icon = appConfig.icon;
-        minWidth = appConfig.defaultSize.width || 300;
-        minHeight = appConfig.defaultSize.height || 250;
-        cardClassName = "";
-        isDismissible = true;
-    }
+    // Extract props directly from the config object
+    const title = config.title;
+    const Icon = config.icon;
+    const ContentComponent = 'content' in config ? config.content : config.component;
+    const contentProps = 'contentProps' in config ? config.contentProps : {};
+    const minWidth = 'minWidth' in config ? config.minWidth : config.defaultSize.width;
+    const minHeight = 'minHeight' in config ? config.minHeight : config.defaultSize.height;
+    const cardClassName = 'cardClassName' in config ? config.cardClassName : "";
+    const isDismissible = 'isDismissible' in config ? config.isDismissible : true;
 
     const handleDragStop = (e: any, d: { x: number, y: number }) => {
         updateItemLayout(item.id, { x: d.x, y: d.y });
@@ -100,6 +87,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
             dragGrid={[20, 20]}
             resizeGrid={[20, 20]}
             enableResizing={resizeHandles}
+            bounds="parent" // Constrain to canvas
         >
             <MicroAppCard
                 title={title || 'Aevon Window'}
@@ -121,7 +109,11 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
                   </>
                 }
             >
-               <WindowContent item={item} />
+               <WindowContent 
+                    isMinimized={item.isMinimized}
+                    ContentComponent={ContentComponent}
+                    contentProps={contentProps}
+               />
             </MicroAppCard>
         </Rnd>
     );

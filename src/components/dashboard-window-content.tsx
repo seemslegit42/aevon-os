@@ -1,13 +1,13 @@
 
 "use client";
 
-import React, { Suspense, type LazyExoticComponent } from 'react';
-import type { LayoutItem } from '@/types/dashboard';
-import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
+import React, { Suspense, type LazyExoticComponent, type ElementType } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface WindowContentProps {
-  item: LayoutItem;
+  isMinimized?: boolean;
+  ContentComponent: LazyExoticComponent<ElementType>;
+  contentProps?: any;
 }
 
 /**
@@ -16,28 +16,14 @@ interface WindowContentProps {
  * It handles the logic of finding the correct component and props,
  * and wraps the content in a Suspense boundary for lazy loading.
  */
-export const WindowContent: React.FC<WindowContentProps> = ({ item }) => {
-  let ContentComponent: LazyExoticComponent<React.ComponentType<any>> | null = null;
-  let contentProps: any = {};
-
-  if (item.type === 'card') {
-    const cardConfig = ALL_CARD_CONFIGS.find(c => c.id === item.cardId);
-    if (cardConfig) {
-        ContentComponent = cardConfig.content;
-        contentProps = { ...cardConfig.contentProps };
-    }
-  } else { // 'app'
-    const appConfig = ALL_MICRO_APPS.find(a => a.id === item.appId);
-    if (appConfig) {
-        ContentComponent = appConfig.component;
-    }
+export const WindowContent: React.FC<WindowContentProps> = ({ isMinimized, ContentComponent, contentProps }) => {
+  if (isMinimized) {
+    return null; // Don't render content if the window is minimized
   }
   
-  if (!ContentComponent) return null;
-
   return (
     <Suspense fallback={<div className="p-4"><Skeleton className="h-full w-full" /></div>}>
-      {!item.isMinimized && <ContentComponent {...contentProps} />}
+      <ContentComponent {...contentProps} />
     </Suspense>
   );
 };
