@@ -58,6 +58,7 @@ const TopBar: React.FC = () => {
   const [currentTime, setCurrentTime] = useState("--:--");
   const [isMounted, setIsMounted] = useState(false);
   const [commandValue, setCommandValue] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const focusedItemId = useLayoutStore((state) => state.focusedItemId);
   const [isNotifying, setIsNotifying] = useState(false);
   const { toggle: toggleCommandPalette } = useCommandPaletteStore();
@@ -93,10 +94,17 @@ const TopBar: React.FC = () => {
   };
   
   const handleCommandSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && commandValue.trim()) {
+    if (e.key === 'Enter' && commandValue.trim() && !isSubmitting) {
         e.preventDefault();
+        setIsSubmitting(true);
         eventBus.emit('command:submit', commandValue);
-        setCommandValue(''); // Clear input after submission
+
+        // After 2 seconds, clear the input and re-enable it.
+        // This gives the user time to see their command was accepted.
+        setTimeout(() => {
+            setCommandValue('');
+            setIsSubmitting(false);
+        }, 2000);
     }
   };
 
@@ -160,11 +168,15 @@ const TopBar: React.FC = () => {
             <Input
               type="search"
               placeholder="Search or ask 'show my tasks'..."
-              className="command-bar-input-aevos-override w-full h-9 pl-10 pr-4 text-sm"
+              className={cn(
+                "command-bar-input-aevos-override w-full h-9 pl-10 pr-4 text-sm",
+                isSubmitting && "opacity-50 cursor-not-allowed"
+              )}
               aria-label="Command or search input"
               value={commandValue}
               onChange={(e) => setCommandValue(e.target.value)}
               onKeyDown={handleCommandSubmit}
+              disabled={isSubmitting}
             />
           </div>
         </div>

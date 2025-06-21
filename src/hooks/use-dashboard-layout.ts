@@ -52,12 +52,20 @@ export function useDashboardLayout() {
     toggleMinimizeItemInStore(itemId);
   }, [toggleMinimizeItemInStore]);
 
+  const ensureCardIsPresent = useCallback((cardId: string) => {
+    const { layoutItems: currentItems, addCard: addCardToStore } = useLayoutStore.getState();
+    const cardExists = currentItems.some(item => item.id === cardId);
+    if (!cardExists) {
+      addCardToStore(cardId);
+    }
+    handleBringToFront(cardId);
+  }, [handleBringToFront]);
+
   const handleAddCard = useCallback((cardId: string) => {
-    const { layoutItems: currentItems } = useLayoutStore.getState(); // Get fresh state
+    const { layoutItems: currentItems } = useLayoutStore.getState();
     const cardExists = currentItems.some(item => item.id === cardId);
     
-    addCard(cardId);
-    handleBringToFront(cardId);
+    ensureCardIsPresent(cardId);
 
     if (!cardExists) {
         const cardConfig = ALL_CARD_CONFIGS.find(c => c.id === cardId);
@@ -65,7 +73,7 @@ export function useDashboardLayout() {
             toast({ title: "Zone Added", description: `The zone "${cardConfig.title}" has been added.` });
         }
     }
-  }, [addCard, handleBringToFront, toast]);
+  }, [ensureCardIsPresent, toast]);
 
   const handleLaunchApp = useCallback((app: MicroApp) => {
     const newInstanceId = launchApp(app);
@@ -115,15 +123,15 @@ export function useDashboardLayout() {
     toast({ title: "Item Moved", description: `Item has been moved to a new position.` });
   }, [updateItemLayout, toast]);
 
+  const handleCommand = useCallback((query: string) => {
+    ensureCardIsPresent('beep');
+    eventBus.emit('beep:submitQuery', query);
+  }, [ensureCardIsPresent]);
+
   // Effect for initialization and event bus setup
   useEffect(() => {
     initialize();
     initializeApps(ALL_MICRO_APPS);
-
-    const handleCommand = (query: string) => {
-       handleAddCard('beep');
-       setTimeout(() => eventBus.emit('beep:submitQuery', query), 100);
-    };
 
     // Event Bus Listeners
     eventBus.on('panel:focus', handleBringToFront);
@@ -149,7 +157,7 @@ export function useDashboardLayout() {
       eventBus.off('app:focusLatest', handleFocusLatestAppInstance);
       eventBus.off('item:move', handleMoveItem);
     };
-  }, [initialize, initializeApps, handleBringToFront, handleAddCard, handleCloseItem, handleResetLayout, handleLaunchApp, handleCloneApp, handleCloseAllAppInstances, handleFocusLatestAppInstance, handleMoveItem]);
+  }, [initialize, initializeApps, handleBringToFront, handleAddCard, handleCloseItem, handleResetLayout, handleLaunchApp, handleCloneApp, handleCloseAllAppInstances, handleFocusLatestAppInstance, handleMoveItem, handleCommand]);
 
   // Expose the state and the composed controller functions
   return {
