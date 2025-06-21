@@ -87,17 +87,37 @@ const BeepCardContent: React.FC = () => {
   const isProcessing = isLoading || isTranscribing;
 
   return (
-    <div className="relative h-full flex flex-col p-1">
-      <div className="absolute inset-0 z-0">
-        <BeepAvatar3D 
-            inputNode={inputNode} 
-            outputNode={outputNode}
-        />
+    <div className="h-full flex flex-col p-0 bg-background/20 overflow-hidden">
+      {/* 3D Avatar Container */}
+      <div className="relative w-full aspect-video flex-shrink-0">
+          <BeepAvatar3D 
+              inputNode={inputNode} 
+              outputNode={outputNode}
+          />
       </div>
       
-      <div className="relative z-10 flex-grow min-h-0">
+      {/* Mic Button Container */}
+      <div className="flex-shrink-0 flex justify-center items-center py-3">
+         <Button
+            onMouseDown={startRecording}
+            onMouseUp={stopRecording}
+            onTouchStart={startRecording}
+            onTouchEnd={stopRecording}
+            disabled={isProcessing}
+            className={cn(
+              "h-12 w-32 rounded-full transition-all duration-200 ease-in-out shadow-2xl text-base font-semibold",
+              isRecording ? "bg-destructive scale-105" : "btn-gradient-primary-accent",
+              isProcessing && !isRecording ? "animate-pulse" : ""
+            )}
+          >
+            {isRecording ? <span className="flex items-center gap-2"><MicIcon /></span> : 'Talk to BEEP'}
+        </Button>
+      </div>
+
+      {/* Chat Log */}
+      <div className="flex-grow min-h-0 px-2">
         <ScrollArea className="h-full pr-2" ref={scrollAreaRef}>
-          <div className="space-y-4 pt-4 pb-20">
+          <div className="space-y-4 pb-4">
              <AnimatePresence>
               {messages.length > 0 ? (
                 messages.map(m => {
@@ -148,7 +168,7 @@ const BeepCardContent: React.FC = () => {
                     animate={{ opacity: 1 }}
                     className="flex-grow flex h-full items-center justify-center text-muted-foreground text-center"
                 >
-                    <p className="text-sm p-8">Hold the button to talk to BEEP.</p>
+                    <p className="text-sm p-4">Hold the button to talk to BEEP.</p>
                 </motion.div>
               )}
                {isLoading && lastMessage?.role === 'user' && (
@@ -174,24 +194,6 @@ const BeepCardContent: React.FC = () => {
             </AnimatePresence>
           </div>
         </ScrollArea>
-      </div>
-      
-      <div className="absolute bottom-4 left-0 right-0 z-20 flex-shrink-0 flex justify-center items-center">
-         <Button
-            onMouseDown={startRecording}
-            onMouseUp={stopRecording}
-            onTouchStart={startRecording}
-            onTouchEnd={stopRecording}
-            disabled={isProcessing}
-            className={cn(
-              "h-16 w-16 rounded-full transition-all duration-200 ease-in-out shadow-2xl",
-              isRecording ? "bg-destructive scale-110" : "btn-gradient-primary-accent",
-              isProcessing && !isRecording ? "animate-pulse" : ""
-            )}
-          >
-            <MicIcon className="w-8 h-8" />
-            <span className="sr-only">Hold to talk</span>
-        </Button>
       </div>
     </div>
   );
