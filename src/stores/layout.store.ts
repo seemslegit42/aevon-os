@@ -49,9 +49,9 @@ export const useLayoutStore = create<LayoutState>((set, get) => ({
              item && typeof item.id === 'string' && typeof item.type === 'string' &&
              (item.type === 'card' ? ALL_CARD_CONFIGS.some(c => c.id === item.cardId) : ALL_MICRO_APPS.some(a => a.id === item.appId))
           );
-           if (validLayouts.length > 0) {
-              finalLayouts = validLayouts;
-           }
+          // If we found a valid, saved layout (even if it's empty), use it.
+          // This correctly handles the case where a user has zero windows open.
+          finalLayouts = validLayouts;
         }
       }
       set({ layoutItems: finalLayouts });
