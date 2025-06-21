@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -40,47 +39,36 @@ const CyberHealthGauge: React.FC = () => {
         }
     }, [score, playSwooshSound]);
 
-    const getScoreData = () => {
-        const needleValue = Math.max(0, Math.min(100, score));
-        return [{ value: needleValue }];
+    const getFillColor = (value: number) => {
+        if (value >= 80) return "hsl(var(--chart-4))"; // Green
+        if (value >= 50) return "hsl(var(--accent))"; // Yellow
+        return "hsl(var(--chart-5))"; // Red
     };
-
-    const getGaugeColor = (value: number) => {
-        if (value >= 80) return "text-green-400";
-        if (value >= 50) return "text-yellow-400";
-        return "text-red-500";
-    };
-
+    
     const getStatusInfo = (value: number) => {
-        if (value >= 80) return { emoji: "😌", text: "Secure", color: "text-green-400" };
-        if (value >= 50) return { emoji: "⚠️", text: "Warning", color: "text-yellow-400" };
-        return { emoji: "🚨", text: "Critical", color: "text-red-500" };
+        if (value >= 80) return { emoji: "😌", text: "Secure", color: getFillColor(value) };
+        if (value >= 50) return { emoji: "⚠️", text: "Warning", color: getFillColor(value) };
+        return { emoji: "🚨", text: "Critical", color: getFillColor(value) };
     };
 
     const status = getStatusInfo(score);
+    const fillColor = getFillColor(score);
 
     return (
         <div className={cn(
-            "glassmorphism-panel w-full max-w-md p-4 transition-all duration-500",
+            "glassmorphism-panel w-full max-w-sm mx-auto p-4 transition-all duration-500",
             score < 50 && "gauge-pulse-animate"
         )}>
-            <div className="relative w-full h-48">
+            <div className="relative w-full h-56">
                 <ResponsiveContainer width="100%" height="100%">
                     <RadialBarChart
-                        innerRadius="80%"
+                        innerRadius="70%"
                         outerRadius="100%"
-                        barSize={15}
+                        barSize={20}
                         data={[{ value: 100 }]}
-                        startAngle={180}
-                        endAngle={0}
+                        startAngle={90}
+                        endAngle={-270}
                     >
-                        <defs>
-                            <linearGradient id="healthGradient" x1="0" y1="0" x2="1" y2="0">
-                                <stop offset="0%" stopColor="#ef4444" />
-                                <stop offset="50%" stopColor="#facc15" />
-                                <stop offset="100%" stopColor="#4ade80" />
-                            </linearGradient>
-                        </defs>
                         <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
                         {/* Background track */}
                         <RadialBar
@@ -94,20 +82,22 @@ const CyberHealthGauge: React.FC = () => {
                         <RadialBar
                             dataKey={() => score}
                             angleAxisId={0}
-                            fill="url(#healthGradient)"
+                            fill={fillColor}
                             cornerRadius={10}
+                            className="transition-colors duration-500"
                         />
                     </RadialBarChart>
                 </ResponsiveContainer>
-                <div className="absolute inset-0 flex flex-col items-center justify-center -translate-y-4">
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <motion.div
                         key={score}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                         className="flex items-baseline font-headline"
+                        style={{ color: fillColor }}
                     >
-                        <span className={cn("text-7xl font-bold", getGaugeColor(score))}>
+                        <span className="text-7xl font-bold">
                             {Math.round(score)}
                         </span>
                         <span className="text-3xl text-muted-foreground">%</span>
@@ -122,7 +112,7 @@ const CyberHealthGauge: React.FC = () => {
                             className="flex items-center gap-2 mt-1"
                         >
                             <span className="text-xl">{status.emoji}</span>
-                            <span className={cn("font-semibold", status.color)}>{status.text}</span>
+                            <span className="font-semibold" style={{ color: status.color }}>{status.text}</span>
                         </motion.div>
                     </AnimatePresence>
                 </div>
