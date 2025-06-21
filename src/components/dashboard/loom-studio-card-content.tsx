@@ -10,6 +10,7 @@ import {
     CheckCircleIcon,
     AlertCircleIcon,
     FileTextIcon,
+    InfoIcon
 } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,9 @@ import eventBus from '@/lib/event-bus';
 import { Textarea } from '@/components/ui/textarea';
 import type { TextCategory, InvoiceData } from '@/lib/ai-schemas';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+
 
 // Sample invoice text
 const sampleInvoiceText = `
@@ -54,32 +58,40 @@ const initialWorkflow: NodeState[] = [
     { id: 'action-log', label: 'Log to System', icon: BrainCircuitIcon, status: 'idle' },
 ];
 
-const WorkflowNode: React.FC<{ node: NodeState }> = ({ node }) => (
-    <div className="flex flex-col items-center w-full">
-        <div className={cn(
-            "flex items-center gap-2 bg-card border border-border/50 text-foreground text-xs rounded-lg px-3 py-1.5 shadow-sm transition-all duration-300 w-full justify-center", 
-            node.status === 'running' && 'workflow-node-running',
-            node.status === 'completed' && 'workflow-node-completed',
-            node.status === 'failed' && 'border-destructive/50 bg-destructive/10',
-            node.isCondition && "bg-secondary/20 border-secondary/50 text-secondary-foreground"
-        )}>
-            {node.status === 'completed' ? <CheckCircleIcon className="w-3 h-3 text-chart-4" />
-            : node.status === 'failed' ? <AlertCircleIcon className="w-3 h-3 text-destructive" />
-            : <node.icon className="w-3 h-3 text-primary" />}
-            <span className="font-medium">{node.label}</span>
+interface WorkflowNodeProps {
+  node: NodeState;
+  onInspect: (node: NodeState) => void;
+}
+
+const WorkflowNode: React.FC<WorkflowNodeProps> = ({ node, onInspect }) => {
+    const canInspect = node.status === 'completed' || node.status === 'failed';
+    return (
+        <div className="flex items-center w-full group">
+            <div className={cn(
+                "flex-grow flex items-center gap-2 bg-card border border-border/50 text-foreground text-xs rounded-lg px-3 py-1.5 shadow-sm transition-all duration-300 w-full justify-center", 
+                node.status === 'running' && 'animate-pulse border-accent/50 bg-accent/10',
+                node.status === 'completed' && 'border-chart-4/50 bg-chart-4/10',
+                node.status === 'failed' && 'border-destructive/50 bg-destructive/10',
+                node.isCondition && "bg-secondary/20 border-secondary/50 text-secondary-foreground"
+            )}>
+                {node.status === 'completed' ? <CheckCircleIcon className="w-3 h-3 text-chart-4" />
+                : node.status === 'failed' ? <AlertCircleIcon className="w-3 h-3 text-destructive" />
+                : <node.icon className="w-3 h-3 text-primary" />}
+                <span className="font-medium">{node.label}</span>
+            </div>
+             <Button 
+                variant="ghost" 
+                size="icon" 
+                className={cn("ml-2 h-6 w-6 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity", canInspect ? "opacity-60" : "invisible")} 
+                onClick={() => canInspect && onInspect(node)}
+                disabled={!canInspect}
+                >
+                <InfoIcon className="h-4 w-4" />
+                <span className="sr-only">Inspect Node</span>
+            </Button>
         </div>
-        {node.output && (
-            <pre className={cn("workflow-node-output", node.status === 'completed' ? "workflow-node-output-success" : "workflow-node-output-failure")}>
-                <code>{JSON.stringify(node.output, null, 2)}</code>
-            </pre>
-        )}
-        {node.error && (
-            <pre className="workflow-node-output workflow-node-output-failure">
-                <code>{node.error}</code>
-            </pre>
-        )}
-    </div>
-);
+    );
+};
 
 const WorkflowConnector: React.FC<{ vertical?: boolean; className?: string }> = ({ vertical, className }) => (
   <div className={cn("bg-border/70 transition-colors", vertical ? "w-px h-4" : "h-px flex-1", className)} />
@@ -89,17 +101,22 @@ const LoomStudioCardContent: React.FC = () => {
     const [nodes, setNodes] = useState<NodeState[]>(initialWorkflow);
     const [isSimulating, setIsSimulating] = useState(false);
     const [inputText, setInputText] = useState(sampleInvoiceText);
+    const [detailedNode, setDetailedNode] = useState<NodeState | null>(null);
     const { toast } = useToast();
     const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
 
     const updateNodeState = useCallback((nodeId: string, newState: Partial<NodeState>) => {
         setNodes(prev => prev.map(n => n.id === nodeId ? { ...n, ...newState } : n));
     }, []);
+    
+    const handleInspectNode = (node: NodeState) => {
+        setDetailedNode(node);
+    };
 
     const runTriggerStep = useCallback(async () => {
         updateNodeState('trigger', { status: 'running' });
         await sleep(300);
-        updateNodeState('trigger', { status: 'completed', output: { characters: inputText.length } });
+        updateNodeState('trigger', { status: 'completed', output: { characters: inputText.length, receivedAt: new Date().toISOString() } });
         eventBus.emit('orchestration:log', { task: 'Loom: Triggered', status: 'success', details: `Processing ${inputText.length} characters.` });
     }, [inputText, updateNodeState]);
 
@@ -135,7 +152,7 @@ const LoomStudioCardContent: React.FC = () => {
     const runLoggingStep = useCallback(async () => {
         updateNodeState('action-log', { status: 'running' });
         await sleep(300);
-        updateNodeState('action-log', { status: 'completed', output: { status: "Logged OK" } });
+        updateNodeState('action-log', { status: 'completed', output: { status: "Logged OK", loggedAt: new Date().toISOString() } });
         eventBus.emit('orchestration:log', { task: 'Loom: Logged', status: 'success', details: 'Workflow results logged to system.' });
     }, [updateNodeState]);
 
@@ -154,7 +171,7 @@ const LoomStudioCardContent: React.FC = () => {
             if (categoryResult.isMatch) {
                 await runExtractionStep();
             } else {
-                updateNodeState('action-extract', { status: 'failed', error: "Skipped: Not an invoice." });
+                updateNodeState('action-extract', { status: 'failed', error: "Skipped: Text was not categorized as an invoice." });
             }
             await sleep(400);
             
@@ -173,6 +190,7 @@ const LoomStudioCardContent: React.FC = () => {
     const findNode = (id: string) => nodes.find(n => n.id === id)!;
 
   return (
+    <>
     <ScrollArea className="h-full pr-2">
         <div className="space-y-4 h-full flex flex-col p-1">
             <div className="flex-shrink-0">
@@ -199,17 +217,56 @@ const LoomStudioCardContent: React.FC = () => {
                 </div>
                 
                 <div className="w-full max-w-xs mx-auto flex flex-col items-center space-y-2">
-                    <WorkflowNode node={findNode('trigger')} />
+                    <WorkflowNode node={findNode('trigger')} onInspect={handleInspectNode} />
                     <WorkflowConnector vertical />
-                    <WorkflowNode node={findNode('condition')} />
+                    <WorkflowNode node={findNode('condition')} onInspect={handleInspectNode} />
                     <WorkflowConnector vertical />
-                    <WorkflowNode node={findNode('action-extract')} />
+                    <WorkflowNode node={findNode('action-extract')} onInspect={handleInspectNode} />
                     <WorkflowConnector vertical />
-                    <WorkflowNode node={findNode('action-log')} />
+                    <WorkflowNode node={findNode('action-log')} onInspect={handleInspectNode} />
                 </div>
             </div>
         </div>
     </ScrollArea>
+    <Dialog open={!!detailedNode} onOpenChange={(isOpen) => !isOpen && setDetailedNode(null)}>
+        <DialogContent className="sm:max-w-md">
+            {detailedNode && (
+                <>
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 font-headline">
+                            <detailedNode.icon className="w-5 h-5 text-primary" />
+                            <span>Node: {detailedNode.label}</span>
+                        </DialogTitle>
+                         <DialogDescription>
+                            Status:
+                            <Badge variant={detailedNode.status === 'completed' ? 'default' : 'destructive'} className={cn('ml-2', detailedNode.status === 'completed' ? 'badge-success' : 'badge-failure')}>
+                                {detailedNode.status}
+                            </Badge>
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="mt-4 text-sm space-y-4">
+                        <h4 className="font-semibold text-muted-foreground">Result Data</h4>
+                        {detailedNode.output && (
+                            <ScrollArea className="max-h-64">
+                                <pre className="text-xs bg-muted/50 text-foreground p-3 rounded-md overflow-x-auto">
+                                    <code>{JSON.stringify(detailedNode.output, null, 2)}</code>
+                                </pre>
+                            </ScrollArea>
+                        )}
+                        {detailedNode.error && (
+                            <pre className="text-xs bg-destructive/10 text-destructive p-3 rounded-md overflow-x-auto">
+                                <code>{detailedNode.error}</code>
+                            </pre>
+                        )}
+                        {!detailedNode.output && !detailedNode.error && (
+                            <p className="text-muted-foreground text-center py-4">No output data for this node.</p>
+                        )}
+                    </div>
+                </>
+            )}
+        </DialogContent>
+    </Dialog>
+    </>
   );
 };
 
