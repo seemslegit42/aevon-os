@@ -1,17 +1,12 @@
 
-import { createOpenAI } from '@ai-sdk/openai';
 import { generateText } from 'ai';
 import { z } from 'zod';
 import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
 import { type NextRequest } from 'next/server';
 import { rateLimiter } from '@/lib/rate-limiter';
+import { groq } from '@/lib/ai/groq';
 
 export const maxDuration = 60;
-
-const groq = createOpenAI({
-  baseURL: 'https://api.groq.com/openai/v1',
-  apiKey: process.env.GROQ_API_KEY,
-});
 
 // Create strings listing available items for the AI's context
 const availablePanels = ALL_CARD_CONFIGS.map(p => `- ${p.title} (id: ${p.id})`).join('\n');

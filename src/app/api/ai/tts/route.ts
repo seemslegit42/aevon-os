@@ -1,13 +1,9 @@
 
-import Groq from 'groq-sdk';
 import { type NextRequest } from 'next/server';
 import { rateLimiter } from '@/lib/rate-limiter';
+import { groqSdk } from '@/lib/ai/groq';
 
 export const maxDuration = 60;
-
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
 
 export async function POST(req: NextRequest) {
   const rateLimitResponse = await rateLimiter(req);
@@ -20,7 +16,7 @@ export async function POST(req: NextRequest) {
       return new Response(JSON.stringify({ error: "No text provided." }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
-    const ttsResponse = await groq.audio.speech.create({
+    const ttsResponse = await groqSdk.audio.speech.create({
       model: "tts-1",
       input: text,
       voice: "alloy", // Other voices: echo, fable, onyx, nova, shimmer
