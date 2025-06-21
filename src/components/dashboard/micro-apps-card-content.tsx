@@ -28,38 +28,37 @@ import { useLayoutStore } from '@/stores/layout.store';
 import { shallow } from 'zustand/shallow';
 
 const MicroAppsCardContent: React.FC = () => {
-  const { layoutItems, closeItem } = useLayoutStore(state => ({
-    layoutItems: state.layoutItems,
-    closeItem: state.closeItem,
-  }), shallow);
   const apps = useMicroApps();
   
-  const handleLaunch = (app: MicroApp) => {
-    eventBus.emit('app:launch', app);
-  }
-
-  const handleCloseAllInstances = (appId: string) => {
-    const instancesToClose = layoutItems.filter(item => item.type === 'app' && item.appId === appId);
-    instancesToClose.forEach(instance => closeItem(instance.id));
-  };
-
-  const handleFocusLatestInstance = (appId: string) => {
-      const instances = layoutItems.filter(item => item.type === 'app' && item.appId === appId);
-      if (instances.length > 0) {
-          const latestInstance = instances.reduce((latest, current) => (current.zIndex > latest.zIndex ? current : latest));
-          eventBus.emit('panel:focus', latestInstance.id);
-      }
-  };
-
   // Helper component for each menu item to avoid re-creating state logic in a loop
   const AppLauncherIcon: React.FC<{app: MicroApp}> = ({ app }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
     const isLongPressTriggeredRef = useRef(false);
 
+    const { layoutItems } = useLayoutStore(state => ({
+        layoutItems: state.layoutItems,
+    }), shallow);
+    
     const openInstances = layoutItems.filter(item => item.type === 'app' && item.appId === app.id);
     const isActive = openInstances.length > 0;
     const AppIcon = app.icon;
+
+    const handleLaunch = (app: MicroApp) => {
+        eventBus.emit('app:launch', app);
+    };
+
+    const handleClone = (appId: string) => {
+        eventBus.emit('app:clone', appId);
+    };
+    
+    const handleFocusLatest = (appId: string) => {
+        eventBus.emit('app:focusLatest', appId);
+    };
+
+    const handleCloseAll = (appId: string) => {
+        eventBus.emit('app:closeAll', appId);
+    };
 
     const handleTouchStart = () => {
       isLongPressTriggeredRef.current = false;
@@ -88,10 +87,6 @@ const MicroAppsCardContent: React.FC = () => {
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault();
         setMenuOpen(true);
-    };
-
-    const handleClone = (appId: string) => {
-        eventBus.emit('app:clone', appId);
     };
 
     return (
@@ -138,18 +133,22 @@ const MicroAppsCardContent: React.FC = () => {
                           ))}
                       </div>
                   )}
-                  <p className="text-xs text-muted-foreground mt-2 border-t border-border/20 pt-2">Right-click or long-press for more options.</p>
+                  <p className="text-xs text-muted-foreground mt-2 border-t border-border/20 pt-2">Left-click to launch, right-click for more options.</p>
               </div>
           </TooltipContent>
         </Tooltip>
         <DropdownMenuContent className="w-56 glassmorphism-panel" onClick={(e) => e.preventDefault()}>
           <DropdownMenuLabel>{app.title}</DropdownMenuLabel>
           <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => { handleLaunch(app); setMenuOpen(false); }}>
+            <RocketIcon />
+            <span>Launch New Instance</span>
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => { handleClone(app.id); setMenuOpen(false); }} disabled={!isActive}>
             <CopyIcon />
             <span>Clone Latest Instance</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => { handleFocusLatestInstance(app.id); setMenuOpen(false); }} disabled={!isActive}>
+          <DropdownMenuItem onClick={() => { handleFocusLatest(app.id); setMenuOpen(false); }} disabled={!isActive}>
               <TargetIcon />
             <span>Focus Latest</span>
           </DropdownMenuItem>
@@ -160,7 +159,7 @@ const MicroAppsCardContent: React.FC = () => {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="text-destructive focus:text-destructive focus:bg-destructive/10"
-            onClick={() => { handleCloseAllInstances(app.id); setMenuOpen(false); }}
+            onClick={() => { handleCloseAll(app.id); setMenuOpen(false); }}
             disabled={!isActive}
           >
             <XIcon />

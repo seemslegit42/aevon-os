@@ -100,10 +100,11 @@ export function useDashboardLayout() {
     const { layoutItems: currentItems, closeItem: close } = useLayoutStore.getState();
     const instancesToClose = currentItems.filter(item => item.type === 'app' && item.appId === appId);
     if (instancesToClose.length > 0) {
+        const app = ALL_MICRO_APPS.find(a => a.id === appId);
         instancesToClose.forEach(instance => close(instance.id));
-        toast({ title: "App Closed", description: `Closed all instances of ${appId}.` });
+        toast({ title: "App Closed", description: `Closed all instances of ${app?.title || 'the app'}.` });
     } else {
-        toast({ variant: 'destructive', title: "Not Found", description: `No open instances of ${appId} to close.` });
+        toast({ variant: 'destructive', title: "Not Found", description: `No open instances of that app to close.` });
     }
   }, [toast]);
 
@@ -114,7 +115,7 @@ export function useDashboardLayout() {
           const latestInstance = instances.reduce((latest, current) => (current.zIndex > latest.zIndex ? current : latest));
           handleBringToFront(latestInstance.id);
       } else {
-          toast({ variant: 'destructive', title: "Not Found", description: `No open instance of ${appId} to focus.` });
+          toast({ variant: 'destructive', title: "Not Found", description: `No open instance of that app to focus.` });
       }
   }, [toast, handleBringToFront]);
 
