@@ -1,10 +1,9 @@
-
 "use client";
 
 import React, { type ElementType } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { CheckCircleIcon, AlertCircleIcon, AIProcessingIcon, InfoCircleIcon } from '@/components/icons';
 import type { NodeState } from '@/types/loom';
 
@@ -18,6 +17,7 @@ const WorkflowNode: React.FC<WorkflowNodeProps> = ({ node, onInspect, isExpanded
     const canInspect = node.status === 'completed' || node.status === 'failed';
     const NodeIcon = node.icon;
     return (
+    <TooltipProvider>
         <div className="flex items-center w-full group">
             <div className={cn(
                 "flex-grow flex items-center gap-3 border text-foreground text-sm rounded-lg px-3 py-2 shadow-sm transition-all duration-300 w-full",
@@ -54,6 +54,7 @@ const WorkflowNode: React.FC<WorkflowNodeProps> = ({ node, onInspect, isExpanded
                  <TooltipContent><p>Inspect Node Output</p></TooltipContent>
              </Tooltip>
         </div>
+    </TooltipProvider>
     );
 };
 

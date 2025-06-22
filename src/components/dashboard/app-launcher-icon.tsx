@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useRef } from 'react';
@@ -77,6 +76,7 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
 
     return (
         <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
+        <TooltipProvider>
         <Tooltip>
           <DropdownMenuTrigger asChild>
             <TooltipTrigger asChild>
@@ -123,6 +123,7 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
               </div>
           </TooltipContent>
         </Tooltip>
+        </TooltipProvider>
         <DropdownMenuContent className="w-56 glassmorphism-panel" onClick={(e) => e.preventDefault()}>
           <DropdownMenuLabel>{app.title}</DropdownMenuLabel>
           <DropdownMenuSeparator />

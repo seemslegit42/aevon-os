@@ -1,4 +1,3 @@
-
 import React, { forwardRef } from 'react';
 import type { IconProps } from '../types';
 

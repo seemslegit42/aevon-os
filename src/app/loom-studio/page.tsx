@@ -1,14 +1,11 @@
-
 "use client";
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { motion, PanInfo } from 'framer-motion';
+import { PanInfo } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { TooltipProvider } from '@/components/ui/tooltip';
-import { useChat } from 'ai/react';
 import { useToast } from "@/hooks/use-toast";
 import eventBus from '@/lib/event-bus';
 import { cn } from '@/lib/utils';
@@ -50,7 +47,7 @@ const LoomStudioPage: React.FC = () => {
     const [inputText, setInputText] = useState('');
     const [detailedNode, setDetailedNode] = useState<NodeState | null>(null);
     const { toast } = useToast();
-    const { messages, append, setMessages, isLoading } = useChat({ id: 'loom-simulation' });
+    const { append, setMessages, isLoading } = useBeepChat();
 
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
@@ -104,47 +101,6 @@ const LoomStudioPage: React.FC = () => {
         toast({ title: "Sent to BEEP", description: "The text has been sent to the BEEP interface for processing." });
     };
 
-    useEffect(() => {
-        if (!isSimulating) return;
-        const lastMessage = messages.at(-1);
-        if (!lastMessage) return;
-
-        if (lastMessage.role === 'assistant' && lastMessage.tool_calls) {
-            lastMessage.tool_calls.forEach(tc => {
-                const nodeId = toolNodeMap[tc.toolName];
-                if (nodeId) updateNodeState(nodeId, { status: 'running' });
-            });
-        } else if (lastMessage.role === 'tool') {
-            const toolCallId = lastMessage.tool_call_id;
-            const originatingMsg = messages.find(m => m.role === 'assistant' && m.tool_calls?.some(tc => tc.toolCallId === toolCallId));
-            const toolCall = originatingMsg?.tool_calls?.find(tc => tc.toolCallId === toolCallId);
-
-            if (toolCall) {
-                const nodeId = toolNodeMap[toolCall.toolName];
-                if (nodeId) {
-                    try {
-                        const result = JSON.parse(lastMessage.content);
-                        updateNodeState(nodeId, { status: 'completed', output: result });
-                        eventBus.emit('orchestration:log', { task: `Loom: ${toolCall.toolName}`, status: 'success', details: `Tool executed successfully.` });
-                        
-                        if (toolCall.toolName === 'extractInvoiceData' && result.summary) {
-                           const securityAlert = { event: "Invoice Processed by Loom", source: "Loom Studio Workflow", timestamp: new Date().toISOString(), details: result.summary, extractedData: result };
-                           eventBus.emit('aegis:new-alert', JSON.stringify(securityAlert, null, 2));
-                        }
-                    } catch (e) {
-                         const error = "Failed to parse tool output.";
-                         updateNodeState(nodeId, { status: 'failed', error });
-                         eventBus.emit('orchestration:log', { task: `Loom: ${toolCall.toolName}`, status: 'failure', details: error });
-                    }
-                }
-            }
-        }
-        
-        if (!isLoading && messages.length > 1) {
-            setIsSimulating(false);
-        }
-    }, [messages, isSimulating, isLoading, updateNodeState, toolNodeMap]);
-
     const findNode = (id: string) => nodes.find(n => n.id === id)!;
     
     const sharedProps = {
@@ -163,7 +119,6 @@ const LoomStudioPage: React.FC = () => {
         <h1 className="text-3xl font-bold font-headline text-primary mb-2">Loom Studio</h1>
         <p className="text-muted-foreground mb-6">Design, test, and orchestrate complex AI agent workflows visually.</p>
         
-        <TooltipProvider>
             <div ref={containerRef} className="flex-grow h-full w-full">
                 {containerSize.width > EXPAND_BREAKPOINT_WIDTH 
                     ? <ExpandedLoomView {...sharedProps} nodePositions={nodePositions} onNodePositionChange={handleNodePositionChange} /> 
@@ -212,7 +167,6 @@ const LoomStudioPage: React.FC = () => {
                     )}
                 </DialogContent>
             </Dialog>
-        </TooltipProvider>
       </div>
     );
 };
