@@ -93,8 +93,8 @@ const TopBar: React.FC = () => {
             {mainNavItems.map((item) => (
               <Tooltip key={item.id}>
                 <TooltipTrigger asChild>
-                  <Link href={item.id} passHref legacyBehavior>
                     <Button
+                        asChild
                         variant="ghost"
                         size="sm"
                         className={cn(
@@ -102,10 +102,11 @@ const TopBar: React.FC = () => {
                           pathname === item.id && "opacity-100 bg-primary/10"
                         )}
                     >
+                      <Link href={item.id}>
                         <item.icon className="w-4 h-4 mr-2 aevos-icon-styling-override" />
                         <span>{item.label}</span>
+                      </Link>
                     </Button>
-                  </Link>
                 </TooltipTrigger>
                 <TooltipContent side="bottom"><p>{item.label}</p></TooltipContent>
               </Tooltip>
