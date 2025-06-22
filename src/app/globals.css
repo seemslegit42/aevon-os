@@ -5,32 +5,34 @@
 
 @layer base {
   :root {
-    /* --- Dark Theme Variables (Corrected) --- */
-    --background: 275 25% 14%;
-    --card: 275 25% 15% / 0.5; /* Note: alpha channel added for hsla() compatibility */
-    --popover: 275 25% 15% / 0.5;
+    /* --- Light Theme Variables --- */
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
     
-    /* Foregrounds - ALL PURE WHITE */
-    --foreground: 0 0% 100%;
-    --card-foreground: 0 0% 100%;
-    --popover-foreground: 0 0% 100%;
+    --card: 0 0% 98%;
+    --card-foreground: 240 10% 3.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    --primary: 275 75% 60%;
     --primary-foreground: 0 0% 100%;
+
+    --secondary: 177 100% 45%;
     --secondary-foreground: 0 0% 100%;
-    --muted-foreground: 0 0% 100%; /* Explicitly white */
-    --accent-foreground: 0 0% 100%;
+
+    --muted: 240 5% 90%;
+    --muted-foreground: 240 4% 46%;
+
+    --accent: 48 100% 55%;
+    --accent-foreground: 240 10% 3.9%;
+
+    --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Brand & Accent Colors */
-    --primary: 275 75% 60%;
-    --secondary: 177 100% 45%;
-    --muted: 220 18% 25%;
-    --accent: 48 100% 55%;
-    --destructive: 0 75% 55%;
-
-    /* Borders & Rings */
-    --border: 275 15% 25%;
-    --input: 275 25% 20%;
-    --ring: 48 100% 60%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 275 75% 60%;
 
     /* Chart colors */
     --chart-1: 275 75% 60%;
@@ -40,6 +42,44 @@
     --chart-5: 0 75% 55%;
 
     --radius: 0.75rem;
+  }
+ 
+  .dark {
+    /* --- Dark Theme Variables --- */
+    --background: 275 25% 14%;
+    --foreground: 210 20% 98%;
+    
+    --card: 275 25% 15%;
+    --card-foreground: 210 20% 98%;
+
+    --popover: 275 25% 15%;
+    --popover-foreground: 210 20% 98%;
+
+    --primary: 275 75% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 177 100% 45%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 220 18% 25%;
+    --muted-foreground: 220 10% 65%;
+
+    --accent: 48 100% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 275 15% 25%;
+    --input: 275 25% 20%;
+    --ring: 48 100% 60%;
+
+    /* Chart colors remain the same for dark mode */
+    --chart-1: 275 75% 60%;
+    --chart-2: 177 100% 45%;
+    --chart-3: 48 100% 55%;
+    --chart-4: 158 65% 50%;
+    --chart-5: 0 75% 55%;
   }
 }
 
@@ -68,13 +108,19 @@
 
 /* Glassmorphism Panel Style */
 .glassmorphism-panel {
-  background-color: hsla(var(--card));
+  background-color: hsl(var(--card) / 0.5);
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
   border: 1px solid hsl(var(--border) / 0.3);
   box-shadow: 0 8px 28px hsl(275 45% 8% / 0.25),
               0 3px 10px hsl(275 45% 8% / 0.2);
   border-radius: var(--radius);
+}
+
+.dark .glassmorphism-panel {
+   background-color: hsla(var(--card));
+   box-shadow: 0 8px 28px hsl(275 45% 8% / 0.25),
+              0 3px 10px hsl(275 45% 8% / 0.2);
 }
 
 /* Custom Scrollbar */

@@ -22,6 +22,7 @@ import { usePathname } from 'next/navigation';
 import { mainNavItems } from '@/config/dashboard-cards.config';
 import CommandBar from './command-bar';
 import UserMenu from './user-menu';
+import { ThemeToggle } from './theme-toggle';
 
 const TopBar: React.FC = () => {
   const [currentTime, setCurrentTime] = useState("--:--");
@@ -116,13 +117,8 @@ const TopBar: React.FC = () => {
 
         {/* Right Side: Controls & User Menu */}
         <div className="flex items-center space-x-1.5">
-          <Tooltip>
-            <TooltipTrigger asChild>
-                <NotificationCenter />
-            </TooltipTrigger>
-            <TooltipContent side="bottom"><p>Notifications</p></TooltipContent>
-          </Tooltip>
-
+          <NotificationCenter />
+          
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80" onClick={() => setCommandPaletteOpen(true)}>
@@ -132,6 +128,8 @@ const TopBar: React.FC = () => {
             </TooltipTrigger>
             <TooltipContent side="bottom"><p>Workspace Settings</p></TooltipContent>
           </Tooltip>
+
+          <ThemeToggle />
 
           <div className="flex items-center text-xs px-2 h-9 font-body text-primary-foreground opacity-80">
             <ClockIcon className="h-4 w-4 mr-1.5 aevos-icon-styling-override text-primary-foreground" />
