@@ -1,55 +1,33 @@
 
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { CheckCircleIcon, AlertTriangleIcon, ArrowRightIcon } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import eventBus from '@/lib/event-bus';
-
-interface FeedItem {
-  task: string;
-  time: string;
-  status: 'success' | 'failure';
-  details: string;
-}
-
+import { useNotificationStore, type Notification } from '@/stores/notification.store';
 
 const LiveOrchestrationFeedCardContent: React.FC = () => {
   const { toast } = useToast();
-  const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
+  // The component now subscribes to the central store instead of managing its own state.
+  const { notifications, addNotification } = useNotificationStore();
 
   useEffect(() => {
-    const handleOrchestrationLog = (logData: { task: string; status: 'success' | 'failure'; details: string; }) => {
-      setFeedItems(prevItems => {
-        const newItem = {
-          ...logData,
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        };
-        const updatedItems = [newItem, ...prevItems];
-        if (updatedItems.length > 20) updatedItems.pop(); // Keep list from getting too long
-        return updatedItems;
-      });
-      // The TopBar now listens to this event directly to manage notifications and glow.
-    };
-
-    eventBus.on('orchestration:log', handleOrchestrationLog);
-    
-    // Add an initial message
-    setFeedItems([{
-        task: "System Initialized",
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        status: "success",
-        details: "Live Orchestration Feed is active. Waiting for AI events."
-    }]);
-
-    return () => {
-      eventBus.off('orchestration:log', handleOrchestrationLog);
-    };
+    // Add an initial message only if the store is empty
+    if (notifications.length === 0) {
+        addNotification({
+            task: "System Initialized",
+            status: "success",
+            details: "Live Orchestration Feed is active. Waiting for AI events.",
+            targetId: "liveOrchestrationFeed"
+        });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleViewDetails = (item: FeedItem) => {
+  const handleViewDetails = (item: Notification) => {
     toast({
       title: `Feed Event: ${item.task}`,
       description: (
@@ -70,7 +48,7 @@ const LiveOrchestrationFeedCardContent: React.FC = () => {
   return (
     <ScrollArea className="h-full pr-3">
         <div className="space-y-3">
-        {feedItems.map((item, index) => (
+        {notifications.map((item, index) => (
             <div key={index} className="flex items-start space-x-3 text-xs">
             <div className="flex-shrink-0 pt-0.5">
                 {item.status === 'success' ? (
@@ -91,7 +69,7 @@ const LiveOrchestrationFeedCardContent: React.FC = () => {
             </div>
             </div>
         ))}
-        {feedItems.length === 0 && (
+        {notifications.length === 0 && (
              <div className="text-center py-6">
                 <p className="text-sm text-muted-foreground">No feed items available.</p>
             </div>
