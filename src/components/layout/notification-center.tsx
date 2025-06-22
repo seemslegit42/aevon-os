@@ -3,10 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import BellIcon from '@/components/icons/BellIcon';
-import CheckCircleIcon from '@/components/icons/CheckCircleIcon';
-import AlertTriangleIcon from '@/components/icons/AlertTriangleIcon';
-import TrashIcon from '@/components/icons/TrashIcon';
+import { Bell, CheckCircle, Warning, Trash } from 'phosphor-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,7 +47,7 @@ const NotificationCenter: React.FC = () => {
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80 relative">
-                <BellIcon className={cn("h-5 w-5 aevos-icon-styling-override", isNotifying && "notification-glow-animate")} />
+                <Bell className={cn("h-5 w-5 aevos-icon-styling-override", isNotifying && "notification-glow-animate")} />
                 {unreadCount > 0 && (
                     <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
                     {unreadCount > 9 ? '9+' : unreadCount}
@@ -79,9 +76,9 @@ const NotificationCenter: React.FC = () => {
                     >
                         <div className="flex-shrink-0 pt-0.5">
                         {n.status === 'success' ? (
-                            <CheckCircleIcon className="w-4 h-4 text-chart-4" />
+                            <CheckCircle className="w-4 h-4 text-chart-4" />
                         ) : (
-                            <AlertTriangleIcon className="w-4 h-4 text-chart-5" />
+                            <Warning className="w-4 h-4 text-chart-5" />
                         )}
                         </div>
                         <div className="flex-1 text-xs">
@@ -107,7 +104,7 @@ const NotificationCenter: React.FC = () => {
                     className="flex items-center justify-center gap-2 !p-2 cursor-pointer text-muted-foreground hover:!text-destructive hover:!bg-destructive/10"
                     onClick={clearAll}
                     >
-                    <TrashIcon /> Clear all notifications
+                    <Trash /> Clear all notifications
                     </DropdownMenuItem>
                 </>
                 )}

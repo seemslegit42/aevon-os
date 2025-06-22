@@ -4,8 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import LaptopIcon from '@/components/icons/LaptopIcon';
-import AIBrainIcon from '@/components/icons/AIBrainIcon';
+import { Laptop, Brain } from 'phosphor-react';
 
 const initialEdrData = [
   { day: 'Mon', Malware: 2, Ransomware: 0, LateralMovement: 1 },
@@ -39,14 +38,14 @@ const EdrSummaryPanel: React.FC = () => {
       <CardHeader>
         <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-                <LaptopIcon className="w-6 h-6 text-secondary" />
+                <Laptop className="w-6 h-6 text-secondary" />
                 <div>
                     <CardTitle className="font-headline text-lg">EDR Summary</CardTitle>
                     <CardDescription className="text-xs">Endpoint threat history</CardDescription>
                 </div>
             </div>
             <Badge className="badge-glow-animate border-none bg-chart-4/80 text-black">
-                <AIBrainIcon className="w-4 h-4 mr-2" />
+                <Brain className="w-4 h-4 mr-2" />
                 AI Blocking: ON
             </Badge>
         </div>

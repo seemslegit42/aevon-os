@@ -5,8 +5,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import SettingsIcon from '@/components/icons/SettingsIcon';
-import ClockIcon from '@/components/icons/ClockIcon';
+import { Gear, Clock } from 'phosphor-react';
 import {
   Tooltip,
   TooltipContent,
@@ -120,7 +119,7 @@ const TopBar: React.FC = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80" onClick={() => setCommandPaletteOpen(true)}>
-                <SettingsIcon className="h-5 w-5 aevos-icon-styling-override" />
+                <Gear className="h-5 w-5 aevos-icon-styling-override" />
                 <span className="sr-only">Settings</span>
               </Button>
             </TooltipTrigger>
@@ -130,7 +129,7 @@ const TopBar: React.FC = () => {
           <ThemeToggle />
 
           <div className="flex items-center text-xs px-2 h-9 font-mono text-primary-foreground opacity-80">
-            <ClockIcon className="h-4 w-4 mr-1.5 text-muted-foreground" />
+            <Clock className="h-4 w-4 mr-1.5 text-muted-foreground" />
             {isMounted ? currentTime : "--:--"}
           </div>
 

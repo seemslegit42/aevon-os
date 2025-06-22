@@ -5,9 +5,7 @@ import React from 'react';
 import { motion, PanInfo } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import FileIcon from '@/components/icons/FileIcon';
-import PlayIcon from '@/components/icons/PlayIcon';
-import MailIcon from '@/components/icons/MailIcon';
+import { File, Play, Envelope } from 'phosphor-react';
 import WorkflowNode from './workflow-node';
 import WorkflowSVGConnectors from './workflow-svg-connectors';
 import type { NodeState } from '@/types/loom';
@@ -44,7 +42,7 @@ const ExpandedLoomView: React.FC<ExpandedLoomViewProps> = ({
             <div className="w-72 flex-shrink-0 flex flex-col gap-4">
                 <div className="flex-shrink-0">
                     <label htmlFor="loom-input-expanded" className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
-                       <FileIcon /> Input Text
+                       <File /> Input Text
                     </label>
                     <Textarea
                         id="loom-input-expanded"
@@ -57,11 +55,11 @@ const ExpandedLoomView: React.FC<ExpandedLoomViewProps> = ({
                 </div>
                  <div className="flex flex-col gap-2">
                     <Button variant="outline" onClick={runSimulation} disabled={isSimulating || !inputText}>
-                        <PlayIcon />
+                        <Play />
                         {isSimulating ? 'Simulating...' : 'Run Simulation'}
                     </Button>
                     <Button className="btn-gradient-primary-accent" onClick={handleSendToBEEP} disabled={isSimulating || !inputText}>
-                        <MailIcon />
+                        <Envelope />
                         Send to BEEP
                     </Button>
                 </div>

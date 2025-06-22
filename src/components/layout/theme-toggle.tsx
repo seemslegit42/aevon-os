@@ -5,8 +5,7 @@ import { useTheme } from "next-themes"
 
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import MoonIcon from "@/components/icons/MoonIcon"
-import SunIcon from "@/components/icons/SunIcon"
+import { Sun, Moon } from "phosphor-react"
 
 export function ThemeToggle() {
   const { setTheme, theme } = useTheme()
@@ -21,8 +20,8 @@ export function ThemeToggle() {
             className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80"
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
           >
-            <SunIcon className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 aevos-icon-styling-override" />
-            <MoonIcon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 aevos-icon-styling-override" />
+            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
           </Button>
         </TooltipTrigger>

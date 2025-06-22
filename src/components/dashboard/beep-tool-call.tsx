@@ -1,36 +1,29 @@
+
 "use client";
 
 import React from 'react';
 import type { Message, ToolCall } from 'ai';
-import EyeIcon from '@/components/icons/EyeIcon';
-import PlusCircleIcon from '@/components/icons/PlusCircleIcon';
-import TrashIcon from '@/components/icons/TrashIcon';
-import RefreshIcon from '@/components/icons/RefreshIcon';
-import SettingsIcon from '@/components/icons/SettingsIcon';
-import CheckCircleIcon from '@/components/icons/CheckCircleIcon';
-import AlertTriangleIcon from '@/components/icons/AlertTriangleIcon';
-import AIProcessingIcon from '@/components/icons/AIProcessingIcon';
-import FileIcon from '@/components/icons/FileIcon';
-import FinancialReportIcon from '@/components/icons/FinancialReportIcon';
-import CreditCardIcon from '@/components/icons/CreditCardIcon';
+import { 
+    Eye, PlusCircle, Trash, ArrowClockwise, Gear, CheckCircle, Warning, GearSix, File, ChartBar, CreditCard 
+} from 'phosphor-react';
 import { cn } from '@/lib/utils';
 import type { IconProps } from '@/types/icon';
 import { TextCategorySchema, InvoiceDataSchema, KnowledgeBaseSearchResultSchema, SalesMetricsSchema, SubscriptionStatusSchema } from '@/lib/ai-schemas';
 
 const toolIcons: Record<string, React.ElementType<IconProps>> = {
-  focusItem: EyeIcon,
-  addItem: PlusCircleIcon,
-  moveItem: RefreshIcon, // Substitute for ArrowRightLeftIcon
-  removeItem: TrashIcon,
-  resetLayout: RefreshIcon,
-  categorizeText: SettingsIcon,
-  extractInvoiceData: SettingsIcon,
-  default: SettingsIcon,
-  closeAllInstancesOfApp: TrashIcon,
-  logAndAlertAegis: CheckCircleIcon,
-  searchKnowledgeBase: FileIcon, // Substitute for BookOpenIcon
-  getSalesMetrics: FinancialReportIcon, // Substitute for DollarSignIcon
-  getSubscriptionStatus: CreditCardIcon,
+  focusItem: Eye,
+  addItem: PlusCircle,
+  moveItem: ArrowClockwise, 
+  removeItem: Trash,
+  resetLayout: ArrowClockwise,
+  categorizeText: Gear,
+  extractInvoiceData: Gear,
+  default: Gear,
+  closeAllInstancesOfApp: Trash,
+  logAndAlertAegis: CheckCircle,
+  searchKnowledgeBase: File, 
+  getSalesMetrics: ChartBar, 
+  getSubscriptionStatus: CreditCard,
 };
 
 const toolFriendlyNames: Record<string, string> = {
@@ -188,9 +181,9 @@ const BeepToolCallDisplay: React.FC<BeepToolCallDisplayProps> = ({ toolCall, all
         !isLoading && !isError && "border-chart-4/50 bg-chart-4/10",
       )}>
         <div className="flex items-center gap-3 font-semibold mb-2">
-            {isLoading ? <AIProcessingIcon className="w-4 h-4 text-accent animate-spin"/> 
-             : isError ? <AlertTriangleIcon className="w-4 h-4 text-destructive"/> 
-             : <CheckCircleIcon className="w-4 h-4 text-chart-4"/>
+            {isLoading ? <GearSix className="w-4 h-4 text-accent animate-spin"/> 
+             : isError ? <Warning className="w-4 h-4 text-destructive"/> 
+             : <CheckCircle className="w-4 h-4 text-chart-4"/>
             }
             <Icon className="w-4 h-4 text-muted-foreground"/>
             <span className={cn(

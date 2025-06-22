@@ -1,13 +1,11 @@
+
 "use client";
 
 import React, { type ElementType } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import CheckCircleIcon from '@/components/icons/CheckCircleIcon';
-import AlertTriangleIcon from '@/components/icons/AlertTriangleIcon';
-import AIProcessingIcon from '@/components/icons/AIProcessingIcon';
-import InfoCircleIcon from '@/components/icons/InfoCircleIcon';
+import { CheckCircle, Warning, Cpu, Info } from 'phosphor-react';
 import type { NodeState } from '@/types/loom';
 
 interface WorkflowNodeProps {
@@ -32,11 +30,11 @@ const WorkflowNode: React.FC<WorkflowNodeProps> = ({ node, onInspect, isExpanded
                   'bg-secondary/10 border-secondary/50 font-semibold': node.isCondition
                 }
             )}>
-                {node.status === 'running' ? <AIProcessingIcon className="w-4 h-4 text-accent animate-spin" /> : <NodeIcon className="w-4 h-4 text-primary" />}
+                {node.status === 'running' ? <Cpu className="w-4 h-4 text-accent animate-spin" /> : <NodeIcon className="w-4 h-4 text-primary" />}
                 <span className="font-medium">{node.label}</span>
                 <div className="flex-grow" />
-                {node.status === 'completed' && <CheckCircleIcon className="w-4 h-4 text-chart-4" />}
-                {node.status === 'failed' && <AlertTriangleIcon className="w-4 h-4 text-destructive" />}
+                {node.status === 'completed' && <CheckCircle className="w-4 h-4 text-chart-4" />}
+                {node.status === 'failed' && <Warning className="w-4 h-4 text-destructive" />}
             </div>
              <Tooltip>
                 <TooltipTrigger asChild>
@@ -50,7 +48,7 @@ const WorkflowNode: React.FC<WorkflowNodeProps> = ({ node, onInspect, isExpanded
                         onClick={() => canInspect && onInspect(node)}
                         disabled={!canInspect}
                         >
-                        <InfoCircleIcon className="h-4 w-4" />
+                        <Info className="h-4 w-4" />
                         <span className="sr-only">Inspect Node</span>
                     </Button>
                 </TooltipTrigger>

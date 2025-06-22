@@ -4,7 +4,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { LoomOrchestrationIcon, ChevronDownIcon } from '@/components/icons';
+import LoomOrchestrationIcon from '@/components/icons/LoomOrchestrationIcon';
+import ChevronDownIcon from '@/components/icons/ChevronDownIcon';
+
 
 /**
  * @deprecated This component is deprecated. Loom Studio has been promoted to a standalone page.

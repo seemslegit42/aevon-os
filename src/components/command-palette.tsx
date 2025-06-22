@@ -12,13 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import PlusCircleIcon from '@/components/icons/PlusCircleIcon';
-import TrashIcon from '@/components/icons/TrashIcon';
-import SearchIcon from '@/components/icons/SearchIcon';
-import XIcon from '@/components/icons/XIcon';
-import SettingsIcon from '@/components/icons/SettingsIcon';
-import PlayIcon from '@/components/icons/PlayIcon';
-import EyeIcon from '@/components/icons/EyeIcon';
+import { PlusCircle, Trash, MagnifyingGlass, X, Gear, Play, Eye } from 'phosphor-react';
 import { ALL_CARD_CONFIGS, type CardConfig } from '@/config/dashboard-cards.config';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { useMicroApps } from '@/hooks/use-micro-apps';
@@ -50,7 +44,7 @@ const MicroAppList: React.FC<MicroAppListProps> = ({ apps, onLaunch }) => (
           </div>
           <div className="flex-shrink-0">
             <Button variant="outline" size="sm" onClick={() => onLaunch(app)} className="text-secondary border-secondary/50 hover:bg-secondary/10 hover:text-secondary w-[90px]">
-              <PlayIcon />
+              <Play />
               Launch
             </Button>
           </div>
@@ -84,12 +78,12 @@ const DashboardZoneList: React.FC<DashboardZoneListProps> = ({ cards, activeCard
           <div className="flex-shrink-0">
             {isActive ? (
               <Button variant="outline" size="sm" onClick={() => onRemove(card.id)} className="text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive w-[90px]">
-                <TrashIcon />
+                <Trash />
                 Remove
               </Button>
             ) : (
               <Button variant="outline" size="sm" onClick={() => onAdd(card.id)} className="text-primary border-primary/50 hover:bg-primary/10 w-[90px]">
-                <PlusCircleIcon />
+                <PlusCircle />
                 Add
               </Button>
             )}
@@ -128,11 +122,11 @@ const OpenWindowList: React.FC<OpenWindowListProps> = ({ instances, appMap, onFo
                         </div>
                         <div className="flex-shrink-0 flex items-center space-x-2">
                             <Button variant="outline" size="sm" onClick={() => onFocus(item.id)}>
-                                <EyeIcon />
+                                <Eye />
                                 Focus
                             </Button>
                             <Button variant="outline" size="icon" onClick={() => onClose(item.id)} className="text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive h-9 w-9">
-                                <XIcon />
+                                <X />
                                 <span className="sr-only">Close</span>
                             </Button>
                         </div>
@@ -215,13 +209,13 @@ const CommandPalette: React.FC = () => {
     <Dialog open={isOpen} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[600px] p-0 max-h-[80vh] flex flex-col">
         <DialogHeader className="p-4 border-b border-border/30">
-          <DialogTitle className="font-headline text-primary flex items-center gap-2"><SettingsIcon /> Manage Workspace</DialogTitle>
+          <DialogTitle className="font-headline text-primary flex items-center gap-2"><Gear /> Manage Workspace</DialogTitle>
           <DialogDescription>Add zones, launch micro-apps, or manage open windows.</DialogDescription>
         </DialogHeader>
 
         <div className="p-4">
           <div className="relative">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
               placeholder="Search zones, apps, or open windows..."
@@ -231,7 +225,7 @@ const CommandPalette: React.FC = () => {
             />
              {searchTerm && (
                 <Button variant="ghost" size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setSearchTerm('')}>
-                  <XIcon className="h-4 w-4" />
+                  <X className="h-4 w-4" />
                 </Button>
               )}
           </div>

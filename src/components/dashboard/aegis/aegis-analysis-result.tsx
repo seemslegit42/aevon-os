@@ -5,8 +5,7 @@ import { motion } from 'framer-motion';
 import { type AegisSecurityAnalysis } from '@/lib/ai-schemas';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import AlertTriangleIcon from '@/components/icons/AlertTriangleIcon';
-import CheckCircleIcon from '@/components/icons/CheckCircleIcon';
+import { Warning, CheckCircle } from 'phosphor-react';
 
 interface AegisAnalysisResultProps {
   result: AegisSecurityAnalysis;
@@ -61,7 +60,7 @@ const AegisAnalysisResult: React.FC<AegisAnalysisResultProps> = ({ result }) => 
         <ul className="space-y-1.5 text-sm text-muted-foreground list-inside">
           {result.identifiedThreats.map((threat, index) => (
             <li key={index} className="flex items-start">
-              <AlertTriangleIcon className="w-4 h-4 mr-2 mt-0.5 text-accent flex-shrink-0" />
+              <Warning className="w-4 h-4 mr-2 mt-0.5 text-accent flex-shrink-0" />
               <span>{threat}</span>
             </li>
           ))}
@@ -73,7 +72,7 @@ const AegisAnalysisResult: React.FC<AegisAnalysisResultProps> = ({ result }) => 
         <ul className="space-y-1.5 text-sm text-muted-foreground list-inside">
           {result.suggestedActions.map((action, index) => (
             <li key={index} className="flex items-start">
-                <CheckCircleIcon className="w-4 h-4 mr-2 mt-0.5 text-chart-4 flex-shrink-0" />
+                <CheckCircle className="w-4 h-4 mr-2 mt-0.5 text-chart-4 flex-shrink-0" />
                 <span>{action}</span>
             </li>
           ))}

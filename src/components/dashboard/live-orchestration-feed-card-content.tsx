@@ -1,7 +1,7 @@
 
 "use client";
 import React, { useEffect } from 'react';
-import { CheckCircleIcon, AlertTriangleIcon, ChevronDownIcon } from '@/components/icons';
+import { CheckCircle, Warning, CaretDown } from 'phosphor-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
 import { useToast } from "@/hooks/use-toast";
@@ -52,9 +52,9 @@ const LiveOrchestrationFeedCardContent: React.FC = () => {
             <div key={index} className="flex items-start space-x-3 text-xs">
             <div className="flex-shrink-0 pt-0.5">
                 {item.status === 'success' ? (
-                <CheckCircleIcon className="w-4 h-4 text-chart-4" />
+                <CheckCircle className="w-4 h-4 text-chart-4" />
                 ) : (
-                <AlertTriangleIcon className="w-4 h-4 text-chart-5" />
+                <Warning className="w-4 h-4 text-chart-5" />
                 )}
             </div>
             <div className="flex-1">
@@ -64,7 +64,7 @@ const LiveOrchestrationFeedCardContent: React.FC = () => {
                 </div>
                 <p className="text-muted-foreground mt-0.5">{item.details}</p>
                  <button onClick={() => handleViewDetails(item)} className={cn("inline-flex items-center text-xs mt-1 hover:underline", item.status === 'success' ? 'details-link-success' : 'details-link-failure')}>
-                     View Details <ChevronDownIcon className="w-3 h-3 ml-1 -rotate-90" />
+                     View Details <CaretDown className="w-3 h-3 ml-1 -rotate-90" />
                 </button>
             </div>
             </div>

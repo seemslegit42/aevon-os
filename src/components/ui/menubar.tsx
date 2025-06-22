@@ -1,9 +1,8 @@
-
 "use client"
 
 import * as React from "react"
 import * as MenubarPrimitive from "@radix-ui/react-menubar"
-import { CheckCircleIcon, ChevronDownIcon } from "@/components/icons" 
+import { CheckCircle, CaretDown } from "phosphor-react"
 
 import { cn } from "@/lib/utils"
 
@@ -83,7 +82,7 @@ const MenubarSubTrigger = React.forwardRef<
     {...props}
   >
     {children}
-    <ChevronDownIcon className="ml-auto h-4 w-4 -rotate-90" />
+    <CaretDown className="ml-auto h-4 w-4 -rotate-90" />
   </MenubarPrimitive.SubTrigger>
 ))
 MenubarSubTrigger.displayName = MenubarPrimitive.SubTrigger.displayName
@@ -161,7 +160,7 @@ const MenubarCheckboxItem = React.forwardRef<
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <MenubarPrimitive.ItemIndicator>
-        <CheckCircleIcon />
+        <CheckCircle />
       </MenubarPrimitive.ItemIndicator>
     </span>
     {children}

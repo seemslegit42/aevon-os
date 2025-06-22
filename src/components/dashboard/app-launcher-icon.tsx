@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useRef } from 'react';
@@ -10,11 +11,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Badge } from '@/components/ui/badge';
-import PlayIcon from '@/components/icons/PlayIcon';
-import EyeIcon from '@/components/icons/EyeIcon';
-import XIcon from '@/components/icons/XIcon';
-import TrashIcon from '@/components/icons/TrashIcon';
-import CopyIcon from '@/components/icons/CopyIcon';
+import { Play, Eye, X, Trash, Copy } from 'phosphor-react';
 import type { MicroApp } from '@/stores/micro-app.store';
 import {
   DropdownMenu,
@@ -111,7 +108,7 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
           <TooltipContent side="top" className="w-64 glassmorphism-panel">
               <div className="font-sans p-1 space-y-1.5">
                   <h4 className="font-semibold text-foreground flex items-center gap-2">
-                    <PlayIcon className="text-primary"/> {app.title}
+                    <Play className="text-primary"/> {app.title}
                   </h4>
                   <p className="text-sm text-muted-foreground">{app.description}</p>
                   {app.tags && app.tags.length > 0 && (
@@ -132,15 +129,15 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
           <DropdownMenuLabel>{app.title}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => { launchApp(app); setMenuOpen(false); }}>
-            <PlayIcon />
+            <Play />
             <span>Launch New Instance</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => { cloneApp(app.id); setMenuOpen(false); }} disabled={!isActive}>
-            <CopyIcon />
+            <Copy />
             <span>Clone Latest Instance</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => { focusLatestInstance(app.id); setMenuOpen(false); }} disabled={!isActive}>
-              <EyeIcon />
+              <Eye />
             <span>Focus Latest</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
@@ -149,11 +146,11 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
             onClick={() => { closeAllInstancesOfApp(app.id); setMenuOpen(false); }}
             disabled={!isActive}
           >
-            <XIcon />
+            <X />
             <span>Close All Instances</span>
           </DropdownMenuItem>
           <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" disabled>
-            <TrashIcon />
+            <Trash />
             <span>Remove from Launcher</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

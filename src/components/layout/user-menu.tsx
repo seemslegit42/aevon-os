@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -15,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from '@/components/ui/button';
-import ChevronDownIcon from '@/components/icons/ChevronDownIcon';
+import { CaretDown } from 'phosphor-react';
 
 const UserMenu: React.FC = () => {
     return (
@@ -30,7 +31,7 @@ const UserMenu: React.FC = () => {
                         <span className="text-xs font-semibold text-foreground">Admin User</span>
                         <span className="text-xs text-muted-foreground">Pro Plan</span>
                     </div>
-                    <ChevronDownIcon className="h-4 w-4 opacity-80 text-muted-foreground" />
+                    <CaretDown className="h-4 w-4 opacity-80 text-muted-foreground" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 glassmorphism-panel mt-2">

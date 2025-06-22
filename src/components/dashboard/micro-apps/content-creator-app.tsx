@@ -14,7 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { type ContentGeneration } from '@/lib/ai-schemas';
-import { ZapIcon, CopyIcon, FileIcon, AlertTriangleIcon } from '@/components/icons';
+import { Zap, Copy, File, Warning } from 'phosphor-react';
 import { generateContent } from '@/actions/generateContent';
 
 const formSchema = z.object({
@@ -76,7 +76,7 @@ const ContentCreatorApp: React.FC = () => {
       if (error) {
           return (
               <div className="text-center text-destructive p-4">
-                  <AlertTriangleIcon className="mx-auto h-8 w-8 mb-2" />
+                  <Warning className="mx-auto h-8 w-8 mb-2" />
                   <h4 className="font-semibold">Generation Failed</h4>
                   <p className="text-xs">{error}</p>
               </div>
@@ -89,13 +89,13 @@ const ContentCreatorApp: React.FC = () => {
                   <div className="flex justify-between items-start">
                     <h3 className="text-lg font-headline text-primary">{generatedContent.title}</h3>
                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleCopy(generatedContent.title)}>
-                        <CopyIcon />
+                        <Copy />
                     </Button>
                   </div>
                   <div className="w-full max-w-none relative">
                     <Textarea readOnly value={generatedContent.body} className="w-full h-48 bg-muted/30" />
                      <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-8 w-8" onClick={() => handleCopy(generatedContent.body)}>
-                        <CopyIcon />
+                        <Copy />
                     </Button>
                   </div>
               </div>
@@ -104,7 +104,7 @@ const ContentCreatorApp: React.FC = () => {
 
       return (
           <div className="text-center text-muted-foreground p-8">
-              <FileIcon className="mx-auto h-12 w-12 opacity-50" />
+              <File className="mx-auto h-12 w-12 opacity-50" />
               <p className="mt-4">Your generated content will appear here.</p>
           </div>
       )
@@ -174,7 +174,7 @@ const ContentCreatorApp: React.FC = () => {
               )}
             />
             <Button type="submit" className="w-full btn-gradient-primary-secondary" disabled={isLoading}>
-                <ZapIcon />
+                <Zap />
               {isLoading ? 'Generating...' : 'Generate Content'}
             </Button>
           </form>

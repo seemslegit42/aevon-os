@@ -3,10 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import AIBrainIcon from '@/components/icons/AIBrainIcon';
-import ZapIcon from '@/components/icons/ZapIcon';
-import AlertTriangleIcon from '@/components/icons/AlertTriangleIcon';
-import AIProcessingIcon from '@/components/icons/AIProcessingIcon';
+import { Brain, Zap, Warning, GearSix } from 'phosphor-react';
 import { generateInsights } from '@/actions/generateInsights';
 import { useLayoutStore } from '@/stores/layout.store';
 import { useToast } from '@/hooks/use-toast';
@@ -61,7 +58,7 @@ export default function AiInsightsCardContent() {
         if (isLoading) {
             return (
                 <div className="text-center py-4">
-                    <AIProcessingIcon className="mx-auto h-8 w-8 text-primary animate-spin" />
+                    <GearSix className="mx-auto h-8 w-8 text-primary animate-spin" />
                     <p className="mt-2 text-xs text-muted-foreground">Generating...</p>
                 </div>
             );
@@ -70,7 +67,7 @@ export default function AiInsightsCardContent() {
         if (error) {
             return (
                 <Alert variant="destructive" className="max-w-lg mx-auto text-xs">
-                    <AlertTriangleIcon className="h-4 w-4" />
+                    <Warning className="h-4 w-4" />
                     <AlertTitle>Error</AlertTitle>
                     <AlertDescription>{error}</AlertDescription>
                 </Alert>
@@ -83,7 +80,7 @@ export default function AiInsightsCardContent() {
                     {insights.map((insight, index) => (
                         <div key={index} className="glassmorphism-panel p-3 flex flex-col justify-between text-xs">
                             <div className="flex items-start gap-2">
-                                <ZapIcon className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+                                <Zap className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
                                 <p className="text-foreground flex-1">{insight.text}</p>
                             </div>
                             {insight.action && (
@@ -99,7 +96,7 @@ export default function AiInsightsCardContent() {
 
         return (
              <div className="text-center text-muted-foreground py-4">
-                <AIBrainIcon className="mx-auto h-8 w-8 opacity-50" />
+                <Brain className="mx-auto h-8 w-8 opacity-50" />
                 <p className="mt-2 text-xs">Click generate to get AI insights.</p>
             </div>
         );
@@ -112,7 +109,7 @@ export default function AiInsightsCardContent() {
              <InsightsDisplay />
            </div>
             <Button size="sm" onClick={handleGenerateInsights} disabled={isLoading} className="btn-gradient-primary-accent mt-2 flex-shrink-0">
-                <ZapIcon />
+                <Zap />
                 {isLoading ? "Analyzing..." : "Generate Insights"}
             </Button>
         </div>

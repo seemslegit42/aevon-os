@@ -3,8 +3,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import UserIcon from '@/components/icons/UserIcon';
-import MicIcon from '@/components/icons/MicIcon';
+import { User, Mic } from 'phosphor-react';
 import { cn } from '@/lib/utils';
 import eventBus from '@/lib/event-bus';
 import BeepAvatar3D from './beep-avatar-3d';
@@ -113,7 +112,7 @@ const BeepCardContent: React.FC = () => {
               isProcessing && !isRecording ? "animate-pulse" : ""
             )}
           >
-            {isRecording ? <span className="flex items-center gap-2"><MicIcon /></span> : 'Talk to BEEP'}
+            {isRecording ? <span className="flex items-center gap-2"><Mic /></span> : 'Talk to BEEP'}
         </Button>
       </div>
 
@@ -159,7 +158,7 @@ const BeepCardContent: React.FC = () => {
                           )}>
                             {m.content}
                           </div>
-                          {m.role === 'user' && <UserIcon className="w-5 h-5 text-primary flex-shrink-0 mt-1" />}
+                          {m.role === 'user' && <User className="w-5 h-5 text-primary flex-shrink-0 mt-1" />}
                         </div>
                       )}
                     </motion.div>
@@ -191,7 +190,7 @@ const BeepCardContent: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     className="flex items-start gap-3 justify-end px-2">
                 <div className="p-3 rounded-lg glassmorphism-panel border-none bg-card/70 text-foreground text-sm">... transcribing</div>
-                <UserIcon className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                <User className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
               </motion.div>
             )}
             </AnimatePresence>

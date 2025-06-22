@@ -3,8 +3,7 @@
 
 import * as React from "react"
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu"
-import CheckCircleIcon from "@/components/icons/CheckCircleIcon" 
-import ChevronDownIcon from "@/components/icons/ChevronDownIcon" 
+import { Check, CaretRight } from "phosphor-react"
 
 import { cn } from "@/lib/utils"
 
@@ -36,7 +35,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
     {...props}
   >
     {children}
-    <ChevronDownIcon className="ml-auto h-4 w-4 -rotate-90" />
+    <CaretRight className="ml-auto h-4 w-4" />
   </DropdownMenuPrimitive.SubTrigger>
 ))
 DropdownMenuSubTrigger.displayName =
@@ -109,7 +108,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <DropdownMenuPrimitive.ItemIndicator>
-        <CheckCircleIcon />
+        <Check className="h-4 w-4" />
       </DropdownMenuPrimitive.ItemIndicator>
     </span>
     {children}
