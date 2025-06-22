@@ -13,7 +13,7 @@ const AgentPresenceCardContent = lazy(() => import('@/components/dashboard/agent
 // Icons for card titles and content
 import {
   MagicWandIcon, ListChecksIcon, LayoutGridIcon, ChartBarIcon, PenSquareIcon, CreditCardIcon, BrainCircuitIcon,
-  UsersRoundIcon, ClockIcon, CheckCircleIcon, LoaderIcon, GitForkIcon, ShieldCheckIcon, ArmoryIcon, ZapIcon,
+  UsersRoundIcon, ClockIcon, CheckCircleIcon, LoaderIcon, GitForkIcon, ShieldCheckIcon, ArmoryIcon, ZapIcon, HomeIcon,
 } from '@/components/icons';
 
 // =================================================================
@@ -32,6 +32,7 @@ export interface NavItemConfig {
 }
 
 export const mainNavItems: NavItemConfig[] = [
+  { id: '/', label: 'Home', icon: HomeIcon },
   { id: '/loom-studio', label: 'Loom', icon: GitForkIcon, contextualActions: [
       { 
           label: 'New Workflow', 
