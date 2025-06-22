@@ -5,7 +5,7 @@
   "private": true,
   "description": "ΛΞVON OS: An AI-first intelligent operating system designed to revolutionize business operations.",
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
