@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase from '../IconBase';
+import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
 import { IconProps } from '../../types';
 
 const SupplyChainIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -23,12 +23,12 @@ const SupplyChainIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) 
       {/* Connecting Arrows (Crystalline strokes) */}
       {/* Arrow 1 (Left to Center) */}
       <path d="M7 11.5h2.5M8.5 10l1 1.5-1 1.5" 
-            fill="none" stroke="currentColor" strokeWidth={sw * 0.7} strokeLinecap="round" strokeLinejoin="round" opacity="0.8"/>
+            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.7} strokeLinecap="round" strokeLinejoin="round" opacity="0.8"/>
       <path d="M8.5 10l.5-.25 1 1.5-.25.25.25.25-1 1.5-.5-.25-.25-.25 1-1.5.25-.25z" fill="currentColor" opacity="0.4"/>
       
       {/* Arrow 2 (Center to Right) */}
       <path d="M14.5 11.5h2.5M16 10l1 1.5-1 1.5" 
-            fill="none" stroke="currentColor" strokeWidth={sw * 0.7} strokeLinecap="round" strokeLinejoin="round" opacity="0.8"/>
+            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.7} strokeLinecap="round" strokeLinejoin="round" opacity="0.8"/>
       <path d="M16 10l.5-.25 1 1.5-.25.25.25.25-1 1.5-.5-.25-.25-.25 1-1.5.25-.25z" fill="currentColor" opacity="0.4"/>
 
       {/* Base Line (Subtle) */}

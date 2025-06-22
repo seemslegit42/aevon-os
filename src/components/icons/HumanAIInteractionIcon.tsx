@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase from '../IconBase';
+import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
 import { IconProps } from '../../types';
 
 const HumanAIInteractionIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -23,7 +23,7 @@ const HumanAIInteractionIcon: React.FC<IconProps> = ({ className, size, strokeWi
       <path d="M10.5 10.5h3v3h-3v-3Z" /> {/* Central connector block */}
       <path d="M10.5 10.5L12 9.5l1.5 1v3l-1.5 1-1.5-1v-3Z" opacity="0.7"/>
       <path d="M8.5 12l2-1.5M15.5 12l-2-1.5" 
-            fill="none" stroke="currentColor" strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.8"/>
+            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.8"/>
     </IconBase>
   );
 };

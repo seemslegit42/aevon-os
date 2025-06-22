@@ -1,7 +1,5 @@
-
 import React, { useRef, useState, useEffect } from 'react';
-import type { IconDisplayInfo } from '../App'; // Adjust path if App.tsx is not in parent
-import type { IconProps } from '../types';
+import type { IconDisplayInfo, IconProps } from '../types/icon';
 
 interface IconDetailModalProps {
   icon: IconDisplayInfo | null;
@@ -73,9 +71,6 @@ const IconDetailModal: React.FC<IconDetailModalProps> = ({ icon, isOpen, onClose
   const handleCopySvg = async () => {
     if (iconSvgRef.current) {
       try {
-        // Create a temporary SVG element with the icon to get its outerHTML with resolved styles
-        // This is a bit of a trick as direct outerHTML might not have styles applied by parent SVG
-        // For this case, outerHTML of the IconBase's SVG should be sufficient.
         let svgString = iconSvgRef.current.outerHTML;
 
         // Minify slightly

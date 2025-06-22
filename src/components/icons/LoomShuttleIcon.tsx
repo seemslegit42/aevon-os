@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase from '../IconBase';
+import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
 import { IconProps } from '../../types';
 
 const LoomShuttleIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -23,7 +23,7 @@ const LoomShuttleIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) 
       {/* "Thread" element - could be a thin line with gradient stroke */}
       <path d="M4.5 12h15" 
             fill="none" 
-            stroke="currentColor" 
+            stroke={`url(#${ICON_GRADIENT_ID})`} 
             strokeWidth={(strokeWidth || 2) * 0.4} 
             strokeLinecap="round"
             opacity="0.6"/>

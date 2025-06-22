@@ -1,6 +1,6 @@
 
 import React, { forwardRef } from 'react';
-import IconBase from '../IconBase';
+import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
 import { IconProps } from '../../types';
 
 const MuteIcon = forwardRef<SVGSVGElement, IconProps>(({ className, size, strokeWidth, id }, ref) => {
@@ -12,7 +12,7 @@ const MuteIcon = forwardRef<SVGSVGElement, IconProps>(({ className, size, stroke
       <path d="M3 9L7 4h1v16H7L3 15V9z" opacity="0.6"/>
 
       {/* Slash Line using gradient for stroke */}
-      <path d="M14 8l6 8M20 8l-6 8" fill="none" stroke="currentColor" strokeWidth={sw * 1.1} strokeLinecap="round"/>
+      <path d="M14 8l6 8M20 8l-6 8" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 1.1} strokeLinecap="round"/>
     </IconBase>
   );
 });

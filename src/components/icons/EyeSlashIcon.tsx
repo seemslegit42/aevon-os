@@ -1,6 +1,6 @@
 
 import React, { forwardRef } from 'react';
-import IconBase from '../IconBase';
+import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
 import { IconProps } from '../../types';
 
 const EyeSlashIcon = forwardRef<SVGSVGElement, IconProps>(({ className, size, strokeWidth, id }, ref) => {
@@ -15,7 +15,7 @@ const EyeSlashIcon = forwardRef<SVGSVGElement, IconProps>(({ className, size, st
       <path 
         d="M3.27 3L21 19.73" 
         fill="none" 
-        stroke="currentColor" 
+        stroke={`url(#${ICON_GRADIENT_ID})`} 
         strokeWidth={sw * 1.2} 
         strokeLinecap="round"
       />

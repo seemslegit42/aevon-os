@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase from '../IconBase';
+import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
 import { IconProps } from '../../types';
 
 const ECommercePlatformIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -30,7 +30,7 @@ const ECommercePlatformIcon: React.FC<IconProps> = ({ className, size, strokeWid
 
       {/* Connecting Lines */}
       <path d="M4.5 5.5L11 8M19.5 5.5L13 8M12 19.5L8.5 17M12 19.5L15.5 17"
-            fill="none" stroke="currentColor" strokeWidth={sw * 0.4} strokeLinecap="round" opacity="0.5"/>
+            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.4} strokeLinecap="round" opacity="0.5"/>
     </IconBase>
   );
 };

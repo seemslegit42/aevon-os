@@ -1,5 +1,5 @@
 import React from 'react';
-import IconBase from '../IconBase';
+import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
 import { IconProps } from '../../types';
 
 const CaduceusIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -19,9 +19,9 @@ const CaduceusIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => 
 
       {/* Serpents (using stroke with gradient) */}
       <path d="M11 20.5s-3-2.5-3-5.5c0-2.25 1.8-4 3.25-4s3.25 1.75 3.25 4c0 3-3 5.5-3 5.5" 
-            fill="none" stroke="currentColor" strokeWidth={sw * 1.1} strokeLinecap="round" />
+            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 1.1} strokeLinecap="round" />
       <path d="M13 20.5s3-2.5 3-5.5c0-2.25-1.8-4-3.25-4S9.5 12.75 9.5 15c0 3 3 5.5 3 5.5" 
-            fill="none" stroke="currentColor" strokeWidth={sw * 1.1} strokeLinecap="round" />
+            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 1.1} strokeLinecap="round" />
       
       {/* Serpent head facets (filled) */}
       <path d="M8.25 10l-.6.6.6.6.6-.6-.6-.6Z" opacity="0.95"/>

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase from '../IconBase';
+import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
 import { IconProps } from '../../types';
 
 const FirewallIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -22,9 +22,9 @@ const FirewallIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => 
 
       {/* Dynamic Energy Patterns/Lines (subtle crystalline strokes) */}
       <path d="M5 9s1.5 1.5 3.5 0 M19 9s-1.5 1.5-3.5 0 M8.5 15s1 -1.5 3.5 -1.5s2.5 1.5 3.5 1.5" 
-            fill="none" stroke="currentColor" strokeWidth={sw * 0.3} strokeLinecap="round" opacity="0.3"/>
+            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.3} strokeLinecap="round" opacity="0.3"/>
       <path d="M12 19l-2-2.5M12 19l2-2.5" 
-            fill="none" stroke="currentColor" strokeWidth={sw * 0.25} strokeLinecap="round" opacity="0.2"/>
+            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.25} strokeLinecap="round" opacity="0.2"/>
     </IconBase>
   );
 };

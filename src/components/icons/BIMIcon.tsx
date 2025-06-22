@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase from '../IconBase';
+import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
 import { IconProps } from '../../types';
 
 const BIMIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -28,7 +28,7 @@ const BIMIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
       <circle cx="12" cy="6" r="1" fill="currentColor" opacity="0.6"/>
 
       {/* Connecting lines (subtle, representing data flow) */}
-      <path d="M6 16V13M18 16V13M12 11V7" stroke="currentColor" strokeWidth={sw*0.3} strokeLinecap="round" opacity="0.4" fill="none"/>
+      <path d="M6 16V13M18 16V13M12 11V7" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw*0.3} strokeLinecap="round" opacity="0.4" fill="none"/>
     </IconBase>
   );
 };

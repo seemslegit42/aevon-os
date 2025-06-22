@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase from '../IconBase';
+import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
 import { IconProps } from '../../types';
 
 const BlueprintIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -17,9 +17,9 @@ const BlueprintIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) =>
 
       {/* Abstracted lines on blueprint (using stroke with gradient) */}
       <path d="M7 7.5h10M7 10.5h6M7 13.5h10" 
-            fill="none" stroke="currentColor" strokeWidth={sw * 0.5} strokeLinecap="round" opacity="0.6"/>
+            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.5} strokeLinecap="round" opacity="0.6"/>
       <path d="M9.5 7.5V13.5 M13.5 7.5V10.5" 
-            fill="none" stroke="currentColor" strokeWidth={sw * 0.4} strokeLinecap="round" opacity="0.5"/>
+            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.4} strokeLinecap="round" opacity="0.5"/>
 
       {/* Tie/Band around the roll (filled) */}
       <path d="M13 17.5H11c-.55 0-1 .45-1 1s.45 1 1 1h2c.55 0 1-.45 1-1s-.45-1-1-1Z" opacity="0.8"/>
