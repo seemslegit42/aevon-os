@@ -8,7 +8,7 @@ import {
   PlusCircleIcon,
   TrashIcon,
   RefreshIcon,
-  GearIcon,
+  SettingsIcon,
   CheckCircleIcon,
   AlertTriangleIcon,
   AIProcessingIcon,
@@ -26,9 +26,9 @@ const toolIcons: Record<string, React.ElementType<IconProps>> = {
   moveItem: RefreshIcon, // Substitute for ArrowRightLeftIcon
   removeItem: TrashIcon,
   resetLayout: RefreshIcon,
-  categorizeText: GearIcon,
-  extractInvoiceData: GearIcon,
-  default: GearIcon,
+  categorizeText: SettingsIcon,
+  extractInvoiceData: SettingsIcon,
+  default: SettingsIcon,
   closeAllInstancesOfApp: TrashIcon,
   logAndAlertAegis: CheckCircleIcon,
   searchKnowledgeBase: FileIcon, // Substitute for BookOpenIcon

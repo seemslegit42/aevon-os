@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-import { SearchIcon, BrainCircuitIcon } from '@/components/icons';
+import { SearchIcon, AIBrainIcon } from '@/components/icons';
 import eventBus from '@/lib/event-bus';
 
 const CommandBar: React.FC = () => {
@@ -52,7 +52,7 @@ const CommandBar: React.FC = () => {
                         transition={{ duration: 0.3 }}
                         className="absolute inset-0 flex items-center gap-2 px-3 bg-primary/10 rounded-md"
                     >
-                        <BrainCircuitIcon className="h-4 w-4 text-primary flex-shrink-0" />
+                        <AIBrainIcon className="h-4 w-4 text-primary flex-shrink-0" />
                         <p className="text-sm text-primary-foreground truncate">{agentResponse}</p>
                     </motion.div>
                 ) : (

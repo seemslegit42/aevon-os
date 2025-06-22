@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ModularConstructionIcon, GearIcon, RefreshIcon, ZapIcon } from '@/components/icons';
+import { ModularConstructionIcon, SettingsIcon, RefreshIcon, ZapIcon } from '@/components/icons';
 
 const WELCOME_MODAL_KEY = 'aevon_welcome_modal_shown_v1';
 
@@ -48,10 +48,10 @@ export function WelcomeModal() {
             </div>
           </div>
           <div className="flex items-start gap-4">
-            <GearIcon className="w-8 h-8 text-secondary flex-shrink-0 mt-1" />
+            <SettingsIcon className="w-8 h-8 text-secondary flex-shrink-0 mt-1" />
             <div>
               <h4 className="font-semibold text-foreground">Customize Your Layout</h4>
-              <p className="text-muted-foreground">Click the <span className="inline-flex items-center justify-center bg-muted/50 rounded-sm p-0.5 align-middle"><GearIcon className="w-3 h-3"/></span> icon in the top bar to add, remove, or launch micro-apps.</p>
+              <p className="text-muted-foreground">Click the <span className="inline-flex items-center justify-center bg-muted/50 rounded-sm p-0.5 align-middle"><SettingsIcon className="w-3 h-3"/></span> icon in the top bar to add, remove, or launch micro-apps.</p>
             </div>
           </div>
           <div className="flex items-start gap-4">

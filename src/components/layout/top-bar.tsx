@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import {
-  GearIcon,
+  SettingsIcon,
   ClockIcon,
 } from '@/components/icons';
 import {
@@ -122,7 +122,7 @@ const TopBar: React.FC = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80" onClick={() => setCommandPaletteOpen(true)}>
-                <GearIcon className="h-5 w-5" />
+                <SettingsIcon className="h-5 w-5" />
                 <span className="sr-only">Settings</span>
               </Button>
             </TooltipTrigger>

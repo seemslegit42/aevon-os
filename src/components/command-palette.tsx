@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlusCircleIcon, TrashIcon, SearchIcon, XIcon, GearIcon, PlayIcon, EyeIcon } from '@/components/icons';
+import { PlusCircleIcon, TrashIcon, SearchIcon, XIcon, SettingsIcon, PlayIcon, EyeIcon } from '@/components/icons';
 import { ALL_CARD_CONFIGS, type CardConfig } from '@/config/dashboard-cards.config';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { useMicroApps } from '@/hooks/use-micro-apps';
@@ -209,7 +209,7 @@ const CommandPalette: React.FC = () => {
     <Dialog open={isOpen} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[600px] p-0 max-h-[80vh] flex flex-col">
         <DialogHeader className="p-4 border-b border-border/30">
-          <DialogTitle className="font-headline text-primary flex items-center gap-2"><GearIcon /> Manage Workspace</DialogTitle>
+          <DialogTitle className="font-headline text-primary flex items-center gap-2"><SettingsIcon /> Manage Workspace</DialogTitle>
           <DialogDescription>Add zones, launch micro-apps, or manage open windows.</DialogDescription>
         </DialogHeader>
 

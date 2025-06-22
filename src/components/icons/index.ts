@@ -87,6 +87,7 @@ export { default as MedicalNanobotIcon } from './MedicalNanobotIcon';
 export { default as MedicalRecordsIcon } from './MedicalRecordsIcon';
 export { default as MenuIcon } from './MenuIcon';
 export { default as MicIcon } from './MicIcon';
+export { default as MinimizeIcon } from './MinimizeIcon';
 export { default as MicroscopeIcon } from './MicroscopeIcon';
 export { default as ModularConstructionIcon } from './ModularConstructionIcon';
 export { default as MoonIcon } from './MoonIcon';
