@@ -9,6 +9,7 @@ import DashboardWindow from '@/components/dashboard-window';
 import { shallow } from 'zustand/shallow';
 import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
 import eventBus from '@/lib/event-bus';
+import { WelcomeModal } from '@/components/welcome-modal';
 
 export default function HomePage() {
   useEffect(() => {
@@ -66,6 +67,7 @@ export default function HomePage() {
 
   return (
     <div className="h-full w-full relative" onClick={handleCanvasClick}>
+      <WelcomeModal />
       {layoutItems.map(item => {
           const config = item.type === 'card'
             ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId)
