@@ -74,21 +74,6 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
   },
 ];
 
-const mockAgents = [
-    { 
-        id: 'agent1', name: 'Invoice Processor', description: 'Monitoring incoming documents.', 
-        status: 'Idle', statusColor: 'text-chart-4', statusIcon: ClockIcon, time: '1m ago' 
-    },
-    { 
-        id: 'agent2', name: 'Security Analyst', description: 'Analyzing login patterns.', 
-        status: 'Processing', statusColor: 'text-accent', statusIcon: AIProcessingIcon, isSpinning: true, time: 'Just now' 
-    },
-    { 
-        id: 'agent3', name: 'Data Synchronizer', description: 'Last sync successful.', 
-        status: 'Completed', statusColor: 'text-chart-2', statusIcon: CheckCircleIcon, time: '15m ago' 
-    },
-];
-
 // =================================================================
 // DASHBOARD CARD (PANEL) CONFIGURATION
 // =================================================================
@@ -123,7 +108,6 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     isDismissible: true,
     description: "Monitor the real-time status and activity of your autonomous AI agents.",
     content: AgentPresenceCardContent,
-    contentProps: { agents: mockAgents },
     defaultLayout: { x: 890, y: 20, width: 450, height: 250 },
     minWidth: 280,
     minHeight: 180,

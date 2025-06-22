@@ -9,19 +9,10 @@ import AegisAnalysisResult from '@/components/dashboard/aegis/aegis-analysis-res
 import PhishingResiliencePanel from '@/components/dashboard/aegis/PhishingResiliencePanel';
 import CloudSecurityPanel from '@/components/dashboard/aegis/CloudSecurityPanel';
 import EdrSummaryPanel from '@/components/dashboard/aegis/EdrSummaryPanel';
-import { Button } from '@/components/ui/button';
 import { AlertTriangleIcon, ZapIcon } from '@/components/icons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { analyzeSecurityAlert } from '@/actions/analyzeSecurity';
-
-const MOCK_ALERT_DATA = JSON.stringify({
-  alert: "Anomalous login detected",
-  timestamp: new Date().toISOString(),
-  source_ip: "198.51.100.24",
-  user: "j.doe",
-  details: "Multiple failed login attempts followed by a successful login from an unrecognized ASN in a different geographical region.",
-}, null, 2);
 
 const AegisSecurityPage: React.FC = () => {
   const { toast } = useToast();
@@ -113,10 +104,6 @@ const AegisSecurityPage: React.FC = () => {
               {!isLoading && !error && !analysis && (
                 <div className="text-center text-muted-foreground p-4">
                   <p className="text-sm mb-4">Awaiting security events...</p>
-                  <Button size="sm" variant="outline" onClick={() => handleAnalysis(MOCK_ALERT_DATA)}>
-                    <ZapIcon className="w-4 h-4 mr-2" />
-                    Trigger Mock Alert
-                  </Button>
                 </div>
               )}
             </div>

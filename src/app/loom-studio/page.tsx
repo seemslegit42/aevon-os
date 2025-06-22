@@ -27,23 +27,6 @@ import {
 } from '@/components/icons';
 
 
-const sampleInvoiceText = `
-To: Aevon Corp
-From: Quantum Supplies Inc.
-Invoice #: QS-2024-789
-Date: 2024-07-15
-Due Date: August 14, 2024
-
-Line Items:
-- 10x Positronic Brain Gels @ $500.00 each = $5,000.00
-- 2x Chroniton Field Emitters @ $2,500.00 each = $5,000.00
-
-Subtotal: $10,000.00
-Tax (8.25%): $825.00
---------------------
-Total Amount Due: $10,825.00
-`;
-
 const initialWorkflow: NodeState[] = [
     { id: 'trigger', label: 'Trigger: New Text Input', icon: ZapIcon, status: 'idle' },
     { id: 'condition', label: 'AI: Is Invoice?', icon: FilterIcon, status: 'idle', isCondition: true },
@@ -64,7 +47,7 @@ const LoomStudioPage: React.FC = () => {
     const [nodes, setNodes] = useState<NodeState[]>(initialWorkflow);
     const [nodePositions, setNodePositions] = useState(initialNodePositions);
     const [isSimulating, setIsSimulating] = useState(false);
-    const [inputText, setInputText] = useState(sampleInvoiceText);
+    const [inputText, setInputText] = useState('');
     const [detailedNode, setDetailedNode] = useState<NodeState | null>(null);
     const { toast } = useToast();
     const { messages, append, setMessages, isLoading } = useChat({ id: 'loom-simulation' });
