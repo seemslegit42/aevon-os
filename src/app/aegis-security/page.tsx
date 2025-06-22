@@ -33,6 +33,13 @@ const AegisSecurityPage: React.FC = () => {
     setIsLoading(true);
     setError(null);
     setAnalysis(null);
+    
+    eventBus.emit('orchestration:log', { 
+        task: 'Aegis: Analysis Started', 
+        status: 'success', 
+        details: 'Received new alert. Beginning AI analysis.',
+        targetId: 'aegisSecurity' 
+    });
 
     try {
       const result = await analyzeSecurityAlert(alertDetails);

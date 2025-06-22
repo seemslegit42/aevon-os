@@ -90,20 +90,37 @@ const getSubscriptionStatusTool = new DynamicTool({
 const categorizeTextTool = new DynamicTool({
   name: 'categorizeText',
   description: 'Analyzes a piece of text and determines its category. This should be the first step for any text analysis.',
-  schema: TextCategorySchema,
+  schema: z.object({
+    text: z.string().describe("The user-provided text to be analyzed."),
+  }),
   func: async ({ text }: { text: string }) => {
-      // This tool is now primarily handled client-side by the agent's reasoning,
-      // but the server implementation is kept for direct calls if needed.
-      return JSON.stringify({ category: 'Not Implemented on Server', isMatch: false });
+      const isLikelyInvoice = /invoice|due date|amount|total/i.test(text);
+      if (isLikelyInvoice) {
+        return JSON.stringify({ isMatch: true, category: 'Invoice' });
+      }
+      return JSON.stringify({ isMatch: false, category: 'General' });
   },
 });
 
 const extractInvoiceDataTool = new DynamicTool({
   name: 'extractInvoiceData',
   description: 'Extracts structured data from invoice text.',
-  schema: InvoiceDataSchema,
+  schema: z.object({
+    text: z.string().describe("The user-provided text containing the invoice information."),
+  }),
   func: async ({ text }: { text: string }) => {
-     return JSON.stringify({ summary: 'Not Implemented on Server' });
+     // Dummy extraction logic
+     const invoiceNumber = text.match(/Invoice #: (.*)/)?.[1] || 'N/A';
+     const amountMatch = text.match(/Total Amount Due: \$(.*)/)?.[1];
+     const amount = amountMatch ? parseFloat(amountMatch.replace(/,/g, '')) : 0;
+     const dueDate = text.match(/Due Date: (.*)/)?.[1] || 'N/A';
+
+     return JSON.stringify({
+        invoiceNumber,
+        amount,
+        dueDate,
+        summary: `Extracted invoice ${invoiceNumber} for $${amount}.`
+     });
   },
 });
 
