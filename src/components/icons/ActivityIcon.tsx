@@ -1,5 +1,5 @@
 import React from 'react';
-import IconBase from '../IconBase';
+import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
 import { IconProps } from '../../types';
 
 const ActivityIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -9,7 +9,7 @@ const ActivityIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => 
       {/* Main Pulse Line */}
       <path d="M2 12.5h3.5l2-5.5 4 9 3-6 2.5 4H22" 
             fill="none" 
-            stroke="currentColor" 
+            stroke={`url(#${ICON_GRADIENT_ID})`}
             strokeWidth={sw * 1.05} 
             strokeLinecap="round" 
             strokeLinejoin="round"/>
@@ -23,12 +23,14 @@ const ActivityIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => 
             opacity="0.5"/>
       
       {/* Nodes at Peaks/Troughs (Simplified) */}
-      <circle cx="5.5" cy="12.5" r="1" opacity="0.7"/>
-      <circle cx="7.5" cy="7" r="1" opacity="0.7"/>
-      <circle cx="11.5" cy="16" r="1" opacity="0.7"/>
-      <circle cx="14.5" cy="10" r="1" opacity="0.7"/>
-      <circle cx="17" cy="14" r="1" opacity="0.7"/>
-      <circle cx="20.5" cy="12.5" r="1" opacity="0.7"/>
+      <g fill={`url(#${ICON_GRADIENT_ID})`} opacity="0.7">
+        <circle cx="5.5" cy="12.5" r="1"/>
+        <circle cx="7.5" cy="7" r="1"/>
+        <circle cx="11.5" cy="16" r="1"/>
+        <circle cx="14.5" cy="10" r="1"/>
+        <circle cx="17" cy="14" r="1"/>
+        <circle cx="20.5" cy="12.5" r="1"/>
+      </g>
     </IconBase>
   );
 };
