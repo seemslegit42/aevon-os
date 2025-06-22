@@ -1,10 +1,9 @@
-
 "use client";
 
 import React, { useState, memo } from 'react';
 import { Rnd } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
-import { X, MinusSquare, Square } from 'phosphor-react';
+import { X, Minus, Square } from 'phosphor-react';
 import { Button } from '@/components/ui/button';
 import type { CardConfig } from '@/types/dashboard';
 import type { MicroApp } from '@/stores/micro-app.store';
@@ -96,7 +95,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, config
                 actions={
                   <>
                     <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => toggleMinimizeItem(item.id)}>
-                        {item.isMinimized ? <Square /> : <MinusSquare />}
+                        {item.isMinimized ? <Square /> : <Minus />}
                     </Button>
                     {isDismissible && (
                       <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCloseClick}>
