@@ -75,7 +75,7 @@ const TopBar: React.FC = () => {
       <header className="topbar-aevos-glass-override flex items-center justify-between">
         {/* Left Side: Branding */}
         <div className="flex items-center">
-          <Link href="/" className="flex items-center" legacyBehavior>
+          <Link href="/" className="flex items-center">
             <Image
               src="/aevon-logo.png"
               alt="Aevon OS Logo"
@@ -132,7 +132,7 @@ const TopBar: React.FC = () => {
           <ThemeToggle />
 
           <div className="flex items-center text-xs px-2 h-9 font-body text-primary-foreground opacity-80">
-            <ClockIcon className="h-4 w-4 mr-1.5 aevos-icon-styling-override text-primary-foreground" />
+            <ClockIcon className="h-4 w-4 mr-1.5 aevos-icon-styling-override text-muted-foreground" />
             {isMounted ? currentTime : "--:--"}
           </div>
 
