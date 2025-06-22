@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { FileIcon, PlayIcon, MailIcon } from '@/components/icons';
 import WorkflowNode from './workflow-node';
 import type { NodeState } from '@/types/loom';
+import { useBeepChat } from '@/hooks/use-beep-chat';
 
 // The simple vertical connector for compact view
 const WorkflowConnector: React.FC = () => (
@@ -22,7 +23,7 @@ interface CompactLoomViewProps {
   runSimulation: () => void;
   handleSendToBEEP: () => void;
   onInspectNode: (node: NodeState) => void;
-  findNode: (id: string) => NodeState | undefined;
+  findNode: (id: string) => NodeState;
 }
 
 const CompactLoomView: React.FC<CompactLoomViewProps> = ({ 

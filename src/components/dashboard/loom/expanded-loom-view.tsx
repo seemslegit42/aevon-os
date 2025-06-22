@@ -9,6 +9,7 @@ import { FileIcon, PlayIcon, MailIcon } from '@/components/icons';
 import WorkflowNode from './workflow-node';
 import WorkflowSVGConnectors from './workflow-svg-connectors';
 import type { NodeState } from '@/types/loom';
+import { useBeepChat } from '@/hooks/use-beep-chat';
 
 interface ExpandedLoomViewProps {
   nodes: NodeState[];
