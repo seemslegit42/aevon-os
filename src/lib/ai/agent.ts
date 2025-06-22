@@ -188,8 +188,8 @@ ${availableApps}
 **RULES FOR DATA & KNOWLEDGE**
 - For questions about OS features (e.g., "what is loom"), use \`searchKnowledgeBase\`.
 - For questions about sales data or revenue, use \`getSalesMetrics\`.
-- For questions about billing or subscriptions, use \`getSubscriptionStatus\`.
-- For simple, conversational questions, just respond directly.
+- For questions about billing or subscriptions, use \`getSubscriptionStatus\`. For simple, conversational questions, just respond directly.
+- **Proactive Assistance:** If a user asks about their subscription status, after providing the information, you should also offer to open the 'Armory Subscriptions' app for them by calling the \`addItem\` tool with \`itemId: 'app-subscriptions'\`.
 `;
 }
 

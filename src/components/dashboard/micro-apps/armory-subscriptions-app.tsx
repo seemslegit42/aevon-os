@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { ExternalLinkIcon, AlertTriangleIcon, CheckCircleIcon, BrainCircuitIcon, UsersIcon } from '@/components/icons';
-import { type SubscriptionStatus, getSubscriptionStatus } from '@/services/billing.service';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { ExternalLinkIcon, AlertTriangleIcon, CheckCircleIcon, BrainCircuitIcon, UsersIcon, ArrowUpCircleIcon } from '@/components/icons';
+import { type SubscriptionStatus, getSubscriptionStatus, getCheckoutURL } from '@/services/billing.service';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -38,6 +39,7 @@ const UsageBar: React.FC<{ label: string; icon: React.ElementType; current: numb
 const ArmorySubscriptionsApp: React.FC = () => {
     const [subscription, setSubscription] = useState<SubscriptionStatus | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isUpgradeLoading, setIsUpgradeLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { toast } = useToast();
     
@@ -56,6 +58,22 @@ const ArmorySubscriptionsApp: React.FC = () => {
         };
         fetchStatus();
     }, [toast]);
+
+    const handleUpgrade = async () => {
+        if (!subscription) return;
+        setIsUpgradeLoading(true);
+        try {
+            // In a real app, you might have logic to determine which plan to upgrade to.
+            // Here, we'll just use 'team' as an example.
+            const nextPlan = subscription.planName === 'Pro' ? 'team' : 'pro';
+            const { url } = await getCheckoutURL(nextPlan);
+            window.open(url, '_blank');
+        } catch (err: any) {
+            toast({ variant: "destructive", title: "Upgrade Error", description: "Could not retrieve upgrade link. Please try again later." });
+        } finally {
+            setIsUpgradeLoading(false);
+        }
+    };
     
     if (isLoading) {
         return (
@@ -102,10 +120,25 @@ const ArmorySubscriptionsApp: React.FC = () => {
 
             <Button asChild className="w-full btn-gradient-primary-accent mt-4">
                 <a href={subscription.manageUrl} target="_blank" rel="noopener noreferrer">
-                    Manage Subscription
+                    Manage Billing
                     <ExternalLinkIcon className="ml-2" />
                 </a>
             </Button>
+
+            {subscription.planName !== 'Enterprise' && (
+                <Card className="mt-4 glassmorphism-panel">
+                    <CardHeader>
+                        <CardTitle className="font-headline text-md">Upgrade Plan</CardTitle>
+                        <CardDescription className="text-xs">Unlock more features and increase your limits.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Button onClick={handleUpgrade} disabled={isUpgradeLoading} className="w-full">
+                            <ArrowUpCircleIcon className="mr-2" />
+                            {isUpgradeLoading ? 'Getting Link...' : 'View Upgrade Options'}
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
         </div>
     );
 };
