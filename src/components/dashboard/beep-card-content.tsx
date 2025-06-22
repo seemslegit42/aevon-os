@@ -21,16 +21,16 @@ const BeepCardContent: React.FC = () => {
   const { toast } = useToast();
   const layoutItems = useLayoutStore(state => state.layoutItems, shallow);
 
-  const audioContextRef = useRef<AudioContext | null>(null);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [inputNode, setInputNode] = useState<GainNode | null>(null);
   const [outputNode, setOutputNode] = useState<GainNode | null>(null);
 
   const initializeAudio = useCallback(() => {
-    if (audioContextRef.current) return;
+    if (audioContext) return;
     try {
         const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
         const context = new AudioContext();
-        audioContextRef.current = context;
+        setAudioContext(context);
         const inputGain = context.createGain();
         const outputGain = context.createGain();
         outputGain.connect(context.destination);
@@ -39,10 +39,12 @@ const BeepCardContent: React.FC = () => {
     } catch (e) {
         toast({ variant: "destructive", title: "Audio Error", description: "Browser does not support Web Audio API." });
     }
-  }, [toast]);
+  }, [toast, audioContext]);
 
   // Eagerly initialize audio on component mount
   useEffect(() => {
+    // We create the context here, but it will be in a 'suspended' state
+    // until a user interaction (like a click) resumes it.
     initializeAudio();
   }, [initializeAudio]);
   
