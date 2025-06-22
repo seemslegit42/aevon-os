@@ -11,21 +11,7 @@ import { useNotificationStore, type Notification } from '@/stores/notification.s
 
 const LiveOrchestrationFeedCardContent: React.FC = () => {
   const { toast } = useToast();
-  // The component now subscribes to the central store instead of managing its own state.
-  const { notifications, addNotification } = useNotificationStore();
-
-  useEffect(() => {
-    // Add an initial message only if the store is empty
-    if (notifications.length === 0) {
-        addNotification({
-            task: "System Initialized",
-            status: "success",
-            details: "Live Orchestration Feed is active. Waiting for AI events.",
-            targetId: "liveOrchestrationFeed"
-        });
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { notifications } = useNotificationStore();
 
   const handleViewDetails = (item: Notification) => {
     toast({

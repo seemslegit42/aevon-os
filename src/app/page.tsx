@@ -1,8 +1,9 @@
 
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLayoutStore } from '@/stores/layout.store';
+import { useNotificationStore } from '@/stores/notification.store';
 import { Skeleton } from '@/components/ui/skeleton';
 import DashboardWindow from '@/components/dashboard-window';
 import { shallow } from 'zustand/shallow';
@@ -11,9 +12,11 @@ import eventBus from '@/lib/event-bus';
 import { WelcomeModal } from '@/components/welcome-modal';
 
 export default function HomePage() {
+  const [hasMounted, setHasMounted] = useState(false);
+
   useEffect(() => {
-    // Initialize the layout store which loads from localStorage or defaults.
-    useLayoutStore.getState().initialize();
+    // This effect runs once on the client, after the initial render.
+    setHasMounted(true);
 
     // Listen for global focus events, e.g., from notifications
     const handleFocus = (id: string) => {
@@ -27,15 +30,28 @@ export default function HomePage() {
     }
   }, []);
 
+  // New useEffect to handle initial notification
+  useEffect(() => {
+    if (hasMounted) {
+      const { notifications, addNotification } = useNotificationStore.getState();
+      if (notifications.length === 0) {
+          addNotification({
+              task: "System Initialized",
+              status: "success",
+              details: "Live Orchestration Feed is active. Waiting for AI events.",
+              targetId: "liveOrchestrationFeed"
+          });
+      }
+    }
+  }, [hasMounted]);
+
   const {
     layoutItems,
-    isInitialized,
     focusedItemId,
     setFocusedItemId
   } = useLayoutStore(
     (state) => ({
       layoutItems: state.layoutItems,
-      isInitialized: state.isInitialized,
       focusedItemId: state.focusedItemId,
       setFocusedItemId: state.setFocusedItemId,
     }),
@@ -48,7 +64,7 @@ export default function HomePage() {
     }
   };
 
-  if (!isInitialized) {
+  if (!hasMounted) {
     return (
         <div className="p-4 md:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
