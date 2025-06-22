@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ExternalLinkIcon, AlertTriangleIcon, CheckCircleIcon, BrainCircuitIcon, TeamIcon, UploadIcon } from '@/components/icons';
+import { ExternalLinkIcon, AlertTriangleIcon, CheckCircleIcon, AIBrainIcon, TeamIcon, UploadIcon } from '@/components/icons';
 import { type SubscriptionStatus, getSubscriptionStatus, getCheckoutURL } from '@/services/billing.service';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -114,7 +114,7 @@ const ArmorySubscriptionsApp: React.FC = () => {
             </Alert>
             
             <div className="space-y-4">
-                 <UsageBar label="AI Queries" icon={BrainCircuitIcon} {...subscription.usage.aiQueries} />
+                 <UsageBar label="AI Queries" icon={AIBrainIcon} {...subscription.usage.aiQueries} />
                  <UsageBar label="Team Members" icon={TeamIcon} {...subscription.usage.teamMembers} />
             </div>
 

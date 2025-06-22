@@ -95,7 +95,6 @@ export { default as PauseIcon } from './PauseIcon';
 export { default as PersonalizedMedicineIcon } from './PersonalizedMedicineIcon';
 export { default as PhoneIcon } from './PhoneIcon';
 export { default as PillCapsuleIcon } from './PillCapsuleIcon';
-export { default as PinIcon } from './PinIcon';
 export { default as PlayIcon } from './PlayIcon';
 export { default as PluginIcon } from './PluginIcon';
 export { default as PlusCircleIcon } from './PlusCircleIcon';

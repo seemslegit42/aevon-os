@@ -12,4 +12,13 @@ const UnlockIcon = forwardRef<SVGSVGElement, IconProps>(({ className, size, stro
       
       {/* Keyhole */}
       <circle cx="12.5" cy="15.5" r="1" opacity="0.8"/>
-      <path d="M12.5 16.5V18" stroke="currentColor" strokeWidth
+      <path d="M12.5 16.5V18" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.7"/>
+
+      {/* Open Shackle */}
+      <path d="M8 9H7V6.5C7 4.01 9.01 2 11.5 2S16 4.01 16 6.5V9h-1V6.5C15 4.84 13.88 3.5 12.5 3.5S10 4.84 10 6.5V9H8z" />
+    </IconBase>
+  );
+});
+UnlockIcon.displayName = 'UnlockIcon';
+
+export default UnlockIcon;

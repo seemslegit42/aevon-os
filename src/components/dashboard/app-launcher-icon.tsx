@@ -11,7 +11,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Badge } from '../ui/badge';
-import { PlayIcon, EyeIcon, XIcon, PinIcon, TrashIcon, CopyIcon } from '../icons';
+import { PlayIcon, EyeIcon, XIcon, TrashIcon, CopyIcon } from '../icons';
 import type { MicroApp } from '@/stores/micro-app.store';
 import {
   DropdownMenu,
@@ -137,10 +137,6 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
           <DropdownMenuItem onClick={() => { focusLatestInstance(app.id); setMenuOpen(false); }} disabled={!isActive}>
               <EyeIcon />
             <span>Focus Latest</span>
-          </DropdownMenuItem>
-           <DropdownMenuItem disabled>
-            <PinIcon />
-            <span>Pin to Top</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
