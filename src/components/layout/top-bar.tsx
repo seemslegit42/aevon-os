@@ -8,13 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   SearchIcon,
-  GitForkIcon as LoomIcon,
-  ShieldCheckIcon as AegisIcon,
-  CreditCardIcon as ArmoryIcon,
   GearIcon,
   ClockIcon,
   ChevronDownIcon,
-  ZapIcon,
 } from '@/components/icons';
 import {
   Tooltip,
@@ -36,23 +32,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import eventBus from '@/lib/event-bus';
-import { useLayoutStore } from '@/stores/layout.store';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import NotificationCenter from './notification-center';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
-
-interface NavItemConfig {
-  id: string; // The URL slug
-  label: string;
-  icon: ElementType;
-}
-
-const mainNavItems: NavItemConfig[] = [
-  { id: '/loom-studio', label: 'Loom', icon: LoomIcon },
-  { id: '/aegis-security', label: 'Λegis', icon: AegisIcon },
-  { id: '/armory', label: 'Armory', icon: ArmoryIcon },
-];
+import { mainNavItems, type NavItemConfig } from '@/config/dashboard-cards.config';
 
 const TopBar: React.FC = () => {
   const [currentTime, setCurrentTime] = useState("--:--");
@@ -60,7 +44,6 @@ const TopBar: React.FC = () => {
   const [commandValue, setCommandValue] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const { focusedItemId } = useLayoutStore();
   const { setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
   const pathname = usePathname();
   
@@ -87,24 +70,33 @@ const TopBar: React.FC = () => {
         }, 2000);
     }
   };
-
+  
+  // This component is now dynamic based on the active page's configuration
   const ContextualActions: React.FC = () => {
-    if (focusedItemId === 'loomStudio' || pathname === '/loom-studio') {
-      return (
-        <div className="border-l border-white/10 ml-2 pl-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="sm" className="font-body text-primary-foreground opacity-80 hover:text-primary-foreground hover:opacity-100">
-                <ZapIcon className="w-4 h-4 mr-2 aevos-icon-styling-override" />
-                New Workflow
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom"><p>Create a new workflow in Loom Studio</p></TooltipContent>
-          </Tooltip>
-        </div>
-      );
+    const activeNavItem = mainNavItems.find(item => item.id === pathname);
+
+    if (!activeNavItem || !activeNavItem.contextualActions) {
+      return null;
     }
-    return null;
+
+    return (
+      <div className="border-l border-white/10 ml-2 pl-2">
+        {activeNavItem.contextualActions.map((action) => {
+           const ActionIcon = action.icon;
+           return (
+            <Tooltip key={action.label}>
+                <TooltipTrigger asChild>
+                <Button variant="ghost" size="sm" onClick={action.action} className="font-body text-primary-foreground opacity-80 hover:text-primary-foreground hover:opacity-100">
+                    <ActionIcon className="w-4 h-4 mr-2 aevos-icon-styling-override" />
+                    {action.label}
+                </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom"><p>{action.tooltip}</p></TooltipContent>
+            </Tooltip>
+           )
+        })}
+      </div>
+    );
   };
 
   return (

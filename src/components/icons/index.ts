@@ -79,6 +79,7 @@ export * from './ArrowRightLeftIcon';
 export * from './ArrowRightIcon';
 export * from './CompassIcon';
 export * from './AlertTriangleIcon';
+export * from './ArmoryIcon';
 export * from './MagicWandIcon';
 export * from './ExternalLinkIcon';
 export * from './HelpCircleIcon';

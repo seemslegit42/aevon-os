@@ -13,10 +13,40 @@ const AgentPresenceCardContent = lazy(() => import('@/components/dashboard/agent
 // Icons for card titles and content
 import {
   MagicWandIcon, ListChecksIcon, LayoutGridIcon, ChartBarIcon, PenSquareIcon, CreditCardIcon, BrainCircuitIcon,
-  UsersRoundIcon, ClockIcon, CheckCircleIcon, LoaderIcon,
+  UsersRoundIcon, ClockIcon, CheckCircleIcon, LoaderIcon, GitForkIcon, ShieldCheckIcon, ArmoryIcon, ZapIcon,
 } from '@/components/icons';
 
-// Define all available micro-apps for registration
+// =================================================================
+// MAIN NAVIGATION CONFIGURATION
+// =================================================================
+export interface NavItemConfig {
+  id: string; // The URL slug
+  label: string;
+  icon: ElementType;
+  contextualActions?: {
+    label: string;
+    icon: ElementType;
+    tooltip: string;
+    action: () => void;
+  }[];
+}
+
+export const mainNavItems: NavItemConfig[] = [
+  { id: '/loom-studio', label: 'Loom', icon: GitForkIcon, contextualActions: [
+      { 
+          label: 'New Workflow', 
+          icon: ZapIcon,
+          tooltip: 'Create a new workflow in Loom Studio',
+          action: () => console.log('Action: Create new workflow') // Placeholder action
+      }
+  ]},
+  { id: '/aegis-security', label: 'Λegis', icon: ShieldCheckIcon },
+  { id: '/armory', label: 'Armory', icon: ArmoryIcon },
+];
+
+// =================================================================
+// MICRO-APP REGISTRATION
+// =================================================================
 export const ALL_MICRO_APPS: MicroAppRegistration[] = [
   {
     id: 'app-analytics',
@@ -65,8 +95,9 @@ const mockAgents = [
     },
 ];
 
-// This is the single source of truth for all dashboard panels (cards).
-// Loom and Aegis have been removed and promoted to standalone pages.
+// =================================================================
+// DASHBOARD CARD (PANEL) CONFIGURATION
+// =================================================================
 export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'beep',
