@@ -6,6 +6,7 @@ type AppEvents = {
   'aegis:new-alert': string;
   'orchestration:log': { task: string; status: 'success' | 'failure'; details: string; targetId?: string; };
   'panel:focus': string;
+  'beep:response': string; // For displaying agent's final text response in the command bar
   [key: string]: unknown;
 };
 

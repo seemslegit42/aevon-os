@@ -66,6 +66,13 @@ export function useBeepChat() {
       // Filter out any null results (server-side tools) and return the rest.
       return toolCallResults.filter(Boolean);
     },
+    onFinish: (message) => {
+      // onFinish is a more reliable way to know the stream is complete.
+      if (message.role === 'assistant' && message.content && !message.tool_calls) {
+        const plainTextContent = message.content.replace(/`+/g, '');
+        eventBus.emit('beep:response', plainTextContent);
+      }
+    }
   });
 
   return {

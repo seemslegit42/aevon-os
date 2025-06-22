@@ -5,9 +5,7 @@ import React, { useState, useEffect, type ElementType } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
-  SearchIcon,
   GearIcon,
   ClockIcon,
   ChevronDownIcon,
@@ -31,18 +29,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import eventBus from '@/lib/event-bus';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import NotificationCenter from './notification-center';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import { mainNavItems, type NavItemConfig } from '@/config/dashboard-cards.config';
+import CommandBar from './command-bar';
 
 const TopBar: React.FC = () => {
   const [currentTime, setCurrentTime] = useState("--:--");
   const [isMounted, setIsMounted] = useState(false);
-  const [commandValue, setCommandValue] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const { setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
   const pathname = usePathname();
@@ -57,19 +53,6 @@ const TopBar: React.FC = () => {
     const timerId = setInterval(updateClock, 60000);
     return () => clearInterval(timerId);
   }, []);
-
-  const handleCommandSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && commandValue.trim() && !isSubmitting) {
-        e.preventDefault();
-        eventBus.emit('beep:submitQuery', commandValue);
-        setIsSubmitting(true);
-        // This gives the user time to see their command was accepted.
-        setTimeout(() => {
-            setCommandValue('');
-            setIsSubmitting(false);
-        }, 2000);
-    }
-  };
   
   // This component is now dynamic based on the active page's configuration
   const ContextualActions: React.FC = () => {
@@ -141,22 +124,7 @@ const TopBar: React.FC = () => {
             ))}
             <ContextualActions />
           </nav>
-          <div className="relative w-full max-w-md">
-            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 aevos-icon-styling-override text-primary-foreground" />
-            <Input
-              type="search"
-              placeholder="Search or ask 'show my tasks'..."
-              className={cn(
-                "command-bar-input-aevos-override w-full h-9 pl-10 pr-4 text-sm",
-                isSubmitting && "opacity-50 cursor-not-allowed"
-              )}
-              aria-label="Command or search input"
-              value={commandValue}
-              onChange={(e) => setCommandValue(e.target.value)}
-              onKeyDown={handleCommandSubmit}
-              disabled={isSubmitting}
-            />
-          </div>
+          <CommandBar />
         </div>
 
         {/* Right Side: Controls & User Menu */}
