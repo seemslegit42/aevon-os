@@ -2,6 +2,7 @@
 "use client";
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { useTheme } from 'next-themes';
 
 type CanvasWrapperProps = {
   children: React.ReactNode;
@@ -13,6 +14,8 @@ type CanvasWrapperProps = {
  * (the dashboard itself).
  */
 const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
+  const { theme } = useTheme();
+
   return (
     <main
       className={cn(
@@ -20,7 +23,10 @@ const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
       )}
     >
       {/* Background effects are positioned absolutely to fill this container */}
-      <div className="canvas-aurora-background-dark-container"></div>
+      <div className={cn(
+          "canvas-aurora-background-dark-container",
+           theme === 'dark' ? 'dark' : 'light' // This ensures the correct ::before pseudo-element is targeted
+      )}></div>
       
       {/* 
         The main content (Dashboard) is also positioned absolutely to fill the container.
