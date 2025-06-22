@@ -35,7 +35,6 @@ export const mainNavItems: NavItemConfig[] = [
   { id: '/', label: 'Home', icon: HomeIcon },
   { id: '/loom-studio', label: 'Loom', icon: GitForkIcon },
   { id: '/aegis-security', label: 'Λegis', icon: ShieldCheckIcon },
-  { id: '/ai-insights', label: 'Insights', icon: BrainCircuitIcon },
   { id: '/armory', label: 'Armory', icon: ArmoryIcon },
 ];
 
