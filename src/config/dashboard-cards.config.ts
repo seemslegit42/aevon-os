@@ -1,4 +1,3 @@
-
 import { lazy, type ElementType } from 'react';
 import type { MicroAppRegistration } from '@/stores/micro-app.store';
 import type { LayoutItem, CardConfig } from '@/types/dashboard';
@@ -12,7 +11,7 @@ const AgentPresenceCardContent = lazy(() => import('@/components/dashboard/agent
 
 // Icons for card titles and content
 import {
-  ChatbotIcon, ActivityIcon, ModularConstructionIcon, BIDashboardIcon, EditIcon, CreditCardIcon, AIBrainIcon,
+  ChatbotIcon, ActivityIcon, ModularConstructionIcon, BIDashboardIcon, EditIcon, CreditCardIcon, AIBrainIcon, AccountingIcon,
   TeamIcon, ClockIcon, CheckCircleIcon, AIProcessingIcon, LoomOrchestrationIcon, ShieldIcon, ShoppingCartIcon, ZapIcon, HomeIcon,
 } from '@/components/icons';
 
@@ -42,6 +41,16 @@ export const mainNavItems: NavItemConfig[] = [
 // MICRO-APP REGISTRATION
 // =================================================================
 export const ALL_MICRO_APPS: MicroAppRegistration[] = [
+  {
+    id: 'app-accounting',
+    title: 'Accounting',
+    description: 'A full-featured accounting suite for managing ledgers, invoices, payroll, and taxes.',
+    icon: AccountingIcon,
+    component: lazy(() => import('@/components/dashboard/micro-apps/accounting-app')),
+    permissions: ['accounting:full-access'],
+    tags: ['finance', 'accounting', 'business'],
+    defaultSize: { width: 700, height: 520 },
+  },
   {
     id: 'app-analytics',
     title: 'Sales Analytics',

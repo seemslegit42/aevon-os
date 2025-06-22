@@ -7,6 +7,7 @@ export { default as AIModelTrainingIcon } from './AIModelTrainingIcon';
 export { default as AIPredictionIcon } from './AIPredictionIcon';
 export { default as AIProcessingIcon } from './AIProcessingIcon';
 export { default as APIIcon } from './APIIcon';
+export { default as AccountingIcon } from './AccountingIcon';
 export { default as ActivityIcon } from './ActivityIcon';
 export { default as AgentHeadIcon } from './AgentHeadIcon';
 export { default as AgentTaskManagementIcon } from './AgentTaskManagementIcon';
