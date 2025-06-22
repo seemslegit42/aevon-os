@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { format } from 'date-fns';
+import { format, startOfMonth } from 'date-fns';
 
 // UI Imports
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,14 +14,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { PlusCircleIcon, UploadIcon, FileIcon, CalendarIcon } from '@/components/icons';
+import { PlusCircle, Upload, File, Calendar } from 'phosphor-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -55,21 +55,14 @@ const initialLedgerData = [
     { id: 'tx-3', date: new Date('2024-06-21'), account: 'Dividends', type: 'Equity' as const, debit: 1000.00, credit: 0 },
     { id: 'tx-4', date: new Date('2024-06-20'), account: 'Bank Loan', type: 'Liability' as const, debit: 0, credit: 5000.00 },
     { id: 'tx-5', date: new Date('2024-06-19'), account: 'New Laptop', type: 'Asset' as const, debit: 2200.00, credit: 0 },
+    { id: 'tx-6', date: new Date('2024-05-15'), account: 'Client Payment', type: 'Income' as const, debit: 0, credit: 3000.00 },
+    { id: 'tx-7', date: new Date('2024-05-10'), account: 'Software Subscription', type: 'Expense' as const, debit: 150.00, credit: 0 },
 ];
 
 const initialInvoiceData = [
     { id: 'INV-003', client: 'Innovate Corp', date: new Date('2024-06-15'), dueDate: new Date('2024-07-15'), amount: 5000.00, status: 'Sent' as const },
     { id: 'INV-002', client: 'Synergy Solutions', date: new Date('2024-05-20'), dueDate: new Date('2024-06-20'), amount: 2500.00, status: 'Paid' as const },
     { id: 'INV-001', client: 'Apex Industries', date: new Date('2024-05-10'), dueDate: new Date('2024-06-10'), amount: 1800.00, status: 'Overdue' as const },
-];
-
-const mockCashflowData = [
-    { name: 'Jan', income: 4000, expenses: 2400 },
-    { name: 'Feb', income: 3000, expenses: 1398 },
-    { name: 'Mar', income: 9800, expenses: 2000 },
-    { name: 'Apr', income: 3908, expenses: 2780 },
-    { name: 'May', income: 4800, expenses: 1890 },
-    { name: 'Jun', income: 3800, expenses: 2390 },
 ];
 
 const currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
@@ -91,7 +84,7 @@ const AddTransactionDialog = ({ onSave }: { onSave: (data: TransactionFormValues
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button size="sm"><PlusCircleIcon/> Add Transaction</Button>
+                <Button size="sm"><PlusCircle weight="bold"/> Add Transaction</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md glassmorphism-panel">
                 <DialogHeader>
@@ -165,7 +158,7 @@ const NewInvoiceDialog = ({ onSave }: { onSave: (data: InvoiceFormValues) => voi
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                 <Button><PlusCircleIcon/> New Invoice</Button>
+                 <Button><PlusCircle weight="bold"/> New Invoice</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md glassmorphism-panel">
                 <DialogHeader>
@@ -196,12 +189,12 @@ const NewInvoiceDialog = ({ onSave }: { onSave: (data: InvoiceFormValues) => voi
                                         <FormControl>
                                             <Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
                                                 {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                <Calendar weight="bold" className="ml-auto h-4 w-4 opacity-50" />
                                             </Button>
                                         </FormControl>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-auto p-0" align="start">
-                                        <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date("1900-01-01")} initialFocus />
+                                        <CalendarComponent mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date("1900-01-01")} initialFocus />
                                     </PopoverContent>
                                 </Popover>
                                 <FormMessage />
@@ -228,7 +221,7 @@ const LedgerTab = ({ ledgerData, onSave }: { ledgerData: (typeof initialLedgerDa
         <CardContent>
             <div className="flex gap-2 mb-4">
                  <AddTransactionDialog onSave={onSave} />
-                <Button size="sm" variant="outline"><UploadIcon/> Import Statement</Button>
+                <Button size="sm" variant="outline"><Upload weight="bold"/> Import Statement</Button>
             </div>
             <ScrollArea className="h-[280px]">
             <Table>
@@ -298,33 +291,67 @@ const InvoicesTab = ({ invoiceData, onSave }: { invoiceData: (typeof initialInvo
     </Card>
 );
 
-const ReportsTab = () => (
-     <Card className="h-full glassmorphism-panel border-none">
-        <CardHeader>
-            <CardTitle className="font-headline text-primary">Financial Reports</CardTitle>
-            <CardDescription>Visualize your business's financial health.</CardDescription>
-        </CardHeader>
-        <CardContent className="h-[calc(100%-4rem)] pb-0">
-             <div className="flex gap-2 mb-4">
-                <Button size="sm" variant="outline"><FileIcon /> Profit & Loss</Button>
-                <Button size="sm" variant="outline"><FileIcon /> Balance Sheet</Button>
-                <Button size="sm" variant="outline"><FileIcon /> GST/HST Report</Button>
-            </div>
-            <h4 className="text-sm font-semibold text-muted-foreground mb-2">Monthly Cash Flow</h4>
-            <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={mockCashflowData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border)/0.5)" />
-                    <XAxis dataKey="name" fontSize={12} />
-                    <YAxis fontSize={12} tickFormatter={(value) => `$${value/1000}k`}/>
-                    <Tooltip contentStyle={{ background: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: 'var(--radius)', }} />
-                    <Legend wrapperStyle={{fontSize: "12px"}}/>
-                    <Bar dataKey="income" fill="hsl(var(--chart-4))" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="expenses" fill="hsl(var(--chart-5))" radius={[4, 4, 0, 0]}/>
-                </BarChart>
-            </ResponsiveContainer>
-        </CardContent>
-    </Card>
-);
+const ReportsTab = ({ ledgerData }: { ledgerData: (typeof initialLedgerData[0])[] }) => {
+    const cashflowData = React.useMemo(() => {
+        const monthlyData: { [key: string]: { income: number; expenses: number } } = {};
+
+        ledgerData.forEach(tx => {
+            const monthKey = format(startOfMonth(tx.date), 'yyyy-MM');
+            if (!monthlyData[monthKey]) {
+                monthlyData[monthKey] = { income: 0, expenses: 0 };
+            }
+            if (tx.type === 'Income') {
+                monthlyData[monthKey].income += tx.credit || 0;
+            } else if (tx.type === 'Expense') {
+                monthlyData[monthKey].expenses += tx.debit || 0;
+            }
+        });
+        
+        const sortedMonths = Object.keys(monthlyData).sort();
+
+        return sortedMonths.map(monthKey => {
+            return {
+                name: format(new Date(`${monthKey}-02`), 'MMM'), // Use day 2 to avoid timezone issues
+                income: monthlyData[monthKey].income,
+                expenses: monthlyData[monthKey].expenses,
+            }
+        });
+    }, [ledgerData]);
+
+    return (
+        <Card className="h-full glassmorphism-panel border-none">
+            <CardHeader>
+                <CardTitle className="font-headline text-primary">Financial Reports</CardTitle>
+                <CardDescription>Key financial reports and cash flow analysis based on your ledger data.</CardDescription>
+            </CardHeader>
+            <CardContent className="h-[calc(100%-4rem)] pb-0">
+                <div className="flex gap-2 mb-4">
+                    <Button size="sm" variant="outline"><File weight="bold" /> Profit & Loss</Button>
+                    <Button size="sm" variant="outline"><File weight="bold" /> Balance Sheet</Button>
+                    <Button size="sm" variant="outline"><File weight="bold" /> GST/HST Report</Button>
+                </div>
+                <h4 className="text-sm font-semibold text-muted-foreground mb-2">Monthly Cash Flow</h4>
+                <ResponsiveContainer width="100%" height={250}>
+                    {cashflowData.length > 0 ? (
+                        <BarChart data={cashflowData}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border)/0.5)" />
+                            <XAxis dataKey="name" fontSize={12} />
+                            <YAxis fontSize={12} tickFormatter={(value) => `$${value/1000}k`}/>
+                            <Tooltip contentStyle={{ background: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: 'var(--radius)' }} />
+                            <Legend wrapperStyle={{fontSize: "12px"}}/>
+                            <Bar dataKey="income" fill="hsl(var(--chart-4))" radius={[4, 4, 0, 0]} />
+                            <Bar dataKey="expenses" fill="hsl(var(--chart-5))" radius={[4, 4, 0, 0]}/>
+                        </BarChart>
+                    ) : (
+                        <div className="flex items-center justify-center h-full text-muted-foreground">
+                            <p>No income or expense data to display. Add transactions in the Ledger tab.</p>
+                        </div>
+                    )}
+                </ResponsiveContainer>
+            </CardContent>
+        </Card>
+    );
+};
 
 
 const AccountingApp = () => {
@@ -367,7 +394,7 @@ const AccountingApp = () => {
                     <InvoicesTab invoiceData={invoiceData} onSave={handleSaveInvoice} />
                 </TabsContent>
                 <TabsContent value="reports" className="flex-grow">
-                    <ReportsTab />
+                    <ReportsTab ledgerData={ledgerData} />
                 </TabsContent>
             </Tabs>
         </div>
