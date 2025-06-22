@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useEffect } from 'react';
-import CommandPalette from '@/components/command-palette';
 import { useLayoutStore } from '@/stores/layout.store';
 import { Skeleton } from '@/components/ui/skeleton';
 import DashboardWindow from '@/components/dashboard-window';
@@ -84,7 +83,6 @@ export default function HomePage() {
               />
           );
       })}
-       <CommandPalette />
     </div>
   );
 };

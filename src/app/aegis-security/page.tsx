@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -9,7 +8,7 @@ import AegisAnalysisResult from '@/components/dashboard/aegis/aegis-analysis-res
 import PhishingResiliencePanel from '@/components/dashboard/aegis/PhishingResiliencePanel';
 import CloudSecurityPanel from '@/components/dashboard/aegis/CloudSecurityPanel';
 import EdrSummaryPanel from '@/components/dashboard/aegis/EdrSummaryPanel';
-import { AlertTriangleIcon, ZapIcon } from '@/components/icons';
+import { Warning, Zap } from 'phosphor-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { analyzeSecurityAlert } from '@/actions/analyzeSecurity';
@@ -80,7 +79,7 @@ const AegisSecurityPage: React.FC = () => {
 
   const ErrorDisplay = () => (
     <div className="p-4 text-center text-destructive">
-      <AlertTriangleIcon className="mx-auto h-8 w-8 mb-2" />
+      <Warning className="mx-auto h-8 w-8 mb-2" />
       <p className="font-semibold">Analysis Failed</p>
       <p className="text-xs">{error}</p>
     </div>

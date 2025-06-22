@@ -15,20 +15,15 @@ import type { NodeState } from '@/types/loom';
 import CompactLoomView from '@/components/dashboard/loom/compact-loom-view';
 import ExpandedLoomView from '@/components/dashboard/loom/expanded-loom-view';
 
-// Icons remain in the main page component as they are part of the initial state definition
-import {
-    FilterIcon,
-    ZapIcon,
-    AIProcessingIcon,
-    SystemDiagnosticsIcon,
-} from '@/components/icons';
+import { Filter, Zap, Cpu, Heartbeat } from 'phosphor-react';
+import { useBeepChat } from '@/hooks/use-beep-chat';
 
 
 const initialWorkflow: NodeState[] = [
-    { id: 'trigger', label: 'Trigger: New Text Input', icon: ZapIcon, status: 'idle' },
-    { id: 'condition', label: 'AI: Is Invoice?', icon: FilterIcon, status: 'idle', isCondition: true },
-    { id: 'action-extract', label: 'AI: Extract Data', icon: AIProcessingIcon, status: 'idle' },
-    { id: 'action-log', label: 'Log & Alert Aegis', icon: SystemDiagnosticsIcon, status: 'idle' },
+    { id: 'trigger', label: 'Trigger: New Text Input', icon: Zap, status: 'idle' },
+    { id: 'condition', label: 'AI: Is Invoice?', icon: Filter, status: 'idle', isCondition: true },
+    { id: 'action-extract', label: 'AI: Extract Data', icon: Cpu, status: 'idle' },
+    { id: 'action-log', label: 'Log & Alert Aegis', icon: Heartbeat, status: 'idle' },
 ];
 
 const initialNodePositions: Record<string, { x: number; y: number }> = {

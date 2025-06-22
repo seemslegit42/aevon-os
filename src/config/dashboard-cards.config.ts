@@ -9,11 +9,26 @@ const MicroAppsCardContent = lazy(() => import('@/components/dashboard/micro-app
 const AiInsightsCardContent = lazy(() => import('@/components/dashboard/ai-insights-card-content'));
 const AgentPresenceCardContent = lazy(() => import('@/components/dashboard/agent-presence-card-content'));
 
-// Icons for card titles and content
+// Icons from Phosphor React
 import {
-  ChatbotIcon, ActivityIcon, ModularConstructionIcon, BIDashboardIcon, EditIcon, CreditCardIcon, AIBrainIcon, AccountingIcon,
-  TeamIcon, ClockIcon, CheckCircleIcon, AIProcessingIcon, LoomOrchestrationIcon, ShieldIcon, ShoppingCartIcon, ZapIcon, HomeIcon,
-} from '@/components/icons';
+    Robot,
+    ChartLine,
+    PuzzlePiece,
+    ChartBar,
+    PencilSimple,
+    CreditCard,
+    Brain,
+    Calculator,
+    Users,
+    Clock,
+    CheckCircle,
+    Cpu,
+    TreeStructure,
+    Shield,
+    ShoppingCart,
+    House,
+    Zap,
+} from 'phosphor-react';
 
 // =================================================================
 // MAIN NAVIGATION CONFIGURATION
@@ -31,10 +46,10 @@ export interface NavItemConfig {
 }
 
 export const mainNavItems: NavItemConfig[] = [
-  { id: '/', label: 'Home', icon: HomeIcon },
-  { id: '/loom-studio', label: 'Loom', icon: LoomOrchestrationIcon },
-  { id: '/aegis-security', label: 'Λegis', icon: ShieldIcon },
-  { id: '/armory', label: 'Armory', icon: ShoppingCartIcon },
+  { id: '/', label: 'Home', icon: House },
+  { id: '/loom-studio', label: 'Loom', icon: TreeStructure },
+  { id: '/aegis-security', label: 'Λegis', icon: Shield },
+  { id: '/armory', label: 'Armory', icon: ShoppingCart },
 ];
 
 // =================================================================
@@ -45,7 +60,7 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     id: 'app-accounting',
     title: 'Accounting',
     description: 'A full-featured accounting suite for managing ledgers, invoices, payroll, and taxes.',
-    icon: AccountingIcon,
+    icon: Calculator,
     component: lazy(() => import('@/components/dashboard/micro-apps/accounting-app')),
     permissions: ['accounting:full-access'],
     tags: ['finance', 'accounting', 'business'],
@@ -55,7 +70,7 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     id: 'app-analytics',
     title: 'Sales Analytics',
     description: 'Detailed sales analytics and trends.',
-    icon: BIDashboardIcon,
+    icon: ChartBar,
     component: lazy(() => import('@/components/dashboard/micro-apps/sales-analytics-app')),
     permissions: ['sales:view', 'analytics:read'],
     tags: ['analytics', 'sales'],
@@ -65,7 +80,7 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     id: 'app-content-creator',
     title: 'Content Creator',
     description: 'AI-powered assistant to generate marketing copy, blog posts, and more.',
-    icon: EditIcon,
+    icon: PencilSimple,
     component: lazy(() => import('@/components/dashboard/micro-apps/content-creator-app')),
     permissions: [], // No special permissions needed
     tags: ['ai', 'writing', 'marketing'],
@@ -75,7 +90,7 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     id: 'app-subscriptions',
     title: 'Armory Subscriptions',
     description: 'View and manage your AEVON OS subscription plan.',
-    icon: CreditCardIcon,
+    icon: CreditCard,
     component: lazy(() => import('@/components/dashboard/micro-apps/armory-subscriptions-app')),
     permissions: [],
     tags: ['billing', 'account'],
@@ -90,7 +105,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'beep',
     title: 'BEEP Interface',
-    icon: ChatbotIcon,
+    icon: Robot,
     isDismissible: true,
     description: "Natural language interface for tasking, automation, and information retrieval.",
     content: BeepCardContent,
@@ -102,7 +117,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'liveOrchestrationFeed',
     title: 'Live Orchestration Feed',
-    icon: ActivityIcon,
+    icon: ChartLine,
     isDismissible: true,
     description: "A real-time feed of events and actions performed by the AI agents.",
     content: LiveOrchestrationFeedCardContent,
@@ -113,7 +128,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'agentPresence',
     title: 'Agent Presence & Status',
-    icon: TeamIcon,
+    icon: Users,
     isDismissible: true,
     description: "Monitor the real-time status and activity of your autonomous AI agents.",
     content: AgentPresenceCardContent,
@@ -124,7 +139,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'microApps',
     title: 'Micro-Apps Palette',
-    icon: ModularConstructionIcon,
+    icon: PuzzlePiece,
     isDismissible: true,
     description: "Launch available micro-apps into the workspace.",
     content: MicroAppsCardContent,
@@ -135,7 +150,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'aiInsights',
     title: 'AI Insights Engine',
-    icon: AIBrainIcon,
+    icon: Brain,
     isDismissible: true,
     description: "Provides personalized recommendations and data-driven intelligence.",
     content: AiInsightsCardContent,
