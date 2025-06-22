@@ -4,7 +4,7 @@
 import React, { useState, memo } from 'react';
 import { Rnd } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
-import { PinIcon, XIcon, MinimizeIcon, RestoreIcon } from '@/components/icons';
+import { PinIcon, XIcon, MinimizeIcon, MaximizeIcon } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import type { CardConfig } from '@/types/dashboard';
 import type { MicroApp } from '@/stores/micro-app.store';
@@ -96,7 +96,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, config
                 actions={
                   <>
                     <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => toggleMinimizeItem(item.id)}>
-                        {item.isMinimized ? <RestoreIcon className="w-4 h-4" /> : <MinimizeIcon className="w-4 h-4" />}
+                        {item.isMinimized ? <MaximizeIcon className="w-4 h-4" /> : <MinimizeIcon className="w-4 h-4" />}
                     </Button>
                     <Button variant="ghost" size="icon" className="h-6 w-6">
                       <PinIcon className="w-4 h-4" />

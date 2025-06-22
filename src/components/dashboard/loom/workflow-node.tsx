@@ -4,8 +4,8 @@
 import React, { type ElementType } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { CheckCircleIcon, AlertCircleIcon, LoaderIcon, InfoIcon } from '@/components/icons';
+import { Tooltip, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+import { CheckCircleIcon, AlertCircleIcon, AIProcessingIcon, InfoCircleIcon } from '@/components/icons';
 import type { NodeState } from '@/types/loom';
 
 interface WorkflowNodeProps {
@@ -29,7 +29,7 @@ const WorkflowNode: React.FC<WorkflowNodeProps> = ({ node, onInspect, isExpanded
                   'bg-secondary/10 border-secondary/50 font-semibold': node.isCondition
                 }
             )}>
-                {node.status === 'running' ? <LoaderIcon className="w-4 h-4 text-accent animate-spin" /> : <NodeIcon className="w-4 h-4 text-primary" />}
+                {node.status === 'running' ? <AIProcessingIcon className="w-4 h-4 text-accent animate-spin" /> : <NodeIcon className="w-4 h-4 text-primary" />}
                 <span className="font-medium">{node.label}</span>
                 <div className="flex-grow" />
                 {node.status === 'completed' && <CheckCircleIcon className="w-4 h-4 text-chart-4" />}
@@ -47,7 +47,7 @@ const WorkflowNode: React.FC<WorkflowNodeProps> = ({ node, onInspect, isExpanded
                         onClick={() => canInspect && onInspect(node)}
                         disabled={!canInspect}
                         >
-                        <InfoIcon className="h-4 w-4" />
+                        <InfoCircleIcon className="h-4 w-4" />
                         <span className="sr-only">Inspect Node</span>
                     </Button>
                 </TooltipTrigger>

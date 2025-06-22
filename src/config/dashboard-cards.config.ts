@@ -12,8 +12,8 @@ const AgentPresenceCardContent = lazy(() => import('@/components/dashboard/agent
 
 // Icons for card titles and content
 import {
-  MagicWandIcon, ListChecksIcon, LayoutGridIcon, ChartBarIcon, PenSquareIcon, CreditCardIcon, BrainCircuitIcon,
-  UsersRoundIcon, ClockIcon, CheckCircleIcon, LoaderIcon, GitForkIcon, ShieldCheckIcon, ArmoryIcon, ZapIcon, HomeIcon,
+  ChatbotIcon, ActivityIcon, ModularConstructionIcon, BIDashboardIcon, EditIcon, CreditCardIcon, AIBrainIcon,
+  TeamIcon, ClockIcon, CheckCircleIcon, AIProcessingIcon, LoomOrchestrationIcon, ShieldIcon, ShoppingCartIcon, ZapIcon, HomeIcon,
 } from '@/components/icons';
 
 // =================================================================
@@ -33,9 +33,9 @@ export interface NavItemConfig {
 
 export const mainNavItems: NavItemConfig[] = [
   { id: '/', label: 'Home', icon: HomeIcon },
-  { id: '/loom-studio', label: 'Loom', icon: GitForkIcon },
-  { id: '/aegis-security', label: 'Λegis', icon: ShieldCheckIcon },
-  { id: '/armory', label: 'Armory', icon: ArmoryIcon },
+  { id: '/loom-studio', label: 'Loom', icon: LoomOrchestrationIcon },
+  { id: '/aegis-security', label: 'Λegis', icon: ShieldIcon },
+  { id: '/armory', label: 'Armory', icon: ShoppingCartIcon },
 ];
 
 // =================================================================
@@ -46,7 +46,7 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     id: 'app-analytics',
     title: 'Sales Analytics',
     description: 'Detailed sales analytics and trends.',
-    icon: ChartBarIcon,
+    icon: BIDashboardIcon,
     component: lazy(() => import('@/components/dashboard/micro-apps/sales-analytics-app')),
     permissions: ['sales:view', 'analytics:read'],
     tags: ['analytics', 'sales'],
@@ -56,7 +56,7 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     id: 'app-content-creator',
     title: 'Content Creator',
     description: 'AI-powered assistant to generate marketing copy, blog posts, and more.',
-    icon: PenSquareIcon,
+    icon: EditIcon,
     component: lazy(() => import('@/components/dashboard/micro-apps/content-creator-app')),
     permissions: [], // No special permissions needed
     tags: ['ai', 'writing', 'marketing'],
@@ -81,7 +81,7 @@ const mockAgents = [
     },
     { 
         id: 'agent2', name: 'Security Analyst', description: 'Analyzing login patterns.', 
-        status: 'Processing', statusColor: 'text-accent', statusIcon: LoaderIcon, isSpinning: true, time: 'Just now' 
+        status: 'Processing', statusColor: 'text-accent', statusIcon: AIProcessingIcon, isSpinning: true, time: 'Just now' 
     },
     { 
         id: 'agent3', name: 'Data Synchronizer', description: 'Last sync successful.', 
@@ -96,7 +96,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'beep',
     title: 'BEEP Interface',
-    icon: MagicWandIcon,
+    icon: ChatbotIcon,
     isDismissible: true,
     description: "Natural language interface for tasking, automation, and information retrieval.",
     content: BeepCardContent,
@@ -108,7 +108,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'liveOrchestrationFeed',
     title: 'Live Orchestration Feed',
-    icon: ListChecksIcon,
+    icon: ActivityIcon,
     isDismissible: true,
     description: "A real-time feed of events and actions performed by the AI agents.",
     content: LiveOrchestrationFeedCardContent,
@@ -119,7 +119,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'agentPresence',
     title: 'Agent Presence & Status',
-    icon: UsersRoundIcon,
+    icon: TeamIcon,
     isDismissible: true,
     description: "Monitor the real-time status and activity of your autonomous AI agents.",
     content: AgentPresenceCardContent,
@@ -131,7 +131,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'microApps',
     title: 'Micro-Apps Palette',
-    icon: LayoutGridIcon,
+    icon: ModularConstructionIcon,
     isDismissible: true,
     description: "Launch available micro-apps into the workspace.",
     content: MicroAppsCardContent,
@@ -142,7 +142,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'aiInsights',
     title: 'AI Insights Engine',
-    icon: BrainCircuitIcon,
+    icon: AIBrainIcon,
     isDismissible: true,
     description: "Provides personalized recommendations and data-driven intelligence.",
     content: AiInsightsCardContent,

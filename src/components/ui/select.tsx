@@ -3,7 +3,7 @@
 
 import * as React from "react"
 import * as SelectPrimitive from "@radix-ui/react-select"
-import { CheckCircleIcon, ChevronDownIcon, ArrowUpCircleIcon } from "@/components/icons" 
+import { CheckCircleIcon, ChevronDownIcon } from "@/components/icons" 
 
 import { cn } from "@/lib/utils"
 
@@ -45,7 +45,7 @@ const SelectScrollUpButton = React.forwardRef<
     )}
     {...props}
   >
-    <ArrowUpCircleIcon className="h-4 w-4" />
+    <ChevronDownIcon className="h-4 w-4 rotate-180" />
   </SelectPrimitive.ScrollUpButton>
 ))
 SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName

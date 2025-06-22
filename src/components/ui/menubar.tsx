@@ -3,7 +3,7 @@
 
 import * as React from "react"
 import * as MenubarPrimitive from "@radix-ui/react-menubar"
-import { CheckCircleIcon, ArrowRightIcon, MiniDotIcon } from "@/components/icons" 
+import { CheckCircleIcon, ChevronDownIcon } from "@/components/icons" 
 
 import { cn } from "@/lib/utils"
 
@@ -83,7 +83,7 @@ const MenubarSubTrigger = React.forwardRef<
     {...props}
   >
     {children}
-    <ArrowRightIcon className="ml-auto h-4 w-4" />
+    <ChevronDownIcon className="ml-auto h-4 w-4 -rotate-90" />
   </MenubarPrimitive.SubTrigger>
 ))
 MenubarSubTrigger.displayName = MenubarPrimitive.SubTrigger.displayName
@@ -183,7 +183,7 @@ const MenubarRadioItem = React.forwardRef<
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <MenubarPrimitive.ItemIndicator>
-        <MiniDotIcon className="h-2 w-2 fill-current" />
+        <div className="h-2 w-2 rounded-full bg-current" />
       </MenubarPrimitive.ItemIndicator>
     </span>
     {children}

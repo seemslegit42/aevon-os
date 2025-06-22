@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { BrainCircuitIcon, ZapIcon, AlertTriangleIcon, SparklesIcon, LoaderIcon } from '@/components/icons';
+import { AIBrainIcon, ZapIcon, AlertTriangleIcon, AIProcessingIcon } from '@/components/icons';
 import { generateInsights } from '@/actions/generateInsights';
 import { useLayoutStore } from '@/stores/layout.store';
 import { useToast } from '@/hooks/use-toast';
@@ -58,7 +58,7 @@ export default function AiInsightsCardContent() {
         if (isLoading) {
             return (
                 <div className="text-center py-4">
-                    <LoaderIcon className="mx-auto h-8 w-8 text-primary animate-spin" />
+                    <AIProcessingIcon className="mx-auto h-8 w-8 text-primary animate-spin" />
                     <p className="mt-2 text-xs text-muted-foreground">Generating...</p>
                 </div>
             );
@@ -80,7 +80,7 @@ export default function AiInsightsCardContent() {
                     {insights.map((insight, index) => (
                         <div key={index} className="glassmorphism-panel p-3 flex flex-col justify-between text-xs">
                             <div className="flex items-start gap-2">
-                                <SparklesIcon className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
+                                <ZapIcon className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
                                 <p className="text-foreground flex-1">{insight.text}</p>
                             </div>
                             {insight.action && (
@@ -96,7 +96,7 @@ export default function AiInsightsCardContent() {
 
         return (
              <div className="text-center text-muted-foreground py-4">
-                <BrainCircuitIcon className="mx-auto h-8 w-8 opacity-50" />
+                <AIBrainIcon className="mx-auto h-8 w-8 opacity-50" />
                 <p className="mt-2 text-xs">Click generate to get AI insights.</p>
             </div>
         );
@@ -115,4 +115,3 @@ export default function AiInsightsCardContent() {
         </div>
     );
 }
-

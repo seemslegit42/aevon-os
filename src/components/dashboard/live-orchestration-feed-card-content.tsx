@@ -1,7 +1,7 @@
 
 "use client";
 import React, { useEffect } from 'react';
-import { CheckCircleIcon, AlertTriangleIcon, ArrowRightIcon } from '@/components/icons';
+import { CheckCircleIcon, AlertTriangleIcon, ChevronDownIcon } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '../ui/scroll-area';
 import { useToast } from "@/hooks/use-toast";
@@ -64,7 +64,7 @@ const LiveOrchestrationFeedCardContent: React.FC = () => {
                 </div>
                 <p className="text-muted-foreground mt-0.5">{item.details}</p>
                  <button onClick={() => handleViewDetails(item)} className={cn("inline-flex items-center text-xs mt-1 hover:underline", item.status === 'success' ? 'details-link-success' : 'details-link-failure')}>
-                     View Details <ArrowRightIcon className="w-3 h-3 ml-1" />
+                     View Details <ChevronDownIcon className="w-3 h-3 ml-1 -rotate-90" />
                 </button>
             </div>
             </div>

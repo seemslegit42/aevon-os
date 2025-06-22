@@ -6,7 +6,7 @@ import { useMicroApps } from '@/hooks/use-micro-apps';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { RocketIcon } from '@/components/icons';
+import { PlayIcon } from '@/components/icons';
 import { useToast } from '@/hooks/use-toast';
 import { useLayoutStore } from '@/stores/layout.store';
 import Link from 'next/link';
@@ -66,7 +66,7 @@ export default function ArmoryPage() {
               </CardContent>
               <CardFooter>
                 <Button className="w-full btn-gradient-primary-secondary" onClick={() => handleLaunch(app.id)}>
-                    <RocketIcon className="mr-2 h-4 w-4" />
+                    <PlayIcon className="mr-2 h-4 w-4" />
                     Launch App
                 </Button>
               </CardFooter>

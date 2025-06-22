@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ΛΞVON OS Icon Showcase</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+<script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0",
+    "@/": "./"
+  }
+}
+</script>
+  <style>
+    /* Optional: For smoother font rendering */
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    /* Custom scrollbar for a more integrated feel with the dark theme */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1e293b; /* slate-800 */
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155; /* slate-700 */
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569; /* slate-600 */
+    }
+
+    /* Icon Facet Opacity Styles */
+    :root {
+      --icon-opacity-1: 0.9;  /* For opacities ~0.85 to 1.0 */
+      --icon-opacity-2: 0.75; /* For opacities ~0.7 to 0.8 */
+      --icon-opacity-3: 0.6;  /* For opacities ~0.55 to 0.65 */
+      --icon-opacity-4: 0.45; /* For opacities ~0.4 to 0.5 */
+      --icon-opacity-5: 0.3;  /* For opacities ~0.25 to 0.35 */
+      --icon-opacity-6: 0.15; /* For opacities ~0.05 to 0.2 */
+    }
+    .if-o1 { opacity: var(--icon-opacity-1); }
+    .if-o2 { opacity: var(--icon-opacity-2); }
+    .if-o3 { opacity: var(--icon-opacity-3); }
+    .if-o4 { opacity: var(--icon-opacity-4); }
+    .if-o5 { opacity: var(--icon-opacity-5); }
+    .if-o6 { opacity: var(--icon-opacity-6); }
+
+    /* For strokes that use currentColor and need opacity */
+    .if-stroke-o1 { stroke-opacity: var(--icon-opacity-1); }
+    .if-stroke-o2 { stroke-opacity: var(--icon-opacity-2); }
+    .if-stroke-o3 { stroke-opacity: var(--icon-opacity-3); }
+    .if-stroke-o4 { stroke-opacity: var(--icon-opacity-4); }
+    .if-stroke-o5 { stroke-opacity: var(--icon-opacity-5); }
+    .if-stroke-o6 { stroke-opacity: var(--icon-opacity-6); }
+
+    /* Custom animation for "NEW" badge if needed */
+    .animate-pulse-stronger {
+      animation: pulse-stronger 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulse-stronger {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.7;
+        transform: scale(1.05);
+      }
+    }
+    
+    /* Ensure modal transitions are smooth */
+    .transition-opacity { transition-property: opacity; }
+    .transition-transform { transition-property: transform; }
+    .duration-300 { transition-duration: 300ms; }
+    .ease-out { transition-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+    .scale-95 { transform: scale(.95); }
+    .scale-100 { transform: scale(1); }
+
+  </style>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-slate-900">
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

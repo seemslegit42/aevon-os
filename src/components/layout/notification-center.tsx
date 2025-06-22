@@ -7,7 +7,7 @@ import {
   BellIcon,
   CheckCircleIcon,
   AlertTriangleIcon,
-  Trash2Icon,
+  TrashIcon,
 } from '@/components/icons';
 import {
   DropdownMenu,
@@ -109,7 +109,7 @@ const NotificationCenter: React.FC = () => {
                     className="flex items-center justify-center gap-2 !p-2 cursor-pointer text-muted-foreground hover:!text-destructive hover:!bg-destructive/10"
                     onClick={clearAll}
                     >
-                    <Trash2Icon /> Clear all notifications
+                    <TrashIcon /> Clear all notifications
                     </DropdownMenuItem>
                 </>
                 )}

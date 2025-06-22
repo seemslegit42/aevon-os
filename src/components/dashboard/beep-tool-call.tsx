@@ -4,15 +4,15 @@
 import React from 'react';
 import type { Message, ToolCall } from 'ai';
 import {
-  TargetIcon,
+  EyeIcon,
   PlusCircleIcon,
   ArrowRightLeftIcon,
-  Trash2Icon,
-  RefreshCwIcon,
+  TrashIcon,
+  RefreshIcon,
   GearIcon,
   CheckCircleIcon,
   AlertCircleIcon,
-  LoaderIcon,
+  AIProcessingIcon,
   BookOpenIcon,
   DollarSignIcon,
   CreditCardIcon,
@@ -22,15 +22,15 @@ import type { IconProps } from '@/types/icon';
 import { TextCategorySchema, InvoiceDataSchema, KnowledgeBaseSearchResultSchema, SalesMetricsSchema, SubscriptionStatusSchema } from '@/lib/ai-schemas';
 
 const toolIcons: Record<string, React.ElementType<IconProps>> = {
-  focusItem: TargetIcon,
+  focusItem: EyeIcon,
   addItem: PlusCircleIcon,
   moveItem: ArrowRightLeftIcon,
-  removeItem: Trash2Icon,
-  resetLayout: RefreshCwIcon,
+  removeItem: TrashIcon,
+  resetLayout: RefreshIcon,
   categorizeText: GearIcon,
   extractInvoiceData: GearIcon,
   default: GearIcon,
-  closeAllInstancesOfApp: Trash2Icon,
+  closeAllInstancesOfApp: TrashIcon,
   logAndAlertAegis: CheckCircleIcon,
   searchKnowledgeBase: BookOpenIcon,
   getSalesMetrics: DollarSignIcon,
@@ -192,7 +192,7 @@ const BeepToolCallDisplay: React.FC<BeepToolCallDisplayProps> = ({ toolCall, all
         !isLoading && !isError && "border-chart-4/50 bg-chart-4/10",
       )}>
         <div className="flex items-center gap-3 font-semibold mb-2">
-            {isLoading ? <LoaderIcon className="w-4 h-4 text-accent animate-spin"/> 
+            {isLoading ? <AIProcessingIcon className="w-4 h-4 text-accent animate-spin"/> 
              : isError ? <AlertCircleIcon className="w-4 h-4 text-destructive"/> 
              : <CheckCircleIcon className="w-4 h-4 text-chart-4"/>
             }

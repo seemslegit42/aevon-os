@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { LayoutGridIcon, GearIcon, ArrowRightLeftIcon, SparklesIcon } from '@/components/icons';
+import { ModularConstructionIcon, GearIcon, ArrowRightLeftIcon, ZapIcon } from '@/components/icons';
 
 const WELCOME_MODAL_KEY = 'aevon_welcome_modal_shown_v1';
 
@@ -33,7 +33,7 @@ export function WelcomeModal() {
       <DialogContent className="sm:max-w-lg glassmorphism-panel">
         <DialogHeader>
           <DialogTitle className="font-headline text-2xl text-primary flex items-center gap-2">
-             <SparklesIcon className="w-6 h-6 text-accent"/> Welcome to ΛΞVON OS
+             <ZapIcon className="w-6 h-6 text-accent"/> Welcome to ΛΞVON OS
           </DialogTitle>
           <DialogDescription className="pt-2 text-muted-foreground">
             Your intelligent workspace is ready. Here are a few tips to get you started:
@@ -55,7 +55,7 @@ export function WelcomeModal() {
             </div>
           </div>
           <div className="flex items-start gap-4">
-            <LayoutGridIcon className="w-8 h-8 text-secondary flex-shrink-0 mt-1" />
+            <ModularConstructionIcon className="w-8 h-8 text-secondary flex-shrink-0 mt-1" />
             <div>
               <h4 className="font-semibold text-foreground">Start Fresh</h4>
               <p className="text-muted-foreground">If things get messy, you can always restore the default layout from the settings panel.</p>

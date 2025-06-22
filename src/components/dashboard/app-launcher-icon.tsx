@@ -11,7 +11,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Badge } from '../ui/badge';
-import { RocketIcon, TargetIcon, XIcon, PinIcon, Trash2Icon, CopyIcon } from '../icons';
+import { PlayIcon, EyeIcon, XIcon, PinIcon, TrashIcon, CopyIcon } from '../icons';
 import type { MicroApp } from '@/stores/micro-app.store';
 import {
   DropdownMenu,
@@ -107,7 +107,7 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
           <TooltipContent side="top" className="w-64 glassmorphism-panel">
               <div className="font-sans p-1 space-y-1.5">
                   <h4 className="font-semibold text-foreground flex items-center gap-2">
-                    <RocketIcon className="text-primary"/> {app.title}
+                    <PlayIcon className="text-primary"/> {app.title}
                   </h4>
                   <p className="text-sm text-muted-foreground">{app.description}</p>
                   {app.tags && app.tags.length > 0 && (
@@ -127,7 +127,7 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
           <DropdownMenuLabel>{app.title}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => { launchApp(app); setMenuOpen(false); }}>
-            <RocketIcon />
+            <PlayIcon />
             <span>Launch New Instance</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => { cloneApp(app.id); setMenuOpen(false); }} disabled={!isActive}>
@@ -135,7 +135,7 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
             <span>Clone Latest Instance</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => { focusLatestInstance(app.id); setMenuOpen(false); }} disabled={!isActive}>
-              <TargetIcon />
+              <EyeIcon />
             <span>Focus Latest</span>
           </DropdownMenuItem>
            <DropdownMenuItem disabled>
@@ -152,7 +152,7 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
             <span>Close All Instances</span>
           </DropdownMenuItem>
           <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" disabled>
-            <Trash2Icon />
+            <TrashIcon />
             <span>Remove from Launcher</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

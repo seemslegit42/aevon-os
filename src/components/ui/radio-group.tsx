@@ -3,9 +3,16 @@
 
 import * as React from "react"
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group"
-import { MiniDotIcon } from "@/components/icons" 
+import { IconProps } from "@/types/icon"
 
 import { cn } from "@/lib/utils"
+
+const MiniDotIcon = (props: IconProps) => (
+  <svg {...props} viewBox="0 0 8 8" fill="currentColor">
+    <circle cx="4" cy="4" r="4" />
+  </svg>
+);
+
 
 const RadioGroup = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,

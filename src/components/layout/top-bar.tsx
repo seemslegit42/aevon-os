@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect, type ElementType } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -42,7 +42,6 @@ const TopBar: React.FC = () => {
     return () => clearInterval(timerId);
   }, []);
   
-  // This component is now dynamic based on the active page's configuration
   const ContextualActions: React.FC = () => {
     const activeNavItem = mainNavItems.find(item => item.id === pathname);
 
