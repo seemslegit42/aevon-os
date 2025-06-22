@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
+import IconBase from '../IconBase';
 import { IconProps } from '../../types';
 
 const GenomicSequencingIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -10,15 +10,15 @@ const GenomicSequencingIcon: React.FC<IconProps> = ({ className, size, strokeWid
       {/* Crystalline Genomic Sequencing Icon */}
       {/* DNA Helix 1 */}
       <path d="M6 3c-4 5-2 12 2 15s5 4 4 0" 
-            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 1.1} strokeLinecap="round"/>
+            fill="none" stroke="currentColor" strokeWidth={sw * 1.1} strokeLinecap="round"/>
       <path d="M6 3L5 4c-3 4-1.5 10 2 12.5l1 1" 
-            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.7} strokeLinecap="round" opacity="0.6"/>
+            fill="none" stroke="currentColor" strokeWidth={sw * 0.7} strokeLinecap="round" opacity="0.6"/>
       
       {/* DNA Helix 2 */}
       <path d="M18 3c4 5 2 12-2 15s-5 4-4 0"
-            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 1.1} strokeLinecap="round"/>
+            fill="none" stroke="currentColor" strokeWidth={sw * 1.1} strokeLinecap="round"/>
       <path d="M18 3L19 4c3 4 1.5 10-2 12.5l-1 1"
-            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.7} strokeLinecap="round" opacity="0.6"/>
+            fill="none" stroke="currentColor" strokeWidth={sw * 0.7} strokeLinecap="round" opacity="0.6"/>
 
       {/* Connecting Rungs with Data Points (Crystalline dots/bars) */}
       {/* Rung 1 */}

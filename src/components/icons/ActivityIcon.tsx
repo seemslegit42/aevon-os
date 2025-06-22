@@ -1,5 +1,5 @@
 import React from 'react';
-import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
+import IconBase from '../IconBase';
 import { IconProps } from '../../types';
 
 const ActivityIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -9,14 +9,14 @@ const ActivityIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => 
       {/* Main Pulse Line */}
       <path d="M2 12.5h3.5l2-5.5 4 9 3-6 2.5 4H22" 
             fill="none" 
-            stroke={`url(#${ICON_GRADIENT_ID})`} 
+            stroke="currentColor" 
             strokeWidth={sw * 1.05} 
             strokeLinecap="round" 
             strokeLinejoin="round"/>
       {/* Facet under the line for 3D body */}
       <path d="M2 12.8h3l2-5.5.5.5 3.5 9 .5-.5 2.5-6 .5.5 2 4h4" 
             fill="none" 
-            stroke={`url(#${ICON_GRADIENT_ID})`} 
+            stroke="currentColor" 
             strokeWidth={sw * 0.6} 
             strokeLinecap="round" 
             strokeLinejoin="round" 

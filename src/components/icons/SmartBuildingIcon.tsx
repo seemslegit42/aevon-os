@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
+import IconBase from '../IconBase';
 import { IconProps } from '../../types';
 
 const SmartBuildingIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -20,11 +20,11 @@ const SmartBuildingIcon: React.FC<IconProps> = ({ className, size, strokeWidth }
       {/* Radiating Signals/Nodes (Crystalline Strokes) */}
       {/* Top Signal */}
       <path d="M12 3s0-1.5 0-2M12 3c-1.5 0-1.5-1-1.5-1.5s.5-1 1.5-1" 
-            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.5} strokeLinecap="round" opacity="0.8"/>
+            fill="none" stroke="currentColor" strokeWidth={sw * 0.5} strokeLinecap="round" opacity="0.8"/>
       <circle cx="12" cy="1" r="1" fill="currentColor" opacity="0.6"/>
       {/* Side Signals */}
       <path d="M4 9S2.5 8 2.5 7M20 9s1.5-1 1.5-2" 
-            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.4} strokeLinecap="round" opacity="0.7"/>
+            fill="none" stroke="currentColor" strokeWidth={sw * 0.4} strokeLinecap="round" opacity="0.7"/>
       <circle cx="2.5" cy="6" r="0.75" fill="currentColor" opacity="0.5"/>
       <circle cx="21.5" cy="6" r="0.75" fill="currentColor" opacity="0.5"/>
       

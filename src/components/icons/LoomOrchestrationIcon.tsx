@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
+import IconBase from '../IconBase';
 import { IconProps } from '../../types';
 
 const LoomOrchestrationIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -26,13 +26,13 @@ const LoomOrchestrationIcon: React.FC<IconProps> = ({ className, size, strokeWid
       
       {/* Connecting Lines/Flow Arrows (Crystalline Strokes) */}
       {/* Top to Mid-Left */}
-      <path d="M10.5 8L7.5 11.5M8 10l-.5.75.5.75" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.5} strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M10.5 8L7.5 11.5M8 10l-.5.75.5.75" fill="none" stroke="currentColor" strokeWidth={sw * 0.5} strokeLinecap="round" strokeLinejoin="round"/>
       {/* Top to Mid-Right */}
-      <path d="M13.5 8L16.5 11.5M16 10l.5.75-.5.75" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.5} strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M13.5 8L16.5 11.5M16 10l.5.75-.5.75" fill="none" stroke="currentColor" strokeWidth={sw * 0.5} strokeLinecap="round" strokeLinejoin="round"/>
       {/* Mid-Left to Bottom */}
-      <path d="M7.5 15.5L10.5 19M8 17.5l.75-.5.75.5" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.5} strokeLinecap="round" strokeLinejoin="round" transform="translate(0,1)"/>
+      <path d="M7.5 15.5L10.5 19M8 17.5l.75-.5.75.5" fill="none" stroke="currentColor" strokeWidth={sw * 0.5} strokeLinecap="round" strokeLinejoin="round" transform="translate(0,1)"/>
       {/* Mid-Right to Bottom */}
-      <path d="M16.5 15.5L13.5 19M16 17.5l-.75-.5-.75.5" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.5} strokeLinecap="round" strokeLinejoin="round" transform="translate(0,1)"/>
+      <path d="M16.5 15.5L13.5 19M16 17.5l-.75-.5-.75.5" fill="none" stroke="currentColor" strokeWidth={sw * 0.5} strokeLinecap="round" strokeLinejoin="round" transform="translate(0,1)"/>
     </IconBase>
   );
 };

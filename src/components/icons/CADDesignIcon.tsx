@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
+import IconBase from '../IconBase';
 import { IconProps } from '../../types';
 
 const CADDesignIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -10,13 +10,13 @@ const CADDesignIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) =>
       {/* Crystalline CAD Design Icon */}
       {/* 3D Wireframe Cube */}
       {/* Front Face */}
-      <path d="M6 8h10v10H6V8Z" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.4} opacity="0.7"/>
+      <path d="M6 8h10v10H6V8Z" fill="none" stroke="currentColor" strokeWidth={sw * 0.4} opacity="0.7"/>
       {/* Top Face */}
-      <path d="M6 8l4-4h6l-4 4H6Z" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.3} opacity="0.6"/>
+      <path d="M6 8l4-4h6l-4 4H6Z" fill="none" stroke="currentColor" strokeWidth={sw * 0.3} opacity="0.6"/>
       {/* Right Face */}
-      <path d="M16 8l4-4v10l-4 4V8Z" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.3} opacity="0.6"/>
+      <path d="M16 8l4-4v10l-4 4V8Z" fill="none" stroke="currentColor" strokeWidth={sw * 0.3} opacity="0.6"/>
       {/* Connecting Edges */}
-      <path d="M10 4v4M16 4v4M10 18v4M20 14v4" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.2} opacity="0.5"/>
+      <path d="M10 4v4M16 4v4M10 18v4M20 14v4" fill="none" stroke="currentColor" strokeWidth={sw * 0.2} opacity="0.5"/>
       <circle cx="6" cy="8" r="0.75" fill="currentColor" opacity="0.4"/>
       <circle cx="16" cy="8" r="0.75" fill="currentColor" opacity="0.4"/>
       <circle cx="10" cy="4" r="0.75" fill="currentColor" opacity="0.4"/>

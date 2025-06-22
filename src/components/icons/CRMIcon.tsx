@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
+import IconBase from '../IconBase';
 import { IconProps } from '../../types';
 
 const CRMIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -29,7 +29,7 @@ const CRMIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
       
       {/* Connecting Lines (Crystalline) */}
       <path d="M10.5 9.5L6.5 7.5M13.5 9.5L17.5 7.5M10.5 14.5L6.5 16.5M13.5 14.5L17.5 16.5" 
-            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.5} strokeLinecap="round" opacity="0.7"/>
+            fill="none" stroke="currentColor" strokeWidth={sw * 0.5} strokeLinecap="round" opacity="0.7"/>
       <path d="M10.5 9.5l-.5-.75L6.5 7.5l.25.5.5.25z M13.5 9.5l.5-.75L17.5 7.5l-.25.5-.5.25z" 
             fill="currentColor" opacity="0.3"/>
     </IconBase>

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
+import IconBase from '../IconBase';
 import { IconProps } from '../../types';
 
 const DroneSurveyingIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -34,7 +34,7 @@ const DroneSurveyingIcon: React.FC<IconProps> = ({ className, size, strokeWidth 
 
       {/* Abstract Terrain Lines Below */}
       <path d="M3 17.5s3-1.5 6-1.5 6 1.5 6 1.5M4.5 20s3-1 4.5-1 4.5 1 4.5 1" 
-            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.6"/>
+            fill="none" stroke="currentColor" strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.6"/>
     </IconBase>
   );
 };

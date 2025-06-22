@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
+import IconBase from '../IconBase';
 import { IconProps } from '../../types';
 
 const LoomNexusIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -18,16 +18,16 @@ const LoomNexusIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) =>
 
       {/* Radiating Faceted Connections/Threads (Using stroke) */}
       {/* Diagonal Top-Left */}
-      <path d="M9.5 9.5L5 5M8.25 8.25L6.5 6.5" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.8"/>
+      <path d="M9.5 9.5L5 5M8.25 8.25L6.5 6.5" fill="none" stroke="currentColor" strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.8"/>
       {/* Diagonal Top-Right */}
-      <path d="M14.5 9.5L19 5M15.75 8.25L17.5 6.5" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.8"/>
+      <path d="M14.5 9.5L19 5M15.75 8.25L17.5 6.5" fill="none" stroke="currentColor" strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.8"/>
       {/* Diagonal Bottom-Left */}
-      <path d="M9.5 14.5L5 19M8.25 15.75L6.5 17.5" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.8"/>
+      <path d="M9.5 14.5L5 19M8.25 15.75L6.5 17.5" fill="none" stroke="currentColor" strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.8"/>
       {/* Diagonal Bottom-Right */}
-      <path d="M14.5 14.5L19 19M15.75 15.75L17.5 17.5" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.8"/>
+      <path d="M14.5 14.5L19 19M15.75 15.75L17.5 17.5" fill="none" stroke="currentColor" strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.8"/>
       
       {/* Straight Top/Bottom/Left/Right connections */}
-      <path d="M12 8.5V3.5M12 15.5V20.5M8.5 12H3.5M15.5 12H20.5" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.5} strokeLinecap="round" opacity="0.7"/>
+      <path d="M12 8.5V3.5M12 15.5V20.5M8.5 12H3.5M15.5 12H20.5" fill="none" stroke="currentColor" strokeWidth={sw * 0.5} strokeLinecap="round" opacity="0.7"/>
       
       {/* Endpoint Crystals (small) */}
       <path d="M4.25 4.25l-1.5-1 3 0-1.5 1Z" opacity="0.5"/>

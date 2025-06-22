@@ -1,5 +1,5 @@
 import React from 'react';
-import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
+import IconBase from '../IconBase';
 import { IconProps } from '../../types';
 
 const AIBrainIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -24,9 +24,9 @@ const AIBrainIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
 
       {/* Connecting Synapses - More Distinct Crystalline Paths */}
       <path d="M9.5 10.5s.5 1 2.5 1.5M14.5 10.5s-.5 1-2.5 1.5" 
-            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.65"/>
+            fill="none" stroke="currentColor" strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.65"/>
       <path d="M11 14.5s.4-.8 1-.8.6.6 1 .8" 
-            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.45} strokeLinecap="round" opacity="0.55"/>
+            fill="none" stroke="currentColor" strokeWidth={sw * 0.45} strokeLinecap="round" opacity="0.55"/>
       
       {/* Subtle Activation Points */}
       <path d="M7 9l-.75-.75 1.5 0-.75.75Z M17 9l-.75-.75 1.5 0-.75.75Z" opacity="0.35" fill="currentColor"/>

@@ -1,6 +1,6 @@
 
 import React, { forwardRef } from 'react';
-import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
+import IconBase from '../IconBase';
 import { IconProps } from '../../types';
 
 const ShareIcon = forwardRef<SVGSVGElement, IconProps>(({ className, size, strokeWidth, id }, ref) => {
@@ -21,7 +21,7 @@ const ShareIcon = forwardRef<SVGSVGElement, IconProps>(({ className, size, strok
 
       {/* Connecting lines */}
       <path d="M15.9 6.5L8.1 10.5M8.1 13.5l7.8 4" 
-            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw*0.7} strokeLinecap="round"/>
+            fill="none" stroke="currentColor" strokeWidth={sw*0.7} strokeLinecap="round"/>
     </IconBase>
   );
 });

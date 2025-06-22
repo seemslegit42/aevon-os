@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
+import IconBase from '../IconBase';
 import { IconProps } from '../../types';
 
 const AutomatedWorkflowIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -20,7 +20,7 @@ const AutomatedWorkflowIcon: React.FC<IconProps> = ({ className, size, strokeWid
       
       {/* Flowing Arrow Pathway */}
       <path d="M8.5 10.5S10 12 12 12s3.5-1.5 3.5-1.5M14.5 12.5l1-1m-1 1l-1-1" 
-            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.8} strokeLinecap="round" strokeLinejoin="round"/>
+            fill="none" stroke="currentColor" strokeWidth={sw * 0.8} strokeLinecap="round" strokeLinejoin="round"/>
       <path d="M8.5 10.5L9 9l3 3-0.5 1.5-2.5-1.5Z" opacity="0.3" fill="currentColor"/>
        <path d="M13.5 10.5l1-1.5 1 1.5h-2Z" opacity="0.7"/> {/* Arrowhead */}
     </IconBase>

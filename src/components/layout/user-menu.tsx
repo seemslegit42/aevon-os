@@ -22,26 +22,26 @@ const UserMenu: React.FC = () => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2 h-9 px-2.5">
-                    <Avatar className="h-6 w-6">
+                <Button variant="ghost" className="flex items-center space-x-2 h-9 px-2.5 hover:bg-primary/10">
+                    <Avatar className="h-7 w-7">
                         <AvatarImage src="https://placehold.co/40x40.png" alt="User" data-ai-hint="user avatar" />
                         <AvatarFallback className="text-xs bg-primary/50 text-primary-foreground">AU</AvatarFallback>
                     </Avatar>
                     <div className="hidden md:flex flex-col items-start leading-tight">
-                        <span className="text-xs font-semibold">Admin User</span>
+                        <span className="text-xs font-semibold text-foreground">Admin User</span>
                         <span className="text-xs text-muted-foreground">Pro Plan</span>
                     </div>
                     <ChevronDownIcon className="h-4 w-4 opacity-80 text-muted-foreground" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 glassmorphism-panel mt-2">
-              <DropdownMenuLabel className="font-headline text-primary-foreground">My Account</DropdownMenuLabel>
+              <DropdownMenuLabel className="font-headline text-foreground">My Account</DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-border/30"/>
-              <DropdownMenuItem className="font-body text-primary-foreground hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Profile</DropdownMenuItem>
-              <DropdownMenuItem className="font-body text-primary-foreground hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Billing</DropdownMenuItem>
-              <DropdownMenuItem className="font-body text-primary-foreground hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Settings</DropdownMenuItem>
+              <DropdownMenuItem className="font-body text-foreground hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Profile</DropdownMenuItem>
+              <DropdownMenuItem className="font-body text-foreground hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Billing</DropdownMenuItem>
+              <DropdownMenuItem className="font-body text-foreground hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Settings</DropdownMenuItem>
               <DropdownMenuSeparator className="bg-border/30"/>
-              <DropdownMenuItem className="font-body text-primary-foreground hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Log out</DropdownMenuItem>
+              <DropdownMenuItem className="font-body text-destructive hover:!bg-destructive/10 focus:text-destructive-foreground focus:bg-destructive">Log out</DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     );

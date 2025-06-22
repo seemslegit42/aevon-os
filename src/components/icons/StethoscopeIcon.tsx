@@ -1,5 +1,5 @@
 import React from 'react';
-import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
+import IconBase from '../IconBase';
 import { IconProps } from '../../types';
 
 const StethoscopeIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -16,12 +16,12 @@ const StethoscopeIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) 
       {/* Tubing - uses stroke with gradient */}
       <path d="M7.5 14.25C7.5 8.5 10.5 4.5 15.5 4.5S19.5 6.5 19.5 9" 
             fill="none" 
-            stroke={`url(#${ICON_GRADIENT_ID})`} 
+            stroke="currentColor" 
             strokeWidth={effectiveStrokeWidth * 1.1} 
             strokeLinecap="round"/>
       <path d="M7.5 14.25c.4-2.8 1.8-5.5 4.8-7.2M15.5 4.5c1.2.4 2.3 1.5 2.8 3" 
             fill="none" 
-            stroke={`url(#${ICON_GRADIENT_ID})`} 
+            stroke="currentColor" 
             strokeWidth={effectiveStrokeWidth * 0.7} 
             strokeLinecap="round" opacity="0.55"/>
       

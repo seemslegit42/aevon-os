@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
+import IconBase from '../IconBase';
 import { IconProps } from '../../types';
 
 const BackupRecoveryIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {

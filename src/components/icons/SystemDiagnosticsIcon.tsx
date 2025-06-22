@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
+import IconBase from '../IconBase';
 import { IconProps } from '../../types';
 
 const SystemDiagnosticsIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -10,9 +10,9 @@ const SystemDiagnosticsIcon: React.FC<IconProps> = ({ className, size, strokeWid
       {/* Crystalline System Diagnostics Icon */}
       {/* Background System Graph/Monitor Line */}
       <path d="M3 15h3l2-4 3 6 2.5-4 2.5 3h3.5" 
-            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.5} strokeLinecap="round" strokeLinejoin="round" opacity="0.4"/>
+            fill="none" stroke="currentColor" strokeWidth={sw * 0.5} strokeLinecap="round" strokeLinejoin="round" opacity="0.4"/>
       <path d="M3 15.5h2.5l2-4 .5.5 2.5 6 .5-.5 2-4 .5.5 2 3h3" 
-            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.3} strokeLinecap="round" strokeLinejoin="round" opacity="0.2"/>
+            fill="none" stroke="currentColor" strokeWidth={sw * 0.3} strokeLinecap="round" strokeLinejoin="round" opacity="0.2"/>
       
       {/* Crystalline Wrench (Overlay) */}
       {/* Head */}

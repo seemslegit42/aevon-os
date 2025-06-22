@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
+import IconBase from '../IconBase';
 import { IconProps } from '../../types';
 
 const AICollaborationIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -23,7 +23,7 @@ const AICollaborationIcon: React.FC<IconProps> = ({ className, size, strokeWidth
 
       {/* Connecting Beams/Lines */}
       <path d="M12 9.38L7.5 14M12 9.38L16.5 14M9 16.5h6"
-            fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.5"/>
+            fill="none" stroke="currentColor" strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.5"/>
       <path d="M12 9.38l-1-1.5L7.5 14l.75.75L12 9.38z M12 9.38l1-1.5L16.5 14l-.75.75L12 9.38z"
             fill="currentColor" opacity="0.2"/>
     </IconBase>

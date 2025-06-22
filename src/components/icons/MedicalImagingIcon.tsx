@@ -1,6 +1,6 @@
 
 import React from 'react';
-import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
+import IconBase from '../IconBase';
 import { IconProps } from '../../types';
 
 const MedicalImagingIcon: React.FC<IconProps> = ({ className, size, strokeWidth }) => {
@@ -17,11 +17,11 @@ const MedicalImagingIcon: React.FC<IconProps> = ({ className, size, strokeWidth 
       
       {/* Layered Scan Lines (Crystalline strokes) */}
       {/* Layer 1 */}
-      <path d="M7.5 9h9" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.8"/>
+      <path d="M7.5 9h9" fill="none" stroke="currentColor" strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.8"/>
       {/* Layer 2 */}
-      <path d="M7 12h10" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.7} strokeLinecap="round" opacity="0.9"/>
+      <path d="M7 12h10" fill="none" stroke="currentColor" strokeWidth={sw * 0.7} strokeLinecap="round" opacity="0.9"/>
       {/* Layer 3 */}
-      <path d="M7.5 15h9" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.8"/>
+      <path d="M7.5 15h9" fill="none" stroke="currentColor" strokeWidth={sw * 0.6} strokeLinecap="round" opacity="0.8"/>
 
       {/* Internal "Structure" highlight (crystalline shape within the outline) */}
       <path d="M12 10l-1.5 2 1.5 2 1.5-2-1.5-2Z" fill="currentColor" opacity="0.7"/>

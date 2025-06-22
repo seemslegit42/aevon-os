@@ -35,7 +35,7 @@ const TopBar: React.FC = () => {
     setIsMounted(true);
     const updateClock = () => {
       const now = new Date();
-      setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }));
+      setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
     };
     updateClock();
     const timerId = setInterval(updateClock, 60000);
@@ -61,7 +61,7 @@ const TopBar: React.FC = () => {
                     {action.label}
                 </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom"><p>{action.tooltip}</p></TooltipContent>
+                <TooltipContent side="bottom" className="glassmorphism-panel border-none"><p>{action.tooltip}</p></TooltipContent>
             </Tooltip>
            )
         })}
@@ -71,7 +71,7 @@ const TopBar: React.FC = () => {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <header className="topbar-aevos-glass-override flex items-center justify-between">
+      <header className="topbar-aevos-glass-override flex items-center justify-between h-14 px-4">
         {/* Left Side: Branding */}
         <div className="flex items-center">
           <Link href="/" className="flex items-center">
@@ -107,7 +107,7 @@ const TopBar: React.FC = () => {
                       </Link>
                     </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom"><p>{item.label}</p></TooltipContent>
+                <TooltipContent side="bottom" className="glassmorphism-panel border-none"><p>{item.label}</p></TooltipContent>
               </Tooltip>
             ))}
             <ContextualActions />
@@ -116,22 +116,22 @@ const TopBar: React.FC = () => {
         </div>
 
         {/* Right Side: Controls & User Menu */}
-        <div className="flex items-center space-x-1.5">
+        <div className="flex items-center space-x-1">
           <NotificationCenter />
           
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80" onClick={() => setCommandPaletteOpen(true)}>
-                <SettingsIcon className="h-5 w-5" />
+                <SettingsIcon className="h-5 w-5 aevos-icon-styling-override" />
                 <span className="sr-only">Settings</span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom"><p>Workspace Settings</p></TooltipContent>
+            <TooltipContent side="bottom" className="glassmorphism-panel border-none"><p>Workspace Settings</p></TooltipContent>
           </Tooltip>
 
           <ThemeToggle />
 
-          <div className="flex items-center text-xs px-2 h-9 font-body text-primary-foreground opacity-80">
+          <div className="flex items-center text-xs px-2 h-9 font-mono text-primary-foreground opacity-80">
             <ClockIcon className="h-4 w-4 mr-1.5 text-muted-foreground" />
             {isMounted ? currentTime : "--:--"}
           </div>

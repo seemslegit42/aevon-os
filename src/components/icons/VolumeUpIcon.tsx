@@ -1,6 +1,6 @@
 
 import React, { forwardRef } from 'react';
-import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
+import IconBase from '../IconBase';
 import { IconProps } from '../../types';
 
 const VolumeUpIcon = forwardRef<SVGSVGElement, IconProps>(({ className, size, strokeWidth, id }, ref) => {
@@ -12,8 +12,8 @@ const VolumeUpIcon = forwardRef<SVGSVGElement, IconProps>(({ className, size, st
       <path d="M3 9L7 4h1v16H7L3 15V9z" opacity="0.6"/>
 
       {/* Sound Waves using gradient for stroke */}
-      <path d="M14.5 8.5a5 5 0 010 7" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.9} strokeLinecap="round" />
-      <path d="M17.5 5.5a9 9 0 010 13" fill="none" stroke={`url(#${ICON_GRADIENT_ID})`} strokeWidth={sw * 0.7} strokeLinecap="round" opacity="0.7"/>
+      <path d="M14.5 8.5a5 5 0 010 7" fill="none" stroke="currentColor" strokeWidth={sw * 0.9} strokeLinecap="round" />
+      <path d="M17.5 5.5a9 9 0 010 13" fill="none" stroke="currentColor" strokeWidth={sw * 0.7} strokeLinecap="round" opacity="0.7"/>
     </IconBase>
   );
 });
