@@ -1,3 +1,4 @@
+
 import { lazy, type ElementType } from 'react';
 import type { MicroAppRegistration } from '@/stores/micro-app.store';
 import type { LayoutItem, CardConfig } from '@/types/dashboard';
