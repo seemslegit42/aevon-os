@@ -90,7 +90,6 @@ const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode }) =>
         0.9, // radius
         0.6  // threshold
     );
-    composer.addPass(composer.renderPass);
     composer.addPass(bloomPass);
 
     // Animation loop
