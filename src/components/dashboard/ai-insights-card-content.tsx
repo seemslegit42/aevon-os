@@ -3,7 +3,10 @@
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AIBrainIcon, ZapIcon, AlertTriangleIcon, AIProcessingIcon } from '@/components/icons';
+import AIBrainIcon from '@/components/icons/AIBrainIcon';
+import ZapIcon from '@/components/icons/ZapIcon';
+import AlertTriangleIcon from '@/components/icons/AlertTriangleIcon';
+import AIProcessingIcon from '@/components/icons/AIProcessingIcon';
 import { generateInsights } from '@/actions/generateInsights';
 import { useLayoutStore } from '@/stores/layout.store';
 import { useToast } from '@/hooks/use-toast';

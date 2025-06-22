@@ -1,13 +1,12 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  BellIcon,
-  CheckCircleIcon,
-  AlertTriangleIcon,
-  TrashIcon,
-} from '@/components/icons';
+import BellIcon from '@/components/icons/BellIcon';
+import CheckCircleIcon from '@/components/icons/CheckCircleIcon';
+import AlertTriangleIcon from '@/components/icons/AlertTriangleIcon';
+import TrashIcon from '@/components/icons/TrashIcon';
 import {
   DropdownMenu,
   DropdownMenuContent,

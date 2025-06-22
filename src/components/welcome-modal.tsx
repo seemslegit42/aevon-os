@@ -4,7 +4,10 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ModularConstructionIcon, SettingsIcon, RefreshIcon, ZapIcon } from '@/components/icons';
+import ModularConstructionIcon from '@/components/icons/ModularConstructionIcon';
+import SettingsIcon from '@/components/icons/SettingsIcon';
+import RefreshIcon from '@/components/icons/RefreshIcon';
+import ZapIcon from '@/components/icons/ZapIcon';
 
 const WELCOME_MODAL_KEY = 'aevon_welcome_modal_shown_v1';
 

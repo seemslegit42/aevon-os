@@ -5,10 +5,8 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import {
-  SettingsIcon,
-  ClockIcon,
-} from '@/components/icons';
+import SettingsIcon from '@/components/icons/SettingsIcon';
+import ClockIcon from '@/components/icons/ClockIcon';
 import {
   Tooltip,
   TooltipContent,

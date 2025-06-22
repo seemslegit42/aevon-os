@@ -1,8 +1,10 @@
+
 "use client";
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { UserIcon, MicIcon } from '@/components/icons';
+import UserIcon from '@/components/icons/UserIcon';
+import MicIcon from '@/components/icons/MicIcon';
 import { cn } from '@/lib/utils';
 import eventBus from '@/lib/event-bus';
 import BeepAvatar3D from './beep-avatar-3d';

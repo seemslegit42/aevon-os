@@ -2,19 +2,17 @@
 
 import React from 'react';
 import type { Message, ToolCall } from 'ai';
-import {
-  EyeIcon,
-  PlusCircleIcon,
-  TrashIcon,
-  RefreshIcon,
-  SettingsIcon,
-  CheckCircleIcon,
-  AlertTriangleIcon,
-  AIProcessingIcon,
-  FileIcon,
-  FinancialReportIcon,
-  CreditCardIcon,
-} from '@/components/icons';
+import EyeIcon from '@/components/icons/EyeIcon';
+import PlusCircleIcon from '@/components/icons/PlusCircleIcon';
+import TrashIcon from '@/components/icons/TrashIcon';
+import RefreshIcon from '@/components/icons/RefreshIcon';
+import SettingsIcon from '@/components/icons/SettingsIcon';
+import CheckCircleIcon from '@/components/icons/CheckCircleIcon';
+import AlertTriangleIcon from '@/components/icons/AlertTriangleIcon';
+import AIProcessingIcon from '@/components/icons/AIProcessingIcon';
+import FileIcon from '@/components/icons/FileIcon';
+import FinancialReportIcon from '@/components/icons/FinancialReportIcon';
+import CreditCardIcon from '@/components/icons/CreditCardIcon';
 import { cn } from '@/lib/utils';
 import type { IconProps } from '@/types/icon';
 import { TextCategorySchema, InvoiceDataSchema, KnowledgeBaseSearchResultSchema, SalesMetricsSchema, SubscriptionStatusSchema } from '@/lib/ai-schemas';

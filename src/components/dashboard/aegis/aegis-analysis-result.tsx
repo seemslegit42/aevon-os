@@ -5,7 +5,8 @@ import { motion } from 'framer-motion';
 import { type AegisSecurityAnalysis } from '@/lib/ai-schemas';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { AlertTriangleIcon, CheckCircleIcon } from '@/components/icons';
+import AlertTriangleIcon from '@/components/icons/AlertTriangleIcon';
+import CheckCircleIcon from '@/components/icons/CheckCircleIcon';
 
 interface AegisAnalysisResultProps {
   result: AegisSecurityAnalysis;

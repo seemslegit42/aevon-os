@@ -2,7 +2,8 @@
 "use client"
 
 import * as React from "react"
-import { ArrowLeftIcon, ArrowRightIcon } from "@/components/icons" 
+import ArrowLeftIcon from "@/components/icons/ArrowLeftIcon" 
+import ArrowRightIcon from "@/components/icons/ArrowRightIcon" 
 import { DayPicker } from "react-day-picker"
 
 import { cn } from "@/lib/utils"

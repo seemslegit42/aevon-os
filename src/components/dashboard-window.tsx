@@ -3,7 +3,9 @@
 import React, { useState, memo } from 'react';
 import { Rnd } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
-import { XIcon, MinimizeIcon, MaximizeIcon } from '@/components/icons';
+import XIcon from '@/components/icons/XIcon';
+import MinimizeIcon from '@/components/icons/MinimizeIcon';
+import MaximizeIcon from '@/components/icons/MaximizeIcon';
 import { Button } from '@/components/ui/button';
 import type { CardConfig } from '@/types/dashboard';
 import type { MicroApp } from '@/stores/micro-app.store';

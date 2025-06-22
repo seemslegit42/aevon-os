@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { CloudCogIcon, AlertTriangleIcon } from '@/components/icons';
+import CloudCogIcon from '@/components/icons/CloudCogIcon';
+import AlertTriangleIcon from '@/components/icons/AlertTriangleIcon';
 import { cn } from '@/lib/utils';
 import {
   Tooltip,

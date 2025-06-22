@@ -5,7 +5,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-import { SearchIcon, AIBrainIcon } from '@/components/icons';
+import SearchIcon from '@/components/icons/SearchIcon';
+import AIBrainIcon from '@/components/icons/AIBrainIcon';
 import eventBus from '@/lib/event-bus';
 
 const CommandBar: React.FC = () => {

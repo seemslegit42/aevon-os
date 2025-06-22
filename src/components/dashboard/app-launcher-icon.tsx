@@ -10,7 +10,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Badge } from '@/components/ui/badge';
-import { PlayIcon, EyeIcon, XIcon, TrashIcon, CopyIcon } from '@/components/icons';
+import PlayIcon from '@/components/icons/PlayIcon';
+import EyeIcon from '@/components/icons/EyeIcon';
+import XIcon from '@/components/icons/XIcon';
+import TrashIcon from '@/components/icons/TrashIcon';
+import CopyIcon from '@/components/icons/CopyIcon';
 import type { MicroApp } from '@/stores/micro-app.store';
 import {
   DropdownMenu,

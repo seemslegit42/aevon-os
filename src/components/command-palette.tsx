@@ -12,7 +12,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlusCircleIcon, TrashIcon, SearchIcon, XIcon, SettingsIcon, PlayIcon, EyeIcon } from '@/components/icons';
+import PlusCircleIcon from '@/components/icons/PlusCircleIcon';
+import TrashIcon from '@/components/icons/TrashIcon';
+import SearchIcon from '@/components/icons/SearchIcon';
+import XIcon from '@/components/icons/XIcon';
+import SettingsIcon from '@/components/icons/SettingsIcon';
+import PlayIcon from '@/components/icons/PlayIcon';
+import EyeIcon from '@/components/icons/EyeIcon';
 import { ALL_CARD_CONFIGS, type CardConfig } from '@/config/dashboard-cards.config';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { useMicroApps } from '@/hooks/use-micro-apps';

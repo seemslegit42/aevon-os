@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { LaptopIcon, BrainCircuitIcon } from '@/components/icons';
+import LaptopIcon from '@/components/icons/LaptopIcon';
+import AIBrainIcon from '@/components/icons/AIBrainIcon';
 
 const initialEdrData = [
   { day: 'Mon', Malware: 2, Ransomware: 0, LateralMovement: 1 },
@@ -45,7 +46,7 @@ const EdrSummaryPanel: React.FC = () => {
                 </div>
             </div>
             <Badge className="badge-glow-animate border-none bg-chart-4/80 text-black">
-                <BrainCircuitIcon className="w-4 h-4 mr-2" />
+                <AIBrainIcon className="w-4 h-4 mr-2" />
                 AI Blocking: ON
             </Badge>
         </div>

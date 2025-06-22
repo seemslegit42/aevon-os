@@ -4,7 +4,10 @@ import React, { type ElementType } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { CheckCircleIcon, AlertCircleIcon, AIProcessingIcon, InfoCircleIcon } from '@/components/icons';
+import CheckCircleIcon from '@/components/icons/CheckCircleIcon';
+import AlertTriangleIcon from '@/components/icons/AlertTriangleIcon';
+import AIProcessingIcon from '@/components/icons/AIProcessingIcon';
+import InfoCircleIcon from '@/components/icons/InfoCircleIcon';
 import type { NodeState } from '@/types/loom';
 
 interface WorkflowNodeProps {
@@ -33,7 +36,7 @@ const WorkflowNode: React.FC<WorkflowNodeProps> = ({ node, onInspect, isExpanded
                 <span className="font-medium">{node.label}</span>
                 <div className="flex-grow" />
                 {node.status === 'completed' && <CheckCircleIcon className="w-4 h-4 text-chart-4" />}
-                {node.status === 'failed' && <AlertCircleIcon className="w-4 h-4 text-destructive" />}
+                {node.status === 'failed' && <AlertTriangleIcon className="w-4 h-4 text-destructive" />}
             </div>
              <Tooltip>
                 <TooltipTrigger asChild>

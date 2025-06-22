@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from '@/components/ui/button';
-import { ChevronDownIcon } from '@/components/icons';
+import ChevronDownIcon from '@/components/icons/ChevronDownIcon';
 
 const UserMenu: React.FC = () => {
     return (
