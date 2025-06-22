@@ -1,4 +1,3 @@
-
 import React, { forwardRef } from 'react';
 import IconBase, { ICON_GRADIENT_ID } from '../IconBase';
 import { IconProps } from '../../types';

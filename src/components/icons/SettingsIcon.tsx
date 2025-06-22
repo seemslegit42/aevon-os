@@ -1,4 +1,3 @@
-
 import React, { forwardRef } from 'react';
 import IconBase from '../IconBase';
 import { IconProps } from '../../types';
