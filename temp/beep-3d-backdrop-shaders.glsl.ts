@@ -1,4 +1,3 @@
-
 export const vs = `precision highp float;
 
 in vec3 position;
