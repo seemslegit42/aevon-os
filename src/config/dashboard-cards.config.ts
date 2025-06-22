@@ -33,15 +33,9 @@ export interface NavItemConfig {
 
 export const mainNavItems: NavItemConfig[] = [
   { id: '/', label: 'Home', icon: HomeIcon },
-  { id: '/loom-studio', label: 'Loom', icon: GitForkIcon, contextualActions: [
-      { 
-          label: 'New Workflow', 
-          icon: ZapIcon,
-          tooltip: 'Create a new workflow in Loom Studio',
-          action: () => console.log('Action: Create new workflow') // Placeholder action
-      }
-  ]},
+  { id: '/loom-studio', label: 'Loom', icon: GitForkIcon },
   { id: '/aegis-security', label: 'Λegis', icon: ShieldCheckIcon },
+  { id: '/ai-insights', label: 'Insights', icon: BrainCircuitIcon },
   { id: '/armory', label: 'Armory', icon: ArmoryIcon },
 ];
 

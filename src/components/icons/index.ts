@@ -93,6 +93,7 @@ export * from './LaptopIcon';
 export * from './LoaderIcon';
 export * from './PenSquareIcon';
 export * from './DollarSignIcon';
+export * from './SparklesIcon';
 
 
 // Aliases for User Profile Dropdown for clarity, if needed, or use directly

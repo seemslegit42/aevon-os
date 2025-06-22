@@ -13,14 +13,19 @@ import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.confi
  * @returns A promise that resolves to the structured AI insights.
  */
 export async function generateInsights(layoutItems: LayoutItem[]): Promise<AiInsights> {
-    const openItemsSummary = layoutItems.map(item => {
+    const openWindowsSummary = layoutItems.length > 0
+    ? layoutItems.map(item => {
         const config = item.type === 'card'
             ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId)
             : ALL_MICRO_APPS.find(a => a.id === item.appId);
-        return config ? `- ${config.title}` : `- Unknown Item (ID: ${item.id})`;
-    }).join('\n');
+        return `- ${config?.title || 'Unknown Item'} (type: ${item.type}, ${item.type === 'card' ? `id: ${item.cardId}` : `appId: ${item.appId}`}, instanceId: ${item.id})`;
+    }).join('\n')
+    : 'The user has an empty workspace.';
     
-    const allAvailableItems = [...ALL_CARD_CONFIGS.map(c => c.title), ...ALL_MICRO_APPS.map(a => a.title)].join(', ');
+    const allAvailableItems = [
+        ...ALL_CARD_CONFIGS.map(c => `- ${c.title} (id: ${c.id})`),
+        ...ALL_MICRO_APPS.map(a => `- ${a.title} (id: ${a.id})`)
+    ].join('\n');
 
     try {
         const { object: insights } = await generateObject({
@@ -28,15 +33,24 @@ export async function generateInsights(layoutItems: LayoutItem[]): Promise<AiIns
             schema: AiInsightsSchema,
             prompt: `You are an AI assistant for the AEVON OS, tasked with providing contextual insights to help the user optimize their workflow.
 
-Here is a list of all items available in the OS:
+Here are all items available in the OS. You can suggest adding them using the 'addItem' tool with their static 'id'.
+---
 ${allAvailableItems}
-
-Here is a summary of the user's current workspace layout (the panels and apps they have open):
----
-${openItemsSummary || 'The user has an empty workspace.'}
 ---
 
-Based on the user's current layout, provide a maximum of 3 short, actionable insights or recommendations. For example, if they have sales data open, you might suggest opening a related analytics app. If their workspace is empty, suggest some common starting panels.`
+Here is a summary of the user's current workspace layout. You can suggest focusing on an open item using the 'focusItem' tool with its unique 'instanceId'.
+---
+${openWindowsSummary}
+---
+
+Based on the user's current layout, provide a maximum of 3 short, actionable insights or recommendations.
+For each insight, you may optionally suggest a corresponding action.
+- If you suggest adding an item, use the 'addItem' tool and its static 'id'.
+- If you suggest focusing on an already open item, use the 'focusItem' tool and its 'instanceId'.
+- For example, if they have sales data open, you might suggest launching the 'Sales Analytics' app ('addItem' with id 'app-analytics').
+- If their workspace is empty, suggest adding a few common starting panels.
+- If an item is already open, do not suggest adding it again; suggest focusing it instead.
+- The 'displayText' for the action button should be short and clear, like "Launch App" or "Focus Window".`
         });
         return insights;
     } catch (error) {

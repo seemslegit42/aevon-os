@@ -33,11 +33,23 @@ export const InvoiceDataSchema = z.object({
 });
 export type InvoiceData = z.infer<typeof InvoiceDataSchema>;
 
-// Defines the structured output for the AI Insights engine.
-export const AiInsightsSchema = z.object({
-  insights: z.array(z.string().describe("A short, actionable insight or recommendation based on the user's current workspace layout. Maximum of 3 insights.")).max(3),
+// Defines a single structured insight object.
+export const InsightSchema = z.object({
+    text: z.string().describe("The textual insight or recommendation for the user."),
+    action: z.object({
+        tool: z.enum(["addItem", "focusItem"]).describe("The suggested tool to call to action the insight."),
+        itemId: z.string().describe("The static ID (for 'addItem') or instance ID (for 'focusItem') of the card or app."),
+        displayText: z.string().describe("A short, human-readable text for the action button, e.g., 'Launch App' or 'Focus Window'.")
+    }).optional().describe("An optional, actionable suggestion for the user to execute.")
 });
+
+// Defines the full response from the insights engine.
+export const AiInsightsSchema = z.object({
+  insights: z.array(InsightSchema).max(3).describe("A list of 1 to 3 personalized insights."),
+});
+
 export type AiInsights = z.infer<typeof AiInsightsSchema>;
+export type Insight = z.infer<typeof InsightSchema>;
 
 
 // Defines the structured output for the Content Creator micro-app.
