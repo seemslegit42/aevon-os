@@ -20,10 +20,10 @@ import ExpandedLoomView from '@/components/dashboard/loom/expanded-loom-view';
 
 // Icons remain in the main page component as they are part of the initial state definition
 import {
-    GitForkIcon,
-    LogInIcon,
-    DatabaseZapIcon,
-    BrainCircuitIcon
+    FilterIcon,
+    ZapIcon,
+    AIProcessingIcon,
+    SystemDiagnosticsIcon,
 } from '@/components/icons';
 
 
@@ -45,10 +45,10 @@ Total Amount Due: $10,825.00
 `;
 
 const initialWorkflow: NodeState[] = [
-    { id: 'trigger', label: 'Trigger: New Text Input', icon: LogInIcon, status: 'idle' },
-    { id: 'condition', label: 'AI: Is Invoice?', icon: GitForkIcon, status: 'idle', isCondition: true },
-    { id: 'action-extract', label: 'AI: Extract Data', icon: DatabaseZapIcon, status: 'idle' },
-    { id: 'action-log', label: 'Log & Alert Aegis', icon: BrainCircuitIcon, status: 'idle' },
+    { id: 'trigger', label: 'Trigger: New Text Input', icon: ZapIcon, status: 'idle' },
+    { id: 'condition', label: 'AI: Is Invoice?', icon: FilterIcon, status: 'idle', isCondition: true },
+    { id: 'action-extract', label: 'AI: Extract Data', icon: AIProcessingIcon, status: 'idle' },
+    { id: 'action-log', label: 'Log & Alert Aegis', icon: SystemDiagnosticsIcon, status: 'idle' },
 ];
 
 const initialNodePositions: Record<string, { x: number; y: number }> = {

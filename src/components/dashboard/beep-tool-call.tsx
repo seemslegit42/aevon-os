@@ -6,15 +6,14 @@ import type { Message, ToolCall } from 'ai';
 import {
   EyeIcon,
   PlusCircleIcon,
-  ArrowRightLeftIcon,
   TrashIcon,
   RefreshIcon,
   GearIcon,
   CheckCircleIcon,
-  AlertCircleIcon,
+  AlertTriangleIcon,
   AIProcessingIcon,
-  BookOpenIcon,
-  DollarSignIcon,
+  FileIcon,
+  FinancialReportIcon,
   CreditCardIcon,
 } from '@/components/icons';
 import { cn } from '@/lib/utils';
@@ -24,7 +23,7 @@ import { TextCategorySchema, InvoiceDataSchema, KnowledgeBaseSearchResultSchema,
 const toolIcons: Record<string, React.ElementType<IconProps>> = {
   focusItem: EyeIcon,
   addItem: PlusCircleIcon,
-  moveItem: ArrowRightLeftIcon,
+  moveItem: RefreshIcon, // Substitute for ArrowRightLeftIcon
   removeItem: TrashIcon,
   resetLayout: RefreshIcon,
   categorizeText: GearIcon,
@@ -32,8 +31,8 @@ const toolIcons: Record<string, React.ElementType<IconProps>> = {
   default: GearIcon,
   closeAllInstancesOfApp: TrashIcon,
   logAndAlertAegis: CheckCircleIcon,
-  searchKnowledgeBase: BookOpenIcon,
-  getSalesMetrics: DollarSignIcon,
+  searchKnowledgeBase: FileIcon, // Substitute for BookOpenIcon
+  getSalesMetrics: FinancialReportIcon, // Substitute for DollarSignIcon
   getSubscriptionStatus: CreditCardIcon,
 };
 
@@ -193,7 +192,7 @@ const BeepToolCallDisplay: React.FC<BeepToolCallDisplayProps> = ({ toolCall, all
       )}>
         <div className="flex items-center gap-3 font-semibold mb-2">
             {isLoading ? <AIProcessingIcon className="w-4 h-4 text-accent animate-spin"/> 
-             : isError ? <AlertCircleIcon className="w-4 h-4 text-destructive"/> 
+             : isError ? <AlertTriangleIcon className="w-4 h-4 text-destructive"/> 
              : <CheckCircleIcon className="w-4 h-4 text-chart-4"/>
             }
             <Icon className="w-4 h-4 text-muted-foreground"/>

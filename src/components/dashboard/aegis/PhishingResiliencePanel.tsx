@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, RadialBarChart, RadialBar, PolarAngleAxis } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { FishIcon } from '@/components/icons';
+import { ShieldIcon } from '@/components/icons';
 
 const initialPhishingData = {
   clickResistance: 82,
@@ -55,7 +55,7 @@ const PhishingResiliencePanel: React.FC = () => {
   return (
     <Card className="glassmorphism-panel h-full flex flex-col">
       <CardHeader className="flex flex-row items-center gap-2">
-        <FishIcon className="w-6 h-6 text-secondary" />
+        <ShieldIcon className="w-6 h-6 text-secondary" />
         <div className="flex-1">
           <CardTitle className="font-headline text-lg">Phishing Resilience</CardTitle>
           <CardDescription className="text-xs">Email threat monitoring</CardDescription>

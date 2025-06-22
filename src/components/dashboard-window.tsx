@@ -96,14 +96,14 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, config
                 actions={
                   <>
                     <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => toggleMinimizeItem(item.id)}>
-                        {item.isMinimized ? <MaximizeIcon className="w-4 h-4" /> : <MinimizeIcon className="w-4 h-4" />}
+                        {item.isMinimized ? <MaximizeIcon /> : <MinimizeIcon />}
                     </Button>
                     <Button variant="ghost" size="icon" className="h-6 w-6">
-                      <PinIcon className="w-4 h-4" />
+                      <PinIcon />
                     </Button>
                     {isDismissible && (
                       <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCloseClick}>
-                        <XIcon className="w-4 h-4" />
+                        <XIcon />
                       </Button>
                     )}
                   </>

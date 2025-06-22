@@ -5,7 +5,7 @@ import React from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { FileTextIcon, PlayIcon, SendIcon } from '@/components/icons';
+import { FileIcon, PlayIcon, MailIcon } from '@/components/icons';
 import WorkflowNode from './workflow-node';
 import type { NodeState } from '@/types/loom';
 
@@ -39,7 +39,7 @@ const CompactLoomView: React.FC<CompactLoomViewProps> = ({
         <div className="space-y-4 h-full flex flex-col p-1">
             <div className="flex-shrink-0">
                 <label htmlFor="loom-input-compact" className="text-sm font-medium text-muted-foreground mb-2 flex items-center gap-2">
-                   <FileTextIcon /> Input Text for Simulation
+                   <FileIcon /> Input Text for Simulation
                 </label>
                 <Textarea
                     id="loom-input-compact"
@@ -56,11 +56,11 @@ const CompactLoomView: React.FC<CompactLoomViewProps> = ({
                     <p className="text-sm text-muted-foreground font-semibold">Workflow</p>
                     <div className="flex items-center gap-2">
                         <Button variant="outline" size="sm" onClick={runSimulation} disabled={isSimulating || !inputText}>
-                            <PlayIcon className="w-4 h-4 mr-2" />
+                            <PlayIcon />
                             {isSimulating ? 'Running...' : 'Run'}
                         </Button>
                          <Button size="sm" className="btn-gradient-primary-accent" onClick={handleSendToBEEP} disabled={isSimulating || !inputText}>
-                            <SendIcon className="w-4 h-4 mr-2" />
+                            <MailIcon />
                             Send
                         </Button>
                     </div>

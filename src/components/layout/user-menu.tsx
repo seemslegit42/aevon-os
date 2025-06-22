@@ -31,7 +31,7 @@ const UserMenu: React.FC = () => {
                         <span className="text-xs font-semibold">Admin User</span>
                         <span className="text-xs text-muted-foreground">Pro Plan</span>
                     </div>
-                    <ChevronDownIcon className="h-4 w-4 opacity-80 aevos-icon-styling-override text-muted-foreground" />
+                    <ChevronDownIcon className="h-4 w-4 opacity-80 text-muted-foreground" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 glassmorphism-panel mt-2">

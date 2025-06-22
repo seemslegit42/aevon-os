@@ -44,7 +44,7 @@ const MicroAppList: React.FC<MicroAppListProps> = ({ apps, onLaunch }) => (
           </div>
           <div className="flex-shrink-0">
             <Button variant="outline" size="sm" onClick={() => onLaunch(app)} className="text-secondary border-secondary/50 hover:bg-secondary/10 hover:text-secondary w-[90px]">
-              <PlayIcon className="w-4 h-4 mr-2" />
+              <PlayIcon />
               Launch
             </Button>
           </div>
@@ -78,12 +78,12 @@ const DashboardZoneList: React.FC<DashboardZoneListProps> = ({ cards, activeCard
           <div className="flex-shrink-0">
             {isActive ? (
               <Button variant="outline" size="sm" onClick={() => onRemove(card.id)} className="text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive w-[90px]">
-                <TrashIcon className="w-4 h-4 mr-2" />
+                <TrashIcon />
                 Remove
               </Button>
             ) : (
               <Button variant="outline" size="sm" onClick={() => onAdd(card.id)} className="text-primary border-primary/50 hover:bg-primary/10 w-[90px]">
-                <PlusCircleIcon className="w-4 h-4 mr-2" />
+                <PlusCircleIcon />
                 Add
               </Button>
             )}
@@ -122,11 +122,11 @@ const OpenWindowList: React.FC<OpenWindowListProps> = ({ instances, appMap, onFo
                         </div>
                         <div className="flex-shrink-0 flex items-center space-x-2">
                             <Button variant="outline" size="sm" onClick={() => onFocus(item.id)}>
-                                <EyeIcon className="w-4 h-4 mr-2"/>
+                                <EyeIcon />
                                 Focus
                             </Button>
                             <Button variant="outline" size="icon" onClick={() => onClose(item.id)} className="text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive h-9 w-9">
-                                <XIcon className="w-4 h-4"/>
+                                <XIcon />
                                 <span className="sr-only">Close</span>
                             </Button>
                         </div>

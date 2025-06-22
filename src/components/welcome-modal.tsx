@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ModularConstructionIcon, GearIcon, ArrowRightLeftIcon, ZapIcon } from '@/components/icons';
+import { ModularConstructionIcon, GearIcon, RefreshIcon, ZapIcon } from '@/components/icons';
 
 const WELCOME_MODAL_KEY = 'aevon_welcome_modal_shown_v1';
 
@@ -41,7 +41,7 @@ export function WelcomeModal() {
         </DialogHeader>
         <div className="grid gap-4 py-4 text-sm">
           <div className="flex items-start gap-4">
-            <ArrowRightLeftIcon className="w-8 h-8 text-secondary flex-shrink-0 mt-1" />
+            <RefreshIcon className="w-8 h-8 text-secondary flex-shrink-0 mt-1" />
             <div>
               <h4 className="font-semibold text-foreground">A Dynamic Canvas</h4>
               <p className="text-muted-foreground">All panels on your dashboard are draggable and resizable. Arrange your workspace exactly how you like it.</p>

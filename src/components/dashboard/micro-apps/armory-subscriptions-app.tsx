@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ExternalLinkIcon, AlertTriangleIcon, CheckCircleIcon, BrainCircuitIcon, UsersIcon, ArrowUpCircleIcon } from '@/components/icons';
+import { ExternalLinkIcon, AlertTriangleIcon, CheckCircleIcon, BrainCircuitIcon, TeamIcon, UploadIcon } from '@/components/icons';
 import { type SubscriptionStatus, getSubscriptionStatus, getCheckoutURL } from '@/services/billing.service';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -104,7 +104,7 @@ const ArmorySubscriptionsApp: React.FC = () => {
                 subscription.status === 'active' && 'border-chart-4/50',
                 subscription.status === 'trialing' && 'border-accent/50',
             )}>
-                 {subscription.status === 'active' ? <CheckCircleIcon className="h-4 w-4" /> : <AlertTriangleIcon className="h-4 w-4" />}
+                 {subscription.status === 'active' ? <CheckCircleIcon /> : <AlertTriangleIcon />}
                  <AlertTitle className="font-headline">
                     You are on the <span className="text-primary">{subscription.planName}</span> plan.
                  </AlertTitle>
@@ -115,13 +115,13 @@ const ArmorySubscriptionsApp: React.FC = () => {
             
             <div className="space-y-4">
                  <UsageBar label="AI Queries" icon={BrainCircuitIcon} {...subscription.usage.aiQueries} />
-                 <UsageBar label="Team Members" icon={UsersIcon} {...subscription.usage.teamMembers} />
+                 <UsageBar label="Team Members" icon={TeamIcon} {...subscription.usage.teamMembers} />
             </div>
 
             <Button asChild className="w-full btn-gradient-primary-accent mt-4">
                 <a href={subscription.manageUrl} target="_blank" rel="noopener noreferrer">
                     Manage Billing
-                    <ExternalLinkIcon className="ml-2" />
+                    <ExternalLinkIcon />
                 </a>
             </Button>
 
@@ -133,7 +133,7 @@ const ArmorySubscriptionsApp: React.FC = () => {
                     </CardHeader>
                     <CardContent>
                         <Button onClick={handleUpgrade} disabled={isUpgradeLoading} className="w-full">
-                            <ArrowUpCircleIcon className="mr-2" />
+                            <UploadIcon className="mr-2" />
                             {isUpgradeLoading ? 'Getting Link...' : 'View Upgrade Options'}
                         </Button>
                     </CardContent>

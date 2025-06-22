@@ -14,7 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { type ContentGeneration } from '@/lib/ai-schemas';
-import { ZapIcon, CopyIcon, FileTextIcon, AlertTriangleIcon } from '@/components/icons';
+import { ZapIcon, CopyIcon, FileIcon, AlertTriangleIcon } from '@/components/icons';
 import { generateContent } from '@/actions/generateContent';
 
 const formSchema = z.object({
@@ -104,7 +104,7 @@ const ContentCreatorApp: React.FC = () => {
 
       return (
           <div className="text-center text-muted-foreground p-8">
-              <FileTextIcon className="mx-auto h-12 w-12 opacity-50" />
+              <FileIcon className="mx-auto h-12 w-12 opacity-50" />
               <p className="mt-4">Your generated content will appear here.</p>
           </div>
       )

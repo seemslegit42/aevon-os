@@ -57,7 +57,7 @@ const TopBar: React.FC = () => {
             <Tooltip key={action.label}>
                 <TooltipTrigger asChild>
                 <Button variant="ghost" size="sm" onClick={action.action} className="font-body text-primary-foreground opacity-80 hover:text-primary-foreground hover:opacity-100">
-                    <ActionIcon className="w-4 h-4 mr-2 aevos-icon-styling-override" />
+                    <ActionIcon className="w-4 h-4 mr-2" />
                     {action.label}
                 </Button>
                 </TooltipTrigger>
@@ -102,7 +102,7 @@ const TopBar: React.FC = () => {
                         )}
                     >
                       <Link href={item.id}>
-                        <item.icon className="w-4 h-4 mr-2 aevos-icon-styling-override" />
+                        <item.icon className="w-4 h-4 mr-2" />
                         <span>{item.label}</span>
                       </Link>
                     </Button>
@@ -122,7 +122,7 @@ const TopBar: React.FC = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80" onClick={() => setCommandPaletteOpen(true)}>
-                <GearIcon className="h-5 w-5 aevos-icon-styling-override" />
+                <GearIcon className="h-5 w-5" />
                 <span className="sr-only">Settings</span>
               </Button>
             </TooltipTrigger>
@@ -132,7 +132,7 @@ const TopBar: React.FC = () => {
           <ThemeToggle />
 
           <div className="flex items-center text-xs px-2 h-9 font-body text-primary-foreground opacity-80">
-            <ClockIcon className="h-4 w-4 mr-1.5 aevos-icon-styling-override text-muted-foreground" />
+            <ClockIcon className="h-4 w-4 mr-1.5 text-muted-foreground" />
             {isMounted ? currentTime : "--:--"}
           </div>
 
