@@ -150,7 +150,7 @@ const BeepCardContent: React.FC = () => {
                     animate={{ opacity: 1 }}
                     className="flex-grow flex h-full items-center justify-center text-muted-foreground text-center"
                 >
-                    <p className="text-sm p-4">Click "Talk to BEEP" to initialize audio, then hold to speak.</p>
+                    <p className="text-sm p-4">This is BEEP, your AI co-pilot. Hold the button to speak, or type a command in the top bar to automate tasks, get insights, and manage your workspace.</p>
                 </motion.div>
               )}
                {isLoading && lastMessage?.role === 'user' && (
