@@ -3,12 +3,12 @@
 export const vs = `
   uniform float time;
   uniform float pointSize;
-  uniform vec4 inputData; // x: inputAvg, y: input analyser data[1], z: input analyser data[2]
-  uniform vec4 outputData; // x: outputAvg, y: output analyser data[1], z: output analyser data[2]
+  uniform vec4 inputData;
+  uniform vec4 outputData;
   
-  varying vec3 vColor;
+  varying float vDisplacement;
 
-  // Perlin 3D Noise - https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
+  // Perlin 3D Noise
   vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
   vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
   vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
@@ -60,41 +60,71 @@ export const vs = `
   }
 
   void main() {
-    // Colors
-    vec3 purple = vec3(0.5, 0.1, 0.9);
-    vec3 cyan = vec3(0.1, 0.9, 0.9);
+    // --- Displacement Calculation ---
+    float baseNoise = snoise(position * 2.0 + time * 0.1);
+    float detailNoise = snoise(position * 8.0 + time * 0.5);
+    float ambientDisplacement = baseNoise * 0.15 + detailNoise * 0.04;
     
-    // Displacement
-    float displacement = 
-      snoise(position * 2.0 + time * 0.2) * 0.2
-      + snoise(position * 5.0 + time * 0.5) * 0.05;
-      
-    float inputDisplacement = inputData.x * snoise(position * (2.0 + inputData.y * 5.0) + time) * 0.5;
-    float outputDisplacement = outputData.x * snoise(position * (2.0 + outputData.y * 5.0) + time * 1.5) * 0.7;
+    // More impactful audio reaction
+    float inputPulse = inputData.x * 1.5;
+    float inputTexture = inputData.y * snoise(position * 4.0 + time * 2.0);
+    float inputDisplacement = (inputPulse + inputTexture) * 0.5;
 
-    vec3 displacedPosition = position + normal * (displacement + inputDisplacement + outputDisplacement);
+    float outputPulse = outputData.x * 2.0;
+    float outputTexture = outputData.z * snoise(position * 5.0 - time * 3.0);
+    float outputDisplacement = (outputPulse + outputTexture) * 0.8;
+    
+    float totalDisplacement = ambientDisplacement + inputDisplacement + outputDisplacement;
+    vDisplacement = totalDisplacement; // Pass displacement to fragment shader
 
-    // Color based on Y position
-    float gradient = smoothstep(-1.0, 1.0, displacedPosition.y);
-    vColor = mix(purple, cyan, gradient);
-
+    vec3 displacedPosition = position + normal * totalDisplacement;
+    
+    // --- Final Position ---
     vec4 modelPosition = modelMatrix * vec4(displacedPosition, 1.0);
     vec4 viewPosition = viewMatrix * modelPosition;
     vec4 projectedPosition = projectionMatrix * viewPosition;
 
     gl_Position = projectedPosition;
-    gl_PointSize = pointSize * (2.0 / -viewPosition.z);
+    gl_PointSize = pointSize * (3.0 / -viewPosition.z);
   }
 `;
 
 // Fragment Shader
 export const fs = `
-  varying vec3 vColor;
+  uniform float time;
+  uniform vec4 inputData;
+  uniform vec4 outputData;
+  
+  varying float vDisplacement;
+
+  // IQ's color palette function
+  vec3 palette( float t ) {
+      vec3 a = vec3(0.5, 0.5, 0.5);
+      vec3 b = vec3(0.5, 0.5, 0.5);
+      vec3 c = vec3(1.0, 1.0, 1.0);
+      vec3 d = vec3(0.3, 0.4, 0.55);
+      return a + b*cos( 6.28318*(c*t+d) );
+  }
 
   void main() {
     float strength = distance(gl_PointCoord, vec2(0.5));
+    if (strength > 0.5) discard; // Make points circular
     strength = 1.0 - smoothstep(0.0, 0.5, strength);
 
-    gl_FragColor = vec4(vColor, strength);
+    // Dynamic color based on displacement and time for an aurora effect
+    float audioLevel = max(inputData.x, outputData.x);
+    vec3 finalColor = palette( vDisplacement * 2.0 + time * 0.1 + audioLevel * 2.0);
+
+    // When BEEP is speaking, shift color towards an electric blue
+    vec3 speakingColor = vec3(0.2, 0.8, 1.0);
+    float speakingMix = smoothstep(0.05, 0.3, outputData.x);
+    finalColor = mix(finalColor, speakingColor, speakingMix);
+
+    // When user is speaking, shift color towards a warmer green/yellow
+    vec3 listeningColor = vec3(0.6, 1.0, 0.2);
+    float listeningMix = smoothstep(0.05, 0.3, inputData.x);
+    finalColor = mix(finalColor, listeningColor, listeningMix);
+
+    gl_FragColor = vec4(finalColor, strength * 1.5);
   }
 `;

@@ -402,3 +402,32 @@
 .animate-window-unmount {
   animation: window-unmount 200ms ease-out forwards;
 }
+
+/* New animation for BEEP Avatar background */
+@keyframes nebula-pan {
+    0% { background-position: 0% 0%; }
+    25% { background-position: 100% 50%; }
+    50% { background-position: 50% 100%; }
+    75% { background-position: 0% 50%; }
+    100% { background-position: 0% 0%; }
+}
+
+.bg-avatar-nebula {
+  background: radial-gradient(ellipse at 50% 50%, hsl(275, 15%, 15%) 0%, hsl(275, 15%, 5%) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.dark .bg-avatar-nebula::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(ellipse at 80% 20%, hsl(var(--primary)/0.25) 0%, transparent 40%),
+    radial-gradient(ellipse at 20% 70%, hsl(var(--secondary)/0.25) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, hsl(var(--accent)/0.1) 0%, transparent 30%);
+  background-size: 250% 250%;
+  animation: nebula-pan 60s ease-in-out infinite;
+  z-index: 1;
+  filter: blur(10px);
+}

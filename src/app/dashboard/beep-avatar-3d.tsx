@@ -8,6 +8,7 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass';
 import { Analyser } from '@/lib/analyser';
 import { vs, fs } from '@/lib/shaders/beep-3d-sphere-vertex.glsl';
+import { cn } from '@/lib/utils';
 
 interface BeepAvatar3DProps {
   inputNode: AudioNode | null;
@@ -37,10 +38,6 @@ const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode }) =>
     renderer.setPixelRatio(window.devicePixelRatio);
     currentMount.appendChild(renderer.domElement);
     rendererRef.current = renderer;
-    
-    const canvas = renderer.domElement;
-    const gradient = `radial-gradient(ellipse at 50% 50%, hsl(240, 30%, 15%) 0%, hsl(240, 30%, 5%) 100%)`;
-    currentMount.style.background = gradient;
     
     // Analysers
     const inputAnalyser = new Analyser(inputNode);
@@ -86,9 +83,9 @@ const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode }) =>
     composer.addPass(renderPass);
     const bloomPass = new UnrealBloomPass(
         new THREE.Vector2(currentMount.clientWidth, currentMount.clientHeight),
-        1.0, // strength
-        0.9, // radius
-        0.6  // threshold
+        1.2, // strength
+        1.0, // radius
+        0.5  // threshold
     );
     composer.addPass(bloomPass);
 
@@ -145,7 +142,7 @@ const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode }) =>
     };
   }, [inputNode, outputNode]);
 
-  return <div ref={mountRef} className="w-full h-full" />;
+  return <div ref={mountRef} className={cn("w-full h-full", "bg-avatar-nebula")} />;
 };
 
 export default BeepAvatar3D;
