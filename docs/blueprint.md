@@ -3,8 +3,6 @@
 ## Core Features:
 
 - BEEP Conversational Interface: BEEP: Natural language interface for tasking, information retrieval, and personalized briefings. BEEP is tool that utilizes conversation to accomplish complex goals, while notifying the user.
-- Loom Studio Visual Orchestration: Loom Studio: Visual workspace for advanced users to build, test, and orchestrate AI workflows, featuring event debugging, prompt diffing, and an Agent DNA Viewer.
-- Aegis AI Security: Aegis: AI-powered cybersecurity that automatically identifies anomalous activities.
 - Micro-App Ecosystem: Micro-Apps: Modular, self-contained applications for specific business functions, designed to be draggable, resizable, and stackable within the Canvas workspace.
 - ΛΞVON Λrmory Marketplace: ΛΞVON Λrmory: Integrated marketplace for AI micro-apps and agents to help build out new experiences within the OS.
 - AI Insights: AI-Powered Insights Engine: Provides personalized recommendations.
