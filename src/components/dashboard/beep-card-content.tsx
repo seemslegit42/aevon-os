@@ -5,21 +5,17 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { User, Mic } from 'phosphor-react';
 import { cn } from '@/lib/utils';
-import eventBus from '@/lib/event-bus';
 import BeepAvatar3D from './beep-avatar-3d';
 import { useToast } from "@/hooks/use-toast";
 import { useAudioRecorder } from '@/hooks/use-audio-recorder';
 import { useTTS } from '@/hooks/use-tts';
 import { useBeepChat } from '@/hooks/use-beep-chat';
 import BeepToolCallDisplay from './beep-tool-call';
-import { useLayoutStore } from '@/stores/layout.store';
-import { shallow } from 'zustand/shallow';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const BeepCardContent: React.FC = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const layoutItems = useLayoutStore(state => state.layoutItems, shallow);
 
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [inputNode, setInputNode] = useState<GainNode | null>(null);
@@ -41,10 +37,7 @@ const BeepCardContent: React.FC = () => {
     }
   }, [toast, audioContext]);
 
-  // Eagerly initialize audio on component mount
   useEffect(() => {
-    // We create the context here, but it will be in a 'suspended' state
-    // until a user interaction (like a click) resumes it.
     initializeAudio();
   }, [initializeAudio]);
   
@@ -52,7 +45,7 @@ const BeepCardContent: React.FC = () => {
   const { playAudio } = useTTS({ outputNode });
   const { isRecording, isTranscribing, startRecording, stopRecording } = useAudioRecorder({ 
     onTranscriptionComplete: (text) => {
-      append({ role: 'user', content: text }, { body: { layoutItems }});
+      append({ role: 'user', content: text });
     },
     inputNode,
   });
@@ -74,23 +67,10 @@ const BeepCardContent: React.FC = () => {
     }
   }, [messages, isLoading, lastMessage, playAudio]);
 
-  useEffect(() => {
-    const handleQuerySubmit = (query: string) => {
-      if (query) {
-        append({ role: 'user', content: query }, { body: { layoutItems } });
-      }
-    };
-    eventBus.on('beep:submitQuery', handleQuerySubmit);
-    return () => {
-      eventBus.off('beep:submitQuery', handleQuerySubmit);
-    };
-  }, [append, layoutItems]);
-
   const isProcessing = isLoading || isTranscribing;
 
   return (
     <div className="h-full flex flex-col p-0 bg-background/20 overflow-hidden">
-      {/* 3D Avatar Container */}
       <div className="relative w-full aspect-video flex-shrink-0">
           <BeepAvatar3D 
               inputNode={inputNode} 
@@ -98,7 +78,6 @@ const BeepCardContent: React.FC = () => {
           />
       </div>
       
-      {/* Mic Button Container */}
       <div className="flex-shrink-0 flex justify-center items-center py-3">
          <Button
             onMouseDown={startRecording}
@@ -116,7 +95,6 @@ const BeepCardContent: React.FC = () => {
         </Button>
       </div>
 
-      {/* Chat Log */}
       <div className="flex-grow min-h-0 px-2">
         <ScrollArea className="h-full pr-2" ref={scrollAreaRef}>
           <div className="space-y-4 pb-4">

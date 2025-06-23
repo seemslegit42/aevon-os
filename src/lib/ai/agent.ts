@@ -28,62 +28,67 @@ import {
 } from '../ai-schemas';
 
 // =================================================================
-// Agent State Definition (Modern LangGraph Standard)
+// Agent State Definition
 // =================================================================
 export interface AgentState extends MessagesState {
   layout: LayoutItem[];
 }
 
 // =================================================================
-// Robust Tool Creation & Error Handling
+// Robust Tool Creation & Event Emitter
 // =================================================================
-/**
- * A robust wrapper for creating DynamicTools. It adds standardized error
- * handling and ensures the output is always a stringified JSON, which
- * is what the LangChain agent framework expects. It also differentiates
- * between server-side and client-side tools.
- * @param input The tool definition, with an added `isClientSide` flag.
- * @returns A new DynamicTool instance.
- */
 const createTool = (input: DynamicToolInput & { isClientSide?: boolean }) => new DynamicTool({
   ...input,
   func: async (args) => {
-    // For client-side tools, we just pass the arguments through.
-    // The client-side `onToolCall` handler will execute the logic.
     if (input.isClientSide) {
       return JSON.stringify({ success: true, message: `Client-side tool ${input.name} called.` });
     }
-    // For server-side tools, we execute the function and handle errors.
+    
     try {
       const result = await input.func(args);
-      // Emit successful results to the event bus for decoupled UI updates
+      
+      // Emit high-level results for specific UI components
       if (input.name === 'analyzeSecurityAlert') eventBus.emit('aegis:analysis-result', result);
       if (input.name === 'generateWorkspaceInsights') eventBus.emit('insights:result', result);
       if (input.name === 'generateMarketingContent') eventBus.emit('content:result', result);
-
+      
+      // Emit granular events for Loom Studio visualization
+      if (['categorizeText', 'extractInvoiceData', 'logAndAlertAegis'].includes(input.name)) {
+        eventBus.emit(`loom:${input.name}:success`, result);
+      }
+      
       return JSON.stringify(result);
     } catch (error: any) {
       const errorMessage = error.message || "An unexpected error occurred in the tool.";
       console.error(`Error in tool '${input.name}':`, errorMessage);
-      // Emit errors to the event bus
+      
+      // Emit high-level errors
       if (input.name === 'analyzeSecurityAlert') eventBus.emit('aegis:analysis-error', errorMessage);
       if (input.name === 'generateWorkspaceInsights') eventBus.emit('insights:error', errorMessage);
       if (input.name === 'generateMarketingContent') eventBus.emit('content:error', errorMessage);
+      
+      // Emit granular errors for Loom Studio
+      if (['categorizeText', 'extractInvoiceData', 'logAndAlertAegis'].includes(input.name)) {
+        eventBus.emit(`loom:${input.name}:error`, errorMessage);
+      }
       
       return JSON.stringify({ error: true, message: errorMessage });
     }
   }
 });
 
+
 // =================================================================
-// SERVER-SIDE TOOLS (Business Logic, Data Fetching, AI Generation)
+// TOOL DEFINITIONS
 // =================================================================
+
+// --- Server-Side Tools ---
 
 const KNOWLEDGE_BASE = {
     'loom studio': 'Loom Studio is a visual workspace for designing, testing, and orchestrating complex AI workflows and prompt chains.',
-    'aegis': 'Aegis is the security command center for AEVON OS. It provides a real-time overview of your security posture, including phishing resilience, cloud security, and endpoint detection.',
-    'beep': 'BEEP (Behavioral Event & Execution Processor) is your natural language interface for tasking, information retrieval, and personalized briefings.',
-    'micro-apps': 'Micro-apps are small, single-purpose applications that can be launched into the workspace for specific tasks, like sales analytics or content creation.',
+    'aegis': 'Aegis is the security command center for AEVON OS. It provides a real-time overview of your security posture.',
+    'beep': 'BEEP (Behavioral Event & Execution Processor) is your natural language interface for tasking and information retrieval.',
+    'micro-apps': 'Micro-apps are small, single-purpose applications that can be launched into the workspace for specific tasks.',
     'armory': 'The Armory is your portal for managing your AEVON OS subscription and exploring add-ons.',
 };
 
@@ -132,7 +137,7 @@ const analyzeSecurityAlertTool = createTool({
         const { object: analysis } = await generateObject({
             model: google('gemini-1.5-flash-latest'),
             schema: AegisSecurityAnalysisSchema,
-            prompt: `You are a senior security analyst for the Aegis defense system. Your role is to analyze security alerts, determine their severity, identify the threats, and recommend clear, actionable steps for mitigation. Analyze the following security alert data: ${alertDetails}`
+            prompt: `You are a senior security analyst for the Aegis defense system. Analyze the following security alert data: ${alertDetails}`
         });
         return analysis;
     }
@@ -149,11 +154,10 @@ const generateWorkspaceInsightsTool = createTool({
                 return `- ${config?.title || 'Unknown Item'} (instanceId: ${item.id})`;
             }).join('\n')
             : 'The user has an empty workspace.';
-
         const { object: insights } = await generateObject({
             model: google('gemini-1.5-flash-latest'),
             schema: AiInsightsSchema,
-            prompt: `You are an AI assistant for AEVON OS. Based on the user's current layout, provide a maximum of 3 short, actionable insights. You may suggest adding an item with the 'addItem' tool or focusing an existing item with the 'focusItem' tool. Current layout:\n${openWindowsSummary}`
+            prompt: `You are an AI assistant for AEVON OS. Based on the user's current layout, provide a maximum of 3 short, actionable insights. You can suggest adding an item with 'addItem' or focusing an existing item with 'focusItem'. Current layout:\n${openWindowsSummary}`
         });
         return insights;
     }
@@ -162,11 +166,7 @@ const generateWorkspaceInsightsTool = createTool({
 const generateMarketingContentTool = createTool({
     name: "generateMarketingContent",
     description: "Generates marketing content based on a topic, content type, and tone.",
-    schema: z.object({
-        topic: z.string(),
-        contentType: z.string(),
-        tone: z.string()
-    }),
+    schema: z.object({ topic: z.string(), contentType: z.string(), tone: z.string() }),
     func: async ({ topic, contentType, tone }) => {
         const { object: content } = await generateObject({
             model: google('gemini-1.5-flash-latest'),
@@ -177,17 +177,55 @@ const generateMarketingContentTool = createTool({
     }
 });
 
-// =================================================================
-// CLIENT-SIDE UI MANIPULATION TOOLS
-// =================================================================
+// --- Workflow-Specific Tools for Loom ---
+
+const categorizeTextTool = createTool({
+    name: "categorizeText",
+    description: "Analyzes a piece of text and categorizes it as either 'Invoice' or 'General Inquiry'.",
+    schema: z.object({ text: z.string() }),
+    func: async ({ text }) => {
+        const { object: category } = await generateObject({
+            model: google('gemini-1.5-flash-latest'),
+            schema: TextCategorySchema,
+            prompt: `Categorize the following text as either 'Invoice' or 'General Inquiry'. Text: """${text}"""`
+        });
+        return category;
+    }
+});
+
+const extractInvoiceDataTool = createTool({
+    name: "extractInvoiceData",
+    description: "Extracts structured data (invoice number, amount, due date) from a piece of text identified as an invoice.",
+    schema: z.object({ text: z.string() }),
+    func: async ({ text }) => {
+        const { object: data } = await generateObject({
+            model: google('gemini-1.5-flash-latest'),
+            schema: InvoiceDataSchema,
+            prompt: `Extract the invoice number, total amount, and due date from the following invoice text: """${text}"""`
+        });
+        return data;
+    }
+});
+
+const logAndAlertAegisTool = createTool({
+    name: "logAndAlertAegis",
+    description: "Logs the result of a workflow and sends a notification to the Aegis system.",
+    schema: z.object({ details: z.string() }),
+    func: async ({ details }) => {
+        // This is a simulated action. In a real app, it would write to a database or call another service.
+        const message = `Workflow completed. Details logged: ${details}`;
+        eventBus.emit('orchestration:log', { task: 'Loom Workflow', status: 'success', details: message });
+        return { success: true, message };
+    }
+});
+
+// --- Client-Side UI Manipulation Tools ---
 const staticItemIds = [...ALL_CARD_CONFIGS.map((p) => p.id), ...ALL_MICRO_APPS.map((a) => a.id)];
 
-const focusItemTool = createTool({ name: 'focusItem', description: "Brings a specific window into focus on the user's canvas.", schema: z.object({ instanceId: z.string() }), func: async () => {}, isClientSide: true });
+const focusItemTool = createTool({ name: 'focusItem', description: "Brings a specific window into focus.", schema: z.object({ instanceId: z.string() }), func: async () => {}, isClientSide: true });
 const addItemTool = createTool({ name: 'addItem', description: 'Adds a new Panel or launches a new Micro-App.', schema: z.object({ itemId: z.string().enum(staticItemIds as [string, ...string[]]) }), func: async () => {}, isClientSide: true });
-const moveItemTool = createTool({ name: 'moveItem', description: "Moves a specific window to new coordinates.", schema: z.object({ instanceId: z.string(), x: z.number(), y: z.number() }), func: async () => {}, isClientSide: true });
 const removeItemTool = createTool({ name: 'removeItem', description: "Closes a single, specific window.", schema: z.object({ instanceId: z.string() }), func: async () => {}, isClientSide: true });
-const closeAllInstancesOfAppTool = createTool({ name: 'closeAllInstancesOfApp', description: "Closes ALL open windows of a specific Micro-App.", schema: z.object({ appId: z.string() }), func: async () => {}, isClientSide: true });
-const resetLayoutTool = createTool({ name: 'resetLayout', description: 'Resets the entire dashboard layout to its default configuration.', schema: z.object({}), func: async () => {}, isClientSide: true });
+const resetLayoutTool = createTool({ name: 'resetLayout', description: 'Resets the entire dashboard layout to its default.', schema: z.object({}), func: async () => {}, isClientSide: true });
 
 
 // =================================================================
@@ -195,20 +233,10 @@ const resetLayoutTool = createTool({ name: 'resetLayout', description: 'Resets t
 // =================================================================
 
 const allTools = [
-    // Server-side tools
-    searchKnowledgeBaseTool,
-    getSalesMetricsTool,
-    getSubscriptionStatusTool,
-    analyzeSecurityAlertTool,
-    generateWorkspaceInsightsTool,
-    generateMarketingContentTool,
-    // Client-side tools
-    focusItemTool,
-    addItemTool,
-    moveItemTool,
-    removeItemTool,
-    closeAllInstancesOfAppTool,
-    resetLayoutTool,
+    searchKnowledgeBaseTool, getSalesMetricsTool, getSubscriptionStatusTool,
+    analyzeSecurityAlertTool, generateWorkspaceInsightsTool, generateMarketingContentTool,
+    categorizeTextTool, extractInvoiceDataTool, logAndAlertAegisTool,
+    focusItemTool, addItemTool, removeItemTool, resetLayoutTool,
 ];
 
 const toolNode = new ToolNode(allTools);
@@ -231,20 +259,13 @@ const getSystemPrompt = (layout: LayoutItem[]) => {
   return `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic.
 
 **CONTEXT: CURRENT WORKSPACE**
-Here are the windows currently open on the user's dashboard. Use the 'instanceId' to manipulate them with tools like 'focusItem' or 'removeItem'.
+Here are the windows currently open on the user's dashboard. Use the 'instanceId' to manipulate them with tools.
 ${openWindowsSummary}
----
-**CONTEXT: AVAILABLE ITEMS**
-Here are the items you can add to the workspace. Use the static 'id' with the 'addItem' tool.
-Available Panels:
-${ALL_CARD_CONFIGS.map(p => `- ${p.title} (id: ${p.id})`).join('\n')}
-Available Micro-Apps:
-${ALL_MICRO_APPS.map(a => `- ${a.title} (id: ${a.id})`).join('\n')}
 ---
 **PRIMARY DIRECTIVE**
 1.  Analyze the user's request to determine the main task.
-2.  If the request requires information about the workspace, use the 'generateWorkspaceInsights' tool.
-3.  Select the most appropriate tool(s) to accomplish the task. You can call multiple tools in parallel.
+2.  **For complex tasks like "analyze this text...", you MUST use a multi-step thought process:** First, call 'categorizeText'. If the category is 'Invoice', THEN call 'extractInvoiceData'. Finally, call 'logAndAlertAegis' with the results.
+3.  Select the most appropriate tool(s) to accomplish the task. You can call multiple tools in parallel if the tasks are independent.
 4.  If a tool fails, explain the error to the user.
 5.  After successfully calling a UI tool, also generate a brief, natural language confirmation for the user. E.g., "Done. I've added the Loom Studio to your workspace."
 6.  If the user asks a general question, use the 'searchKnowledgeBase' tool first.

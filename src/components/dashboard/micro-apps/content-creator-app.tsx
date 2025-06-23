@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -15,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { type ContentGeneration } from '@/lib/ai-schemas';
 import { Zap, Copy, File, Warning } from 'phosphor-react';
 import eventBus from '@/lib/event-bus';
+import { useBeepChat } from '@/hooks/use-beep-chat';
 
 const formSchema = z.object({
   topic: z.string().min(5, { message: 'Topic must be at least 5 characters long.' }),
@@ -29,6 +31,7 @@ const ContentCreatorApp: React.FC = () => {
   const [generatedContent, setGeneratedContent] = useState<ContentGeneration | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { append: beepAppend, isLoading: isBeepLoading } = useBeepChat();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -40,14 +43,17 @@ const ContentCreatorApp: React.FC = () => {
   });
 
   const onSubmit = async (values: FormData) => {
-    setIsLoading(true);
     setError(null);
     setGeneratedContent(null);
     
     const prompt = `Generate a ${values.contentType} about "${values.topic}" with a ${values.tone} tone.`;
-    eventBus.emit('beep:submitQuery', prompt);
+    beepAppend({ role: 'user', content: prompt });
   };
   
+  useEffect(() => {
+    setIsLoading(isBeepLoading);
+  }, [isBeepLoading]);
+
   useEffect(() => {
     const handleContentResult = (result: ContentGeneration) => {
         setGeneratedContent(result);

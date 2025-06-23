@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
@@ -42,7 +43,7 @@ const LoomStudioPage: React.FC = () => {
     const [inputText, setInputText] = useState('');
     const [detailedNode, setDetailedNode] = useState<NodeState | null>(null);
     const { toast } = useToast();
-    const { append, setMessages, isLoading } = useBeepChat();
+    const { append: beepAppend, isLoading: isBeepLoading } = useBeepChat();
 
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
@@ -64,16 +65,41 @@ const LoomStudioPage: React.FC = () => {
         };
     }, []);
 
-    const toolNodeMap: { [key: string]: string } = {
-        categorizeText: 'condition',
-        extractInvoiceData: 'action-extract',
-        logAndAlertAegis: 'action-log',
-    };
+    useEffect(() => {
+        // The simulation is driven by the global BEEP loading state
+        setIsSimulating(isBeepLoading);
+    }, [isBeepLoading]);
 
     const updateNodeState = useCallback((nodeId: string, newState: Partial<NodeState>) => {
         setNodes(prev => prev.map(n => n.id === nodeId ? { ...n, ...newState } : n));
     }, []);
-    
+
+    // Listen for events from the agent to update the UI
+    useEffect(() => {
+        const handleCategorizeSuccess = (result: any) => updateNodeState('condition', { status: 'completed', output: result });
+        const handleExtractSuccess = (result: any) => updateNodeState('action-extract', { status: 'completed', output: result });
+        const handleLogSuccess = (result: any) => updateNodeState('action-log', { status: 'completed', output: result });
+        
+        const handleError = (nodeId: string) => (error: string) => updateNodeState(nodeId, { status: 'failed', error });
+
+        eventBus.on('loom:categorizeText:success', handleCategorizeSuccess);
+        eventBus.on('loom:extractInvoiceData:success', handleExtractSuccess);
+        eventBus.on('loom:logAndAlertAegis:success', handleLogSuccess);
+        
+        eventBus.on('loom:categorizeText:error', handleError('condition'));
+        eventBus.on('loom:extractInvoiceData:error', handleError('action-extract'));
+        eventBus.on('loom:logAndAlertAegis:error', handleError('action-log'));
+
+        return () => {
+            eventBus.off('loom:categorizeText:success');
+            eventBus.off('loom:extractInvoiceData:success');
+            eventBus.off('loom:logAndAlertAegis:success');
+            eventBus.off('loom:categorizeText:error');
+            eventBus.off('loom:extractInvoiceData:error');
+            eventBus.off('loom:logAndAlertAegis:error');
+        };
+    }, [updateNodeState]);
+
     const handleNodePositionChange = (id: string, info: PanInfo) => {
         setNodePositions(prev => ({
             ...prev,
@@ -82,17 +108,17 @@ const LoomStudioPage: React.FC = () => {
     };
 
     const runSimulation = useCallback(() => {
-        setIsSimulating(true);
+        // Reset the UI state and send the prompt to the BEEP agent
         setNodes(initialWorkflow);
-        setMessages([]);
-        append({ role: 'user', content: `Please run the full analysis workflow on the following text: """${inputText}"""` });
         updateNodeState('trigger', { status: 'completed', output: { receivedAt: new Date().toISOString(), characters: inputText.length } });
+        updateNodeState('condition', { status: 'running' });
+        beepAppend({ role: 'user', content: `Analyze the following text: """${inputText}"""` });
         eventBus.emit('orchestration:log', { task: 'Loom: Triggered', status: 'success', details: `Processing ${inputText.length} characters.`, targetId: 'loomStudio' });
-    }, [inputText, append, setMessages, updateNodeState]);
+    }, [inputText, beepAppend, updateNodeState]);
 
     const handleSendToBEEP = () => {
         if (!inputText || isSimulating) return;
-        eventBus.emit('beep:submitQuery', `Analyze the following text: """${inputText}"""`);
+        beepAppend({ role: 'user', content: `Analyze the following text: """${inputText}"""` });
         toast({ title: "Sent to BEEP", description: "The text has been sent to the BEEP interface for processing." });
     };
 

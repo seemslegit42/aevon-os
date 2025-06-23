@@ -1,3 +1,4 @@
+
 "use client";
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -6,20 +7,24 @@ import { Brain, Zap, Warning, GearSix } from 'phosphor-react';
 import { useToast } from '@/hooks/use-toast';
 import eventBus from '@/lib/event-bus';
 import type { Insight, AiInsights } from '@/lib/ai-schemas';
+import { useBeepChat } from '@/hooks/use-beep-chat';
 
 export default function AiInsightsCardContent() {
     const [insights, setInsights] = useState<Insight[] | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { toast } = useToast();
+    const { append: beepAppend, isLoading: isBeepLoading } = useBeepChat();
     
     const handleGenerateInsights = useCallback(() => {
-        setIsLoading(true);
         setError(null);
         setInsights(null);
-        // Dispatch the request to the BEEP agent
-        eventBus.emit('beep:submitQuery', 'Generate some insights for my current workspace layout.');
-    }, []);
+        beepAppend({ role: 'user', content: 'Generate some insights for my current workspace layout.' });
+    }, [beepAppend]);
+
+    useEffect(() => {
+        setIsLoading(isBeepLoading);
+    }, [isBeepLoading]);
 
     useEffect(() => {
         const handleInsightsResult = (result: AiInsights) => {
@@ -55,7 +60,7 @@ export default function AiInsightsCardContent() {
         }
 
         if (command) {
-            eventBus.emit('beep:submitQuery', command);
+            beepAppend({ role: 'user', content: command });
             toast({
                 title: 'Action Sent to BEEP',
                 description: `Executing: "${insight.text}"`,
