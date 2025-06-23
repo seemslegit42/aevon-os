@@ -1,3 +1,4 @@
+
 import mitt, { type Emitter } from 'mitt';
 import type { AegisSecurityAnalysis, AiInsights, ContentGeneration, WebSummarizerResult } from './ai-schemas';
 
@@ -30,6 +31,10 @@ type AppEvents = {
   'loom:extractInvoiceData:error': string;
   'loom:logAndAlertAegis:success': any;
   'loom:logAndAlertAegis:error': string;
+  
+  // Tool execution events
+  'tool:success': { toolName: string };
+  'tool:error': { toolName: string };
 
   // System-level Events
   'orchestration:log': { task: string; status: 'success' | 'failure'; details: string; targetId?: string; };

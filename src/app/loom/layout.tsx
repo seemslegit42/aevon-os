@@ -1,29 +1,17 @@
 
 import type {Metadata} from 'next';
-import './globals.css';
-import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: 'Loom Studio',
   description: 'Loom Studio: The embedded, always-available creative workspace inside nexOS.',
 };
 
-export default function RootLayout({
+export default function LoomLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" className="dark">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Lexend:wght@100..900&display=swap" rel="stylesheet" />
-      </head>
-      <body className="font-body antialiased">
-        {children}
-        <Toaster />
-      </body>
-    </html>
-  );
+  // This layout was invalid, containing duplicate <html> and <body> tags which caused a build error.
+  // A nested layout should just wrap its children, inheriting the main layout's structure.
+  return <>{children}</>;
 }

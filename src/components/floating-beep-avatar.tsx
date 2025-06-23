@@ -1,3 +1,4 @@
+
 "use client";
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Rnd } from 'react-rnd';
@@ -10,6 +11,8 @@ import { useAudioRecorder } from '@/hooks/use-audio-recorder';
 import { useTTS } from '@/hooks/use-tts';
 import { useBeepChatStore } from '@/stores/beep-chat.store';
 import { useAvatarTelemetry } from '@/hooks/use-avatar-telemetry';
+import { useAgentConfigStore } from '@/stores/agent-config.store';
+import { getIdleQuip, getToolSuccessQuip, getToolErrorQuip } from '@/lib/humor-module';
 import eventBus from '@/lib/event-bus';
 import type { AvatarState } from '@/types/dashboard';
 
@@ -21,10 +24,12 @@ const FloatingBeepAvatar: React.FC = () => {
   const [inputNode, setInputNode] = useState<GainNode | null>(null);
   const [outputNode, setOutputNode] = useState<GainNode | null>(null);
   const stateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Get state and actions from the global store
   const { avatarState, setAvatarState, append, isLoading, lastMessage } = useBeepChatStore();
   const isProcessing = useBeepChatStore(state => state.isLoading);
+  const { isHumorEnabled, humorFrequency } = useAgentConfigStore();
 
   const initializeAudio = useCallback(() => {
     if (audioContext) return;
@@ -54,6 +59,8 @@ const FloatingBeepAvatar: React.FC = () => {
     },
     inputNode,
   });
+
+  const isBusy = isLoading || isSpeaking || isRecording || isTranscribing;
   
   const setAndLogAvatarState = useCallback((state: AvatarState, metadata?: Record<string, any>) => {
     setAvatarState(state);
@@ -102,6 +109,60 @@ const FloatingBeepAvatar: React.FC = () => {
       playAudio(plainTextContent);
     }
   }, [lastMessage, isLoading, playAudio]);
+
+  // --- Humor Module Integration ---
+  const resetIdleTimer = useCallback(() => {
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    if (isHumorEnabled && !isBusy) {
+        const idleTimeout = humorFrequency === 'high' ? 20000 : humorFrequency === 'medium' ? 45000 : 90000;
+        idleTimerRef.current = setTimeout(() => {
+            const quip = getIdleQuip(humorFrequency);
+            if (quip) {
+                playAudio(quip);
+            }
+        }, idleTimeout);
+    }
+  }, [isHumorEnabled, isBusy, humorFrequency, playAudio]);
+
+  useEffect(() => {
+      resetIdleTimer();
+      return () => {
+          if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      }
+  }, [resetIdleTimer]);
+
+
+  // Event-based quip logic
+  useEffect(() => {
+    const handleToolSuccess = ({ toolName }: { toolName: string }) => {
+        if (isHumorEnabled && !isBusy) {
+            const quip = getToolSuccessQuip(humorFrequency);
+            if (quip) {
+                // Add a small delay to not talk over the agent's main response
+                setTimeout(() => playAudio(quip), 750);
+            }
+        }
+    };
+
+    const handleToolError = ({ toolName }: { toolName: string }) => {
+        if (isHumorEnabled && !isBusy) {
+            const quip = getToolErrorQuip(humorFrequency);
+            if (quip) {
+                setTimeout(() => playAudio(quip), 750);
+            }
+        }
+    };
+
+    eventBus.on('tool:success', handleToolSuccess);
+    eventBus.on('tool:error', handleToolError);
+
+    return () => {
+        eventBus.off('tool:success', handleToolSuccess);
+        eventBus.off('tool:error', handleToolError);
+    };
+  }, [isHumorEnabled, isBusy, humorFrequency, playAudio]);
+  // --- End Humor Module ---
+
 
   return (
     <Rnd

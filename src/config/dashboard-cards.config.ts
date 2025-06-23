@@ -29,6 +29,7 @@ import {
     ShoppingCart,
     House,
     Zap,
+    SlidersHorizontal,
 } from 'phosphor-react';
 
 // =================================================================
@@ -96,6 +97,16 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     permissions: [],
     tags: ['billing', 'account'],
     defaultSize: { width: 400, height: 420 },
+  },
+  {
+    id: 'app-agent-config',
+    title: 'Agent Configuration',
+    description: 'Tune the personality and behavior of your BEEP AI assistant.',
+    icon: Cpu,
+    component: lazy(() => import('@/app/dashboard/micro-apps/agent-config-app')),
+    permissions: [],
+    tags: ['ai', 'settings', 'personalization'],
+    defaultSize: { width: 450, height: 400 },
   },
 ];
 
