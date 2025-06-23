@@ -19,7 +19,6 @@ const toLangChainMessage = (message: Message): BaseMessage => {
     if (message.role === 'user') {
         return new HumanMessage(message.content);
     } else if (message.role === 'assistant') {
-        // Create an AIMessage that includes content and any tool calls
         const tool_calls = message.tool_calls?.map(tc => ({
             id: tc.toolCallId,
             name: tc.toolName,

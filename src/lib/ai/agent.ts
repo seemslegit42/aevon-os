@@ -1,3 +1,4 @@
+
 'use server';
 
 import { StateGraph, END, START, type MessagesState } from '@langchain/langgraph';
@@ -27,25 +28,32 @@ import {
 } from '../ai-schemas';
 
 // =================================================================
-// Agent State Definition
+// Agent State Definition (Modern LangGraph Standard)
 // =================================================================
 export interface AgentState extends MessagesState {
   layout: LayoutItem[];
 }
 
 // =================================================================
-// TOOL CREATION & ERROR HANDLING
+// Robust Tool Creation & Error Handling
 // =================================================================
 /**
  * A robust wrapper for creating DynamicTools. It adds standardized error
  * handling and ensures the output is always a stringified JSON, which
- * is what the LangChain agent framework expects.
- * @param input The tool definition.
+ * is what the LangChain agent framework expects. It also differentiates
+ * between server-side and client-side tools.
+ * @param input The tool definition, with an added `isClientSide` flag.
  * @returns A new DynamicTool instance.
  */
-const createTool = (input: DynamicToolInput) => new DynamicTool({
+const createTool = (input: DynamicToolInput & { isClientSide?: boolean }) => new DynamicTool({
   ...input,
   func: async (args) => {
+    // For client-side tools, we just pass the arguments through.
+    // The client-side `onToolCall` handler will execute the logic.
+    if (input.isClientSide) {
+      return JSON.stringify({ success: true, message: `Client-side tool ${input.name} called.` });
+    }
+    // For server-side tools, we execute the function and handle errors.
     try {
       const result = await input.func(args);
       // Emit successful results to the event bus for decoupled UI updates
@@ -169,35 +177,32 @@ const generateMarketingContentTool = createTool({
     }
 });
 
-
 // =================================================================
-// CLIENT-SIDE TOOLS (UI Manipulation)
-// These tool definitions are used by the agent to decide *what* to do.
-// The actual implementation logic resides on the client in `use-beep-chat.ts`.
+// CLIENT-SIDE UI MANIPULATION TOOLS
 // =================================================================
 const staticItemIds = [...ALL_CARD_CONFIGS.map((p) => p.id), ...ALL_MICRO_APPS.map((a) => a.id)];
 
-const focusItemTool = createTool({ name: 'focusItem', description: "Brings a specific window into focus on the user's canvas.", schema: z.object({ instanceId: z.string() }), func: async (args) => args });
-const addItemTool = createTool({ name: 'addItem', description: 'Adds a new Panel or launches a new Micro-App.', schema: z.object({ itemId: z.string().enum(staticItemIds as [string, ...string[]]) }), func: async (args) => args });
-const moveItemTool = createTool({ name: 'moveItem', description: "Moves a specific window to new coordinates.", schema: z.object({ instanceId: z.string(), x: z.number(), y: z.number() }), func: async (args) => args });
-const removeItemTool = createTool({ name: 'removeItem', description: "Closes a single, specific window.", schema: z.object({ instanceId: z.string() }), func: async (args) => args });
-const closeAllInstancesOfAppTool = createTool({ name: 'closeAllInstancesOfApp', description: "Closes ALL open windows of a specific Micro-App.", schema: z.object({ appId: z.string() }), func: async (args) => args });
-const resetLayoutTool = createTool({ name: 'resetLayout', description: 'Resets the entire dashboard layout to its default configuration.', schema: z.object({}), func: async (args) => args });
+const focusItemTool = createTool({ name: 'focusItem', description: "Brings a specific window into focus on the user's canvas.", schema: z.object({ instanceId: z.string() }), func: async () => {}, isClientSide: true });
+const addItemTool = createTool({ name: 'addItem', description: 'Adds a new Panel or launches a new Micro-App.', schema: z.object({ itemId: z.string().enum(staticItemIds as [string, ...string[]]) }), func: async () => {}, isClientSide: true });
+const moveItemTool = createTool({ name: 'moveItem', description: "Moves a specific window to new coordinates.", schema: z.object({ instanceId: z.string(), x: z.number(), y: z.number() }), func: async () => {}, isClientSide: true });
+const removeItemTool = createTool({ name: 'removeItem', description: "Closes a single, specific window.", schema: z.object({ instanceId: z.string() }), func: async () => {}, isClientSide: true });
+const closeAllInstancesOfAppTool = createTool({ name: 'closeAllInstancesOfApp', description: "Closes ALL open windows of a specific Micro-App.", schema: z.object({ appId: z.string() }), func: async () => {}, isClientSide: true });
+const resetLayoutTool = createTool({ name: 'resetLayout', description: 'Resets the entire dashboard layout to its default configuration.', schema: z.object({}), func: async () => {}, isClientSide: true });
 
 
 // =================================================================
-// AGENT SETUP
+// AGENT SETUP & GRAPH DEFINITION
 // =================================================================
 
 const allTools = [
-    // Server-side data/logic tools
+    // Server-side tools
     searchKnowledgeBaseTool,
     getSalesMetricsTool,
     getSubscriptionStatusTool,
     analyzeSecurityAlertTool,
     generateWorkspaceInsightsTool,
     generateMarketingContentTool,
-    // Client-side UI tools
+    // Client-side tools
     focusItemTool,
     addItemTool,
     moveItemTool,
@@ -246,11 +251,7 @@ ${ALL_MICRO_APPS.map(a => `- ${a.title} (id: ${a.id})`).join('\n')}
 `;
 }
 
-// =================================================================
-// AGENT GRAPH DEFINITION
-// =================================================================
-
-// This node calls the main model
+// Node that calls the AI model
 const callModelNode = async (state: AgentState) => {
   const { messages, layout } = state;
   const systemPrompt = getSystemPrompt(layout || []);
@@ -259,15 +260,16 @@ const callModelNode = async (state: AgentState) => {
   return { messages: [response] };
 };
 
-// This router decides whether to call tools or end the conversation
+// Router that decides whether to call tools or end
 const shouldInvokeToolsRouter = (state: AgentState) => {
-  const lastMessage = state.messages[state.messages.length - 1] as AIMessage;
-  if (!lastMessage.tool_calls || lastMessage.tool_calls.length === 0) {
-    return END;
+  const lastMessage = state.messages[state.messages.length - 1];
+  if (lastMessage instanceof AIMessage && lastMessage.tool_calls && lastMessage.tool_calls.length > 0) {
+    return 'tools';
   }
-  return 'tools';
+  return END;
 };
 
+// Define the graph
 const workflow = new StateGraph<AgentState>({
     channels: { 
         messages: { 
@@ -289,7 +291,8 @@ workflow.addConditionalEdges('agent', shouldInvokeToolsRouter, {
   [END]: END,
 });
 
+workflow.addEdge(START, 'agent');
 workflow.addEdge('tools', 'agent');
-workflow.addEntryPoint(START);
 
+// Compile the graph into a runnable object
 export const agentGraph = workflow.compile();

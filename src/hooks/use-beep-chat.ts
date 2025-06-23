@@ -9,80 +9,75 @@ import { useToast } from './use-toast';
 export function useBeepChat() {
     const { toast } = useToast();
 
-    // The tool call handler is now defined here and passed to the useChat hook.
-    // This is the correct pattern for handling client-side tool execution.
+    // This is the handler for client-side tools. It receives tool calls from the AI
+    // and executes them by calling actions on the Zustand layout store.
     const handleToolCall: ToolCallHandler = async (chatMessages, toolCalls) => {
         const layoutActions = useLayoutStore.getState();
-        let toolCallResults: any[] = [];
         
         for (const toolCall of toolCalls) {
-            let result: any;
-            const taskName = `BEEP: ${toolCall.toolName}`;
+            const { toolName, args } = toolCall;
+            let result: any = { success: true, message: `Tool ${toolName} executed.` };
             let status: 'success' | 'failure' = 'success';
-            let details = `Tool ${toolCall.toolName} executed successfully.`;
+            let details = result.message;
 
             try {
-                // This switch handles all client-side UI manipulation tools.
-                switch (toolCall.toolName) {
+                switch (toolName) {
                     case 'focusItem':
-                        layoutActions.bringToFront(toolCall.args.instanceId);
-                        details = `Focused on item: ${toolCall.args.instanceId}`;
+                        layoutActions.bringToFront(args.instanceId as string);
+                        details = `Focused on item: ${args.instanceId}`;
                         break;
                     case 'addItem':
-                        layoutActions.addCard(toolCall.args.itemId);
-                        details = `Adding item: ${toolCall.args.itemId}`;
+                        layoutActions.addCard(args.itemId as string);
+                        details = `Adding item: ${args.itemId}`;
                         break;
                     case 'moveItem':
-                        layoutActions.moveItem(toolCall.args.instanceId, { x: toolCall.args.x, y: toolCall.args.y });
-                        details = `Moving item: ${toolCall.args.itemId}`;
+                        layoutActions.moveItem(args.instanceId as string, { x: args.x as number, y: args.y as number });
+                        details = `Moving item: ${args.instanceId}`;
                         break;
                     case 'removeItem':
-                        layoutActions.closeItem(toolCall.args.instanceId);
-                        details = `Removing item: ${toolCall.args.instanceId}`;
+                        layoutActions.closeItem(args.instanceId as string);
+                        details = `Removing item: ${args.instanceId}`;
                         break;
                     case 'closeAllInstancesOfApp':
-                        layoutActions.closeAllInstancesOfApp(toolCall.args.appId);
-                        details = `Closing all instances of: ${toolCall.args.appId}`;
+                        layoutActions.closeAllInstancesOfApp(args.appId as string);
+                        details = `Closing all instances of: ${args.appId}`;
                         break;
                     case 'resetLayout':
                         layoutActions.resetLayout();
                         details = `Resetting dashboard layout.`;
                         break;
                     default:
-                        // If the tool is not meant for the client, we throw an error.
-                        // The agent should be configured to only send client-side tool calls here.
-                        throw new Error(`Unknown client-side tool: ${toolCall.toolName}`);
+                        // This case should ideally not be hit if the agent is configured correctly
+                        // to only send client-side tools to the client.
+                        continue;
                 }
                 result = { success: true, message: details };
+
             } catch (error: any) {
                 result = { error: error.message };
                 status = 'failure';
                 details = error.message;
+                toast({ variant: 'destructive', title: `UI Action Failed: ${toolName}`, description: details });
             }
 
-            // Log the outcome of the action to the orchestration feed.
-            eventBus.emit('orchestration:log', { task: taskName, status, details });
-            
-            toolCallResults.push({
+            eventBus.emit('orchestration:log', { task: `BEEP: ${toolName}`, status, details });
+
+            // Append the result of the tool call to the chat history.
+            // This is crucial for the agent to know the tool was executed.
+            chatMessages.push({
+                role: 'tool',
+                content: JSON.stringify(result),
                 tool_call_id: toolCall.toolCallId,
-                result: result
             });
         }
         
-        // This helper function on the useChat hook sends the tool results back to the server
-        // so the agent can continue its reasoning process.
-        return chatMessages.concat({
-            role: 'tool',
-            content: JSON.stringify(toolCallResults),
-        });
+        return chatMessages;
     };
     
     const { messages, append, isLoading, setMessages } = useChat({
         api: '/api/ai/chat',
-        // The onToolCall handler is correctly passed here.
         experimental_onToolCall: handleToolCall,
         onFinish: (message) => {
-            // onFinish is a more reliable way to know the stream is complete.
             if (message.role === 'assistant' && message.content && !message.tool_calls) {
                 const plainTextContent = message.content.replace(/`+/g, '');
                 eventBus.emit('beep:response', plainTextContent);
