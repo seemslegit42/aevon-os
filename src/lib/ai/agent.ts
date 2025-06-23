@@ -1,10 +1,9 @@
-
 'use server';
 
 import { StateGraph, END, START, type MessagesState } from '@langchain/langgraph';
 import { ToolNode } from '@langchain/langgraph/prebuilt';
 import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages';
-import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+import { ChatGroq } from '@langchain/groq';
 import { DynamicTool, type DynamicToolInput } from '@langchain/core/tools';
 import { z } from 'zod';
 import { generateObject } from 'ai';
@@ -208,9 +207,10 @@ const allTools = [
 
 const toolNode = new ToolNode(allTools);
 
-const model = new ChatGoogleGenerativeAI({
-  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-  model: 'gemini-1.5-flash-latest',
+// Use Groq for speed in the main conversational agent
+const model = new ChatGroq({
+  apiKey: process.env.GROQ_API_KEY,
+  model: 'llama3-70b-8192',
 }).bindTools(allTools);
 
 const getSystemPrompt = (layout: LayoutItem[]) => {

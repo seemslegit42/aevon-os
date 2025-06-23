@@ -63,7 +63,8 @@ export function useTTS({ outputNode }: UseTTSProps) {
       });
 
       if (!response.ok) {
-        throw new Error(`TTS request failed with status ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(errorData.error || `TTS request failed with status ${response.status}`);
       }
       
       const audioData = await response.arrayBuffer();
@@ -82,7 +83,8 @@ export function useTTS({ outputNode }: UseTTSProps) {
       
     } catch (error) {
       console.error("Error playing TTS audio:", error);
-      toast({ variant: "destructive", title: "Audio Error", description: "Failed to play AI response." });
+      const errorMessage = error instanceof Error ? error.message : "Failed to play AI response.";
+      toast({ variant: "destructive", title: "Audio Error", description: errorMessage });
     }
   }, [outputNode, toast, initializeLocalAudio]);
 
