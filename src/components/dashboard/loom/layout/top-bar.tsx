@@ -1,9 +1,17 @@
 
-// src/components/layout/top-bar.tsx
-import { AiFlowGeneratorForm } from '@/components/ai/ai-flow-generator-form';
+'use client';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { useToast } from '@/hooks/use-toast';
+import { generateLoomWorkflow } from '@/lib/ai/loom-flow';
+
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { BrainCircuit, Search, Settings, UserCircle, Menu, FolderKanban, FileText, BookMarked, Eye, ShieldQuestion, LayoutGrid, Settings2, Bot, ListOrdered, Terminal } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
+import { BrainCircuit, Search, Settings, UserCircle, Menu, FolderKanban, FileText, BookMarked, Eye, ShieldQuestion, LayoutGrid, Settings2, Bot, ListOrdered, Terminal, Loader2 } from 'lucide-react';
 import type { PanelVisibility, AiGeneratedFlowData, ConsoleMessage } from '@/types/loom'; 
 import {
   DropdownMenu,
@@ -14,7 +22,81 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import { useToast } from '@/hooks/use-toast';
+
+interface AiFlowGeneratorFormProps {
+    onFlowGenerated: (data: AiGeneratedFlowData) => void; 
+    addConsoleMessage: (type: ConsoleMessage['type'], text: string, swarmId?: string) => void;
+}
+
+const FormSchema = z.object({
+  prompt: z.string().min(10, {
+    message: "Prompt must be at least 10 characters.",
+  }),
+});
+
+const AiFlowGeneratorForm = ({ onFlowGenerated, addConsoleMessage }: AiFlowGeneratorFormProps) => {
+    const { toast } = useToast();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const form = useForm<z.infer<typeof FormSchema>>({
+        resolver: zodResolver(FormSchema),
+        defaultValues: { prompt: "" },
+    });
+
+    const onSubmit = async (values: z.infer<typeof FormSchema>) => {
+        setIsLoading(true);
+        addConsoleMessage('info', `Generating new workflow from prompt: "${values.prompt}"`);
+
+        try {
+            const result = await generateLoomWorkflow({ prompt: values.prompt });
+            onFlowGenerated({
+                ...result,
+                message: 'Workflow generated successfully by AI.',
+                error: false,
+                userInput: values.prompt,
+            });
+            form.reset();
+        } catch (error: any) {
+            toast({ variant: 'destructive', title: 'Flow Generation Failed', description: error.message });
+            onFlowGenerated({
+                message: error.message,
+                nodes: [],
+                error: true,
+                userInput: values.prompt,
+                workflowName: "Failed Generation"
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="relative w-full">
+                <FormField
+                    control={form.control}
+                    name="prompt"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                                <Input
+                                    placeholder="Describe a workflow for the AI to build..."
+                                    className="bg-card/70 border-border/50 h-10 pl-4 pr-10"
+                                    disabled={isLoading}
+                                    {...field}
+                                />
+                            </FormControl>
+                        </FormItem>
+                    )}
+                />
+                <Button type="submit" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8" disabled={isLoading}>
+                    {isLoading ? <Loader2 className="animate-spin" /> : <BrainCircuit className="h-5 w-5" />}
+                    <span className="sr-only">Generate Flow</span>
+                </Button>
+            </form>
+        </Form>
+    );
+};
 
 
 interface TopBarProps {

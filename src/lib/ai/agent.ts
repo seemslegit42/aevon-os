@@ -20,11 +20,9 @@ import {
     AegisSecurityAnalysisSchema, 
     AiInsightsSchema, 
     ContentGenerationSchema, 
-    InvoiceDataSchema, 
     KnowledgeBaseSearchResultSchema, 
     SalesMetricsSchema, 
     SubscriptionStatusSchema, 
-    TextCategorySchema 
 } from '../ai-schemas';
 
 // =================================================================
@@ -40,8 +38,10 @@ export interface AgentState extends MessagesState {
 const createTool = (input: DynamicToolInput & { isClientSide?: boolean }) => new DynamicTool({
   ...input,
   func: async (args) => {
+    // For client-side tools, we just need to signal the intent to call them.
+    // The actual execution happens on the client.
     if (input.isClientSide) {
-      return JSON.stringify({ success: true, message: `Client-side tool ${input.name} called.` });
+      return JSON.stringify({ success: true, message: `Client-side tool ${input.name} called with arguments: ${JSON.stringify(args)}` });
     }
     
     try {
@@ -52,11 +52,6 @@ const createTool = (input: DynamicToolInput & { isClientSide?: boolean }) => new
       if (input.name === 'generateWorkspaceInsights') eventBus.emit('insights:result', result);
       if (input.name === 'generateMarketingContent') eventBus.emit('content:result', result);
       
-      // Emit granular events for Loom Studio visualization
-      if (['categorizeText', 'extractInvoiceData', 'logAndAlertAegis'].includes(input.name)) {
-        eventBus.emit(`loom:${input.name}:success`, result);
-      }
-      
       return JSON.stringify(result);
     } catch (error: any) {
       const errorMessage = error.message || "An unexpected error occurred in the tool.";
@@ -66,11 +61,6 @@ const createTool = (input: DynamicToolInput & { isClientSide?: boolean }) => new
       if (input.name === 'analyzeSecurityAlert') eventBus.emit('aegis:analysis-error', errorMessage);
       if (input.name === 'generateWorkspaceInsights') eventBus.emit('insights:error', errorMessage);
       if (input.name === 'generateMarketingContent') eventBus.emit('content:error', errorMessage);
-      
-      // Emit granular errors for Loom Studio
-      if (['categorizeText', 'extractInvoiceData', 'logAndAlertAegis'].includes(input.name)) {
-        eventBus.emit(`loom:${input.name}:error`, errorMessage);
-      }
       
       return JSON.stringify({ error: true, message: errorMessage });
     }
@@ -177,48 +167,6 @@ const generateMarketingContentTool = createTool({
     }
 });
 
-// --- Workflow-Specific Tools for Loom ---
-
-const categorizeTextTool = createTool({
-    name: "categorizeText",
-    description: "Analyzes a piece of text and categorizes it as either 'Invoice' or 'General Inquiry'.",
-    schema: z.object({ text: z.string() }),
-    func: async ({ text }) => {
-        const { object: category } = await generateObject({
-            model: google('gemini-1.5-flash-latest'),
-            schema: TextCategorySchema,
-            prompt: `Categorize the following text as either 'Invoice' or 'General Inquiry'. Text: """${text}"""`
-        });
-        return category;
-    }
-});
-
-const extractInvoiceDataTool = createTool({
-    name: "extractInvoiceData",
-    description: "Extracts structured data (invoice number, amount, due date) from a piece of text identified as an invoice.",
-    schema: z.object({ text: z.string() }),
-    func: async ({ text }) => {
-        const { object: data } = await generateObject({
-            model: google('gemini-1.5-flash-latest'),
-            schema: InvoiceDataSchema,
-            prompt: `Extract the invoice number, total amount, and due date from the following invoice text: """${text}"""`
-        });
-        return data;
-    }
-});
-
-const logAndAlertAegisTool = createTool({
-    name: "logAndAlertAegis",
-    description: "Logs the result of a workflow and sends a notification to the Aegis system.",
-    schema: z.object({ details: z.string() }),
-    func: async ({ details }) => {
-        // This is a simulated action. In a real app, it would write to a database or call another service.
-        const message = `Workflow completed. Details logged: ${details}`;
-        eventBus.emit('orchestration:log', { task: 'Loom Workflow', status: 'success', details: message });
-        return { success: true, message };
-    }
-});
-
 // --- Client-Side UI Manipulation Tools ---
 const staticItemIds = [...ALL_CARD_CONFIGS.map((p) => p.id), ...ALL_MICRO_APPS.map((a) => a.id)];
 
@@ -235,7 +183,6 @@ const resetLayoutTool = createTool({ name: 'resetLayout', description: 'Resets t
 const allTools = [
     searchKnowledgeBaseTool, getSalesMetricsTool, getSubscriptionStatusTool,
     analyzeSecurityAlertTool, generateWorkspaceInsightsTool, generateMarketingContentTool,
-    categorizeTextTool, extractInvoiceDataTool, logAndAlertAegisTool,
     focusItemTool, addItemTool, removeItemTool, resetLayoutTool,
 ];
 
@@ -264,11 +211,11 @@ ${openWindowsSummary}
 ---
 **PRIMARY DIRECTIVE**
 1.  Analyze the user's request to determine the main task.
-2.  **For complex tasks like "analyze this text...", you MUST use a multi-step thought process:** First, call 'categorizeText'. If the category is 'Invoice', THEN call 'extractInvoiceData'. Finally, call 'logAndAlertAegis' with the results.
-3.  Select the most appropriate tool(s) to accomplish the task. You can call multiple tools in parallel if the tasks are independent.
-4.  If a tool fails, explain the error to the user.
-5.  After successfully calling a UI tool, also generate a brief, natural language confirmation for the user. E.g., "Done. I've added the Loom Studio to your workspace."
-6.  If the user asks a general question, use the 'searchKnowledgeBase' tool first.
+2.  Select the most appropriate tool(s) to accomplish the task. You can call multiple tools in parallel if the tasks are independent.
+3.  If a tool fails, explain the error to the user.
+4.  After successfully calling a UI tool, also generate a brief, natural language confirmation for the user. E.g., "Done. I've added the Loom Studio to your workspace."
+5.  If the user asks a general question, use the 'searchKnowledgeBase' tool first.
+6.  Do not generate workflows for Loom Studio. That is handled by a separate, specialized AI. If asked to create a workflow, politely decline and suggest they use the "Generate" button in Loom Studio.
 `;
 }
 

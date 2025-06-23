@@ -83,3 +83,21 @@ export const SubscriptionStatusSchema = z.object({
   manageUrl: z.string().url().describe("The URL to the customer's billing management portal."),
 });
 export type SubscriptionStatus = z.infer<typeof SubscriptionStatusSchema>;
+
+// Defines the structure of a single node for the Loom workflow.
+// This is used by the AI to generate the workflow structure.
+export const WorkflowNodeSchema = z.object({
+  title: z.string().describe("A short, descriptive title for the node's purpose."),
+  type: z.enum(['prompt', 'decision', 'agent-call', 'wait', 'api-call', 'trigger', 'custom', 'web-summarizer', 'data-transform', 'conditional']).describe("The functional type of the node."),
+  description: z.string().describe("A brief one-sentence description of what this node does."),
+  position: z.object({
+    x: z.number().describe("The x-coordinate for the node on a 2D canvas."),
+    y: z.number().describe("The y-coordinate for the node on a 2D canvas."),
+  }).describe("The position of the node on the canvas."),
+});
+
+// Defines the overall structure of the AI-generated workflow.
+export const AiGeneratedFlowDataSchema = z.object({
+  workflowName: z.string().describe("A concise and descriptive name for the entire workflow."),
+  nodes: z.array(WorkflowNodeSchema).describe("An array of workflow nodes that constitute the flow."),
+});
