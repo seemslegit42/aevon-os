@@ -10,6 +10,7 @@ import { Analyser } from '@/lib/analyser';
 import { vs, fs } from '@/lib/shaders/beep-3d-sphere-vertex.glsl';
 import { cn } from '@/lib/utils';
 import type { AvatarState } from './beep-card-content';
+import { useAvatarPresetStore } from '@/stores/avatar-preset.store';
 
 interface BeepAvatar3DProps {
   inputNode: AudioNode | null;
@@ -29,17 +30,41 @@ const stateToUniformMap: Record<AvatarState, number> = {
 const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode, avatarState }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const activePreset = useAvatarPresetStore(state => state.getActivePreset());
+
   const uniformsRef = useRef({
       time: { value: 0.0 },
-      pointSize: { value: 3.5 },
       inputData: { value: new THREE.Vector4(0, 0, 0, 0) },
       outputData: { value: new THREE.Vector4(0, 0, 0, 0) },
       uAvatarState: { value: stateToUniformMap.idle },
+      // Preset uniforms
+      uPointSize: { value: activePreset.particleSize },
+      uMotionSpeed: { value: activePreset.motionSpeed },
+      uNoiseStrength: { value: activePreset.noiseStrength },
+      uColorIdle: { value: new THREE.Color(...activePreset.colors.idle) },
+      uColorListening: { value: new THREE.Color(...activePreset.colors.listening) },
+      uColorSpeaking: { value: new THREE.Color(...activePreset.colors.speaking) },
+      uColorThinking: { value: new THREE.Color(...activePreset.colors.thinking) },
+      uColorToolCall: { value: new THREE.Color(...activePreset.colors.tool_call) },
+      uColorSecurity: { value: new THREE.Color(...activePreset.colors.security_alert) },
   });
 
   useEffect(() => {
     uniformsRef.current.uAvatarState.value = stateToUniformMap[avatarState];
   }, [avatarState]);
+
+  useEffect(() => {
+    // Update uniforms when preset changes
+    uniformsRef.current.uPointSize.value = activePreset.particleSize;
+    uniformsRef.current.uMotionSpeed.value = activePreset.motionSpeed;
+    uniformsRef.current.uNoiseStrength.value = activePreset.noiseStrength;
+    uniformsRef.current.uColorIdle.value.setRGB(...activePreset.colors.idle);
+    uniformsRef.current.uColorListening.value.setRGB(...activePreset.colors.listening);
+    uniformsRef.current.uColorSpeaking.value.setRGB(...activePreset.colors.speaking);
+    uniformsRef.current.uColorThinking.value.setRGB(...activePreset.colors.thinking);
+    uniformsRef.current.uColorToolCall.value.setRGB(...activePreset.colors.tool_call);
+    uniformsRef.current.uColorSecurity.value.setRGB(...activePreset.colors.security_alert);
+  }, [activePreset]);
 
   useEffect(() => {
     if (!mountRef.current || !inputNode || !outputNode) return;

@@ -2,9 +2,11 @@
 // Vertex Shader
 export const vs = `
   uniform float time;
-  uniform float pointSize;
   uniform vec4 inputData;
   uniform vec4 outputData;
+  uniform float uPointSize;
+  uniform float uMotionSpeed;
+  uniform float uNoiseStrength;
   
   varying float vDisplacement;
 
@@ -61,9 +63,9 @@ export const vs = `
 
   void main() {
     // --- Displacement Calculation ---
-    float baseNoise = snoise(position * 2.0 + time * 0.1);
-    float detailNoise = snoise(position * 8.0 + time * 0.5);
-    float ambientDisplacement = baseNoise * 0.15 + detailNoise * 0.04;
+    float baseNoise = snoise(position * 2.0 + time * 0.1 * uMotionSpeed);
+    float detailNoise = snoise(position * 8.0 + time * 0.5 * uMotionSpeed);
+    float ambientDisplacement = baseNoise * uNoiseStrength + detailNoise * (uNoiseStrength / 2.0);
     
     // More impactful audio reaction
     float inputPulse = inputData.x * 1.5;
@@ -85,17 +87,23 @@ export const vs = `
     vec4 projectedPosition = projectionMatrix * viewPosition;
 
     gl_Position = projectedPosition;
-    gl_PointSize = pointSize * (3.0 / -viewPosition.z);
+    gl_PointSize = uPointSize * (3.0 / -viewPosition.z);
   }
 `;
 
 // Fragment Shader
 export const fs = `
   uniform float time;
-  uniform vec4 inputData;
-  uniform vec4 outputData;
   uniform int uAvatarState;
   
+  // Preset Uniforms
+  uniform vec3 uColorIdle;
+  uniform vec3 uColorListening;
+  uniform vec3 uColorSpeaking;
+  uniform vec3 uColorThinking;
+  uniform vec3 uColorToolCall;
+  uniform vec3 uColorSecurity;
+
   varying float vDisplacement;
 
   // State mapping (must match BeepAvatar3D component)
@@ -106,8 +114,7 @@ export const fs = `
   const int STATE_TOOL_CALL = 4;
   const int STATE_SECURITY_ALERT = 5;
 
-
-  // IQ's color palette function
+  // IQ's color palette function for aurora effect
   vec3 palette( float t, vec3 a, vec3 b, vec3 c, vec3 d ) {
     return a + b*cos( 6.28318*(c*t+d) );
   }
@@ -117,39 +124,29 @@ export const fs = `
     if (strength > 0.5) discard; // Make points circular
     strength = 1.0 - smoothstep(0.0, 0.5, strength);
 
-    vec3 finalColor;
+    vec3 stateColor;
 
     if (uAvatarState == STATE_IDLE) {
-        // Cool, shifting aurora
-        finalColor = palette(vDisplacement * 2.0 + time * 0.1, vec3(0.5), vec3(0.5), vec3(1.0), vec3(0.0, 0.1, 0.2));
+        stateColor = palette(vDisplacement * 2.0 + time * 0.1, uColorIdle, uColorIdle * 0.5, vec3(1.0), vec3(0.0, 0.1, 0.2));
     } else if (uAvatarState == STATE_LISTENING) {
-        // Vibrant green pulse
         float pulse = 0.5 + 0.5 * sin(time * 5.0 + vDisplacement * 20.0);
-        vec3 baseColor = vec3(0.243, 0.725, 0.569); // Patina Green #3EB991
-        finalColor = baseColor * (0.8 + 0.4 * pulse);
+        stateColor = uColorListening * (0.8 + 0.4 * pulse);
     } else if (uAvatarState == STATE_SPEAKING) {
-        // Electric blue pulse
         float pulse = 0.5 + 0.5 * cos(time * 8.0 + vDisplacement * 25.0);
-        vec3 baseColor = vec3(0.125, 0.698, 0.667); // Roman Aqua #20B2AA
-        finalColor = baseColor * (0.8 + 0.4 * pulse);
+        stateColor = uColorSpeaking * (0.8 + 0.4 * pulse);
     } else if (uAvatarState == STATE_THINKING) {
-        // Subtle, slow purple pulse
         float pulse = 0.7 + 0.3 * sin(time * 1.5);
-        vec3 baseColor = vec3(0.416, 0.051, 0.804); // Imperial Purple #6A0DAD
-        finalColor = baseColor * pulse;
+        stateColor = uColorThinking * pulse;
     } else if (uAvatarState == STATE_TOOL_CALL) {
-        // Bright yellow flash
         float flash = smoothstep(0.0, 0.5, sin(time * 20.0));
-        finalColor = vec3(1.0, 0.84, 0.0) * flash; // Gold/Yellow
+        stateColor = uColorToolCall * flash;
     } else if (uAvatarState == STATE_SECURITY_ALERT) {
-        // Urgent, pulsing red
         float pulse = 0.5 + 0.5 * sin(time * 10.0);
-        finalColor = vec3(0.8, 0.1, 0.1) * (0.5 + pulse * 0.5); // Red
+        stateColor = uColorSecurity * (0.5 + pulse * 0.5);
     } else {
-        // Fallback
-        finalColor = vec3(0.5);
+        stateColor = uColorIdle;
     }
 
-    gl_FragColor = vec4(finalColor, strength * 1.5);
+    gl_FragColor = vec4(stateColor, strength * 1.5);
   }
 `;

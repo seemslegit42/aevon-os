@@ -14,11 +14,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu"
 import { Button } from '@/components/ui/button';
 import { CaretDown } from 'phosphor-react';
+import { useAvatarPresetStore } from '@/stores/avatar-preset.store';
 
 const UserMenu: React.FC = () => {
+    const { presets, activePresetId, setActivePresetId } = useAvatarPresetStore();
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -39,6 +47,22 @@ const UserMenu: React.FC = () => {
               <DropdownMenuSeparator className="bg-border/30"/>
               <DropdownMenuItem className="font-body text-foreground hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Profile</DropdownMenuItem>
               <DropdownMenuItem className="font-body text-foreground hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Billing</DropdownMenuItem>
+              
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="font-body text-foreground hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">
+                    <span>Avatar Preset</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuRadioGroup value={activePresetId} onValueChange={(value) => setActivePresetId(value as any)}>
+                    {presets.map(preset => (
+                      <DropdownMenuRadioItem key={preset.id} value={preset.id}>
+                        {preset.name}
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+
               <DropdownMenuItem className="font-body text-foreground hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">Settings</DropdownMenuItem>
               <DropdownMenuSeparator className="bg-border/30"/>
               <DropdownMenuItem className="font-body text-destructive hover:!bg-destructive/10 focus:text-destructive-foreground focus:bg-destructive">Log out</DropdownMenuItem>
