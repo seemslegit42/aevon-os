@@ -1,23 +1,2 @@
-
-import type {NextConfig} from 'next';
-
-const nextConfig: NextConfig = {
-  transpilePackages: ['three'],
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'placehold.co',
-        port: '',
-        pathname: '/**',
-      },
-    ],
-  },
-  experimental: {
-    allowedDevOrigins: [
-      'https://6000-firebase-studio-1750373577120.cluster-3ch54x2epbcnetrm6ivbqqebjk.cloudworkstations.dev',
-    ],
-  },
-};
-
-export default nextConfig;
+// This file is deprecated and has been replaced by next.config.js.
+// The build process in this environment does not support '.ts' for Next.js configuration.
