@@ -6,7 +6,7 @@ import { useLayoutStore } from '@/stores/layout.store';
 export function useBeepChat() {
     const { messages, append, isLoading, setMessages, lastMessage } = useChat({
     api: '/api/ai/chat',
-    onToolCall: async (toolCalls) => {
+    async onToolCall(toolCalls) {
       // Get the layout store actions *once* for this batch of tool calls.
       const layoutActions = useLayoutStore.getState();
 

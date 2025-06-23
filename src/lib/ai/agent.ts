@@ -27,8 +27,9 @@ import type { LayoutItem } from '@/types/dashboard';
 // =================================================================
 export interface AgentState extends MessagesState {
   layout: LayoutItem[];
-  task?: 'analyze_text' | 'ui_operation' | 'knowledge_search' | 'data_query';
-  data?: any;
+  data?: {
+    text?: string;
+  };
 }
 
 // =================================================================
@@ -134,8 +135,24 @@ const logAndAlertAegisTool = new DynamicTool({
     },
 });
 
+// A special tool to signal the start of a complex workflow.
+// The agent calls this, and our graph router intercepts it to start the sub-graph.
+const startAnalysisWorkflowTool = new DynamicTool({
+    name: 'startAnalysisWorkflow',
+    description: 'A special tool to trigger a multi-step analysis workflow on a given piece of text.',
+    schema: z.object({
+        text: z.string().describe("The user-provided text to be analyzed by the workflow."),
+    }),
+    func: async () => {
+        // This tool is for routing only. The graph intercepts it.
+        // It doesn't perform a server-side action itself.
+        return "Workflow started. Categorizing text...";
+    }
+});
+
+
 // =================================================================
-// CLIENT-SIDE UI MANIPULATION TOOLS
+// CLIENT-SIDE UI MANIPULATION TOOLS (placeholders for the server)
 // =================================================================
 const staticItemIds = [...ALL_CARD_CONFIGS.map((p) => p.id), ...ALL_MICRO_APPS.map((a) => a.id)];
 const focusItemTool = new DynamicTool({ name: 'focusItem', description: "Brings a specific window into focus on the user's canvas.", schema: z.object({ instanceId: z.string() }), func: async () => JSON.stringify({ success: true, message: "Focusing item." }) });
@@ -149,7 +166,7 @@ const resetLayoutTool = new DynamicTool({ name: 'resetLayout', description: 'Res
 // AGENT SETUP
 // =================================================================
 const serverTools = [ getSalesMetricsTool, getSubscriptionStatusTool, searchKnowledgeBaseTool, logAndAlertAegisTool, categorizeTextTool, extractInvoiceDataTool ];
-const allTools = [ ...serverTools, focusItemTool, addItemTool, moveItemTool, removeItemTool, resetLayoutTool, closeAllInstancesOfAppTool ];
+const allTools = [ ...serverTools, startAnalysisWorkflowTool, focusItemTool, addItemTool, moveItemTool, removeItemTool, resetLayoutTool, closeAllInstancesOfAppTool ];
 const toolNode = new ToolNode(serverTools);
 
 const model = new ChatGoogleGenerativeAI({
@@ -180,12 +197,11 @@ ${ALL_CARD_CONFIGS.map(p => `- ${p.title} (id: ${p.id})`).join('\n')}
 Available Micro-Apps:
 ${ALL_MICRO_APPS.map(a => `- ${a.title} (id: ${a.id})`).join('\n')}
 ---
-**RULES FOR UI MANIPULATION**
-1.  Check open windows before acting.
-2.  Use 'instanceId' for open windows, 'id' for new items.
-3.  If a user asks to perform an action on text (e.g. "analyze this", "process this invoice"), DO NOT call the tools like \`categorizeText\` yourself. Instead, your ONLY action should be to respond with a single tool call to a special tool named \`startAnalysisWorkflow\` with the user's text as the argument. This will trigger a managed, multi-step workflow.
-4.  For all other tasks (UI manipulation, knowledge search, data queries), you can call the other tools as needed.
-5.  After calling a UI tool, also generate a brief, confirmatory message for the user. E.g., "Done. I've added the Loom Studio." You can generate text and call tools in the same turn.
+**PRIMARY DIRECTIVE**
+1.  First, analyze the user's request to determine the main task.
+2.  If the user wants you to analyze, process, or understand a piece of text (e.g., "analyze this," "process this invoice"), your ONLY action must be to call the \`startAnalysisWorkflow\` tool with the user's text. This triggers a specialized, multi-step workflow. Do not call any other tools in this case.
+3.  For all other requests (UI manipulation, knowledge searches, data queries), you can call the other available tools as needed.
+4.  After calling a UI tool, also generate a brief, confirmatory message for the user. E.g., "Done. I've added the Loom Studio." You can generate text and call tools in the same turn.
 `;
 }
 
@@ -202,9 +218,9 @@ const callModelNode = async (state: AgentState) => {
 
 const callCategorizeNode = async (state: AgentState) => {
   const { data } = state;
-  const toolCall: any = await categorizeTextTool.invoke({ text: data.text });
+  const toolCallResult = await categorizeTextTool.invoke({ text: data?.text });
   const toolMessage = new ToolMessage({
-    content: toolCall,
+    content: toolCallResult,
     tool_call_id: 'categorize_text_call',
     name: 'categorizeText'
   });
@@ -213,9 +229,9 @@ const callCategorizeNode = async (state: AgentState) => {
 
 const callExtractionNode = async (state: AgentState) => {
   const { data } = state;
-  const toolCall: any = await extractInvoiceDataTool.invoke({ text: data.text });
+  const toolCallResult = await extractInvoiceDataTool.invoke({ text: data?.text });
   const toolMessage = new ToolMessage({
-    content: toolCall,
+    content: toolCallResult,
     tool_call_id: 'extract_invoice_data_call',
     name: 'extractInvoiceData'
   });
@@ -228,8 +244,15 @@ const callFinalizeNode = async (state: AgentState) => {
   const summary = `Finalized workflow. Last message content: ${lastMessage.content}`;
   await logAndAlertAegisTool.invoke({ analysisSummary: summary });
 
+  let parsedContent;
+  try {
+      parsedContent = JSON.parse(lastMessage.content as string);
+  } catch {
+      parsedContent = { summary: lastMessage.content };
+  }
+
   const finalResponse = new AIMessage({
-    content: `Workflow complete. I've logged the results. Summary: ${JSON.parse(lastMessage.content as string).summary}`
+    content: `Workflow complete. I've logged the results. Summary: ${parsedContent.summary}`
   });
   return { messages: [finalResponse] };
 };
@@ -238,12 +261,16 @@ const callFinalizeNode = async (state: AgentState) => {
 // AGENT GRAPH ROUTING LOGIC
 // =================================================================
 
-const shouldInvokeToolsRouter = (state: AgentState): 'tools' | '__end__' => {
+const shouldInvokeToolsRouter = (state: AgentState): 'tools' | 'categorize' | '__end__' => {
   const { messages } = state;
   const lastMessage = messages[messages.length - 1] as AIMessage;
+  
+  if (!lastMessage.tool_calls || lastMessage.tool_calls.length === 0) {
+    return '__end__';
+  }
 
-  // The model can call a special tool 'startAnalysisWorkflow' to trigger our graph.
-  if (lastMessage.tool_calls?.some(tc => tc.name === 'startAnalysisWorkflow')) {
+  // Check if the special workflow tool was called
+  if (lastMessage.tool_calls.some(tc => tc.name === 'startAnalysisWorkflow')) {
       const textToAnalyze = lastMessage.tool_calls.find(tc => tc.name === 'startAnalysisWorkflow')?.args.text;
       // We don't actually execute this tool. We use it as a signal to start our graph.
       // We manually add its result so the agent knows it was "called".
@@ -258,10 +285,6 @@ const shouldInvokeToolsRouter = (state: AgentState): 'tools' | '__end__' => {
       return 'categorize';
   }
 
-  if (!lastMessage.tool_calls || lastMessage.tool_calls.length === 0) {
-    return '__end__';
-  }
-  
   const hasServerToolCall = lastMessage.tool_calls.some(call => 
     serverTools.some(tool => tool.name === call.name)
   );
@@ -291,10 +314,6 @@ const workflow = new StateGraph<AgentState>({
         layout: {
             value: (x, y) => y ?? x,
             default: () => []
-        },
-        task: {
-            value: (x,y) => y ?? x,
-            default: () => undefined
         },
         data: {
             value: (x,y) => y ?? x,
