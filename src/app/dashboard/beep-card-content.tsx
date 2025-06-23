@@ -38,7 +38,9 @@ const BeepCardContent: React.FC = () => {
   }, [toast, audioContext]);
 
   useEffect(() => {
-    initializeAudio();
+    // Initialize audio context on user interaction to comply with browser policies
+    document.addEventListener('click', initializeAudio, { once: true });
+    return () => document.removeEventListener('click', initializeAudio);
   }, [initializeAudio]);
   
   const { messages, append, isLoading, lastMessage } = useBeepChat();
@@ -84,7 +86,7 @@ const BeepCardContent: React.FC = () => {
             onMouseUp={stopRecording}
             onTouchStart={startRecording}
             onTouchEnd={stopRecording}
-            disabled={isProcessing}
+            disabled={isProcessing || !inputNode} // Disable if audio is not ready
             className={cn(
               "h-12 w-32 rounded-full transition-all duration-200 ease-in-out shadow-2xl text-base font-semibold",
               isRecording ? "bg-destructive scale-105" : "btn-gradient-primary-accent",
@@ -148,7 +150,7 @@ const BeepCardContent: React.FC = () => {
                     animate={{ opacity: 1 }}
                     className="flex-grow flex h-full items-center justify-center text-muted-foreground text-center"
                 >
-                    <p className="text-sm p-4">Hold the button to talk to BEEP.</p>
+                    <p className="text-sm p-4">Click "Talk to BEEP" to initialize audio, then hold to speak.</p>
                 </motion.div>
               )}
                {isLoading && lastMessage?.role === 'user' && (

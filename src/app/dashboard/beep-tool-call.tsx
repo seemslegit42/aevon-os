@@ -8,7 +8,7 @@ import {
 } from 'phosphor-react';
 import { cn } from '@/lib/utils';
 import type { IconProps } from '@/types/icon';
-import { TextCategorySchema, InvoiceDataSchema, KnowledgeBaseSearchResultSchema, SalesMetricsSchema, SubscriptionStatusSchema } from '@/lib/ai-schemas';
+import { KnowledgeBaseSearchResultSchema, SalesMetricsSchema, SubscriptionStatusSchema } from '@/lib/ai-schemas';
 
 const toolIcons: Record<string, React.ElementType<IconProps>> = {
   focusItem: Eye,
@@ -16,14 +16,15 @@ const toolIcons: Record<string, React.ElementType<IconProps>> = {
   moveItem: ArrowClockwise, 
   removeItem: Trash,
   resetLayout: ArrowClockwise,
-  categorizeText: Gear,
-  extractInvoiceData: Gear,
   default: Gear,
   closeAllInstancesOfApp: Trash,
-  logAndAlertAegis: CheckCircle,
+  analyzeSecurityAlert: CheckCircle,
   searchKnowledgeBase: File, 
   getSalesMetrics: ChartBar, 
   getSubscriptionStatus: CreditCard,
+  generateMarketingContent: Gear,
+  generateWorkspaceInsights: Gear,
+  summarizeWebpage: File,
 };
 
 const toolFriendlyNames: Record<string, string> = {
@@ -32,13 +33,14 @@ const toolFriendlyNames: Record<string, string> = {
   moveItem: 'Move Item',
   removeItem: 'Remove Item',
   resetLayout: 'Reset Layout',
-  categorizeText: 'Categorize Text',
-  extractInvoiceData: 'Extract Invoice Data',
   closeAllInstancesOfApp: 'Close All',
-  logAndAlertAegis: 'Log Event',
+  analyzeSecurityAlert: 'Analyze Security Alert',
   searchKnowledgeBase: 'Search Knowledge Base',
   getSalesMetrics: 'Get Sales Metrics',
   getSubscriptionStatus: 'Get Subscription Status',
+  generateMarketingContent: 'Generate Content',
+  generateWorkspaceInsights: 'Generate Insights',
+  summarizeWebpage: 'Summarize Webpage',
 };
 
 
@@ -49,26 +51,6 @@ const toolFriendlyNames: Record<string, string> = {
 const ToolResultContent: React.FC<{ toolName: string; result: any }> = ({ toolName, result }) => {
   try {
     switch (toolName) {
-      case 'categorizeText': {
-        const { category, isMatch } = TextCategorySchema.parse(result);
-        return (
-          <div className="text-foreground font-sans text-xs space-y-1">
-            <p><strong>Category:</strong> {category}</p>
-            <p><strong>Is Match:</strong> {isMatch ? 'Yes' : 'No'}</p>
-          </div>
-        );
-      }
-      case 'extractInvoiceData': {
-        const data = InvoiceDataSchema.parse(result);
-        return (
-          <div className="text-foreground font-sans text-xs space-y-1">
-            {data.invoiceNumber && <p><strong>Invoice #:</strong> {data.invoiceNumber}</p>}
-            {data.amount && <p><strong>Amount:</strong> ${data.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>}
-            {data.dueDate && <p><strong>Due Date:</strong> {data.dueDate}</p>}
-            {data.summary && <p className="pt-1 italic text-muted-foreground">{data.summary}</p>}
-          </div>
-        );
-      }
       case 'searchKnowledgeBase': {
           const { answer } = KnowledgeBaseSearchResultSchema.parse(result);
            return (
@@ -162,7 +144,7 @@ const BeepToolCallDisplay: React.FC<BeepToolCallDisplayProps> = ({ toolCall, all
             return <code>Arguments: {JSON.stringify(args, null, 2)}</code>
         }
         if (isError) {
-            return <code>Details: {result?.error || 'An unknown error occurred.'}</code>;
+            return <code>Details: {result?.error || result?.message || 'An unknown error occurred.'}</code>;
         }
         if (result) {
             // For client-side tools with a predefined message

@@ -26,6 +26,8 @@ export function BeepChatProvider() {
       let status: 'success' | 'failure' = 'success';
       let details = result.message;
 
+      // This handler only executes client-side UI manipulation tools.
+      // Server-side tools are filtered out by the agent and handled on the backend.
       try {
         switch (toolName) {
             case 'focusItem':
@@ -45,22 +47,23 @@ export function BeepChatProvider() {
                 details = `Resetting dashboard layout.`;
                 break;
             default:
-                // This case should ideally not be hit if the agent is configured correctly
-                // to only send client-side tools to the client. This tool call will be passed
-                // back to the agent to be handled on the server.
+                // If the tool is not a known client-side tool, we skip it.
+                // It will be sent back to the server for processing in the next turn.
                 continue;
         }
         result = { success: true, message: details };
 
       } catch (error: any) {
-        result = { error: error.message };
+        result = { error: true, message: error.message };
         status = 'failure';
         details = error.message;
         toast({ variant: 'destructive', title: `UI Action Failed: ${toolName}`, description: details });
       }
-
-      eventBus.emit('orchestration:log', { task: `BEEP: ${toolName}`, status, details });
       
+      // Log the execution of the client-side tool
+      eventBus.emit('orchestration:log', { task: `BEEP UI: ${toolName}`, status, details });
+      
+      // Add the result of the tool call to the chat history
       chatMessages.push({
         role: 'tool',
         content: JSON.stringify(result),
@@ -68,6 +71,7 @@ export function BeepChatProvider() {
       });
     }
     
+    // Return the updated messages, including tool results
     return chatMessages;
   };
 
@@ -87,18 +91,21 @@ export function BeepChatProvider() {
     api: '/api/ai/chat',
     experimental_onToolCall: handleToolCall,
     onFinish: (message) => {
-        if (message.role === 'assistant' && message.content && !message.tool_calls) {
+        // When the AI finishes generating a response, if it's a simple text response
+        // (not a tool call), emit an event for the TTS hook to pick up.
+        if (message.role === 'assistant' && message.content && !message.tool_calls?.length) {
             const plainTextContent = message.content.replace(/`+/g, '');
             eventBus.emit('beep:response', plainTextContent);
         }
     }
   });
   
-  // Custom append function that always includes the latest layout context
+  // Create a custom 'append' function that always includes the latest layout context.
+  // This makes the agent context-aware of the UI state.
   const appendWithContext = async (message: Message) => {
     const currentLayout = useLayoutStore.getState().layoutItems;
     return originalAppend(message, {
-      options: { body: { layout: currentLayout } }
+      options: { body: { layoutItems: currentLayout } }
     });
   };
 
@@ -120,7 +127,7 @@ export function BeepChatProvider() {
   }, [
     messages, error, isLoading, input, setInput,
     handleInputChange, handleSubmit, setMessages,
-    reload, stop
+    reload, stop, appendWithContext
   ]);
 
   return null; // This component does not render anything
