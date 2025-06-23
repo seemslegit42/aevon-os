@@ -1,7 +1,7 @@
 
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { Message, ToolCall } from 'ai';
 import { 
     Eye, PlusCircle, Trash, ArrowClockwise, Gear, CheckCircle, Warning, GearSix, File, ChartBar, CreditCard 
@@ -9,6 +9,7 @@ import {
 import { cn } from '@/lib/utils';
 import type { IconProps } from '@/types/icon';
 import { KnowledgeBaseSearchResultSchema, SalesMetricsSchema, SubscriptionStatusSchema } from '@/lib/ai-schemas';
+import { useAvatarTelemetry } from '@/hooks/use-avatar-telemetry';
 
 const toolIcons: Record<string, React.ElementType<IconProps>> = {
   focusItem: Eye,
@@ -111,6 +112,7 @@ interface BeepToolCallDisplayProps {
 
 const BeepToolCallDisplay: React.FC<BeepToolCallDisplayProps> = ({ toolCall, allMessages }) => {
     const { toolName, args, toolCallId } = toolCall;
+    const { logEvent } = useAvatarTelemetry();
 
     // Find the corresponding tool result message in the chat history
     const resultMessage = allMessages.find(msg => msg.role === 'tool' && msg.tool_call_id === toolCallId);
@@ -131,6 +133,22 @@ const BeepToolCallDisplay: React.FC<BeepToolCallDisplayProps> = ({ toolCall, all
     const isError = result && (result.error || result.success === false);
     const friendlyName = toolFriendlyNames[toolName] || toolName;
     const Icon = toolIcons[toolName] || toolIcons.default;
+    
+    useEffect(() => {
+        logEvent('toolExecution', {
+          emotionSignature: 'tool:started',
+          metadata: { toolName, toolCallId, args: JSON.stringify(args) }
+        });
+    }, [logEvent, toolName, toolCallId, args]);
+    
+    useEffect(() => {
+        if (!isLoading) {
+            logEvent('toolExecution', {
+                emotionSignature: isError ? 'tool:error' : 'tool:success',
+                metadata: { toolName, toolCallId, result: JSON.stringify(result) }
+            });
+        }
+    }, [isLoading, isError, logEvent, toolName, toolCallId, result]);
 
 
     const getTitle = () => {

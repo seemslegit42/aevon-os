@@ -1,13 +1,33 @@
 
 import { useRef, useCallback, useEffect, useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
+import { useAvatarTelemetry } from './use-avatar-telemetry';
+import type { AvatarState } from '@/app/dashboard/beep-card-content';
 
 interface UseTTSProps {
   outputNode?: GainNode | null;
 }
 
+// This utility function is a simplified version of the one in the TTS API route.
+// It helps predict the emotion on the client-side for immediate logging.
+function getEmotionFromTextForLogging(text: string): AvatarState {
+    const lowerText = text.toLowerCase();
+    if (lowerText.includes('security alert') || lowerText.includes('threat detected')) {
+        return 'security_alert';
+    }
+    if (lowerText.startsWith('analyzing') || lowerText.startsWith('generating insights')) {
+        return 'thinking';
+    }
+    if (lowerText.startsWith('done.') || lowerText.startsWith('okay, i have') || lowerText.startsWith('alright,')) {
+        return 'tool_call';
+    }
+    return 'speaking'; // Neutral/default state
+}
+
+
 export function useTTS({ outputNode }: UseTTSProps) {
   const { toast } = useToast();
+  const { logEvent } = useAvatarTelemetry();
   const [isSpeaking, setIsSpeaking] = useState(false);
   const ttsSourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
   const localAudioContextRef = useRef<AudioContext | null>(null);
@@ -48,6 +68,13 @@ export function useTTS({ outputNode }: UseTTSProps) {
     if (audioContext.state === 'suspended') {
       await audioContext.resume();
     }
+    
+    // Log the intended emotion before making the API call
+    const predictedEmotion = getEmotionFromTextForLogging(text);
+    logEvent('ttsEmotionSet', {
+      emotionSignature: predictedEmotion,
+      metadata: { details: `Requesting TTS with predicted tone: ${predictedEmotion}` }
+    });
 
     setIsSpeaking(true);
     try {
@@ -85,7 +112,7 @@ export function useTTS({ outputNode }: UseTTSProps) {
       toast({ variant: "destructive", title: "Audio Error", description: errorMessage });
       setIsSpeaking(false);
     }
-  }, [outputNode, toast, initializeLocalAudio]);
+  }, [outputNode, toast, initializeLocalAudio, logEvent]);
 
   return { playAudio, isSpeaking };
 }

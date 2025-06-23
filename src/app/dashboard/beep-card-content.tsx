@@ -14,12 +14,14 @@ import BeepToolCallDisplay from './beep-tool-call';
 import { motion, AnimatePresence } from 'framer-motion';
 import eventBus from '@/lib/event-bus';
 import { useBeepChatStore } from '@/stores/beep-chat.store';
+import { useAvatarTelemetry } from '@/hooks/use-avatar-telemetry';
 
 export type AvatarState = 'idle' | 'listening' | 'speaking' | 'thinking' | 'tool_call' | 'security_alert';
 
 const BeepCardContent: React.FC = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const { logEvent } = useAvatarTelemetry();
 
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [inputNode, setInputNode] = useState<GainNode | null>(null);
@@ -58,42 +60,54 @@ const BeepCardContent: React.FC = () => {
     },
     inputNode,
   });
-
-  const setTemporaryState = useCallback((state: AvatarState, duration: number) => {
+  
+  const setAndLogAvatarState = useCallback((state: AvatarState, metadata?: Record<string, any>) => {
     setAvatarState(state);
+    logEvent('avatarStateChange', { emotionSignature: state, metadata });
+  }, [setAvatarState, logEvent]);
+
+
+  const setTemporaryState = useCallback((state: AvatarState, duration: number, metadata?: Record<string, any>) => {
+    setAndLogAvatarState(state, metadata);
     if (stateTimeoutRef.current) clearTimeout(stateTimeoutRef.current);
     stateTimeoutRef.current = setTimeout(() => {
         // After timeout, revert to 'thinking' if still loading, otherwise 'idle'
-        setAvatarState(isLoading ? 'thinking' : 'idle');
+        const nextState = isLoading ? 'thinking' : 'idle';
+        setAndLogAvatarState(nextState);
     }, duration);
-  }, [isLoading, setAvatarState]);
+  }, [isLoading, setAndLogAvatarState]);
 
   useEffect(() => {
     // Determine avatar state based on component states
     if (stateTimeoutRef.current) return; // Don't override a temporary state
 
+    let newState: AvatarState;
     if (isRecording) {
-      setAvatarState('listening');
+      newState = 'listening';
     } else if (isSpeaking) {
-      setAvatarState('speaking');
+      newState = 'speaking';
     } else if (isLoading || isTranscribing) {
-      setAvatarState('thinking');
+      newState = 'thinking';
     } else {
-      setAvatarState('idle');
+      newState = 'idle';
     }
-  }, [isRecording, isSpeaking, isLoading, isTranscribing, setAvatarState]);
+    
+    if (avatarState !== newState) {
+       setAndLogAvatarState(newState);
+    }
+  }, [isRecording, isSpeaking, isLoading, isTranscribing, setAndLogAvatarState, avatarState]);
 
   useEffect(() => {
       // Handle tool call visualization
       if (lastMessage?.role === 'assistant' && lastMessage.tool_calls) {
-          setTemporaryState('tool_call', 1500);
+          setTemporaryState('tool_call', 1500, { messageId: lastMessage.id });
       }
   }, [lastMessage, setTemporaryState]);
 
   useEffect(() => {
     // Handle security alerts from event bus
-    const handleSecurityAlert = () => {
-        setTemporaryState('security_alert', 5000);
+    const handleSecurityAlert = (details: string) => {
+        setTemporaryState('security_alert', 5000, { details });
     };
     eventBus.on('aegis:new-alert', handleSecurityAlert);
     return () => {
@@ -234,3 +248,4 @@ const BeepCardContent: React.FC = () => {
 };
 
 export default BeepCardContent;
+
