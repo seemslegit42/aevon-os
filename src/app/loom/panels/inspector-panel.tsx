@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import type { WorkflowNodeData, NodeStatus } from '@/app/dashboard/loom/workflow/workflow-node';
+import type { WorkflowNodeData, NodeStatus } from '@/app/loom/workflow/workflow-node';
 import { useState, useEffect } from 'react';
 import {
   Select,
