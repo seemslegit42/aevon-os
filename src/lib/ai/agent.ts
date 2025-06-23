@@ -13,6 +13,7 @@ import eventBus from '../event-bus';
 import * as SalesDataService from '@/services/sales-data.service';
 import * as BillingService from '@/services/billing.service';
 
+import { ALL_ITEM_IDS } from '@/config/dashboard-items.data';
 import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
 import type { LayoutItem } from '@/types/dashboard';
 import { 
@@ -186,10 +187,16 @@ const summarizeWebpageTool = createTool({
 });
 
 // --- Client-Side UI Manipulation Tools ---
-const staticItemIds = [...ALL_CARD_CONFIGS.map((p) => p.id), ...ALL_MICRO_APPS.map((a) => a.id)];
-
 const focusItemTool = createTool({ name: 'focusItem', description: "Brings a specific window into focus.", schema: z.object({ instanceId: z.string() }), func: async () => {}, isClientSide: true });
-const addItemTool = createTool({ name: 'addItem', description: 'Adds a new Panel or launches a new Micro-App.', schema: z.object({ itemId: z.string().enum(staticItemIds as [string, ...string[]]) }), func: async () => {}, isClientSide: true });
+const addItemTool = createTool({
+    name: 'addItem',
+    description: 'Adds a new Panel or launches a new Micro-App.',
+    schema: z.object({
+        itemId: z.string().enum(ALL_ITEM_IDS as [string, ...string[]]).describe("The unique ID of the card or micro-app to add to the dashboard.")
+    }),
+    func: async () => {},
+    isClientSide: true
+});
 const removeItemTool = createTool({ name: 'removeItem', description: "Closes a single, specific window.", schema: z.object({ instanceId: z.string() }), func: async () => {}, isClientSide: true });
 const resetLayoutTool = createTool({ name: 'resetLayout', description: 'Resets the entire dashboard layout to its default.', schema: z.object({}), func: async () => {}, isClientSide: true });
 
