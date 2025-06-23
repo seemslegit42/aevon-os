@@ -1,24 +1,23 @@
-
 // src/app/page.tsx
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { TopBar } from '@/components/dashboard/loom/layout/top-bar';
-import { BottomBar } from '@/components/dashboard/loom/layout/bottom-bar';
-import { CanvasZone } from '@/components/dashboard/loom/canvas/canvas-zone';
-import { PalettePanel } from '@/components/dashboard/loom/panels/palette-panel';
-import { InspectorPanel } from '@/components/dashboard/loom/panels/inspector-panel';
-import { TimelinePanel } from '@/components/dashboard/loom/panels/timeline-panel';
-import { ConsolePanel } from '@/components/dashboard/loom/panels/console-panel';
-import { AgentHubPanel } from '@/components/dashboard/loom/panels/agent-hub-panel';
-import { ActionConsolePanel } from '@/components/dashboard/loom/panels/action-console-panel';
-import { TemplateSelectorDialog } from '@/components/dashboard/loom/panels/template-selector-dialog';
-import type { WorkflowNodeData, NodeStatus, NodeType } from '@/components/dashboard/loom/workflow/workflow-node';
+import { TopBar } from '@/app/loom/layout/top-bar';
+import { BottomBar } from '@/app/loom/layout/bottom-bar';
+import { CanvasZone } from '@/app/loom/canvas/canvas-zone';
+import { PalettePanel } from '@/app/loom/panels/palette-panel';
+import { InspectorPanel } from '@/app/loom/panels/inspector-panel';
+import { TimelinePanel } from '@/app/loom/panels/timeline-panel';
+import { ConsolePanel } from '@/app/loom/panels/console-panel';
+import { AgentHubPanel } from '@/app/loom/panels/agent-hub-panel';
+import { ActionConsolePanel } from '@/app/loom/panels/action-console-panel';
+import { TemplateSelectorDialog } from '@/app/loom/panels/template-selector-dialog';
+import type { WorkflowNodeData, NodeStatus, NodeType } from '@/app/loom/workflow/workflow-node';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/hooks/use-toast';
 import { generateNodeId } from '@/lib/utils';
-import { ResizableHorizontalPanes } from '@/components/dashboard/loom/layout/resizable-horizontal-panes';
-import { ResizableVerticalPanes } from '@/components/dashboard/loom/layout/resizable-vertical-panes';
+import { ResizableHorizontalPanes } from '@/app/loom/layout/resizable-horizontal-panes';
+import { ResizableVerticalPanes } from '@/app/loom/layout/resizable-vertical-panes';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { useBeepChat } from '@/hooks/use-beep-chat';
 import eventBus from '@/lib/event-bus';

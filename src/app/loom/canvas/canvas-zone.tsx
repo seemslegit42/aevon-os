@@ -1,7 +1,6 @@
-
 // src/components/canvas/canvas-zone.tsx
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { WorkflowNode, type WorkflowNodeData, type NodeType, type NodeStatus } from '@/components/dashboard/loom/workflow/workflow-node';
+import { WorkflowNode, type WorkflowNodeData, type NodeType, type NodeStatus } from '@/app/loom/workflow/workflow-node';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sparkles, MousePointer2 } from 'lucide-react'; 
 import { cn } from '@/lib/utils';

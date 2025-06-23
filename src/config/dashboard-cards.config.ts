@@ -4,11 +4,11 @@ import type { MicroAppRegistration } from '@/stores/micro-app.store';
 import type { LayoutItem, CardConfig } from '@/types/dashboard';
 
 // Lazy loaded card content components
-const BeepCardContent = lazy(() => import('@/components/dashboard/beep-card-content'));
-const LiveOrchestrationFeedCardContent = lazy(() => import('@/components/dashboard/live-orchestration-feed-card-content'));
-const MicroAppsCardContent = lazy(() => import('@/components/dashboard/micro-apps-card-content'));
-const AiInsightsCardContent = lazy(() => import('@/components/dashboard/ai-insights-card-content'));
-const AgentPresenceCardContent = lazy(() => import('@/components/dashboard/agent-presence-card-content'));
+const BeepCardContent = lazy(() => import('@/app/dashboard/beep-card-content'));
+const LiveOrchestrationFeedCardContent = lazy(() => import('@/app/dashboard/live-orchestration-feed-card-content'));
+const MicroAppsCardContent = lazy(() => import('@/app/dashboard/micro-apps-card-content'));
+const AiInsightsCardContent = lazy(() => import('@/app/dashboard/ai-insights-card-content'));
+const AgentPresenceCardContent = lazy(() => import('@/app/dashboard/agent-presence-card-content'));
 
 // Icons from Phosphor React
 import {
@@ -62,7 +62,7 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     title: 'Accounting',
     description: 'A full-featured accounting suite for managing ledgers, invoices, payroll, and taxes.',
     icon: Calculator,
-    component: lazy(() => import('@/components/dashboard/micro-apps/accounting-app')),
+    component: lazy(() => import('@/app/dashboard/micro-apps/accounting-app')),
     permissions: ['accounting:full-access'],
     tags: ['finance', 'accounting', 'business'],
     defaultSize: { width: 700, height: 520 },
@@ -72,7 +72,7 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     title: 'Sales Analytics',
     description: 'Detailed sales analytics and trends.',
     icon: ChartBar,
-    component: lazy(() => import('@/components/dashboard/micro-apps/sales-analytics-app')),
+    component: lazy(() => import('@/app/dashboard/micro-apps/sales-analytics-app')),
     permissions: ['sales:view', 'analytics:read'],
     tags: ['analytics', 'sales'],
     defaultSize: { width: 500, height: 600 },
@@ -82,7 +82,7 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     title: 'Content Creator',
     description: 'AI-powered assistant to generate marketing copy, blog posts, and more.',
     icon: PencilSimple,
-    component: lazy(() => import('@/components/dashboard/micro-apps/content-creator-app')),
+    component: lazy(() => import('@/app/dashboard/micro-apps/content-creator-app')),
     permissions: [], // No special permissions needed
     tags: ['ai', 'writing', 'marketing'],
     defaultSize: { width: 750, height: 450 },
@@ -92,7 +92,7 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     title: 'Armory Subscriptions',
     description: 'View and manage your AEVON OS subscription plan.',
     icon: CreditCard,
-    component: lazy(() => import('@/components/dashboard/micro-apps/armory-subscriptions-app')),
+    component: lazy(() => import('@/app/dashboard/micro-apps/armory-subscriptions-app')),
     permissions: [],
     tags: ['billing', 'account'],
     defaultSize: { width: 400, height: 420 },

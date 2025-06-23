@@ -2,7 +2,7 @@
 "use client";
 
 import React from 'react';
-import { ScrollArea } from '../ui/scroll-area';
+import { ScrollArea } from '../../components/ui/scroll-area';
 import { useMicroApps } from '@/hooks/use-micro-apps';
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppLauncherIcon } from './app-launcher-icon';

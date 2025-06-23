@@ -1,5 +1,4 @@
-
-import type { WorkflowNodeData, NodeType } from "@/components/dashboard/loom/workflow/workflow-node";
+import type { WorkflowNodeData, NodeType } from "@/app/loom/workflow/workflow-node";
 
 export interface PanelVisibility {
   palette: boolean;
