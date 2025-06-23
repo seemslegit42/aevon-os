@@ -16,7 +16,7 @@ export interface WorkflowNodeData {
     modelName?: string;
     transformationLogic?: string;
     condition?: string;
-    output?: BackendSummarizeOutput | BackendExecutePromptOutput | Record<string, any>; 
+    output?: WebSummarizerResult | Record<string, any>; 
     [key: string]: any;
   };
 }
@@ -41,18 +41,6 @@ export interface AiGeneratedFlowData {
   nodes: WorkflowNodeData[];
   error?: boolean;
   userInput?: string;
-  swarmId?: string;
-}
-
-export interface BackendSummarizeOutput {
-  summary?: string;
-  originalUrl: string;
-  error?: string;
-  logs?: string[];
-}
-export interface BackendExecutePromptOutput {
-  responseText?: string;
-  error?: string;
 }
 
 export interface ActionRequest {
@@ -107,4 +95,10 @@ export interface Connection {
     id: string;
     from: string; // fromNodeId
     to: string;   // toNodeId
+}
+
+export interface WebSummarizerResult {
+  summary?: string;
+  originalUrl: string;
+  error?: string;
 }

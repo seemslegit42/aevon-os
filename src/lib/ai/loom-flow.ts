@@ -4,7 +4,7 @@
 import { google } from '@/lib/ai/groq';
 import { generateObject } from 'ai';
 import { z } from 'zod';
-import { AiGeneratedFlowDataSchema } from './ai-schemas';
+import { AiGeneratedFlowDataSchema } from '../ai-schemas';
 import type { AiGeneratedFlowData } from '@/types/loom';
 import { generateNodeId } from '../utils';
 
@@ -14,9 +14,6 @@ const LoomWorkflowInputSchema = z.object({
 
 /**
  * Generates a structured workflow for Loom Studio from a natural language prompt.
- * This function is a server action that can be called directly from client components.
- * @param input - An object containing the user's prompt.
- * @returns A promise that resolves to the generated workflow data.
  */
 export async function generateLoomWorkflow(
   input: z.infer<typeof LoomWorkflowInputSchema>
@@ -29,21 +26,22 @@ export async function generateLoomWorkflow(
 
             User request: "${input.prompt}"
 
-            Your task is to break down the request into a logical sequence of nodes. You must generate a 'workflowName' and an array of 'nodes'. Each node must have a 'title', a 'description', a 'type', and 'position' coordinates.
+            Your task is to break down the request into a logical sequence of nodes. You MUST generate a creative and relevant 'workflowName' and an array of 'nodes'. Each node must have a 'title', a 'description', a 'type', and 'position' coordinates.
 
             Available Node Types: 'prompt', 'decision', 'agent-call', 'wait', 'api-call', 'trigger', 'custom', 'web-summarizer', 'data-transform', 'conditional'.
 
-            - Use the 'decision' or 'conditional' type for branching logic.
-            - Use 'agent-call' for tasks requiring an autonomous agent.
-            - Use 'web-summarizer' for fetching and summarizing web content.
-            - Use 'prompt' for steps that require generating text with an LLM.
-            - Use 'data-transform' for manipulating data between steps.
-            - Lay out the nodes logically on the canvas. Start at around x: 50, y: 50 and increment x by about 300 for each subsequent node in a linear flow. For branching flows, use the y-coordinate to separate paths.
+            - Be creative with the workflow. If the user asks to "summarize a news article about AI", create a multi-step flow:
+              1. A 'web-summarizer' node to get the article content.
+              2. A 'prompt' node to re-format the summary into a tweet.
+              3. A 'conditional' node to decide if the sentiment is positive.
+              4. An 'agent-call' node to post the tweet if the sentiment is positive.
+            - Lay out the nodes logically on the canvas. Start at x: 50, y: 50. Increment x by about 300 for each subsequent node in a linear flow. For branching flows, use the y-coordinate to separate paths (e.g., y: 50 for the 'true' path, y: 250 for the 'false' path).
+            - Ensure descriptions are clear and concise.
+            - Do not generate more than 5 nodes unless the prompt is very complex.
 
             Generate the complete workflow structure now.`,
         });
 
-        // Post-process to ensure unique IDs, as the model might not generate them.
         const processedNodes = object.nodes.map((node, index) => ({
             ...node,
             id: generateNodeId(node.type, node.title, index),
