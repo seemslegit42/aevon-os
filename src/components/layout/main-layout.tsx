@@ -5,6 +5,7 @@ import React from 'react';
 import CanvasWrapper from './canvas-wrapper';
 import TopBar from './top-bar';
 import { BeepChatProvider } from '../beep-chat-provider';
+import FloatingBeepAvatar from '../floating-beep-avatar';
 
 type MainLayoutProps = {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <CanvasWrapper>
         {children}
       </CanvasWrapper>
+      <FloatingBeepAvatar />
     </div>
   );
 };

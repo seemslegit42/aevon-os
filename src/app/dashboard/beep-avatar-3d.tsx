@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useRef } from 'react';
@@ -9,7 +8,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { Analyser } from '@/lib/analyser';
 import { vs, fs } from '@/lib/shaders/beep-3d-sphere-vertex.glsl';
 import { cn } from '@/lib/utils';
-import type { AvatarState } from './beep-card-content';
+import type { AvatarState } from '@/types/dashboard';
 import { useAvatarPresetStore } from '@/stores/avatar-preset.store';
 
 interface BeepAvatar3DProps {

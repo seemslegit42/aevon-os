@@ -1,0 +1,145 @@
+"use client";
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { Rnd } from 'react-rnd';
+import { Button } from '@/components/ui/button';
+import { Mic } from 'phosphor-react';
+import { cn } from '@/lib/utils';
+import BeepAvatar3D from '@/app/dashboard/beep-avatar-3d';
+import { useToast } from "@/hooks/use-toast";
+import { useAudioRecorder } from '@/hooks/use-audio-recorder';
+import { useTTS } from '@/hooks/use-tts';
+import { useBeepChatStore } from '@/stores/beep-chat.store';
+import { useAvatarTelemetry } from '@/hooks/use-avatar-telemetry';
+import eventBus from '@/lib/event-bus';
+import type { AvatarState } from '@/types/dashboard';
+
+const FloatingBeepAvatar: React.FC = () => {
+  const { toast } = useToast();
+  const { logEvent } = useAvatarTelemetry();
+  
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [inputNode, setInputNode] = useState<GainNode | null>(null);
+  const [outputNode, setOutputNode] = useState<GainNode | null>(null);
+  const stateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Get state and actions from the global store
+  const { avatarState, setAvatarState, append, isLoading, lastMessage } = useBeepChatStore();
+  const isProcessing = useBeepChatStore(state => state.isLoading);
+
+  const initializeAudio = useCallback(() => {
+    if (audioContext) return;
+    try {
+        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+        const context = new AudioContext();
+        setAudioContext(context);
+        const inputGain = context.createGain();
+        const outputGain = context.createGain();
+        outputGain.connect(context.destination);
+        setInputNode(inputGain);
+        setOutputNode(outputGain);
+    } catch (e) {
+        toast({ variant: "destructive", title: "Audio Error", description: "Browser does not support Web Audio API." });
+    }
+  }, [toast, audioContext]);
+
+  useEffect(() => {
+    document.addEventListener('click', initializeAudio, { once: true });
+    return () => document.removeEventListener('click', initializeAudio);
+  }, [initializeAudio]);
+
+  const { playAudio, isSpeaking } = useTTS({ outputNode });
+  const { isRecording, isTranscribing, startRecording, stopRecording } = useAudioRecorder({ 
+    onTranscriptionComplete: (text) => {
+      append({ role: 'user', content: text });
+    },
+    inputNode,
+  });
+  
+  const setAndLogAvatarState = useCallback((state: AvatarState, metadata?: Record<string, any>) => {
+    setAvatarState(state);
+    logEvent('avatarStateChange', { emotionSignature: state, metadata });
+  }, [setAvatarState, logEvent]);
+
+  const setTemporaryState = useCallback((state: AvatarState, duration: number, metadata?: Record<string, any>) => {
+    setAndLogAvatarState(state, metadata);
+    if (stateTimeoutRef.current) clearTimeout(stateTimeoutRef.current);
+    stateTimeoutRef.current = setTimeout(() => {
+        const nextState = isLoading ? 'thinking' : 'idle';
+        setAndLogAvatarState(nextState);
+    }, duration);
+  }, [isLoading, setAndLogAvatarState]);
+
+  useEffect(() => {
+    if (stateTimeoutRef.current) return;
+    let newState: AvatarState;
+    if (isRecording) newState = 'listening';
+    else if (isSpeaking) newState = 'speaking';
+    else if (isLoading || isTranscribing) newState = 'thinking';
+    else newState = 'idle';
+    if (avatarState !== newState) setAndLogAvatarState(newState);
+  }, [isRecording, isSpeaking, isLoading, isTranscribing, setAndLogAvatarState, avatarState]);
+
+  useEffect(() => {
+      if (lastMessage?.role === 'assistant' && lastMessage.tool_calls) {
+          setTemporaryState('tool_call', 1500, { messageId: lastMessage.id });
+      }
+  }, [lastMessage, setTemporaryState]);
+  
+   useEffect(() => {
+    const handleSecurityAlert = (details: string) => {
+        setTemporaryState('security_alert', 5000, { details });
+    };
+    eventBus.on('aegis:new-alert', handleSecurityAlert);
+    return () => {
+        eventBus.off('aegis:new-alert', handleSecurityAlert);
+        if (stateTimeoutRef.current) clearTimeout(stateTimeoutRef.current);
+    };
+  }, [setTemporaryState]);
+
+  useEffect(() => {
+    if (lastMessage?.role === 'assistant' && lastMessage.content && !isLoading && !lastMessage.tool_calls) {
+      const plainTextContent = lastMessage.content.replace(/`+/g, '');
+      playAudio(plainTextContent);
+    }
+  }, [lastMessage, isLoading, playAudio]);
+
+  return (
+    <Rnd
+      default={{
+        x: window.innerWidth - 220,
+        y: window.innerHeight - 220,
+        width: 180,
+        height: 180,
+      }}
+      bounds="window"
+      enableResizing={false}
+      className="z-[100] group"
+    >
+      <div className="relative w-full h-full rounded-full cursor-grab active:cursor-grabbing focus:outline-none">
+        <BeepAvatar3D
+          inputNode={inputNode}
+          outputNode={outputNode}
+          avatarState={avatarState}
+        />
+        <div className="absolute bottom-[-50px] left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300">
+           <Button
+              onMouseDown={startRecording}
+              onMouseUp={stopRecording}
+              onTouchStart={startRecording}
+              onTouchEnd={stopRecording}
+              disabled={isProcessing || !inputNode}
+              className={cn(
+                "h-14 w-14 rounded-full transition-all duration-200 ease-in-out shadow-2xl",
+                isRecording ? "bg-destructive scale-110" : "btn-gradient-primary-accent",
+                isProcessing && !isRecording ? "animate-pulse" : ""
+              )}
+          >
+            <Mic className="w-7 h-7"/>
+          </Button>
+        </div>
+      </div>
+    </Rnd>
+  );
+};
+
+export default FloatingBeepAvatar;

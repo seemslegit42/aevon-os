@@ -1,8 +1,7 @@
-
 import { useRef, useCallback, useEffect, useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useAvatarTelemetry } from './use-avatar-telemetry';
-import type { AvatarState } from '@/app/dashboard/beep-card-content';
+import type { AvatarState } from '@/types/dashboard';
 
 interface UseTTSProps {
   outputNode?: GainNode | null;

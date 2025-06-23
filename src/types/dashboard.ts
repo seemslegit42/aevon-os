@@ -1,4 +1,3 @@
-
 import type { ElementType, LazyExoticComponent } from 'react';
 
 export interface CardConfig {
@@ -29,3 +28,4 @@ export type LayoutItem = {
     appId?: string; // The ID from ALL_MICRO_APPS
 };
 
+export type AvatarState = 'idle' | 'listening' | 'speaking' | 'thinking' | 'tool_call' | 'security_alert';

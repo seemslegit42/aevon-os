@@ -1,251 +1,41 @@
-
 "use client";
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { User, Mic } from 'phosphor-react';
-import { cn } from '@/lib/utils';
-import BeepAvatar3D from './beep-avatar-3d';
-import { useToast } from "@/hooks/use-toast";
-import { useAudioRecorder } from '@/hooks/use-audio-recorder';
-import { useTTS } from '@/hooks/use-tts';
-import { useBeepChat } from '@/hooks/use-beep-chat';
-import BeepToolCallDisplay from './beep-tool-call';
-import { motion, AnimatePresence } from 'framer-motion';
-import eventBus from '@/lib/event-bus';
+import React, { useEffect, useRef } from 'react';
 import { useBeepChatStore } from '@/stores/beep-chat.store';
-import { useAvatarTelemetry } from '@/hooks/use-avatar-telemetry';
+import BeepChatHistory from '@/components/beep-chat-history';
 
-export type AvatarState = 'idle' | 'listening' | 'speaking' | 'thinking' | 'tool_call' | 'security_alert';
-
+/**
+ * This component now serves as a dedicated view for the BEEP chat history.
+ * The interactive avatar has been moved to a persistent, floating component.
+ */
 const BeepCardContent: React.FC = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
-  const { logEvent } = useAvatarTelemetry();
-
-  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-  const [inputNode, setInputNode] = useState<GainNode | null>(null);
-  const [outputNode, setOutputNode] = useState<GainNode | null>(null);
-  const stateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Get state and actions from the global store
-  const { avatarState, setAvatarState } = useBeepChatStore();
-  const { messages, append, isLoading, lastMessage } = useBeepChat();
-
-  const initializeAudio = useCallback(() => {
-    if (audioContext) return;
-    try {
-        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-        const context = new AudioContext();
-        setAudioContext(context);
-        const inputGain = context.createGain();
-        const outputGain = context.createGain();
-        outputGain.connect(context.destination);
-        setInputNode(inputGain);
-        setOutputNode(outputGain);
-    } catch (e) {
-        toast({ variant: "destructive", title: "Audio Error", description: "Browser does not support Web Audio API." });
-    }
-  }, [toast, audioContext]);
+  const messages = useBeepChatStore((state) => state.messages);
+  const isLoading = useBeepChatStore((state) => state.isLoading);
+  const isTranscribing = false; // This logic is now in the floating avatar
 
   useEffect(() => {
-    document.addEventListener('click', initializeAudio, { once: true });
-    return () => document.removeEventListener('click', initializeAudio);
-  }, [initializeAudio]);
-  
-  const { playAudio, isSpeaking } = useTTS({ outputNode });
-  const { isRecording, isTranscribing, startRecording, stopRecording } = useAudioRecorder({ 
-    onTranscriptionComplete: (text) => {
-      append({ role: 'user', content: text });
-    },
-    inputNode,
-  });
-  
-  const setAndLogAvatarState = useCallback((state: AvatarState, metadata?: Record<string, any>) => {
-    setAvatarState(state);
-    logEvent('avatarStateChange', { emotionSignature: state, metadata });
-  }, [setAvatarState, logEvent]);
-
-
-  const setTemporaryState = useCallback((state: AvatarState, duration: number, metadata?: Record<string, any>) => {
-    setAndLogAvatarState(state, metadata);
-    if (stateTimeoutRef.current) clearTimeout(stateTimeoutRef.current);
-    stateTimeoutRef.current = setTimeout(() => {
-        // After timeout, revert to 'thinking' if still loading, otherwise 'idle'
-        const nextState = isLoading ? 'thinking' : 'idle';
-        setAndLogAvatarState(nextState);
-    }, duration);
-  }, [isLoading, setAndLogAvatarState]);
-
-  useEffect(() => {
-    // Determine avatar state based on component states
-    if (stateTimeoutRef.current) return; // Don't override a temporary state
-
-    let newState: AvatarState;
-    if (isRecording) {
-      newState = 'listening';
-    } else if (isSpeaking) {
-      newState = 'speaking';
-    } else if (isLoading || isTranscribing) {
-      newState = 'thinking';
-    } else {
-      newState = 'idle';
-    }
-    
-    if (avatarState !== newState) {
-       setAndLogAvatarState(newState);
-    }
-  }, [isRecording, isSpeaking, isLoading, isTranscribing, setAndLogAvatarState, avatarState]);
-
-  useEffect(() => {
-      // Handle tool call visualization
-      if (lastMessage?.role === 'assistant' && lastMessage.tool_calls) {
-          setTemporaryState('tool_call', 1500, { messageId: lastMessage.id });
-      }
-  }, [lastMessage, setTemporaryState]);
-
-  useEffect(() => {
-    // Handle security alerts from event bus
-    const handleSecurityAlert = (details: string) => {
-        setTemporaryState('security_alert', 5000, { details });
-    };
-    eventBus.on('aegis:new-alert', handleSecurityAlert);
-    return () => {
-        eventBus.off('aegis:new-alert', handleSecurityAlert);
-        if (stateTimeoutRef.current) clearTimeout(stateTimeoutRef.current);
-    };
-  }, [setTemporaryState]);
-
-
-  useEffect(() => {
+    // Auto-scroll logic remains to keep the chat view up-to-date.
     if (scrollAreaRef.current) {
       const viewport = scrollAreaRef.current.querySelector('div');
       if (viewport) {
-         viewport.scrollTo({
-            top: viewport.scrollHeight,
-            behavior: 'smooth',
-          });
+        viewport.scrollTo({
+          top: viewport.scrollHeight,
+          behavior: 'smooth',
+        });
       }
     }
-    
-    if (lastMessage?.role === 'assistant' && lastMessage.content && !isLoading && !lastMessage.tool_calls) {
-      const plainTextContent = lastMessage.content.replace(/`+/g, '');
-      playAudio(plainTextContent);
-    }
-  }, [messages, isLoading, lastMessage, playAudio]);
-
-  const isProcessing = isLoading || isTranscribing;
+  }, [messages, isLoading]);
 
   return (
     <div className="h-full flex flex-col p-0 bg-background/20 overflow-hidden">
-      <div className="relative w-full aspect-video flex-shrink-0">
-          <BeepAvatar3D 
-              inputNode={inputNode} 
-              outputNode={outputNode}
-              avatarState={avatarState}
-          />
-      </div>
-      
-      <div className="flex-shrink-0 flex justify-center items-center py-3">
-         <Button
-            onMouseDown={startRecording}
-            onMouseUp={stopRecording}
-            onTouchStart={startRecording}
-            onTouchEnd={stopRecording}
-            disabled={isProcessing || !inputNode}
-            className={cn(
-              "h-12 w-32 rounded-full transition-all duration-200 ease-in-out shadow-2xl text-base font-semibold",
-              isRecording ? "bg-destructive scale-105" : "btn-gradient-primary-accent",
-              isProcessing && !isRecording ? "animate-pulse" : ""
-            )}
-          >
-            {isRecording ? <span className="flex items-center gap-2"><Mic /></span> : 'Talk to BEEP'}
-        </Button>
-      </div>
-
-      <div className="flex-grow min-h-0 px-2">
-        <ScrollArea className="h-full pr-2" ref={scrollAreaRef}>
-          <div className="space-y-4 pb-4">
-             <AnimatePresence>
-              {messages.length > 0 ? (
-                messages.map(m => {
-                  if (m.role === 'tool') return null;
-
-                  return (
-                    <motion.div
-                      key={m.id}
-                      layout
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.3 }}
-                      className="px-2"
-                    >
-                      {m.role === 'assistant' && m.tool_calls ? (
-                        <div className="space-y-2">
-                          {m.tool_calls.map(toolCall => (
-                            <BeepToolCallDisplay
-                              key={toolCall.toolCallId}
-                              toolCall={toolCall}
-                              allMessages={messages}
-                            />
-                          ))}
-                        </div>
-                      ) : (
-                        <div className={cn("flex items-start gap-3", m.role === 'user' ? 'justify-end' : '')}>
-                          {m.role === 'assistant' && (
-                            <div className="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0" />
-                          )}
-                          <div className={cn(
-                            "p-3 rounded-lg max-w-sm whitespace-pre-wrap text-sm shadow-md",
-                            m.role === 'user' 
-                              ? 'btn-gradient-primary-accent text-primary-foreground' 
-                              : 'glassmorphism-panel border-none bg-card/70 text-foreground'
-                          )}>
-                            {m.content}
-                          </div>
-                          {m.role === 'user' && <User className="w-5 h-5 text-primary flex-shrink-0 mt-1" />}
-                        </div>
-                      )}
-                    </motion.div>
-                  );
-                })
-              ) : (
-                <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="flex-grow flex h-full items-center justify-center text-muted-foreground text-center"
-                >
-                    <p className="text-sm p-4">This is BEEP, your AI co-pilot. Hold the button to speak, or type a command in the top bar to automate tasks, get insights, and manage your workspace.</p>
-                </motion.div>
-              )}
-               {isLoading && lastMessage?.role === 'user' && (
-                <motion.div 
-                    layout
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex items-start gap-3 px-2">
-                  <div className="w-6 h-6 rounded-full bg-primary/20 flex-shrink-0" />
-                  <div className="p-3 rounded-lg glassmorphism-panel border-none bg-card/70 text-foreground text-sm">...</div>
-                </motion.div>
-              )}
-             {isTranscribing && (
-               <motion.div 
-                    layout
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex items-start gap-3 justify-end px-2">
-                <div className="p-3 rounded-lg glassmorphism-panel border-none bg-card/70 text-foreground text-sm">... transcribing</div>
-                <User className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-              </motion.div>
-            )}
-            </AnimatePresence>
-          </div>
-        </ScrollArea>
-      </div>
+      <BeepChatHistory
+        scrollAreaRef={scrollAreaRef}
+        messages={messages}
+        isLoading={isLoading}
+        isTranscribing={isTranscribing}
+      />
     </div>
   );
 };
 
 export default BeepCardContent;
-

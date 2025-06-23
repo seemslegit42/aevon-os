@@ -105,10 +105,10 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
 export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'beep',
-    title: 'BEEP Interface',
+    title: 'BEEP Chat Log',
     icon: Robot,
     isDismissible: true,
-    description: "Natural language interface for tasking, automation, and information retrieval.",
+    description: "A persistent log of your conversation history with BEEP. The interactive avatar is always available at the bottom of your screen.",
     content: BeepCardContent,
     defaultLayout: { x: 20, y: 20, width: 380, height: 520 },
     minWidth: 300,

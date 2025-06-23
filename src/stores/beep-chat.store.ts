@@ -1,7 +1,6 @@
-
 import { create } from 'zustand';
 import type { Message } from 'ai';
-import type { AvatarState } from '@/app/dashboard/beep-card-content';
+import type { AvatarState } from '@/types/dashboard';
 
 // This mirrors the state provided by the Vercel useChat hook
 // and adds our custom avatarState
