@@ -125,17 +125,17 @@ export const fs = `
     } else if (uAvatarState == STATE_LISTENING) {
         // Vibrant green pulse
         float pulse = 0.5 + 0.5 * sin(time * 5.0 + vDisplacement * 20.0);
-        vec3 baseColor = vec3(0.4, 0.9, 0.2); // Patina Green
+        vec3 baseColor = vec3(0.243, 0.725, 0.569); // Patina Green #3EB991
         finalColor = baseColor * (0.8 + 0.4 * pulse);
     } else if (uAvatarState == STATE_SPEAKING) {
         // Electric blue pulse
         float pulse = 0.5 + 0.5 * cos(time * 8.0 + vDisplacement * 25.0);
-        vec3 baseColor = vec3(0.125, 0.698, 0.667); // Roman Aqua
+        vec3 baseColor = vec3(0.125, 0.698, 0.667); // Roman Aqua #20B2AA
         finalColor = baseColor * (0.8 + 0.4 * pulse);
     } else if (uAvatarState == STATE_THINKING) {
         // Subtle, slow purple pulse
         float pulse = 0.7 + 0.3 * sin(time * 1.5);
-        vec3 baseColor = vec3(0.415, 0.05, 0.804); // Imperial Purple
+        vec3 baseColor = vec3(0.416, 0.051, 0.804); // Imperial Purple #6A0DAD
         finalColor = baseColor * pulse;
     } else if (uAvatarState == STATE_TOOL_CALL) {
         // Bright yellow flash
@@ -144,7 +144,7 @@ export const fs = `
     } else if (uAvatarState == STATE_SECURITY_ALERT) {
         // Urgent, pulsing red
         float pulse = 0.5 + 0.5 * sin(time * 10.0);
-        finalColor = vec3(0.8, 0.1, 0.1) * pulse; // Red
+        finalColor = vec3(0.8, 0.1, 0.1) * (0.5 + pulse * 0.5); // Red
     } else {
         // Fallback
         finalColor = vec3(0.5);
