@@ -20,6 +20,7 @@ import { mainNavItems } from '@/config/dashboard-cards.config';
 import CommandBar from './command-bar';
 import UserMenu from './user-menu';
 import { ThemeToggle } from './theme-toggle';
+import { useBeepChatStore } from '@/stores/beep-chat.store';
 
 const TopBar: React.FC = () => {
   const [currentTime, setCurrentTime] = useState("--:--");
@@ -27,6 +28,7 @@ const TopBar: React.FC = () => {
   
   const { setOpen: setCommandPaletteOpen } = useCommandPaletteStore();
   const pathname = usePathname();
+  const avatarState = useBeepChatStore(state => state.avatarState);
   
   useEffect(() => {
     setIsMounted(true);
@@ -68,7 +70,10 @@ const TopBar: React.FC = () => {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <header className="topbar-aevos-glass-override flex items-center justify-between h-14 px-4">
+      <header 
+        className="topbar-aevos-glass-override flex items-center justify-between h-14 px-4"
+        data-avatar-state={avatarState}
+      >
         {/* Left Side: Branding */}
         <div className="flex items-center">
           <Link href="/" className="flex items-center">

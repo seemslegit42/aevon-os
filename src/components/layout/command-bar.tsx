@@ -7,11 +7,15 @@ import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { MagnifyingGlass, Brain } from 'phosphor-react';
 import eventBus from '@/lib/event-bus';
+import { useBeepChatStore } from '@/stores/beep-chat.store';
 
 const CommandBar: React.FC = () => {
     const [commandValue, setCommandValue] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [agentResponse, setAgentResponse] = useState<string | null>(null);
+
+    // Subscribe to avatarState from the global store
+    const avatarState = useBeepChatStore(state => state.avatarState);
 
     useEffect(() => {
         const handleAgentResponse = (response: string) => {
@@ -39,9 +43,20 @@ const CommandBar: React.FC = () => {
             }, 2000);
         }
     };
+    
+    // Map avatarState to a specific glow CSS class
+    const glowClass = {
+        'listening': 'command-bar-glow-listening',
+        'speaking': 'command-bar-glow-speaking',
+        'thinking': 'command-bar-glow-thinking',
+        'tool_call': 'command-bar-glow-tool_call',
+        'security_alert': 'command-bar-glow-security_alert',
+        'idle': '',
+    }[avatarState];
+
 
     return (
-        <div className="relative w-full max-w-md h-9">
+        <div className={cn("relative w-full max-w-md h-9 command-bar-container", glowClass)}>
             <AnimatePresence>
                 {agentResponse ? (
                     <motion.div

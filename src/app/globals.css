@@ -218,7 +218,32 @@
   box-shadow: 0 6px 20px 0 hsl(var(--primary) / 0.1) !important;
   font-family: 'Lexend', sans-serif !important;
   color: hsl(var(--foreground)) !important;
+  position: relative; /* For pseudo-element overlay */
 }
+
+/* State-driven background overlay for TopBar */
+.topbar-aevos-glass-override::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: var(--state-color, transparent);
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+.topbar-aevos-glass-override[data-avatar-state="listening"]::before,
+.topbar-aevos-glass-override[data-avatar-state="speaking"]::before,
+.topbar-aevos-glass-override[data-avatar-state="thinking"]::before,
+.topbar-aevos-glass-override[data-avatar-state="tool_call"]::before,
+.topbar-aevos-glass-override[data-avatar-state="security_alert"]::before {
+    opacity: 0.15;
+}
+.topbar-aevos-glass-override[data-avatar-state="listening"] { --state-color: hsl(var(--chart-4)); }
+.topbar-aevos-glass-override[data-avatar-state="speaking"] { --state-color: hsl(var(--chart-2)); }
+.topbar-aevos-glass-override[data-avatar-state="thinking"] { --state-color: hsl(var(--primary)); }
+.topbar-aevos-glass-override[data-avatar-state="tool_call"] { --state-color: hsl(var(--accent)); }
+.topbar-aevos-glass-override[data-avatar-state="security_alert"] { --state-color: hsl(var(--destructive)); }
+
 
 .command-bar-input-aevos-override {
   background-color: hsla(var(--muted), 0.2) !important;
@@ -431,3 +456,22 @@
   z-index: 1;
   filter: blur(10px);
 }
+
+/* Command Bar Glow Effect */
+@keyframes command-bar-pulse {
+  0% { box-shadow: 0 0 0 0px var(--glow-color); }
+  70% { box-shadow: 0 0 10px 4px var(--glow-color); }
+  100% { box-shadow: 0 0 0 0px var(--glow-color); }
+}
+
+.command-bar-container {
+    --glow-color: transparent;
+    border-radius: var(--radius);
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.command-bar-glow-listening { --glow-color: hsl(var(--chart-4) / 0.5); animation: command-bar-pulse 2s infinite; }
+.command-bar-glow-speaking { --glow-color: hsl(var(--chart-2) / 0.5); animation: command-bar-pulse 2s infinite; }
+.command-bar-glow-thinking { --glow-color: hsl(var(--primary) / 0.5); animation: command-bar-pulse 2s infinite; }
+.command-bar-glow-tool_call { --glow-color: hsl(var(--accent) / 0.6); animation: command-bar-pulse 1s 1; }
+.command-bar-glow-security_alert { --glow-color: hsl(var(--destructive) / 0.6); animation: command-bar-pulse 1.5s infinite; }

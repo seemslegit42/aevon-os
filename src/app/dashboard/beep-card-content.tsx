@@ -13,6 +13,7 @@ import { useBeepChat } from '@/hooks/use-beep-chat';
 import BeepToolCallDisplay from './beep-tool-call';
 import { motion, AnimatePresence } from 'framer-motion';
 import eventBus from '@/lib/event-bus';
+import { useBeepChatStore } from '@/stores/beep-chat.store';
 
 export type AvatarState = 'idle' | 'listening' | 'speaking' | 'thinking' | 'tool_call' | 'security_alert';
 
@@ -23,9 +24,11 @@ const BeepCardContent: React.FC = () => {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [inputNode, setInputNode] = useState<GainNode | null>(null);
   const [outputNode, setOutputNode] = useState<GainNode | null>(null);
-  const [avatarState, setAvatarState] = useState<AvatarState>('idle');
   const stateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Get state and actions from the global store
+  const { avatarState, setAvatarState } = useBeepChatStore();
+  const { messages, append, isLoading, lastMessage } = useBeepChat();
 
   const initializeAudio = useCallback(() => {
     if (audioContext) return;
@@ -48,7 +51,6 @@ const BeepCardContent: React.FC = () => {
     return () => document.removeEventListener('click', initializeAudio);
   }, [initializeAudio]);
   
-  const { messages, append, isLoading, lastMessage } = useBeepChat();
   const { playAudio, isSpeaking } = useTTS({ outputNode });
   const { isRecording, isTranscribing, startRecording, stopRecording } = useAudioRecorder({ 
     onTranscriptionComplete: (text) => {
@@ -64,7 +66,7 @@ const BeepCardContent: React.FC = () => {
         // After timeout, revert to 'thinking' if still loading, otherwise 'idle'
         setAvatarState(isLoading ? 'thinking' : 'idle');
     }, duration);
-  }, [isLoading]);
+  }, [isLoading, setAvatarState]);
 
   useEffect(() => {
     // Determine avatar state based on component states
@@ -79,7 +81,7 @@ const BeepCardContent: React.FC = () => {
     } else {
       setAvatarState('idle');
     }
-  }, [isRecording, isSpeaking, isLoading, isTranscribing, setTemporaryState]);
+  }, [isRecording, isSpeaking, isLoading, isTranscribing, setAvatarState]);
 
   useEffect(() => {
       // Handle tool call visualization
