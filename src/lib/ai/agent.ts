@@ -1,3 +1,4 @@
+
 'use server';
 
 import { StateGraph, END, START, type MessagesState } from '@langchain/langgraph';
@@ -14,7 +15,6 @@ import * as SalesDataService from '@/services/sales-data.service';
 import * as BillingService from '@/services/billing.service';
 
 import { ALL_ITEM_IDS } from '@/config/dashboard-items.data';
-import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
 import type { LayoutItem } from '@/types/dashboard';
 import { 
     AegisSecurityAnalysisSchema, 
@@ -143,8 +143,10 @@ const generateWorkspaceInsightsTool = createTool({
     func: async ({ layout }) => {
         const openWindowsSummary = layout.length > 0
             ? layout.map((item: LayoutItem) => {
-                const config = item.type === 'card' ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId) : ALL_MICRO_APPS.find(a => a.id === item.appId);
-                return `- ${config?.title || 'Unknown Item'} (instanceId: ${item.id})`;
+                // This server-side function must NOT import the full component configs.
+                // We just need a name, which we can derive from the ID.
+                const name = item.cardId || item.appId || 'Unknown Item';
+                return `- ${name} (instanceId: ${item.id})`;
             }).join('\n')
             : 'The user has an empty workspace.';
         const { object: insights } = await generateObject({
@@ -221,13 +223,10 @@ const model = new ChatGroq({
 }).bindTools(allTools);
 
 const getSystemPrompt = (layout: LayoutItem[]) => {
+  // The original logic caused a build failure by importing client-side component configs into a server module.
+  // This simplified logic removes the problematic import while retaining the core functionality.
   const openWindowsSummary = layout.length > 0
-    ? layout.map(item => {
-        const config = item.type === 'card' 
-          ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId)
-          : ALL_MICRO_APPS.find(a => a.id === item.appId);
-        return `- ${config?.title || 'Unknown Item'} (instanceId: ${item.id})`;
-      }).join('\n')
+    ? layout.map(item => `- type: ${item.type}, id: ${item.cardId || item.appId}, instanceId: ${item.id}`).join('\n')
     : 'The user has an empty workspace.';
 
   return `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic.

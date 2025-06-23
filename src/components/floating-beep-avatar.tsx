@@ -5,7 +5,6 @@ import { Rnd } from 'react-rnd';
 import { Button } from '@/components/ui/button';
 import { Mic } from 'phosphor-react';
 import { cn } from '@/lib/utils';
-import BeepAvatar3D from '@/app/dashboard/beep-avatar-3d';
 import { useToast } from "@/hooks/use-toast";
 import { useAudioRecorder } from '@/hooks/use-audio-recorder';
 import { useTTS } from '@/hooks/use-tts';
@@ -15,6 +14,14 @@ import { useAgentConfigStore } from '@/stores/agent-config.store';
 import { getIdleQuip, getToolSuccessQuip, getToolErrorQuip } from '@/lib/humor-module';
 import eventBus from '@/lib/event-bus';
 import type { AvatarState } from '@/types/dashboard';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const BeepAvatar3D = dynamic(() => import('@/app/dashboard/beep-avatar-3d'), {
+  ssr: false,
+  loading: () => <Skeleton className="w-full h-full rounded-full" />,
+});
+
 
 const FloatingBeepAvatar: React.FC = () => {
   const { toast } = useToast();
@@ -167,8 +174,8 @@ const FloatingBeepAvatar: React.FC = () => {
   return (
     <Rnd
       default={{
-        x: window.innerWidth - 220,
-        y: window.innerHeight - 220,
+        x: (typeof window !== 'undefined' ? window.innerWidth : 1024) - 220,
+        y: (typeof window !== 'undefined' ? window.innerHeight : 768) - 220,
         width: 180,
         height: 180,
       }}
@@ -204,3 +211,5 @@ const FloatingBeepAvatar: React.FC = () => {
 };
 
 export default FloatingBeepAvatar;
+
+    

@@ -1,6 +1,7 @@
+
 import { useRef, useCallback, useEffect, useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
-import { useAvatarTelemetry } from './use-avatar-telemetry';
+import { useAvatarTelemetry } from '@/hooks/use-avatar-telemetry';
 import type { AvatarState } from '@/types/dashboard';
 
 interface UseTTSProps {
@@ -115,3 +116,5 @@ export function useTTS({ outputNode }: UseTTSProps) {
 
   return { playAudio, isSpeaking };
 }
+
+    

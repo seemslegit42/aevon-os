@@ -1,4 +1,6 @@
 
+"use client";
+
 import { useState, useRef, useCallback } from 'react';
 import { useToast } from "@/hooks/use-toast";
 
