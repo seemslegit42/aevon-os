@@ -1,5 +1,5 @@
 import mitt, { type Emitter } from 'mitt';
-import type { AegisSecurityAnalysis, AiInsights, ContentGeneration } from './ai-schemas';
+import type { AegisSecurityAnalysis, AiInsights, ContentGeneration, WebSummarizerResult } from './ai-schemas';
 
 type AppEvents = {
   // BEEP Agent Communication
@@ -19,6 +19,10 @@ type AppEvents = {
   'content:result': ContentGeneration;
   'content:error': string;
   
+  // Web Summarizer Events
+  'websummarizer:result': WebSummarizerResult;
+  'websummarizer:error': string;
+
   // Loom Workflow Events (for visualization)
   'loom:categorizeText:success': any;
   'loom:categorizeText:error': string;

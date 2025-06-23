@@ -84,6 +84,13 @@ export const SubscriptionStatusSchema = z.object({
 });
 export type SubscriptionStatus = z.infer<typeof SubscriptionStatusSchema>;
 
+// Defines the structured output for the Web Summarizer tool.
+export const WebSummarizerResultSchema = z.object({
+  summary: z.string().describe("The generated summary of the webpage content."),
+  originalUrl: z.string().url().describe("The original URL that was summarized."),
+});
+export type WebSummarizerResult = z.infer<typeof WebSummarizerResultSchema>;
+
 // Defines the structure of a single node for the Loom workflow.
 // This is used by the AI to generate the workflow structure.
 export const WorkflowNodeSchema = z.object({

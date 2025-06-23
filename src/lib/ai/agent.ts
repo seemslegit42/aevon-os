@@ -22,7 +22,8 @@ import {
     ContentGenerationSchema, 
     KnowledgeBaseSearchResultSchema, 
     SalesMetricsSchema, 
-    SubscriptionStatusSchema, 
+    SubscriptionStatusSchema,
+    WebSummarizerResultSchema,
 } from '../ai-schemas';
 
 // =================================================================
@@ -51,6 +52,7 @@ const createTool = (input: DynamicToolInput & { isClientSide?: boolean }) => new
       if (input.name === 'analyzeSecurityAlert') eventBus.emit('aegis:analysis-result', result);
       if (input.name === 'generateWorkspaceInsights') eventBus.emit('insights:result', result);
       if (input.name === 'generateMarketingContent') eventBus.emit('content:result', result);
+      if (input.name === 'summarizeWebpage') eventBus.emit('websummarizer:result', result);
       
       return JSON.stringify(result);
     } catch (error: any) {
@@ -61,6 +63,7 @@ const createTool = (input: DynamicToolInput & { isClientSide?: boolean }) => new
       if (input.name === 'analyzeSecurityAlert') eventBus.emit('aegis:analysis-error', errorMessage);
       if (input.name === 'generateWorkspaceInsights') eventBus.emit('insights:error', errorMessage);
       if (input.name === 'generateMarketingContent') eventBus.emit('content:error', errorMessage);
+      if (input.name === 'summarizeWebpage') eventBus.emit('websummarizer:error', errorMessage);
       
       return JSON.stringify({ error: true, message: errorMessage });
     }
@@ -167,6 +170,22 @@ const generateMarketingContentTool = createTool({
     }
 });
 
+const summarizeWebpageTool = createTool({
+    name: "summarizeWebpage",
+    description: "Fetches the content from a given URL and provides a concise summary. Use this for any node of type 'web-summarizer' or if the user asks to summarize a webpage.",
+    schema: z.object({ url: z.string().url().describe("The URL of the webpage to summarize.") }),
+    func: async ({ url }) => {
+        // In a real application, you would fetch the webpage content here.
+        // For this simulation, we'll assume the content is available and pass it to the model.
+        const { object: summaryResult } = await generateObject({
+            model: google('gemini-1.5-flash-latest'),
+            schema: WebSummarizerResultSchema,
+            prompt: `Please provide a concise, professional summary of the content from the webpage at this URL: ${url}. Assume you have already fetched the page content. Focus on the key takeaways.`
+        });
+        return { ...summaryResult, originalUrl: url };
+    }
+});
+
 // --- Client-Side UI Manipulation Tools ---
 const staticItemIds = [...ALL_CARD_CONFIGS.map((p) => p.id), ...ALL_MICRO_APPS.map((a) => a.id)];
 
@@ -183,6 +202,7 @@ const resetLayoutTool = createTool({ name: 'resetLayout', description: 'Resets t
 const allTools = [
     searchKnowledgeBaseTool, getSalesMetricsTool, getSubscriptionStatusTool,
     analyzeSecurityAlertTool, generateWorkspaceInsightsTool, generateMarketingContentTool,
+    summarizeWebpageTool,
     focusItemTool, addItemTool, removeItemTool, resetLayoutTool,
 ];
 

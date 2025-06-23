@@ -20,6 +20,9 @@ import { generateNodeId } from '@/lib/utils';
 import { ResizableHorizontalPanes } from '@/components/dashboard/loom/layout/resizable-horizontal-panes';
 import { ResizableVerticalPanes } from '@/components/dashboard/loom/layout/resizable-vertical-panes';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { useBeepChat } from '@/hooks/use-beep-chat';
+import eventBus from '@/lib/event-bus';
+import type { WebSummarizerResult } from '@/lib/ai-schemas';
 
 import type {
   PanelVisibility,
@@ -64,7 +67,7 @@ export default function LoomStudioPage() {
   const [isTemplateSelectorOpen, setIsTemplateSelectorOpen] = useState(false);
   const [actionRequests, setActionRequests] = useState<ActionRequest[]>(initialActionRequests);
 
-
+  const { append: beepAppend } = useBeepChat();
   const isMobile = useIsMobile();
   const { toast } = useToast();
 
@@ -78,6 +81,58 @@ export default function LoomStudioPage() {
     };
     setConsoleMessages([welcomeMessage]);
   }, []);
+  
+  useEffect(() => {
+    const handleSummarizerResult = (result: WebSummarizerResult) => {
+        addConsoleMessage('info', `Web summarizer finished for URL: ${result.originalUrl}`);
+        setGeneratedFlow(prevFlow => {
+            if (!prevFlow) return null;
+            const runningNode = prevFlow.nodes.find(n => n.status === 'running' && n.type === 'web-summarizer');
+            if (!runningNode) return prevFlow;
+
+            const newNodes = prevFlow.nodes.map(n => 
+                n.id === runningNode.id 
+                ? { ...n, status: 'completed' as NodeStatus, config: { ...n.config, output: result } }
+                : n
+            );
+            return { ...prevFlow, nodes: newNodes };
+        });
+        setNodeExecutionStatus(prev => {
+            const runningNode = generatedFlow?.nodes.find(n => n.status === 'running' && n.type === 'web-summarizer');
+            if (!runningNode) return prev;
+            return { ...prev, [runningNode.id]: 'completed' };
+        });
+    };
+
+    const handleSummarizerError = (error: string) => {
+        addConsoleMessage('error', `Web summarizer failed: ${error}`);
+        setGeneratedFlow(prevFlow => {
+             if (!prevFlow) return null;
+            const runningNode = prevFlow.nodes.find(n => n.status === 'running' && n.type === 'web-summarizer');
+            if (!runningNode) return prevFlow;
+
+            const newNodes = prevFlow.nodes.map(n => 
+                n.id === runningNode.id 
+                ? { ...n, status: 'failed' as NodeStatus, config: { ...n.config, output: { error } } }
+                : n
+            );
+            return { ...prevFlow, nodes: newNodes };
+        });
+        setNodeExecutionStatus(prev => {
+            const runningNode = generatedFlow?.nodes.find(n => n.status === 'running' && n.type === 'web-summarizer');
+            if (!runningNode) return prev;
+            return { ...prev, [runningNode.id]: 'failed' };
+        });
+    }
+
+    eventBus.on('websummarizer:result', handleSummarizerResult);
+    eventBus.on('websummarizer:error', handleSummarizerError);
+
+    return () => {
+        eventBus.off('websummarizer:result', handleSummarizerResult);
+        eventBus.off('websummarizer:error', handleSummarizerError);
+    }
+  }, [addConsoleMessage, generatedFlow]);
 
   const addConsoleMessage = useCallback((type: ConsoleMessage['type'], text: string) => {
     const newMessage: ConsoleMessage = { type, text, timestamp: new Date() };
@@ -302,11 +357,40 @@ export default function LoomStudioPage() {
     }
 
     setNodeExecutionStatus(prev => ({ ...prev, [nodeId]: 'running' }));
-    toast({ title: "Execution Not Implemented", description: `Backend for node type '${nodeToRun.type}' is not yet implemented.`});
-    addConsoleMessage('warn', `Execution for node type '${nodeToRun.type}' is not implemented. Faking failure.`);
-    setTimeout(() => {
-        setNodeExecutionStatus(prev => ({ ...prev, [nodeId]: 'failed' }));
-    }, 1500);
+    addTimelineEvent({ type: 'node_running', message: `Executing node: ${nodeToRun.title}`, nodeId: nodeToRun.id, nodeTitle: nodeToRun.title });
+    
+    let prompt = '';
+    switch (nodeToRun.type) {
+        case 'web-summarizer':
+            if (!nodeToRun.config?.url) {
+                addConsoleMessage('error', `Node "${nodeToRun.title}" is missing a URL in its configuration.`);
+                setNodeExecutionStatus(prev => ({...prev, [nodeId]: 'failed'}));
+                return;
+            }
+            prompt = `Please summarize the content from the webpage at this URL: ${nodeToRun.config.url}`;
+            break;
+        case 'prompt':
+             if (!nodeToRun.config?.promptText) {
+                addConsoleMessage('error', `Node "${nodeToRun.title}" is missing prompt text in its configuration.`);
+                setNodeExecutionStatus(prev => ({...prev, [nodeId]: 'failed'}));
+                return;
+            }
+            prompt = nodeToRun.config.promptText;
+            break;
+        // Add other cases here as more node types become executable
+        default:
+            toast({ title: "Execution Not Implemented", description: `Backend for node type '${nodeToRun.type}' is not yet implemented.`});
+            addConsoleMessage('warn', `Execution for node type '${nodeToRun.type}' is not implemented. Faking failure.`);
+            setTimeout(() => {
+                setNodeExecutionStatus(prev => ({ ...prev, [nodeId]: 'failed' }));
+            }, 1500);
+            return;
+    }
+
+    if (prompt) {
+        addConsoleMessage('info', `Dispatching task to BEEP for node "${nodeToRun.title}": ${prompt}`);
+        beepAppend({ role: 'user', content: prompt });
+    }
   };
 
   const isNodeRunning = (nodeId: string): boolean => nodeExecutionStatus[nodeId] === 'running';
