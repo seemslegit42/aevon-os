@@ -1,8 +1,9 @@
+
 import { useRef, useCallback, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 
 interface UseTTSProps {
-  // outputNode is now optional. The hook can manage its own context.
+  // outputNode is now optional. The hook can manage its own audio context.
   outputNode?: GainNode | null;
 }
 
