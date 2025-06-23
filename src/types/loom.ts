@@ -1,4 +1,25 @@
-import type { WorkflowNodeData, NodeType } from "@/app/loom/workflow/workflow-node";
+
+export type NodeStatus = 'queued' | 'running' | 'failed' | 'completed' | 'unknown' | 'pending';
+export type NodeType = 'prompt' | 'decision' | 'agent-call' | 'wait' | 'api-call' | 'trigger' | 'custom' | 'web-summarizer' | 'data-transform' | 'conditional'; 
+
+export interface WorkflowNodeData {
+  id: string;
+  title: string;
+  type: NodeType;
+  description: string;
+  status?: NodeStatus;
+  agentName?: string;
+  position?: { x: number; y: number };
+  config?: {
+    url?: string;
+    promptText?: string;
+    modelName?: string;
+    transformationLogic?: string;
+    condition?: string;
+    output?: BackendSummarizeOutput | BackendExecutePromptOutput | Record<string, any>; 
+    [key: string]: any;
+  };
+}
 
 export interface PanelVisibility {
   palette: boolean;

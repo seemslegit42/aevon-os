@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import type { WorkflowNodeData, NodeStatus } from '@/app/loom/workflow/workflow-node';
+import type { WorkflowNodeData, NodeStatus, BackendSummarizeOutput, BackendExecutePromptOutput } from '@/types/loom';
 import { useState, useEffect } from 'react';
 import {
   Select,
@@ -18,7 +18,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import type { BackendSummarizeOutput, BackendExecutePromptOutput } from '@/types/loom';
 
 
 interface InspectorPanelProps {

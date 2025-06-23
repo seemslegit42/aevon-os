@@ -5,37 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Bot, CheckCircle, AlertTriangle, Clock, HelpCircle, MessageSquare, GitMerge, Zap, Timer, Webhook, SlidersHorizontal, Cog, Globe, FunctionSquare, Binary } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
-import type { BackendSummarizeOutput, BackendExecutePromptOutput, ConnectingState } from '@/types/loom';
-
-
-export type NodeStatus = 'queued' | 'running' | 'failed' | 'completed' | 'unknown' | 'pending';
-// Node types can remain somewhat abstract, as SuperAGI will handle the specifics
-export type NodeType = 'prompt' | 'decision' | 'agent-call' | 'wait' | 'api-call' | 'trigger' | 'custom' | 'web-summarizer' | 'data-transform' | 'conditional'; 
-
-export interface WorkflowNodeData {
-  id: string;
-  title: string;
-  type: NodeType;
-  description: string;
-  status?: NodeStatus;
-  agentName?: string; // Could map to a SuperAGI agent ID or name
-  position?: { x: number; y: number };
-  config?: {
-    // Common config fields
-    url?: string; // For web-summarizer
-    promptText?: string; // For prompt node
-    modelName?: string; // Could be agent_id or model preference for SuperAGI
-    transformationLogic?: string; // For data-transform
-    condition?: string; // For conditional node
-    
-    // Output from backend (simulated or real)
-    output?: BackendSummarizeOutput | BackendExecutePromptOutput | Record<string, any>; 
-    
-    // Other potential SuperAGI specific configs can be added here
-    // e.g., agent_id, goal, specific_tool_params
-    [key: string]: any; // Allow other dynamic config properties
-  };
-}
+import type { WorkflowNodeData, NodeStatus, NodeType, BackendSummarizeOutput, BackendExecutePromptOutput, ConnectingState } from '@/types/loom';
 
 interface WorkflowNodeProps {
   node: WorkflowNodeData;
