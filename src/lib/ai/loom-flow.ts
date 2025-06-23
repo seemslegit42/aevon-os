@@ -4,7 +4,7 @@
 import { google } from '@/lib/ai/groq';
 import { generateObject } from 'ai';
 import { z } from 'zod';
-import { AiGeneratedFlowDataSchema } from '../ai-schemas';
+import { AiGeneratedFlowDataSchema } from '@/lib/ai-schemas';
 import type { AiGeneratedFlowData } from '@/types/loom';
 import { generateNodeId } from '../utils';
 

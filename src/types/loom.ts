@@ -1,4 +1,6 @@
 
+import type { WebSummarizerResult } from '@/lib/ai-schemas';
+
 export type NodeStatus = 'queued' | 'running' | 'failed' | 'completed' | 'unknown' | 'pending';
 export type NodeType = 'prompt' | 'decision' | 'agent-call' | 'wait' | 'api-call' | 'trigger' | 'custom' | 'web-summarizer' | 'data-transform' | 'conditional'; 
 
@@ -45,7 +47,6 @@ export interface AiGeneratedFlowData {
 
 export interface ActionRequest {
   id: string;
-  agentId: string;
   agentName: string;
   requestType: 'permission' | 'input' | 'clarification';
   message: string;
@@ -95,10 +96,4 @@ export interface Connection {
     id: string;
     from: string; // fromNodeId
     to: string;   // toNodeId
-}
-
-export interface WebSummarizerResult {
-  summary?: string;
-  originalUrl: string;
-  error?: string;
 }
