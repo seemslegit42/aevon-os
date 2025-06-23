@@ -9,15 +9,37 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { Analyser } from '@/lib/analyser';
 import { vs, fs } from '@/lib/shaders/beep-3d-sphere-vertex.glsl';
 import { cn } from '@/lib/utils';
+import type { AvatarState } from './beep-card-content';
 
 interface BeepAvatar3DProps {
   inputNode: AudioNode | null;
   outputNode: AudioNode | null;
+  avatarState: AvatarState;
 }
 
-const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode }) => {
+const stateToUniformMap: Record<AvatarState, number> = {
+    idle: 0,
+    listening: 1,
+    speaking: 2,
+    thinking: 3,
+    tool_call: 4,
+    security_alert: 5,
+};
+
+const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode, avatarState }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const uniformsRef = useRef({
+      time: { value: 0.0 },
+      pointSize: { value: 3.5 },
+      inputData: { value: new THREE.Vector4(0, 0, 0, 0) },
+      outputData: { value: new THREE.Vector4(0, 0, 0, 0) },
+      uAvatarState: { value: stateToUniformMap.idle },
+  });
+
+  useEffect(() => {
+    uniformsRef.current.uAvatarState.value = stateToUniformMap[avatarState];
+  }, [avatarState]);
 
   useEffect(() => {
     if (!mountRef.current || !inputNode || !outputNode) return;
@@ -42,14 +64,8 @@ const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode }) =>
     // Analysers
     const inputAnalyser = new Analyser(inputNode);
     const outputAnalyser = new Analyser(outputNode);
-
-    // Points material with custom shaders
-    const uniforms = {
-      time: { value: 0.0 },
-      pointSize: { value: 3.5 },
-      inputData: { value: new THREE.Vector4(0, 0, 0, 0) },
-      outputData: { value: new THREE.Vector4(0, 0, 0, 0) },
-    };
+    
+    const uniforms = uniformsRef.current;
 
     const pointsMaterial = new THREE.ShaderMaterial({
       uniforms,

@@ -94,16 +94,22 @@ export const fs = `
   uniform float time;
   uniform vec4 inputData;
   uniform vec4 outputData;
+  uniform int uAvatarState;
   
   varying float vDisplacement;
 
+  // State mapping (must match BeepAvatar3D component)
+  const int STATE_IDLE = 0;
+  const int STATE_LISTENING = 1;
+  const int STATE_SPEAKING = 2;
+  const int STATE_THINKING = 3;
+  const int STATE_TOOL_CALL = 4;
+  const int STATE_SECURITY_ALERT = 5;
+
+
   // IQ's color palette function
-  vec3 palette( float t ) {
-      vec3 a = vec3(0.5, 0.5, 0.5);
-      vec3 b = vec3(0.5, 0.5, 0.5);
-      vec3 c = vec3(1.0, 1.0, 1.0);
-      vec3 d = vec3(0.3, 0.4, 0.55);
-      return a + b*cos( 6.28318*(c*t+d) );
+  vec3 palette( float t, vec3 a, vec3 b, vec3 c, vec3 d ) {
+    return a + b*cos( 6.28318*(c*t+d) );
   }
 
   void main() {
@@ -111,19 +117,38 @@ export const fs = `
     if (strength > 0.5) discard; // Make points circular
     strength = 1.0 - smoothstep(0.0, 0.5, strength);
 
-    // Dynamic color based on displacement and time for an aurora effect
-    float audioLevel = max(inputData.x, outputData.x);
-    vec3 finalColor = palette( vDisplacement * 2.0 + time * 0.1 + audioLevel * 2.0);
+    vec3 finalColor;
 
-    // When BEEP is speaking, shift color towards an electric blue
-    vec3 speakingColor = vec3(0.2, 0.8, 1.0);
-    float speakingMix = smoothstep(0.05, 0.3, outputData.x);
-    finalColor = mix(finalColor, speakingColor, speakingMix);
-
-    // When user is speaking, shift color towards a warmer green/yellow
-    vec3 listeningColor = vec3(0.6, 1.0, 0.2);
-    float listeningMix = smoothstep(0.05, 0.3, inputData.x);
-    finalColor = mix(finalColor, listeningColor, listeningMix);
+    if (uAvatarState == STATE_IDLE) {
+        // Cool, shifting aurora
+        finalColor = palette(vDisplacement * 2.0 + time * 0.1, vec3(0.5), vec3(0.5), vec3(1.0), vec3(0.0, 0.1, 0.2));
+    } else if (uAvatarState == STATE_LISTENING) {
+        // Vibrant green pulse
+        float pulse = 0.5 + 0.5 * sin(time * 5.0 + vDisplacement * 20.0);
+        vec3 baseColor = vec3(0.4, 0.9, 0.2); // Patina Green
+        finalColor = baseColor * (0.8 + 0.4 * pulse);
+    } else if (uAvatarState == STATE_SPEAKING) {
+        // Electric blue pulse
+        float pulse = 0.5 + 0.5 * cos(time * 8.0 + vDisplacement * 25.0);
+        vec3 baseColor = vec3(0.125, 0.698, 0.667); // Roman Aqua
+        finalColor = baseColor * (0.8 + 0.4 * pulse);
+    } else if (uAvatarState == STATE_THINKING) {
+        // Subtle, slow purple pulse
+        float pulse = 0.7 + 0.3 * sin(time * 1.5);
+        vec3 baseColor = vec3(0.415, 0.05, 0.804); // Imperial Purple
+        finalColor = baseColor * pulse;
+    } else if (uAvatarState == STATE_TOOL_CALL) {
+        // Bright yellow flash
+        float flash = smoothstep(0.0, 0.5, sin(time * 20.0));
+        finalColor = vec3(1.0, 0.84, 0.0) * flash; // Gold/Yellow
+    } else if (uAvatarState == STATE_SECURITY_ALERT) {
+        // Urgent, pulsing red
+        float pulse = 0.5 + 0.5 * sin(time * 10.0);
+        finalColor = vec3(0.8, 0.1, 0.1) * pulse; // Red
+    } else {
+        // Fallback
+        finalColor = vec3(0.5);
+    }
 
     gl_FragColor = vec4(finalColor, strength * 1.5);
   }

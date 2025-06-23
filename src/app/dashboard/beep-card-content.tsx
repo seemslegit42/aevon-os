@@ -12,6 +12,9 @@ import { useTTS } from '@/hooks/use-tts';
 import { useBeepChat } from '@/hooks/use-beep-chat';
 import BeepToolCallDisplay from './beep-tool-call';
 import { motion, AnimatePresence } from 'framer-motion';
+import eventBus from '@/lib/event-bus';
+
+export type AvatarState = 'idle' | 'listening' | 'speaking' | 'thinking' | 'tool_call' | 'security_alert';
 
 const BeepCardContent: React.FC = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -20,6 +23,9 @@ const BeepCardContent: React.FC = () => {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [inputNode, setInputNode] = useState<GainNode | null>(null);
   const [outputNode, setOutputNode] = useState<GainNode | null>(null);
+  const [avatarState, setAvatarState] = useState<AvatarState>('idle');
+  const stateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
 
   const initializeAudio = useCallback(() => {
     if (audioContext) return;
@@ -38,19 +44,62 @@ const BeepCardContent: React.FC = () => {
   }, [toast, audioContext]);
 
   useEffect(() => {
-    // Initialize audio context on user interaction to comply with browser policies
     document.addEventListener('click', initializeAudio, { once: true });
     return () => document.removeEventListener('click', initializeAudio);
   }, [initializeAudio]);
   
   const { messages, append, isLoading, lastMessage } = useBeepChat();
-  const { playAudio } = useTTS({ outputNode });
+  const { playAudio, isSpeaking } = useTTS({ outputNode });
   const { isRecording, isTranscribing, startRecording, stopRecording } = useAudioRecorder({ 
     onTranscriptionComplete: (text) => {
       append({ role: 'user', content: text });
     },
     inputNode,
   });
+
+  const setTemporaryState = useCallback((state: AvatarState, duration: number) => {
+    setAvatarState(state);
+    if (stateTimeoutRef.current) clearTimeout(stateTimeoutRef.current);
+    stateTimeoutRef.current = setTimeout(() => {
+        // After timeout, revert to 'thinking' if still loading, otherwise 'idle'
+        setAvatarState(isLoading ? 'thinking' : 'idle');
+    }, duration);
+  }, [isLoading]);
+
+  useEffect(() => {
+    // Determine avatar state based on component states
+    if (stateTimeoutRef.current) return; // Don't override a temporary state
+
+    if (isRecording) {
+      setAvatarState('listening');
+    } else if (isSpeaking) {
+      setAvatarState('speaking');
+    } else if (isLoading || isTranscribing) {
+      setAvatarState('thinking');
+    } else {
+      setAvatarState('idle');
+    }
+  }, [isRecording, isSpeaking, isLoading, isTranscribing, setTemporaryState]);
+
+  useEffect(() => {
+      // Handle tool call visualization
+      if (lastMessage?.role === 'assistant' && lastMessage.tool_calls) {
+          setTemporaryState('tool_call', 1500);
+      }
+  }, [lastMessage, setTemporaryState]);
+
+  useEffect(() => {
+    // Handle security alerts from event bus
+    const handleSecurityAlert = () => {
+        setTemporaryState('security_alert', 5000);
+    };
+    eventBus.on('aegis:new-alert', handleSecurityAlert);
+    return () => {
+        eventBus.off('aegis:new-alert', handleSecurityAlert);
+        if (stateTimeoutRef.current) clearTimeout(stateTimeoutRef.current);
+    };
+  }, [setTemporaryState]);
+
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -77,6 +126,7 @@ const BeepCardContent: React.FC = () => {
           <BeepAvatar3D 
               inputNode={inputNode} 
               outputNode={outputNode}
+              avatarState={avatarState}
           />
       </div>
       
@@ -86,7 +136,7 @@ const BeepCardContent: React.FC = () => {
             onMouseUp={stopRecording}
             onTouchStart={startRecording}
             onTouchEnd={stopRecording}
-            disabled={isProcessing || !inputNode} // Disable if audio is not ready
+            disabled={isProcessing || !inputNode}
             className={cn(
               "h-12 w-32 rounded-full transition-all duration-200 ease-in-out shadow-2xl text-base font-semibold",
               isRecording ? "bg-destructive scale-105" : "btn-gradient-primary-accent",
