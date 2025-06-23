@@ -1,11 +1,16 @@
 
-import type { WebSummarizerResult } from '@/lib/ai-schemas';
-
 export type NodeStatus = 'queued' | 'running' | 'failed' | 'completed' | 'unknown' | 'pending';
 export type NodeType = 'prompt' | 'decision' | 'agent-call' | 'wait' | 'api-call' | 'trigger' | 'custom' | 'web-summarizer' | 'data-transform' | 'conditional'; 
 
+export interface WebSummarizerResult {
+  summary: string;
+  originalUrl: string;
+  [key: string]: any; 
+}
+
 export interface WorkflowNodeData {
   id: string;
+  localId?: string; // Used only for template definition
   title: string;
   type: NodeType;
   description: string;
