@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -12,12 +11,14 @@ import EdrSummaryPanel from '@/app/aegis-security/EdrSummaryPanel';
 import { Warning, Zap } from 'phosphor-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useTTS } from '@/hooks/use-tts';
 
 const AegisSecurityPage: React.FC = () => {
   const { toast } = useToast();
   const [analysis, setAnalysis] = useState<AegisSecurityAnalysis | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { playAudio } = useTTS({});
 
   // This function is triggered by the global event bus when an alert comes in.
   const handleIncomingAlert = useCallback((alertDetails: string) => {
@@ -42,6 +43,7 @@ const AegisSecurityPage: React.FC = () => {
     const handleAnalysisResult = (result: AegisSecurityAnalysis) => {
         setAnalysis(result);
         setIsLoading(false);
+        playAudio(`Security analysis complete. Severity is ${result.severity}. ${result.summary}`);
         eventBus.emit('orchestration:log', { 
             task: 'Aegis: Analysis Complete', 
             status: 'success', 
@@ -71,7 +73,7 @@ const AegisSecurityPage: React.FC = () => {
       eventBus.off('aegis:analysis-result', handleAnalysisResult);
       eventBus.off('aegis:analysis-error', handleAnalysisError);
     };
-  }, [toast, handleIncomingAlert]);
+  }, [toast, handleIncomingAlert, playAudio]);
 
   const AnalysisLoader = () => (
     <div className="p-4 space-y-4">

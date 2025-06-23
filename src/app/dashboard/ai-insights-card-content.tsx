@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -11,6 +10,7 @@ import { useBeepChat } from '@/hooks/use-beep-chat';
 import eventBus from '@/lib/event-bus';
 import { type AiInsights, type Insight } from '@/lib/ai-schemas';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTTS } from '@/hooks/use-tts';
 
 const AiInsightsCardContent: React.FC = () => {
   const { toast } = useToast();
@@ -19,6 +19,7 @@ const AiInsightsCardContent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   
   const { append: beepAppend, isLoading: isBeepLoading } = useBeepChat();
+  const { playAudio } = useTTS({});
 
   const handleGenerateInsights = useCallback(() => {
     setIsLoading(true);
@@ -36,6 +37,8 @@ const AiInsightsCardContent: React.FC = () => {
     const handleInsightsResult = (result: AiInsights) => {
         setInsights(result);
         setIsLoading(false);
+        const insightsText = result.insights.map(i => i.text).join(' ');
+        playAudio(`I have found some new insights for you. ${insightsText}`);
     };
     
     const handleInsightsError = (errorMessage: string) => {
@@ -51,7 +54,7 @@ const AiInsightsCardContent: React.FC = () => {
       eventBus.off('insights:result', handleInsightsResult);
       eventBus.off('insights:error', handleInsightsError);
     };
-  }, [toast]);
+  }, [toast, playAudio]);
   
   const handleInsightAction = (insight: Insight) => {
     if (!insight.action) return;
