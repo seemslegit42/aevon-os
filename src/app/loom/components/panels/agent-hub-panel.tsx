@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { BasePanel } from './base-panel';
-import { Bot, ShieldCheck, ListChecks, UserPlus, PlayCircle, PauseCircle, Globe, MessageSquare, Edit3, Save, XCircle, Play, Pause, FileText, SendHorizonal, Loader2 } from 'lucide-react';
+import { Bot, UserPlus, Globe, MessageSquare, Edit3, Save, XCircle, FileText, SendHorizonal, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';

@@ -1,4 +1,3 @@
-
 // src/app/loom/components/panels/action-console-panel.tsx
 'use client';
 
@@ -6,7 +5,7 @@ import { BasePanel } from './base-panel';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ShieldQuestion, Bot, AlertTriangle, HelpCircle, MessageSquare, Check, X, Edit3, SendHorizonal } from 'lucide-react';
+import { ShieldQuestion, HelpCircle, MessageSquare, Check, X, Edit3, SendHorizonal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ActionRequest, ConsoleMessage, TimelineEvent } from '@/types/loom';
 import React, {useState} from 'react';
