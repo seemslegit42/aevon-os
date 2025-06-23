@@ -18,6 +18,14 @@ type AppEvents = {
   // Content Generation Events
   'content:result': ContentGeneration;
   'content:error': string;
+  
+  // Loom Workflow Events (for visualization)
+  'loom:categorizeText:success': any;
+  'loom:categorizeText:error': string;
+  'loom:extractInvoiceData:success': any;
+  'loom:extractInvoiceData:error': string;
+  'loom:logAndAlertAegis:success': any;
+  'loom:logAndAlertAegis:error': string;
 
   // System-level Events
   'orchestration:log': { task: string; status: 'success' | 'failure'; details: string; targetId?: string; };
