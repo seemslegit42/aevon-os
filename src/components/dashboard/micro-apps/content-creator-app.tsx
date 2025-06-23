@@ -1,7 +1,6 @@
-
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -15,7 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { type ContentGeneration } from '@/lib/ai-schemas';
 import { Zap, Copy, File, Warning } from 'phosphor-react';
-import { generateContent } from '@/actions/generateContent';
+import eventBus from '@/lib/event-bus';
 
 const formSchema = z.object({
   topic: z.string().min(5, { message: 'Topic must be at least 5 characters long.' }),
@@ -44,17 +43,31 @@ const ContentCreatorApp: React.FC = () => {
     setIsLoading(true);
     setError(null);
     setGeneratedContent(null);
-
-    try {
-      const result: ContentGeneration = await generateContent(values);
-      setGeneratedContent(result);
-    } catch (err: any) {
-      setError(err.message);
-      toast({ variant: 'destructive', title: 'Generation Failed', description: err.message });
-    } finally {
-      setIsLoading(false);
-    }
+    
+    const prompt = `Generate a ${values.contentType} about "${values.topic}" with a ${values.tone} tone.`;
+    eventBus.emit('beep:submitQuery', prompt);
   };
+  
+  useEffect(() => {
+    const handleContentResult = (result: ContentGeneration) => {
+        setGeneratedContent(result);
+        setIsLoading(false);
+    };
+
+    const handleContentError = (errorMessage: string) => {
+        setError(errorMessage);
+        setIsLoading(false);
+        toast({ variant: 'destructive', title: 'Generation Failed', description: errorMessage });
+    };
+
+    eventBus.on('content:result', handleContentResult);
+    eventBus.on('content:error', handleContentError);
+
+    return () => {
+        eventBus.off('content:result', handleContentResult);
+        eventBus.off('content:error', handleContentError);
+    }
+  }, [toast]);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);

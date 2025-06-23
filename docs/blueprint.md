@@ -3,7 +3,7 @@
 ## Core Features:
 
 - BEEP Conversational Interface: BEEP: Natural language interface for tasking, information retrieval, and personalized briefings. BEEP is tool that utilizes conversation to accomplish complex goals, while notifying the user.
-- Micro-App Ecosystem: Micro-Apps: Modular, self-contained applications for specific business functions, designed to be draggable, resizable, and stackable within the Canvas workspace.
+- Micro-App Ecosystem: Micro-Apps: Modular, self-contained applications for specific business functions, designed to be launched from the zustand store to the home page and their interface/card is draggable, resizable, and stackable within the Canvas workspace.
 - ΛΞVON Λrmory Marketplace: ΛΞVON Λrmory: Integrated marketplace for AI micro-apps and agents to help build out new experiences within the OS.
 - AI Insights: AI-Powered Insights Engine: Provides personalized recommendations.
 - Persistent Command Bar: TopBar (Command Bar): a permanently visible global interface element for natural language I/O, agent responses, search, and notifications.

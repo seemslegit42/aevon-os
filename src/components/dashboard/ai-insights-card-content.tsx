@@ -1,38 +1,47 @@
-
 "use client";
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Brain, Zap, Warning, GearSix } from 'phosphor-react';
-import { generateInsights } from '@/actions/generateInsights';
-import { useLayoutStore } from '@/stores/layout.store';
 import { useToast } from '@/hooks/use-toast';
-import { shallow } from 'zustand/shallow';
 import eventBus from '@/lib/event-bus';
-import type { Insight } from '@/lib/ai-schemas';
+import type { Insight, AiInsights } from '@/lib/ai-schemas';
 
 export default function AiInsightsCardContent() {
     const [insights, setInsights] = useState<Insight[] | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { toast } = useToast();
-    const layoutItems = useLayoutStore(state => state.layoutItems, shallow);
     
-    const handleGenerateInsights = useCallback(async () => {
+    const handleGenerateInsights = useCallback(() => {
         setIsLoading(true);
         setError(null);
         setInsights(null);
-        try {
-            const result = await generateInsights(layoutItems);
+        // Dispatch the request to the BEEP agent
+        eventBus.emit('beep:submitQuery', 'Generate some insights for my current workspace layout.');
+    }, []);
+
+    useEffect(() => {
+        const handleInsightsResult = (result: AiInsights) => {
             setInsights(result.insights);
-        } catch (err: any) {
-            const errorMessage = err.message || "An unexpected error occurred.";
-            setError(errorMessage);
-            toast({ variant: 'destructive', title: 'Failed to Generate Insights', description: errorMessage });
-        } finally {
             setIsLoading(false);
+        };
+
+        const handleInsightsError = (errorMessage: string) => {
+            setError(errorMessage);
+            setIsLoading(false);
+            toast({ variant: 'destructive', title: 'Failed to Generate Insights', description: errorMessage });
+        };
+        
+        eventBus.on('insights:result', handleInsightsResult);
+        eventBus.on('insights:error', handleInsightsError);
+
+        return () => {
+            eventBus.off('insights:result', handleInsightsResult);
+            eventBus.off('insights:error', handleInsightsError);
         }
-    }, [layoutItems, toast]);
+    }, [toast]);
+
 
     const handleExecuteAction = (insight: Insight) => {
         if (!insight.action) return;

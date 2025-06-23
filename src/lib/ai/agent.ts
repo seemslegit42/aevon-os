@@ -1,4 +1,3 @@
-
 'use server';
 
 import { StateGraph, END, START, type MessagesState } from '@langchain/langgraph';
@@ -7,10 +6,25 @@ import { AIMessage, BaseMessage, HumanMessage } from '@langchain/core/messages';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
 import { DynamicTool, type DynamicToolInput } from '@langchain/core/tools';
 import { z } from 'zod';
+import { generateObject } from 'ai';
+import { google } from '@/lib/ai/groq';
+import eventBus from '../event-bus';
+
 import * as SalesDataService from '@/services/sales-data.service';
 import * as BillingService from '@/services/billing.service';
+
 import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
 import type { LayoutItem } from '@/types/dashboard';
+import { 
+    AegisSecurityAnalysisSchema, 
+    AiInsightsSchema, 
+    ContentGenerationSchema, 
+    InvoiceDataSchema, 
+    KnowledgeBaseSearchResultSchema, 
+    SalesMetricsSchema, 
+    SubscriptionStatusSchema, 
+    TextCategorySchema 
+} from '../ai-schemas';
 
 // =================================================================
 // Agent State Definition
@@ -20,28 +34,41 @@ export interface AgentState extends MessagesState {
 }
 
 // =================================================================
-// HELPER FOR CREATING TOOLS
+// TOOL CREATION & ERROR HANDLING
 // =================================================================
-// This helper standardizes tool creation and adds error handling.
+/**
+ * A robust wrapper for creating DynamicTools. It adds standardized error
+ * handling and ensures the output is always a stringified JSON, which
+ * is what the LangChain agent framework expects.
+ * @param input The tool definition.
+ * @returns A new DynamicTool instance.
+ */
 const createTool = (input: DynamicToolInput) => new DynamicTool({
   ...input,
   func: async (args) => {
     try {
-      // Execute the original function
       const result = await input.func(args);
-      // Ensure the result is always a string as the agent expects.
-      return typeof result === 'string' ? result : JSON.stringify(result);
+      // Emit successful results to the event bus for decoupled UI updates
+      if (input.name === 'analyzeSecurityAlert') eventBus.emit('aegis:analysis-result', result);
+      if (input.name === 'generateWorkspaceInsights') eventBus.emit('insights:result', result);
+      if (input.name === 'generateMarketingContent') eventBus.emit('content:result', result);
+
+      return JSON.stringify(result);
     } catch (error: any) {
-      console.error(`Error in tool '${input.name}':`, error);
-      // Return a structured error message for the agent to process.
-      return JSON.stringify({ error: true, message: error.message || "An unexpected error occurred in the tool." });
+      const errorMessage = error.message || "An unexpected error occurred in the tool.";
+      console.error(`Error in tool '${input.name}':`, errorMessage);
+      // Emit errors to the event bus
+      if (input.name === 'analyzeSecurityAlert') eventBus.emit('aegis:analysis-error', errorMessage);
+      if (input.name === 'generateWorkspaceInsights') eventBus.emit('insights:error', errorMessage);
+      if (input.name === 'generateMarketingContent') eventBus.emit('content:error', errorMessage);
+      
+      return JSON.stringify({ error: true, message: errorMessage });
     }
   }
 });
 
-
 // =================================================================
-// SERVER-SIDE TOOLS (Business Logic, Data Fetching)
+// SERVER-SIDE TOOLS (Business Logic, Data Fetching, AI Generation)
 // =================================================================
 
 const KNOWLEDGE_BASE = {
@@ -54,10 +81,8 @@ const KNOWLEDGE_BASE = {
 
 const searchKnowledgeBaseTool = createTool({
     name: 'searchKnowledgeBase',
-    description: 'Searches the AEVON OS internal knowledge base for information about its features.',
-    schema: z.object({
-        query: z.string().describe("The user's question about an OS feature."),
-    }),
+    description: "Searches the AEVON OS internal knowledge base for information about its features. Use this first for any 'what is' or 'how to' questions.",
+    schema: z.object({ query: z.string().describe("The user's question about an OS feature.") }),
     func: async ({ query }) => {
         const lowerQuery = query.toLowerCase();
         for (const key in KNOWLEDGE_BASE) {
@@ -88,38 +113,91 @@ const getSubscriptionStatusTool = createTool({
     name: "getSubscriptionStatus",
     description: "Retrieves the user's current subscription plan, status, and renewal date.",
     schema: z.object({}),
-    func: async () => {
-        return await BillingService.getSubscriptionStatus();
+    func: async () => await BillingService.getSubscriptionStatus()
+});
+
+const analyzeSecurityAlertTool = createTool({
+    name: "analyzeSecurityAlert",
+    description: "Performs a security analysis on a given alert, providing a structured response.",
+    schema: z.object({ alertDetails: z.string().describe("The stringified JSON of the security alert.") }),
+    func: async ({ alertDetails }) => {
+        const { object: analysis } = await generateObject({
+            model: google('gemini-1.5-flash-latest'),
+            schema: AegisSecurityAnalysisSchema,
+            prompt: `You are a senior security analyst for the Aegis defense system. Your role is to analyze security alerts, determine their severity, identify the threats, and recommend clear, actionable steps for mitigation. Analyze the following security alert data: ${alertDetails}`
+        });
+        return analysis;
     }
 });
 
-// =================================================================
-// CLIENT-SIDE TOOLS (UI Manipulation)
-// These tools have placeholder functions on the server. The agent calls them,
-// but the actual execution happens on the client in `use-beep-chat.ts`.
-// =================================================================
-const staticItemIds = [...ALL_CARD_CONFIGS.map((p) => p.id), ...ALL_MICRO_APPS.map((a) => a.id)];
-const createClientTool = (name: string, description: string, schema: z.ZodObject<any>) => createTool({
-    name,
-    description,
-    schema,
-    func: async (args) => ({ success: true, message: `Client-side tool '${name}' called with arguments: ${JSON.stringify(args)}` })
+const generateWorkspaceInsightsTool = createTool({
+    name: "generateWorkspaceInsights",
+    description: "Analyzes the user's current workspace layout to generate personalized, actionable insights.",
+    schema: z.object({ layout: z.any().describe("The current layout of the user's dashboard, passed from the agent state.") }),
+    func: async ({ layout }) => {
+        const openWindowsSummary = layout.length > 0
+            ? layout.map((item: LayoutItem) => {
+                const config = item.type === 'card' ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId) : ALL_MICRO_APPS.find(a => a.id === item.appId);
+                return `- ${config?.title || 'Unknown Item'} (instanceId: ${item.id})`;
+            }).join('\n')
+            : 'The user has an empty workspace.';
+
+        const { object: insights } = await generateObject({
+            model: google('gemini-1.5-flash-latest'),
+            schema: AiInsightsSchema,
+            prompt: `You are an AI assistant for AEVON OS. Based on the user's current layout, provide a maximum of 3 short, actionable insights. You may suggest adding an item with the 'addItem' tool or focusing an existing item with the 'focusItem' tool. Current layout:\n${openWindowsSummary}`
+        });
+        return insights;
+    }
 });
 
-const focusItemTool = createClientTool('focusItem', "Brings a specific window into focus on the user's canvas.", z.object({ instanceId: z.string() }));
-const addItemTool = createClientTool('addItem', 'Adds a new Panel or launches a new Micro-App.', z.object({ itemId: z.string().enum(staticItemIds as [string, ...string[]]) }));
-const moveItemTool = createClientTool('moveItem', "Moves a specific window to new coordinates.", z.object({ instanceId: z.string(), x: z.number(), y: z.number() }));
-const removeItemTool = createClientTool('removeItem', "Closes a single, specific window.", z.object({ instanceId: z.string() }));
-const closeAllInstancesOfAppTool = createClientTool('closeAllInstancesOfApp', "Closes ALL open windows of a specific Micro-App.", z.object({ appId: z.string() }));
-const resetLayoutTool = createClientTool('resetLayout', 'Resets the entire dashboard layout to its default configuration.', z.object({}));
+const generateMarketingContentTool = createTool({
+    name: "generateMarketingContent",
+    description: "Generates marketing content based on a topic, content type, and tone.",
+    schema: z.object({
+        topic: z.string(),
+        contentType: z.string(),
+        tone: z.string()
+    }),
+    func: async ({ topic, contentType, tone }) => {
+        const { object: content } = await generateObject({
+            model: google('gemini-1.5-flash-latest'),
+            schema: ContentGenerationSchema,
+            prompt: `You are an expert content creator. Generate a piece of content. Topic: ${topic}, Type: ${contentType}, Tone: ${tone}.`
+        });
+        return content;
+    }
+});
+
+
+// =================================================================
+// CLIENT-SIDE TOOLS (UI Manipulation)
+// These tool definitions are used by the agent to decide *what* to do.
+// The actual implementation logic resides on the client in `use-beep-chat.ts`.
+// =================================================================
+const staticItemIds = [...ALL_CARD_CONFIGS.map((p) => p.id), ...ALL_MICRO_APPS.map((a) => a.id)];
+
+const focusItemTool = createTool({ name: 'focusItem', description: "Brings a specific window into focus on the user's canvas.", schema: z.object({ instanceId: z.string() }), func: async (args) => args });
+const addItemTool = createTool({ name: 'addItem', description: 'Adds a new Panel or launches a new Micro-App.', schema: z.object({ itemId: z.string().enum(staticItemIds as [string, ...string[]]) }), func: async (args) => args });
+const moveItemTool = createTool({ name: 'moveItem', description: "Moves a specific window to new coordinates.", schema: z.object({ instanceId: z.string(), x: z.number(), y: z.number() }), func: async (args) => args });
+const removeItemTool = createTool({ name: 'removeItem', description: "Closes a single, specific window.", schema: z.object({ instanceId: z.string() }), func: async (args) => args });
+const closeAllInstancesOfAppTool = createTool({ name: 'closeAllInstancesOfApp', description: "Closes ALL open windows of a specific Micro-App.", schema: z.object({ appId: z.string() }), func: async (args) => args });
+const resetLayoutTool = createTool({ name: 'resetLayout', description: 'Resets the entire dashboard layout to its default configuration.', schema: z.object({}), func: async (args) => args });
+
 
 // =================================================================
 // AGENT SETUP
 // =================================================================
+
 const allTools = [
+    // Server-side data/logic tools
     searchKnowledgeBaseTool,
     getSalesMetricsTool,
     getSubscriptionStatusTool,
+    analyzeSecurityAlertTool,
+    generateWorkspaceInsightsTool,
+    generateMarketingContentTool,
+    // Client-side UI tools
     focusItemTool,
     addItemTool,
     moveItemTool,
@@ -160,28 +238,28 @@ ${ALL_MICRO_APPS.map(a => `- ${a.title} (id: ${a.id})`).join('\n')}
 ---
 **PRIMARY DIRECTIVE**
 1.  Analyze the user's request to determine the main task.
-2.  Select the most appropriate tool(s) to accomplish the task. You can call multiple tools in parallel.
-3.  If a tool fails, explain the error to the user and ask for clarification if needed.
-4.  After successfully calling a UI tool (like adding or moving a window), also generate a brief, natural language confirmation for the user. E.g., "Done. I've added the Loom Studio to your workspace."
-5.  If the user asks a general question, use the knowledge base tool first before attempting to answer from your own knowledge.
+2.  If the request requires information about the workspace, use the 'generateWorkspaceInsights' tool.
+3.  Select the most appropriate tool(s) to accomplish the task. You can call multiple tools in parallel.
+4.  If a tool fails, explain the error to the user.
+5.  After successfully calling a UI tool, also generate a brief, natural language confirmation for the user. E.g., "Done. I've added the Loom Studio to your workspace."
+6.  If the user asks a general question, use the 'searchKnowledgeBase' tool first.
 `;
 }
 
 // =================================================================
-// AGENT GRAPH
+// AGENT GRAPH DEFINITION
 // =================================================================
 
-// Node that calls the model
+// This node calls the main model
 const callModelNode = async (state: AgentState) => {
   const { messages, layout } = state;
   const systemPrompt = getSystemPrompt(layout || []);
-  // Insert the system prompt at the beginning of the conversation.
   const messagesWithSystemPrompt = [new HumanMessage(systemPrompt), ...messages];
   const response = await model.invoke(messagesWithSystemPrompt);
   return { messages: [response] };
 };
 
-// Router that decides whether to call tools or end the turn.
+// This router decides whether to call tools or end the conversation
 const shouldInvokeToolsRouter = (state: AgentState) => {
   const lastMessage = state.messages[state.messages.length - 1] as AIMessage;
   if (!lastMessage.tool_calls || lastMessage.tool_calls.length === 0) {
@@ -210,8 +288,8 @@ workflow.addConditionalEdges('agent', shouldInvokeToolsRouter, {
   tools: 'tools',
   [END]: END,
 });
-workflow.addEdge('tools', 'agent');
 
+workflow.addEdge('tools', 'agent');
 workflow.addEntryPoint(START);
 
 export const agentGraph = workflow.compile();

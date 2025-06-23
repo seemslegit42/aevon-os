@@ -11,7 +11,6 @@ import EdrSummaryPanel from '@/components/dashboard/aegis/EdrSummaryPanel';
 import { Warning, Zap } from 'phosphor-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { analyzeSecurityAlert } from '@/actions/analyzeSecurity';
 
 const AegisSecurityPage: React.FC = () => {
   const { toast } = useToast();
@@ -19,7 +18,8 @@ const AegisSecurityPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleAnalysis = useCallback(async (alertDetails: string) => {
+  // This function is triggered by the global event bus when an alert comes in.
+  const handleIncomingAlert = useCallback((alertDetails: string) => {
     setIsLoading(true);
     setError(null);
     setAnalysis(null);
@@ -27,40 +27,50 @@ const AegisSecurityPage: React.FC = () => {
     eventBus.emit('orchestration:log', { 
         task: 'Aegis: Analysis Started', 
         status: 'success', 
-        details: 'Received new alert. Beginning AI analysis.',
+        details: 'Received new alert. Dispatching to BEEP for analysis.',
         targetId: 'aegisSecurity' 
     });
 
-    try {
-      const result = await analyzeSecurityAlert(alertDetails);
-      setAnalysis(result);
-      eventBus.emit('orchestration:log', { 
-        task: 'Aegis: Analysis Complete', 
-        status: 'success', 
-        details: `Severity assessed as ${result.severity}.`,
-        targetId: 'aegisSecurity' 
-      });
+    // Dispatch the analysis task to the BEEP agent.
+    eventBus.emit('beep:submitQuery', `Analyze the following security alert and return the structured result: \`\`\`json\n${alertDetails}\n\`\`\``);
 
-    } catch (err: any) {
-      setError(err.message);
-      toast({ variant: "destructive", title: "Analysis Failed", description: err.message });
-       eventBus.emit('orchestration:log', { 
-         task: 'Aegis: Analysis Failed', 
-         status: 'failure', 
-         details: err.message,
-         targetId: 'aegisSecurity'
-        });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [toast]);
+  }, []);
 
+  // Effect to listen for analysis results from the agent
   useEffect(() => {
-    eventBus.on('aegis:new-alert', handleAnalysis);
-    return () => {
-      eventBus.off('aegis:new-alert', handleAnalysis);
+    const handleAnalysisResult = (result: AegisSecurityAnalysis) => {
+        setAnalysis(result);
+        setIsLoading(false);
+        eventBus.emit('orchestration:log', { 
+            task: 'Aegis: Analysis Complete', 
+            status: 'success', 
+            details: `Severity assessed as ${result.severity}.`,
+            targetId: 'aegisSecurity' 
+        });
     };
-  }, [handleAnalysis]);
+
+    const handleAnalysisError = (errorMessage: string) => {
+        setError(errorMessage);
+        setIsLoading(false);
+        toast({ variant: "destructive", title: "Analysis Failed", description: errorMessage });
+        eventBus.emit('orchestration:log', { 
+            task: 'Aegis: Analysis Failed', 
+            status: 'failure', 
+            details: errorMessage,
+            targetId: 'aegisSecurity'
+        });
+    };
+
+    eventBus.on('aegis:new-alert', handleIncomingAlert);
+    eventBus.on('aegis:analysis-result', handleAnalysisResult);
+    eventBus.on('aegis:analysis-error', handleAnalysisError);
+
+    return () => {
+      eventBus.off('aegis:new-alert', handleIncomingAlert);
+      eventBus.off('aegis:analysis-result', handleAnalysisResult);
+      eventBus.off('aegis:analysis-error', handleAnalysisError);
+    };
+  }, [toast, handleIncomingAlert]);
 
   const AnalysisLoader = () => (
     <div className="p-4 space-y-4">
