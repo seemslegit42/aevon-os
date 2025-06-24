@@ -9,7 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ExternalLink, ShieldAlert, CheckCircle, BrainCircuit, Users, Upload } from 'lucide-react';
 import { getSubscriptionStatus, getCheckoutURL } from '@/services/billing.service';
-import type { SubscriptionStatus } from '@/types/dashboard';
+import { type SubscriptionStatus } from '@/lib/ai-schemas';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
