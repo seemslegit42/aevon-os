@@ -1,4 +1,6 @@
 
+"use client";
+
 /**
  * Analyser class for live audio visualisation.
  */
