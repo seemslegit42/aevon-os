@@ -1,4 +1,20 @@
+
 import type { ElementType, LazyExoticComponent } from 'react';
+
+/** Describes a UI control that a micro-app can expose. */
+export interface UIControl {
+  id: string;
+  label: string;
+  icon: ElementType;
+  // Note: The action for this control is handled by the micro-app's internal logic,
+  // typically by listening for a namespaced event (e.g., `control:click:${appInstanceId}:${controlId}`).
+}
+
+/** Describes a sub-route within a micro-app. */
+export interface MicroAppRoute {
+  path: string; // Relative to the app's baseRoute, e.g., "details/:id"
+  component: LazyExoticComponent<ElementType>; // The component to render for this route.
+}
 
 export interface CardConfig {
   id: string;
