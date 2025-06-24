@@ -1,3 +1,4 @@
+
 /**
  * @fileOverview Defines Zod schemas and TypeScript types for AI interactions.
  * This file centralizes all data structures used for AI interactions,
