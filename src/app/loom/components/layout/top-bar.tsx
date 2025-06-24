@@ -63,6 +63,7 @@ const AiFlowGeneratorForm = ({ onFlowGenerated, addConsoleMessage }: AiFlowGener
             onFlowGenerated({
                 message: error.message,
                 nodes: [],
+                connections: [],
                 error: true,
                 userInput: values.prompt,
                 workflowName: "Failed Generation"

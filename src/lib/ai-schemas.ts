@@ -94,6 +94,7 @@ export type WebSummarizerResult = z.infer<typeof WebSummarizerResultSchema>;
 // Defines the structure of a single node for the Loom workflow.
 // This is used by the AI to generate the workflow structure.
 export const WorkflowNodeSchema = z.object({
+  localId: z.string().describe("A short, unique, workflow-specific identifier for this node, e.g., 'get-data-1'."),
   title: z.string().describe("A short, descriptive title for the node's purpose."),
   type: z.enum(['prompt', 'decision', 'agent-call', 'wait', 'api-call', 'trigger', 'custom', 'web-summarizer', 'data-transform', 'conditional']).describe("The functional type of the node."),
   description: z.string().describe("A brief one-sentence description of what this node does."),
@@ -103,8 +104,15 @@ export const WorkflowNodeSchema = z.object({
   }).describe("The position of the node on the canvas."),
 });
 
+// Defines a connection between two nodes in the AI-generated workflow.
+export const WorkflowConnectionSchema = z.object({
+  fromLocalId: z.string().describe("The localId of the source node."),
+  toLocalId: z.string().describe("The localId of the target node."),
+});
+
 // Defines the overall structure of the AI-generated workflow.
 export const AiGeneratedFlowDataSchema = z.object({
   workflowName: z.string().describe("A concise and descriptive name for the entire workflow."),
   nodes: z.array(WorkflowNodeSchema).describe("An array of workflow nodes that constitute the flow."),
+  connections: z.array(WorkflowConnectionSchema).optional().describe("An optional array defining the connections between nodes using their localIds."),
 });

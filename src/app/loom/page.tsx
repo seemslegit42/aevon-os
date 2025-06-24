@@ -44,10 +44,9 @@ const initialActionRequests: ActionRequest[] = [];
 
 
 export default function LoomStudioPage() {
-  const [generatedFlow, setGeneratedFlow] = useState<AiGeneratedFlowData | null>(null);
-  const [connections, setConnections] = useState<Connection[]>([]);
+  const { nodes, connections, selectedNodeId, setWorkflow, setSelectedNodeId, updateNode, deleteNode, addNode, addConnection, clearWorkflow } = useLoomStore();
+
   const [connectingState, setConnectingState] = useState<ConnectingState | null>(null);
-  const [selectedNode, setSelectedNode] = useState<WorkflowNodeData | null>(null);
   const [panelVisibility, setPanelVisibility] = useState<PanelVisibility>({
     palette: true,
     inspector: true,
@@ -67,11 +66,13 @@ export default function LoomStudioPage() {
   });
   const [isTemplateSelectorOpen, setIsTemplateSelectorOpen] = useState(false);
   const [actionRequests, setActionRequests] = useState<ActionRequest[]>(initialActionRequests);
+  const [workflowName, setWorkflowName] = useState<string | undefined>('Untitled Flow');
 
   const { append: beepAppend } = useBeepChat();
   const isMobile = useIsMobile();
   const { toast } = useToast();
-  const { setWorkflow, setSelectedNodeId } = useLoomStore();
+  
+  const selectedNode = nodes.find(n => n.id === selectedNodeId) || null;
 
   const addConsoleMessage = useCallback((type: ConsoleMessage['type'], text: string) => {
     const newMessage: ConsoleMessage = { type, text, timestamp: new Date() };
@@ -83,35 +84,13 @@ export default function LoomStudioPage() {
   }, []);
 
   useEffect(() => {
-    const welcomeMessage: ConsoleMessage = {
-        type: 'info',
-        text: 'Loom Studio Initialized. AI is standing by to generate workflows.',
-        timestamp: new Date()
-    };
-    setConsoleMessages([welcomeMessage]);
-  }, []);
-
-  useEffect(() => {
-    setWorkflow({
-        nodes: generatedFlow?.nodes || [],
-        connections: connections,
-    });
-  }, [generatedFlow, connections, setWorkflow]);
-  
-  const updateNode = useCallback((nodeId: string, updates: Partial<WorkflowNodeData>) => {
-    setGeneratedFlow(prevFlow => {
-        if (!prevFlow) return null;
-        const newNodes = prevFlow.nodes.map(n => 
-            n.id === nodeId ? { ...n, ...updates } : n
-        );
-        return { ...prevFlow, nodes: newNodes };
-    });
-  }, []);
+    addConsoleMessage('info', 'Loom Studio Initialized. AI is standing by to generate workflows.');
+  }, [addConsoleMessage]);
 
   useEffect(() => {
     const handleSummarizerResult = (result: WebSummarizerResult) => {
         addConsoleMessage('info', `Web summarizer finished for URL: ${result.originalUrl}`);
-        const runningNode = generatedFlow?.nodes.find(n => nodeExecutionStatus[n.id] === 'running' && n.type === 'web-summarizer');
+        const runningNode = nodes.find(n => nodeExecutionStatus[n.id] === 'running' && n.type === 'web-summarizer');
         
         if (runningNode) {
             updateNode(runningNode.id, {
@@ -124,7 +103,7 @@ export default function LoomStudioPage() {
 
     const handleSummarizerError = (error: string) => {
         addConsoleMessage('error', `Web summarizer failed: ${error}`);
-        const runningNode = generatedFlow?.nodes.find(n => nodeExecutionStatus[n.id] === 'running' && n.type === 'web-summarizer');
+        const runningNode = nodes.find(n => nodeExecutionStatus[n.id] === 'running' && n.type === 'web-summarizer');
         if (runningNode) {
             updateNode(runningNode.id, {
                 status: 'failed',
@@ -141,7 +120,7 @@ export default function LoomStudioPage() {
         eventBus.off('websummarizer:result', handleSummarizerResult);
         eventBus.off('websummarizer:error', handleSummarizerError);
     }
-  }, [addConsoleMessage, generatedFlow, nodeExecutionStatus, updateNode]);
+  }, [addConsoleMessage, nodes, nodeExecutionStatus, updateNode]);
 
 
   const handleAgentActionResponse = useCallback((requestId: string, responseStatus: 'approved' | 'denied' | 'responded', details?: string) => {
@@ -159,7 +138,7 @@ export default function LoomStudioPage() {
   }, [actionRequests, addConsoleMessage, addTimelineEvent, toast]);
 
 
-  const visualizeWorkflowExecution = useCallback(async (flow: AiGeneratedFlowData) => {
+  const visualizeWorkflowExecution = useCallback((flow: AiGeneratedFlowData) => {
     if (!flow || flow.nodes.length === 0 || !flow.workflowName) {
         addConsoleMessage('warn', 'No workflow or nodes available to visualize.');
         return;
@@ -180,84 +159,55 @@ export default function LoomStudioPage() {
 
 
   const handleFlowGenerated = useCallback((data: AiGeneratedFlowData) => {
-    setGeneratedFlow(data);
-    setSelectedNode(null);
+    setSelectedNodeId(null);
 
-    if (data.error) {
-      addConsoleMessage('error', `Failed to generate flow: ${data.message || 'Unknown error'}`);
-      setTimelineEvents([]);
-      setNodeExecutionStatus({});
-      setConnections([]);
-    } else if (data.nodes.length > 0 && data.workflowName) {
-        addConsoleMessage('info', `Flow "${data.workflowName}" generated with ${data.nodes.length} steps. Preparing for display...`);
-
-        const newConnections: Connection[] = [];
-        if (data.nodes.length > 1) {
-            for (let i = 0; i < data.nodes.length - 1; i++) {
-              newConnections.push({
-                id: `conn-${data.nodes[i].id}-to-${data.nodes[i+1].id}-${Date.now()}`,
-                from: data.nodes[i].id,
-                to: data.nodes[i+1].id,
-              });
-            }
-            addConsoleMessage('info', `Auto-created ${newConnections.length} connections for the generated flow.`);
-        }
-        setConnections(newConnections);
-        visualizeWorkflowExecution(data);
+    if (data.error || !data.workflowName || data.nodes.length === 0) {
+        addConsoleMessage('error', `Failed to generate flow: ${data.message || 'AI returned an empty or invalid workflow.'}`);
+        clearWorkflow();
+        setTimelineEvents([]);
+        setNodeExecutionStatus({});
     } else {
-         addConsoleMessage('info', `Flow "${data.workflowName || 'Untitled Flow'}" generated but contained no actionable steps.`);
-         setTimelineEvents([]);
-         setNodeExecutionStatus({});
-         setConnections([]);
+        addConsoleMessage('info', `Flow "${data.workflowName}" generated with ${data.nodes.length} steps. Preparing for display...`);
+        const idMap: Record<string, string> = {};
+        const newNodes: WorkflowNodeData[] = data.nodes.map((node, index) => {
+            const newNodeId = generateNodeId('ai', node.title, `${Date.now()}-${index}`);
+            idMap[node.localId!] = newNodeId;
+            return { ...node, id: newNodeId, status: 'queued', position: node.position };
+        });
+
+        const newConnections: Connection[] = (data.connections || []).map((conn, index) => ({
+            id: `conn-ai-${Date.now()}-${index}`,
+            from: idMap[conn.fromLocalId],
+            to: idMap[conn.toLocalId],
+        })).filter(c => c.from && c.to); // Filter out invalid connections
+        
+        setWorkflow({ nodes: newNodes, connections: newConnections });
+        setWorkflowName(data.workflowName);
+        visualizeWorkflowExecution({ ...data, nodes: newNodes });
     }
-  }, [addConsoleMessage, visualizeWorkflowExecution]);
+  }, [addConsoleMessage, visualizeWorkflowExecution, setWorkflow, clearWorkflow, setSelectedNodeId]);
 
   const handleNodeDropped = (newNodeData: Omit<WorkflowNodeData, 'id' | 'status'> & { status?: NodeStatus }) => {
-    const uniqueIndex = Date.now();
-    const nodeTitleBase = newNodeData.title || 'Manual Node';
-    const nodeId = generateNodeId('manual', nodeTitleBase, uniqueIndex);
+    const newNode = addNode(newNodeData);
+    
+    if (nodes.length === 0) {
+        addConsoleMessage('info', `New custom workflow "${workflowName}" started by user adding node: "${newNode.title}".`);
+        addTimelineEvent({ type: 'workflow_start', message: `Custom workflow "${workflowName}" started.`});
+    }
 
-    const nodeWithIdAndStatus: WorkflowNodeData = {
-      ...newNodeData,
-      id: nodeId,
-      title: nodeTitleBase,
-      description: newNodeData.description || `Manually added ${nodeTitleBase} node. Configure in Inspector.`,
-      status: 'queued',
-      config: newNodeData.config || {},
-    };
-
-    setGeneratedFlow(prevFlow => {
-      const currentNodes = prevFlow?.nodes || [];
-      const newWorkflowName = prevFlow?.workflowName || "My Custom Flow";
-
-      if (currentNodes.length === 0 && !prevFlow?.workflowName) {
-        addConsoleMessage('info', `New custom workflow "${newWorkflowName}" started by user adding node: "${nodeWithIdAndStatus.title}".`);
-        addTimelineEvent({ type: 'workflow_start', message: `Custom workflow "${newWorkflowName}" started.`});
-      }
-
-      return {
-        message: prevFlow?.message || "Node added to canvas.",
-        userInput: prevFlow?.userInput || "Custom flow",
-        error: prevFlow?.error || false,
-        nodes: [...currentNodes, nodeWithIdAndStatus],
-        workflowName: newWorkflowName,
-      };
-    });
-
-    setSelectedNode(nodeWithIdAndStatus);
-    addConsoleMessage('log', `Node "${nodeWithIdAndStatus.title}" (ID: ${nodeWithIdAndStatus.id}) added to canvas.`);
-    setNodeExecutionStatus(prev => ({...prev, [nodeWithIdAndStatus.id]: 'queued' }));
+    setSelectedNodeId(newNode.id);
+    addConsoleMessage('log', `Node "${newNode.title}" (ID: ${newNode.id}) added to canvas.`);
+    setNodeExecutionStatus(prev => ({...prev, [newNode.id]: 'queued' }));
     addTimelineEvent({
-      nodeId: nodeWithIdAndStatus.id,
-      nodeTitle: nodeWithIdAndStatus.title,
+      nodeId: newNode.id,
+      nodeTitle: newNode.title,
       type: 'node_queued',
-      message: `Manual Node "${nodeWithIdAndStatus.title}" added and queued.`
+      message: `Manual Node "${newNode.title}" added and queued.`
     });
   };
 
   const handleNodeSelected = (node: WorkflowNodeData | null) => {
     if (node) {
-      setSelectedNode(node);
       setSelectedNodeId(node.id);
       setConnectingState(null);
       addConsoleMessage('log', `Node "${node.title}" (ID: ${node.id}) selected.`);
@@ -265,51 +215,43 @@ export default function LoomStudioPage() {
       if (connectingState) {
         addConsoleMessage('info', `Connection attempt cancelled by clicking canvas background.`);
       }
-      setSelectedNode(null);
       setSelectedNodeId(null);
       setConnectingState(null);
     }
   };
 
-  const handleNodeUpdate = (updatedNode: WorkflowNodeData) => {
-    updateNode(updatedNode.id, updatedNode);
-    setSelectedNode(updatedNode);
-    toast({ title: "Node Updated", description: `Node "${updatedNode.title}" has been saved.` });
-    addConsoleMessage('info', `Node "${updatedNode.title}" (ID: ${updatedNode.id}) updated.`);
+  const handleNodeUpdate = (updatedNodeData: WorkflowNodeData) => {
+    updateNode(updatedNodeData.id, updatedNodeData);
+    toast({ title: "Node Updated", description: `Node "${updatedNodeData.title}" has been saved.` });
+    addConsoleMessage('info', `Node "${updatedNodeData.title}" (ID: ${updatedNodeData.id}) updated.`);
 
-    const oldStatus = nodeExecutionStatus[updatedNode.id];
-    if (updatedNode.status && oldStatus !== updatedNode.status) {
-      setNodeExecutionStatus(prev => ({...prev, [updatedNode.id]: updatedNode.status! }));
+    const oldStatus = nodeExecutionStatus[updatedNodeData.id];
+    if (updatedNodeData.status && oldStatus !== updatedNodeData.status) {
+      setNodeExecutionStatus(prev => ({...prev, [updatedNodeData.id]: updatedNodeData.status! }));
       const eventTypeMap: Partial<Record<NodeStatus, TimelineEvent['type']>> = {
         completed: 'node_completed', running: 'node_running', failed: 'node_failed', queued: 'node_queued',
       };
       addTimelineEvent({
-        nodeId: updatedNode.id, nodeTitle: updatedNode.title,
-        type: eventTypeMap[updatedNode.status!] || 'info',
-        message: `Node "${updatedNode.title}" status manually updated to ${updatedNode.status}.`
+        nodeId: updatedNodeData.id, nodeTitle: updatedNodeData.title,
+        type: eventTypeMap[updatedNodeData.status!] || 'info',
+        message: `Node "${updatedNodeData.title}" status manually updated to ${updatedNodeData.status}.`
       });
     }
   };
 
   const handleDeleteNode = (nodeId: string) => {
-    const nodeToDelete = generatedFlow?.nodes?.find(n => n.id === nodeId);
+    const nodeToDelete = nodes.find(n => n.id === nodeId);
     if (!nodeToDelete) return;
 
-    setGeneratedFlow(prevFlow => {
-      if (!prevFlow) return prevFlow;
-      return { ...prevFlow, nodes: prevFlow.nodes.filter(n => n.id !== nodeId) };
-    });
-
-    setConnections(prevConns => prevConns.filter(c => c.from !== nodeId && c.to !== nodeId));
-    if (selectedNode?.id === nodeId) setSelectedNode(null);
-    setNodeExecutionStatus(prev => { const newStatus = { ...prev }; delete newStatus[nodeId]; return newStatus; });
+    deleteNode(nodeId);
+    
     addConsoleMessage('info', `Node "${nodeToDelete.title}" (ID: ${nodeId}) and connections deleted.`);
     addTimelineEvent({ type: 'info', message: `Node "${nodeToDelete.title}" deleted.`});
     toast({ title: "Node Deleted", description: `Node "${nodeToDelete.title}" has been removed.`});
   };
 
   const handleRunNode = useCallback(async (nodeId: string) => {
-    const nodeToRun = generatedFlow?.nodes?.find(n => n.id === nodeId);
+    const nodeToRun = nodes.find(n => n.id === nodeId);
     if (!nodeToRun) {
       addConsoleMessage('error', `Attempted to run non-existent node ID: ${nodeId}`);
       return;
@@ -341,7 +283,7 @@ export default function LoomStudioPage() {
         addConsoleMessage('info', `Dispatching task to BEEP for node "${nodeToRun.title}": ${prompt}`);
         beepAppend({ role: 'user', content: prompt });
     }
-  }, [generatedFlow, addConsoleMessage, addTimelineEvent, toast, beepAppend]);
+  }, [nodes, addConsoleMessage, addTimelineEvent, toast, beepAppend]);
 
   const isNodeRunning = (nodeId: string): boolean => nodeExecutionStatus[nodeId] === 'running';
 
@@ -378,7 +320,7 @@ export default function LoomStudioPage() {
   const handleOutputPortClick = (nodeId: string, portElement: HTMLDivElement) => {
     addConsoleMessage('log', `Output port clicked on node ${nodeId}. Waiting for input port selection.`);
     setConnectingState({ fromNodeId: nodeId, fromPortElement: portElement });
-    setSelectedNode(generatedFlow?.nodes.find(n => n.id === nodeId) || null);
+    setSelectedNodeId(nodeId);
   };
 
   const handleInputPortClick = (nodeId: string) => {
@@ -395,14 +337,10 @@ export default function LoomStudioPage() {
       return;
     }
 
-    const newConnection: Connection = {
-      id: `conn-${connectingState.fromNodeId}-to-${nodeId}-${Date.now()}`,
-      from: connectingState.fromNodeId,
-      to: nodeId,
-    };
-    setConnections(prev => [...prev, newConnection]);
-    const fromNodeTitle = generatedFlow?.nodes.find(n=>n.id===connectingState.fromNodeId)?.title || 'source';
-    const toNodeTitle = generatedFlow?.nodes.find(n=>n.id===nodeId)?.title || 'target';
+    addConnection(connectingState.fromNodeId, nodeId);
+    
+    const fromNodeTitle = nodes.find(n=>n.id===connectingState.fromNodeId)?.title || 'source';
+    const toNodeTitle = nodes.find(n=>n.id===nodeId)?.title || 'target';
     addConsoleMessage('info', `Connected ${fromNodeTitle} to ${toNodeTitle}.`);
     toast({title: "Connection Created"});
     setConnectingState(null);
@@ -413,6 +351,7 @@ export default function LoomStudioPage() {
 
   const handleLoadTemplate = useCallback((template: WorkflowTemplate) => {
     addConsoleMessage('info', `Loading template: "${template.name}"`);
+    clearWorkflow();
     const idMap: Record<string, string> = {};
     const newNodes: WorkflowNodeData[] = template.nodes.map((nodeDef, index) => {
       const newNodeId = generateNodeId('template', nodeDef.title, `${Date.now()}-${index}`);
@@ -425,22 +364,20 @@ export default function LoomStudioPage() {
       to: idMap[connDef.toLocalId],
     }));
 
-    const newFlowData: AiGeneratedFlowData = {
-      workflowName: template.name,
-      nodes: newNodes,
-      message: `Template "${template.name}" loaded.`,
-      error: false,
-    };
-
-    setGeneratedFlow(newFlowData);
-    setConnections(newConnections);
-    setSelectedNode(null);
-    setConnectingState(null);
+    setWorkflow({ nodes: newNodes, connections: newConnections });
+    setWorkflowName(template.name);
+    
     toast({ title: "Template Loaded", description: `Workflow "${template.name}" is ready.` });
     addTimelineEvent({ type: 'info', message: `Workflow template "${template.name}" loaded.` });
-    visualizeWorkflowExecution(newFlowData);
+    visualizeWorkflowExecution({
+        workflowName: template.name,
+        nodes: newNodes,
+        connections: template.connections.map(c => ({ fromLocalId: c.fromLocalId, toLocalId: c.toLocalId})),
+        message: 'Template loaded',
+        error: false,
+    });
     setIsTemplateSelectorOpen(false);
-  }, [addConsoleMessage, addTimelineEvent, toast, visualizeWorkflowExecution]);
+  }, [addConsoleMessage, addTimelineEvent, toast, visualizeWorkflowExecution, setWorkflow, clearWorkflow]);
 
   const anyMobilePanelOpen = isMobile && Object.values(panelVisibility).some(v => v);
 
@@ -459,8 +396,8 @@ export default function LoomStudioPage() {
         <main className={`flex-1 relative flex overflow-hidden p-0 pb-16`}>
            <div className={`flex-1 h-full transition-opacity duration-300 ${anyMobilePanelOpen ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
               <CanvasZone
-                workflowName={generatedFlow?.workflowName}
-                nodes={generatedFlow?.nodes || []}
+                workflowName={workflowName}
+                nodes={nodes}
                 connections={connections}
                 onNodeDropped={handleNodeDropped}
                 selectedNode={selectedNode}
@@ -547,8 +484,8 @@ export default function LoomStudioPage() {
               {/* Center Column */}
               <ResizableVerticalPanes storageKey="loom-center-v-split" initialDividerPosition={70} minPaneHeight={100}>
                 <CanvasZone
-                  workflowName={generatedFlow?.workflowName}
-                  nodes={generatedFlow?.nodes || []}
+                  workflowName={workflowName}
+                  nodes={nodes}
                   connections={connections}
                   onNodeDropped={handleNodeDropped}
                   selectedNode={selectedNode}

@@ -1,3 +1,4 @@
+
 'use client';
 // src/app/loom/components/canvas/canvas-zone.tsx
 import React, { useRef, useEffect, useState, useCallback } from 'react';

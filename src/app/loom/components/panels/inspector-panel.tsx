@@ -1,3 +1,4 @@
+
 'use client';
 // src/app/loom/components/panels/inspector-panel.tsx
 import { BasePanel } from './base-panel';

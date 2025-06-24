@@ -1,3 +1,4 @@
+
 export type NodeStatus = 'queued' | 'running' | 'failed' | 'completed' | 'unknown' | 'pending';
 export type NodeType = 'prompt' | 'decision' | 'agent-call' | 'wait' | 'api-call' | 'trigger' | 'custom' | 'web-summarizer' | 'data-transform' | 'conditional'; 
 export type BeepEmotion = 'neutral' | 'helpful' | 'insightful' | 'cautious' | 'alert';
@@ -46,7 +47,8 @@ export interface ConnectingState {
 export interface AiGeneratedFlowData {
   message: string | null;
   workflowName?: string;
-  nodes: WorkflowNodeData[];
+  nodes: (Omit<WorkflowNodeData, 'id'> & { localId: string })[];
+  connections?: { fromLocalId: string, toLocalId: string }[];
   error?: boolean;
   userInput?: string;
 }
