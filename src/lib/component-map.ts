@@ -20,3 +20,4 @@ componentMap.set('app-armory', lazy(() => import('@/micro-apps/armory/component'
 componentMap.set('app-content-creator', lazy(() => import('@/micro-apps/content-creator/component')));
 componentMap.set('app-agent-config', lazy(() => import('@/micro-apps/agent-config/component')));
 componentMap.set('app-system-monitor', lazy(() => import('@/micro-apps/system-monitor/component')));
+componentMap.set('app-vin-compliance', lazy(() => import('@/micro-apps/vin-compliance/component')));

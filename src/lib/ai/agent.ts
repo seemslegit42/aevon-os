@@ -1,3 +1,4 @@
+
 'use server';
 
 import { StateGraph, END, START, type MessagesState } from '@langchain/langgraph';
@@ -13,6 +14,7 @@ import { logAction } from '@/services/action-log.service';
 import { getEmotionFromText } from '@/lib/sentiment-parser';
 import { getRecentSecurityEvents } from '@/services/aegis.service';
 import { getRecentActionLogs, getActionLogStats } from '@/services/system-monitor.service';
+import { generateVin } from '@/micro-apps/vin-compliance/logic';
 
 
 import type { LayoutItem } from '@/types/dashboard';
@@ -24,6 +26,7 @@ import {
     InvoiceDataSchema,
     ConditionalResultSchema,
     DataTransformResultSchema,
+    VinComplianceResultSchema,
 } from '../ai-schemas';
 
 // =================================================================
@@ -180,6 +183,33 @@ const extractInvoiceDataTool = createTool({
     }
 });
 
+const generateVinTool = createTool({
+    name: "generateVin",
+    description: "Generates a compliant 17-character Vehicle Identification Number (VIN) for a custom trailer based on manufacturing details. Use this for the VIN Compliance Builder app or when a user asks to create a VIN.",
+    schema: z.object({
+        manufacturerId: z.string().length(3).describe("The 3-character World Manufacturer Identifier (WMI)."),
+        trailerType: z.enum(['Flatbed', 'Enclosed', 'Gooseneck', 'Utility']).describe("The type of the trailer."),
+        modelYear: z.number().int().min(2020).max(2030).describe("The manufacturing model year."),
+        plantCode: z.string().length(1).describe("The single-character code for the manufacturing plant."),
+    }),
+    func: async ({ manufacturerId, trailerType, modelYear, plantCode }) => {
+        const result = generateVin({ manufacturerId, trailerType, modelYear, plantCode });
+        const { object: vinResult } = await generateObject({
+            model: google('gemini-1.5-flash-latest'),
+            schema: VinComplianceResultSchema,
+            prompt: `A Vehicle Identification Number (VIN) has been generated based on the provided data.
+            
+            Generated VIN: ${result.vin}
+            Check Digit: ${result.checkDigit}
+            Breakdown: WMI=${result.breakdown.wmi}, VDS=${result.breakdown.vds}, Year=${result.breakdown.yearCode}, Plant=${result.breakdown.plantCode}, Seq=${result.breakdown.sequentialNumber}
+
+            Now, create a brief, official-sounding compliance document summary confirming this VIN's validity according to standard manufacturing practices (e.g., SAE J272). Mention the key components and confirm the check digit is valid.`
+        });
+        return vinResult;
+    }
+});
+
+
 const analyzeSecurityAlertTool = createTool({
     name: "analyzeSecurityAlert",
     description: "Analyzes and reports on the most recent security events detected by the Aegis system. Use this tool when the user asks about security, threats, or anomalies.",
@@ -313,7 +343,7 @@ const resetLayoutTool = createTool({ name: 'resetLayout', description: 'Resets t
 const allTools = [
     searchKnowledgeBaseTool,
     generateWorkspaceInsightsTool, generateMarketingContentTool,
-    summarizeWebpageTool, extractInvoiceDataTool,
+    summarizeWebpageTool, extractInvoiceDataTool, generateVinTool,
     analyzeSecurityAlertTool,
     getSystemHealthReportTool,
     evaluateConditionTool,

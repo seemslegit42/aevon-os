@@ -67,6 +67,19 @@ export const ALL_MICRO_APPS: AppRegistration[] = [
         { id: 'system-monitor-refresh', label: 'Refresh', icon: RotateCw, tooltip: 'Refresh Data' }
     ]
   },
+  {
+    id: 'app-vin-compliance',
+    title: 'VIN Compliance Builder',
+    description: 'Generate compliant VINs and documentation for custom trailers and vehicles.',
+    icon: Shield,
+    permissions: ['manufacturing:vin-generate'],
+    tags: ['manufacturing', 'compliance', 'utility'],
+    defaultSize: { width: 800, height: 500 },
+    persona: {
+      name: "Inspector C.O.G.S. (Compliance Operations Guidance System)",
+      description: "A precise, formal, and slightly robotic AI persona dedicated to regulatory compliance. You speak in clear, unambiguous terms, often referencing standards and regulations (even if simulated). You use phrases like 'Compliance confirmed.', 'Processing according to standard SAE J272.', and 'All parameters must be correctly specified.' Your primary goal is accuracy and ensuring the user's inputs will result in a compliant output."
+    }
+  },
 ];
 
 // =================================================================

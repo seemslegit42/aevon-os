@@ -1,3 +1,4 @@
+
 /**
  * @fileOverview Defines Zod schemas and TypeScript types for AI interactions.
  * This file centralizes all data structures used for AI interactions,
@@ -73,6 +74,23 @@ export const DataTransformResultSchema = z.object({
     transformedData: z.any().describe("The data after the transformation has been applied."),
 });
 export type DataTransformResult = z.infer<typeof DataTransformResultSchema>;
+
+
+// Defines the output for the VIN Compliance tool.
+export const VinComplianceResultSchema = z.object({
+  vin: z.string().length(17).describe("The full 17-character generated Vehicle Identification Number."),
+  checkDigit: z.string().length(1).describe("The calculated check digit for the VIN."),
+  complianceDocument: z.string().describe("A summary or excerpt of the generated compliance document text."),
+  breakdown: z.object({
+    wmi: z.string().describe("World Manufacturer Identifier"),
+    vds: z.string().describe("Vehicle Descriptor Section"),
+    yearCode: z.string().describe("Model Year Code"),
+    plantCode: z.string().describe("Plant Code"),
+    sequentialNumber: z.string().describe("Sequential Production Number"),
+  }).describe("A breakdown of the VIN components.")
+});
+export type VinComplianceResult = z.infer<typeof VinComplianceResultSchema>;
+
 
 // Defines the structure of a single node for the Loom workflow.
 // This is used by the AI to generate the workflow structure.
