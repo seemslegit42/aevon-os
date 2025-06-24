@@ -3,7 +3,7 @@
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
-import { Warning } from 'phosphor-react';
+import { Warning, ArrowClockwise } from 'phosphor-react';
 import { useLayoutStore } from '@/stores/layout.store';
 
 interface Props {
@@ -16,13 +16,13 @@ interface State {
   error?: Error;
 }
 
-const FallbackUI = ({ error, onRetry, onClose }: { error?: Error, onRetry: () => void, onClose: () => void }) => {
+const FallbackUI = ({ error, onReload, onClose }: { error?: Error, onReload: () => void, onClose: () => void }) => {
     return (
         <div className="flex flex-col items-center justify-center h-full p-4 text-center bg-destructive/10 text-destructive">
             <Warning className="w-12 h-12 mb-4" />
-            <h3 className="text-lg font-headline text-destructive-foreground mb-2">Something Went Wrong</h3>
+            <h3 className="text-lg font-headline text-destructive-foreground mb-2">Component Error</h3>
             <p className="text-sm text-destructive-foreground/80 mb-4">
-              This component has encountered an error. You can try to reload it or close this window.
+              This window has encountered an unrecoverable error.
             </p>
             {error && (
               <details className="text-xs p-2 bg-black/20 rounded-md w-full text-left max-h-24 overflow-auto">
@@ -31,8 +31,8 @@ const FallbackUI = ({ error, onRetry, onClose }: { error?: Error, onRetry: () =>
               </details>
             )}
             <div className="flex items-center gap-4 mt-6">
-                <Button variant="destructive" onClick={onRetry}>Retry</Button>
-                <Button variant="outline" className="border-destructive/50 text-destructive hover:bg-destructive/20 hover:text-destructive" onClick={onClose}>Close Window</Button>
+                <Button variant="outline" onClick={onReload} className="border-destructive/50 text-destructive hover:bg-destructive/20 hover:text-destructive"><ArrowClockwise /> Reload Window</Button>
+                <Button variant="destructive" onClick={onClose}>Close Window</Button>
             </div>
         </div>
     );
@@ -51,9 +51,11 @@ class ErrorBoundary extends Component<Props, State> {
     console.error("Uncaught error in micro-app:", error, errorInfo);
   }
 
-  private handleRetry = () => {
+  private handleReload = () => {
+    // We can reset our own error state, but the reload action will trigger the remount
     this.setState({ hasError: false, error: undefined });
-  };
+    useLayoutStore.getState().reloadApp(this.props.itemId);
+  }
   
   private handleClose = () => {
     useLayoutStore.getState().closeItem(this.props.itemId);
@@ -64,7 +66,7 @@ class ErrorBoundary extends Component<Props, State> {
       return (
         <FallbackUI 
             error={this.state.error}
-            onRetry={this.handleRetry}
+            onReload={this.handleReload}
             onClose={this.handleClose}
         />
       );

@@ -25,6 +25,7 @@ interface LayoutState {
   closeAllInstancesOfApp: (appId: string) => boolean;
   focusLatestInstance: (appId: string) => boolean;
   moveItem: (itemId: string, newPos: Position) => void;
+  reloadApp: (itemId: string) => void;
   resetLayout: () => void;
 }
 
@@ -52,12 +53,10 @@ export const useLayoutStore = create<LayoutState>()(
 
       bringToFront: (id) => set(state => {
         const itemToFront = state.layoutItems.find(item => item.id === id);
-        // Do not bring maximized items to front if another item is clicked,
-        // unless the maximized item itself is clicked.
         if (state.focusedItemId !== id && state.layoutItems.some(i => i.isMaximized)) {
             const maximizedItem = state.layoutItems.find(i => i.isMaximized);
             if (maximizedItem && maximizedItem.id !== id) {
-                 return { focusedItemId: id }; // Just focus, don't change z-index
+                 return { focusedItemId: id }; 
             }
         }
 
@@ -102,7 +101,7 @@ export const useLayoutStore = create<LayoutState>()(
                           return {
                               ...item,
                               isMaximized: true,
-                              isMinimized: false, // Can't be minimized and maximized
+                              isMinimized: false,
                               lastX: item.x,
                               lastY: item.y,
                               lastWidth: item.width,
@@ -124,7 +123,6 @@ export const useLayoutStore = create<LayoutState>()(
                           };
                       }
                   }
-                  // When one item is maximized, ensure all others are not.
                   return { ...item, isMaximized: false };
               }),
               focusedItemId: id,
@@ -209,6 +207,39 @@ export const useLayoutStore = create<LayoutState>()(
         }));
         get().bringToFront(itemId);
       },
+      
+      reloadApp: (itemId: string) => set(state => {
+        const itemIndex = state.layoutItems.findIndex(item => item.id === itemId);
+        if (itemIndex === -1) {
+          return state; // Item not found, do nothing
+        }
+
+        const itemToReload = state.layoutItems[itemIndex];
+        
+        // This action is primarily for apps which can have broken internal state.
+        if (itemToReload.type !== 'app' || !itemToReload.appId) {
+            return state;
+        }
+
+        const newId = `${itemToReload.appId}-${crypto.randomUUID()}`;
+        const maxZ = Math.max(0, ...state.layoutItems.map(item => item.zIndex || 0));
+
+        const newItem: LayoutItem = {
+          ...itemToReload,
+          id: newId, // The new key will trigger a remount in React
+          zIndex: maxZ + 1,
+          isMinimized: false,
+          isMaximized: false,
+        };
+
+        const newLayoutItems = [...state.layoutItems];
+        newLayoutItems[itemIndex] = newItem;
+
+        return {
+          layoutItems: newLayoutItems,
+          focusedItemId: newId,
+        };
+      }),
 
       resetLayout: () => {
         set({ layoutItems: DEFAULT_LAYOUT_CONFIG, focusedItemId: null });
