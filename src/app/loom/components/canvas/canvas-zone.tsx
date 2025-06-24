@@ -4,9 +4,11 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { WorkflowNode } from '@/app/loom/components/workflow/workflow-node';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Sparkles, MousePointer2 } from 'lucide-react'; 
+import { Sparkles, MousePointer2, Play } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 import type { WorkflowNodeData, NodeType, NodeStatus, Connection, ConnectingState } from '@/types/loom';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 interface CanvasZoneProps {
   workflowName?: string;
@@ -19,6 +21,8 @@ interface CanvasZoneProps {
   onInputPortClick: (nodeId: string) => void; 
   onOutputPortClick: (nodeId: string, portElement: HTMLDivElement) => void; 
   connectingState: ConnectingState | null;
+  onRunWorkflow: () => void;
+  isWorkflowRunning: boolean;
 }
 
 interface PortPosition {
@@ -37,6 +41,8 @@ export function CanvasZone({
   onInputPortClick,
   onOutputPortClick,
   connectingState,
+  onRunWorkflow,
+  isWorkflowRunning,
 }: CanvasZoneProps) {
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const nodeRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -215,16 +221,30 @@ export function CanvasZone({
       onMouseMove={handleMouseMove} 
       ref={canvasRef}
     >
+       <TooltipProvider>
       <div className={viewportContentStyle}> {/* Added grid-background here */}
         {workflowName && (
-          <div className="mb-8 p-4 bg-card/80 rounded-lg shadow backdrop-blur-md sticky top-0 z-20"> {/* Adjusted top to 0 due to p-8 on parent */}
-            <h2 className="text-xl font-headline mb-2 text-primary">
-              Workflow: {workflowName || "Untitled Flow"}
-            </h2>
-             <p className="text-xs text-muted-foreground">
-              {nodes.length} nodes, {connections.length} connections.
-              {connectingState && <span className="text-accent ml-2">Connecting from: {nodes.find(n=>n.id === connectingState.fromNodeId)?.title || '...'}</span>}
-            </p>
+          <div className="mb-8 p-3 bg-card/80 rounded-lg shadow backdrop-blur-md sticky top-0 z-20 flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-headline mb-1 text-primary">
+                Workflow: {workflowName || "Untitled Flow"}
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                {nodes.length} nodes, {connections.length} connections.
+                {connectingState && <span className="text-accent ml-2">Connecting from: {nodes.find(n=>n.id === connectingState.fromNodeId)?.title || '...'}</span>}
+              </p>
+            </div>
+             <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button onClick={onRunWorkflow} disabled={nodes.length === 0 || isWorkflowRunning} className="btn-gradient-primary-secondary">
+                      <Play className="h-4 w-4 mr-2"/>
+                      {isWorkflowRunning ? 'Executing...' : 'Run Workflow'}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{nodes.length > 0 ? 'Execute the entire workflow from the beginning.' : 'Add nodes to the canvas to run a workflow.'}</p>
+                </TooltipContent>
+              </Tooltip>
           </div>
         )}
         <div className={nodesContainerRelativeParentStyle}> 
@@ -283,6 +303,7 @@ export function CanvasZone({
             />
         )}
       </div>
+      </TooltipProvider>
     </ScrollArea>
   );
 }

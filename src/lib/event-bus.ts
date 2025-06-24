@@ -2,7 +2,7 @@
 import mitt, { type Emitter } from 'mitt';
 import type { AegisSecurityAnalysis, AiInsights, ContentGeneration, WebSummarizerResult, AiGeneratedFlowData, InvoiceData } from './ai-schemas';
 import type { AvatarState } from '@/types/dashboard';
-import type { BeepEmotion } from '@/types/loom';
+import type { BeepEmotion, TimelineEvent } from '@/types/loom';
 import type { MonthlySales, SalesTrend } from '@/services/sales-data.service';
 
 type AppEvents = {
@@ -32,6 +32,8 @@ type AppEvents = {
   'loom:flow-generated': AiGeneratedFlowData;
   'loom:open-templates': void;
   'loom:node-result': { content: string };
+  'loom:workflow-started': void;
+  'loom:workflow-completed': void;
   
   // Tool execution events
   'tool:success': { toolName: string };
@@ -44,6 +46,7 @@ type AppEvents = {
   // System-level Events
   'orchestration:log': { task: string; status: 'success' | 'failure'; details: string; targetId?: string; };
   'panel:focus': string;
+  'timeline:event': Omit<TimelineEvent, 'id' | 'timestamp'>;
 
   [key: string]: unknown;
 };

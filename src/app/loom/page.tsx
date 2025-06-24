@@ -64,6 +64,7 @@ export default function LoomStudioPage() {
     error: true,
   });
   const [isTemplateSelectorOpen, setIsTemplateSelectorOpen] = useState(false);
+  const [isWorkflowRunning, setIsWorkflowRunning] = useState(false);
 
   const { append: beepAppend } = useBeepChat();
   const isMobile = useIsMobile();
@@ -177,6 +178,16 @@ export default function LoomStudioPage() {
     eventBus.on('loom:node-result', handleNodeResult);
     return () => { eventBus.off('loom:node-result', handleNodeResult); };
   }, [addConsoleMessage, nodes, nodeExecutionStatus, updateNode, addTimelineEvent, updateNodeStatus]);
+  
+  useEffect(() => {
+    // Listen for workflow completion event from the agent
+    const handleWorkflowComplete = () => {
+      setIsWorkflowRunning(false);
+      addTimelineEvent({ type: 'workflow_completed', message: 'Workflow execution finished.' });
+    };
+    eventBus.on('loom:workflow-completed', handleWorkflowComplete);
+    return () => { eventBus.off('loom:workflow-completed', handleWorkflowComplete); };
+  }, [addTimelineEvent]);
 
 
   const handleNodeDropped = (newNodeData: Omit<WorkflowNodeData, 'id' | 'status'> & { status?: NodeStatus }) => {
@@ -252,6 +263,22 @@ export default function LoomStudioPage() {
     }
   }, [nodes, addConsoleMessage, addTimelineEvent, toast, beepAppend, updateNodeStatus]);
 
+  const handleRunWorkflow = useCallback(() => {
+    if (nodes.length === 0) {
+      toast({ title: "Empty Workflow", description: "Add nodes to the canvas before running.", variant: 'destructive' });
+      return;
+    }
+    setIsWorkflowRunning(true);
+    addConsoleMessage('info', `User initiated workflow execution for "${workflowName}".`);
+    // Pass a serializable version of the workflow to the agent
+    const serializableWorkflow = {
+      nodes: nodes.map(({ id, type, config }) => ({ id, type, config })),
+      connections,
+    };
+    beepAppend({ role: 'user', content: `Please run the entire Loom workflow: ${JSON.stringify(serializableWorkflow)}` });
+  }, [nodes, connections, workflowName, beepAppend, addConsoleMessage, toast]);
+
+
   const isNodeRunning = (nodeId: string): boolean => nodeExecutionStatus[nodeId] === 'running';
 
   const togglePanel = (panel: keyof PanelVisibility) => {
@@ -314,7 +341,7 @@ export default function LoomStudioPage() {
       <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
         <main className={`flex-1 relative flex overflow-hidden p-0 pb-16`}>
            <div className={`flex-1 h-full transition-opacity duration-300 ${anyMobilePanelOpen ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
-              <CanvasZone {...{workflowName, nodes, connections, onNodeDropped: handleNodeDropped, selectedNode, onNodeSelected: handleNodeSelected, nodeExecutionStatus, onInputPortClick: handleInputPortClick, onOutputPortClick: handleOutputPortClick, connectingState}} />
+              <CanvasZone {...{workflowName, nodes, connections, onNodeDropped: handleNodeDropped, selectedNode, onNodeSelected: handleNodeSelected, nodeExecutionStatus, onInputPortClick: handleInputPortClick, onOutputPortClick: handleOutputPortClick, connectingState, onRunWorkflow: handleRunWorkflow, isWorkflowRunning}} />
            </div>
            {Object.entries(panelVisibility).map(([panelKey, isVisible]) => (
                 <div key={panelKey} className={cn(`fixed inset-y-0 z-40 w-4/5 max-w-sm bg-card/90 backdrop-blur-lg shadow-2xl transform transition-transform duration-300 ease-in-out`, {
@@ -356,7 +383,7 @@ export default function LoomStudioPage() {
             </ResizableVerticalPanes>
             <ResizableHorizontalPanes storageKey="loom-center-right-h-split" initialDividerPosition={75}>
               <ResizableVerticalPanes storageKey="loom-center-v-split" initialDividerPosition={70} minPaneHeight={100}>
-                <CanvasZone {...{workflowName, nodes, connections, onNodeDropped: handleNodeDropped, selectedNode, onNodeSelected: handleNodeSelected, nodeExecutionStatus, onInputPortClick: handleInputPortClick, onOutputPortClick: handleOutputPortClick, connectingState}} />
+                <CanvasZone {...{workflowName, nodes, connections, onNodeDropped: handleNodeDropped, selectedNode, onNodeSelected: handleNodeSelected, nodeExecutionStatus, onInputPortClick: handleInputPortClick, onOutputPortClick: handleOutputPortClick, connectingState, onRunWorkflow: handleRunWorkflow, isWorkflowRunning}} />
                 <ResizableHorizontalPanes storageKey="loom-bottom-h-split" minPaneWidth={200}>
                     <TimelinePanel className={cn(!panelVisibility.timeline && "hidden")} onClose={() => togglePanel('timeline')} events={timelineEvents} />
                     <ConsolePanel className={cn(!panelVisibility.console && "hidden")} onClose={() => togglePanel('console')} messages={consoleMessages.filter(msg => consoleFilters[msg.type])} filters={consoleFilters} onToggleFilter={(type) => setConsoleFilters(f => ({ ...f, [type]: !f[type]}))} onClearConsole={clearConsole} />

@@ -11,6 +11,7 @@ import { generateObject } from 'ai';
 import { google } from '@/lib/ai/groq';
 import type { WorkflowNodeData, Connection } from '@/types/loom';
 import { logAction } from '@/services/action-log.service';
+import eventBus from '@/lib/event-bus';
 
 import * as SalesDataService from '@/services/sales-data.service';
 import * as BillingService from '@/services/billing.service';
@@ -211,6 +212,35 @@ const extractInvoiceDataTool = createTool({
     }
 });
 
+const runLoomWorkflowTool = createTool({
+    name: "runLoomWorkflow",
+    description: "Executes a full workflow defined in Loom Studio. It simulates the flow, logging each step.",
+    schema: z.object({
+        nodes: z.array(z.any()),
+        connections: z.array(z.any()),
+    }),
+    func: async ({ nodes, connections }) => {
+        // In a real implementation, this would be a complex graph traversal.
+        // For now, we simulate it and emit events.
+        eventBus.emit('loom:workflow-started' as any); // Use 'as any' if type isn't defined
+        
+        for (const node of nodes) {
+            await new Promise(res => setTimeout(res, 750));
+            eventBus.emit('timeline:event' as any, { type: 'node_running', message: `Executing ${node.title}`, nodeId: node.id, nodeTitle: node.title });
+            
+            await new Promise(res => setTimeout(res, 1500));
+            const success = Math.random() > 0.15; // 85% success rate
+            const status = success ? 'completed' : 'failed';
+            eventBus.emit('timeline:event' as any, { type: `node_${status}`, message: `Node ${node.title} ${status}`, nodeId: node.id, nodeTitle: node.title });
+        }
+        
+        await new Promise(res => setTimeout(res, 500));
+        eventBus.emit('loom:workflow-completed' as any);
+
+        return { success: true, message: `Workflow execution simulation completed.` };
+    }
+});
+
 
 // --- Client-Side UI Manipulation Tools ---
 const focusItemTool = createTool({ name: 'focusItem', description: "Brings a specific window into focus.", schema: z.object({ instanceId: z.string() }), func: async () => {}, isClientSide: true });
@@ -234,7 +264,7 @@ const resetLayoutTool = createTool({ name: 'resetLayout', description: 'Resets t
 const allTools = [
     searchKnowledgeBaseTool, getSalesAnalyticsDataTool, getSubscriptionStatusTool,
     analyzeSecurityAlertTool, generateWorkspaceInsightsTool, generateMarketingContentTool,
-    summarizeWebpageTool, extractInvoiceDataTool,
+    summarizeWebpageTool, extractInvoiceDataTool, runLoomWorkflowTool,
     focusItemTool, addItemTool, removeItemTool, resetLayoutTool,
 ];
 
@@ -283,6 +313,7 @@ Selected Node:
 ${selectedNodeSummary}
 
 **Loom Instructions:**
+- If the user asks to "run the workflow", "execute the flow", or a similar command, use the 'runLoomWorkflow' tool. Pass the entire workflow (nodes and connections) to the tool.
 - When asked to "explain this", "explain the selected node", or a similar query, use the 'Selected Node' context to provide a clear, concise explanation of its purpose and function.
 - When asked "what should I do next?" or to "suggest a node", analyze the graph (especially nodes without outgoing connections) and suggest a logical next step (e.g., "After a 'Web Summarizer' node, you could add a 'Prompt' node to reformat the summary.").
 - Do NOT offer to create connections or modify the graph directly. Instead, guide the user on how they can do it.
