@@ -80,7 +80,7 @@ const TopBar: React.FC = () => {
     };
 
     return (
-        <div className="relative w-full max-w-md h-9">
+        <div className={cn("command-bar-container relative w-full max-w-md h-9", `command-bar-glow-${avatarState}`)}>
             <form onSubmit={handleCommandSubmit} className="w-full h-full">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
