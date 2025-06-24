@@ -20,7 +20,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { getEmotionFromText } from '@/lib/sentiment-parser';
 import { BeepEmotion } from '@/types/loom';
 
-const BeepAvatar3D = dynamic(() => import('@/app/dashboard/beep-avatar-3d'), {
+const BeepAvatar3D = dynamic(() => import('@/micro-apps/beep-avatar-3d'), {
   ssr: false,
   loading: () => <Skeleton className="w-full h-full rounded-full" />,
 });

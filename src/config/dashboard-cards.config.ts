@@ -14,12 +14,12 @@ import { agentConfigAppConfig } from '@/micro-apps/agent-config';
 
 
 // Lazy loaded card content components
-const BeepCardContent = lazy(() => import('@/app/dashboard/beep-card-content'));
-const LiveOrchestrationFeedCardContent = lazy(() => import('@/app/dashboard/live-orchestration-feed-card-content'));
-const MicroAppsCardContent = lazy(() => import('@/app/dashboard/micro-apps-card-content'));
-const AiInsightsCardContent = lazy(() => import('@/app/dashboard/ai-insights-card-content'));
-const AgentPresenceCardContent = lazy(() => import('@/app/dashboard/agent-presence-card-content'));
-const DevHudCardContent = lazy(() => import('@/app/dashboard/dev-hud-card-content'));
+const BeepCardContent = lazy(() => import('@/micro-apps/beep-card-content'));
+const LiveOrchestrationFeedCardContent = lazy(() => import('@/micro-apps/live-orchestration-feed-card-content'));
+const MicroAppsCardContent = lazy(() => import('@/micro-apps/micro-apps-card-content'));
+const AiInsightsCardContent = lazy(() => import('@/micro-apps/ai-insights-card-content'));
+const AgentPresenceCardContent = lazy(() => import('@/micro-apps/agent-presence-card-content'));
+const DevHudCardContent = lazy(() => import('@/micro-apps/dev-hud-card-content'));
 
 // Icons from Phosphor React
 import {

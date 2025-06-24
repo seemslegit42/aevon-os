@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { User } from 'phosphor-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import BeepToolCallDisplay from '@/app/dashboard/beep-tool-call';
+import BeepToolCallDisplay from '@/micro-apps/beep-tool-call';
 import type { Message } from 'ai';
 
 interface BeepChatHistoryProps {
