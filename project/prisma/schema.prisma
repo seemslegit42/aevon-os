@@ -1,0 +1,179 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Datasource and Generator
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ===================================
+// Core User & Auth Models
+// ===================================
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  avatarUrl    String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  // Relations
+  accounts     Account[]
+  subscription Subscription?
+  layouts      DashboardLayout[]
+  workflows    LoomWorkflow[]
+  transactions Transaction[]
+  invoices     Invoice[]
+  alerts       SecurityAlert[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          String  // e.g., 'google', 'credentials'
+  providerAccountId String
+  
+  @@unique([provider, providerAccountId])
+}
+
+// ===================================
+// Subscription & Billing Models
+// ===================================
+
+model Subscription {
+  id        String             @id @default(cuid())
+  userId    String             @unique
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan      PlanName
+  status    SubscriptionStatus
+  renewsOn  DateTime
+  manageUrl String
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}
+
+enum PlanName {
+  Pro
+  Team
+  Enterprise
+}
+
+enum SubscriptionStatus {
+  active
+  trialing
+  canceled
+}
+
+// ===================================
+// Dashboard & Layout Models
+// ===================================
+
+model DashboardLayout {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String   @default("Default")
+  isDefault Boolean  @default(true)
+  
+  // JSON field to store the array of layout items
+  items     Json
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId, name])
+}
+
+// ===================================
+// Loom Workflow Models
+// ===================================
+
+model LoomWorkflow {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  
+  // Storing nodes and connections as JSON is most practical for this use case
+  nodes       Json
+  connections Json
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ===================================
+// Financial Micro-App Models
+// ===================================
+
+model Transaction {
+  id          String          @id @default(cuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        DateTime
+  account     String
+  type        TransactionType
+  debit       Float?
+  credit      Float?
+  description String?
+  
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+enum TransactionType {
+  Income
+  Expense
+  Asset
+  Liability
+  Equity
+}
+
+model Invoice {
+  id         String        @id @default(cuid())
+  userId     String
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientName String
+  issuedDate DateTime      @default(now())
+  dueDate    DateTime
+  amount     Float
+  status     InvoiceStatus
+  
+  items      Json?
+  
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+enum InvoiceStatus {
+  Draft
+  Sent
+  Paid
+  Overdue
+}
+
+// ===================================
+// Aegis Security Models
+// ===================================
+
+model SecurityAlert {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type           String    // e.g., 'Phishing Attempt', 'Malware Detected', 'Unusual Login'
+  severity       String    // 'Low', 'Medium', 'High', 'Critical'
+  details        Json
+  status         String    @default("new") // 'new', 'analyzed', 'resolved'
+  analysisResult Json?
+  
+  timestamp      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
