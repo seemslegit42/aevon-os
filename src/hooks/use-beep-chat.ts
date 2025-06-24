@@ -11,6 +11,7 @@ export function useBeepChat() {
     messages: s.messages,
     append: s.append,
     isLoading: s.isLoading,
+    error: s.error,
     setMessages: s.setMessages,
   }), shallow);
   

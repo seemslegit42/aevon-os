@@ -66,7 +66,7 @@ export default function LoomStudioPage() {
   const [isTemplateSelectorOpen, setIsTemplateSelectorOpen] = useState(false);
   const [isWorkflowRunning, setIsWorkflowRunning] = useState(false);
 
-  const { append: beepAppend } = useBeepChat();
+  const { append: beepAppend, error: beepError } = useBeepChat();
   const isMobile = useIsMobile();
   const { toast } = useToast();
   
@@ -164,6 +164,31 @@ export default function LoomStudioPage() {
     return () => { eventBus.off('loom:workflow-completed', handleWorkflowComplete); };
   }, [addTimelineEvent]);
 
+
+  const runningNodeId = Object.keys(nodeExecutionStatus).find(
+    (id) => nodeExecutionStatus[id] === 'running'
+  );
+
+  useEffect(() => {
+    if (beepError && runningNodeId) {
+      const runningNode = nodes.find(n => n.id === runningNodeId);
+      if (runningNode) {
+        const errorMessage = beepError.message || 'An unknown API error occurred.';
+        updateNode(runningNode.id, {
+          status: 'failed',
+          config: { ...runningNode.config, output: { error: errorMessage } }
+        });
+        updateNodeStatus(runningNode.id, 'failed');
+        addTimelineEvent({
+          type: 'node_failed',
+          message: `Node failed due to API error: ${errorMessage}`,
+          nodeId: runningNode.id,
+          nodeTitle: runningNode.title,
+        });
+        addConsoleMessage('error', `Node ${runningNode.title} failed: ${errorMessage}`);
+      }
+    }
+  }, [beepError, runningNodeId, nodes, updateNode, updateNodeStatus, addTimelineEvent, addConsoleMessage]);
 
   const handleNodeDropped = (newNodeData: Omit<WorkflowNodeData, 'id' | 'status'> & { status?: NodeStatus }) => {
     if (nodes.length === 0) {
