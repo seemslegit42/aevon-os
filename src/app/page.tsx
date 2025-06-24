@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -9,7 +8,7 @@ import { shallow } from 'zustand/shallow';
 import eventBus from '@/lib/event-bus';
 import { WelcomeModal } from '@/components/welcome-modal';
 import CommandPalette from '@/components/command-palette';
-import { useIsMobile } from '@/hooks/use-is-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { DesktopDashboard } from '@/components/desktop-dashboard';
 import { MobileDashboard } from '@/components/mobile-dashboard';
 import { cn } from '@/lib/utils';
