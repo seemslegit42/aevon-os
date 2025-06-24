@@ -14,7 +14,7 @@ import type { WorkflowNodeData, Connection } from '@/types/loom';
 import * as SalesDataService from '@/services/sales-data.service';
 import * as BillingService from '@/services/billing.service';
 
-import { ALL_ITEM_IDS } from '@/config/dashboard-items.data';
+import { ALL_CARD_CONFIGS, ALL_MICRO_APPS, type AppRegistration } from '@/config/app-registry';
 import type { LayoutItem } from '@/types/dashboard';
 import { 
     AegisSecurityAnalysisSchema, 
@@ -24,7 +24,6 @@ import {
     SubscriptionStatusSchema,
     WebSummarizerResultSchema,
 } from '../ai-schemas';
-import type { AppRegistration } from '@/config/app-registry';
 
 // =================================================================
 // Agent State Definition
@@ -135,8 +134,6 @@ const generateWorkspaceInsightsTool = createTool({
     func: async ({ layout }) => {
         const openWindowsSummary = layout.length > 0
             ? layout.map((item: LayoutItem) => {
-                // This server-side function must NOT import the full component configs.
-                // We just need a name, which we can derive from the ID.
                 const name = item.cardId || item.appId || 'Unknown Item';
                 return `- ${name} (instanceId: ${item.id})`;
             }).join('\n')
@@ -181,6 +178,8 @@ const summarizeWebpageTool = createTool({
 });
 
 // --- Client-Side UI Manipulation Tools ---
+const ALL_ITEM_IDS = [...ALL_MICRO_APPS.map(app => app.id), ...ALL_CARD_CONFIGS.map(card => card.id)];
+
 const focusItemTool = createTool({ name: 'focusItem', description: "Brings a specific window into focus.", schema: z.object({ instanceId: z.string() }), func: async () => {}, isClientSide: true });
 const addItemTool = createTool({
     name: 'addItem',
