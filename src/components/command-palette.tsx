@@ -241,7 +241,7 @@ const CommandPalette: React.FC = () => {
              <MicroAppList apps={filteredApps} onLaunch={handleLaunchApp} />
              {filteredApps.length === 0 && searchTerm && <p className="text-sm text-muted-foreground text-center py-2">No micro-apps match your search.</p>}
             
-             <DashboardZoneList cards={ALL_CARD_CONFIGS} activeCardIds={activeCardIds} onAdd={handleAddCard} onRemove={handleCloseItem}/>
+             <DashboardZoneList cards={filteredCards} activeCardIds={activeCardIds} onAdd={handleAddCard} onRemove={handleCloseItem}/>
              {filteredCards.length === 0 && searchTerm && <p className="text-sm text-muted-foreground text-center py-2">No zones match your search.</p>}
 
              <OpenWindowList instances={openAppInstances} appMap={appMap} onFocus={handleFocusItem} onClose={handleCloseItem} />
