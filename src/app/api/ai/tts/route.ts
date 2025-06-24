@@ -89,6 +89,15 @@ export async function POST(req: NextRequest) {
   const rateLimitResponse = await rateLimiter(req);
   if (rateLimitResponse) return rateLimitResponse;
 
+  // Production Hardening: Check for required API key
+  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+      console.error('AEGIS ALERT: TTS service is offline. Reason: GOOGLE_GENERATIVE_AI_API_KEY is not configured.');
+      return new Response(JSON.stringify({ error: "Server configuration error: The TTS service is not available." }), { 
+          status: 503, // Service Unavailable
+          headers: { 'Content-Type': 'application/json' },
+      });
+  }
+
   try {
     const { text } = await req.json();
 
@@ -103,7 +112,7 @@ export async function POST(req: NextRequest) {
     const ssmlText = wrapWithSSML(text, tone);
 
     const { speech } = await generate({
-      model: google('gemini-2.5-flash-preview-tts'),
+      model: google('text-to-speech'),
       prompt: ssmlText,
     });
 

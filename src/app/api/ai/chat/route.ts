@@ -44,6 +44,15 @@ export async function POST(req: NextRequest) {
     const rateLimitResponse = await rateLimiter(req);
     if (rateLimitResponse) return rateLimitResponse;
 
+    // Production Hardening: Check for required API keys
+    if (!process.env.GROQ_API_KEY || !process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+        console.error('AEGIS ALERT: Chat service is offline. Reason: Required API keys are not configured.');
+        return new Response(JSON.stringify({ error: "Server configuration error: The chat service is not available." }), { 
+            status: 503, // Service Unavailable
+            headers: { 'Content-Type': 'application/json' },
+        });
+    }
+
     try {
         const { messages, layoutItems, loomState, currentRoute, activeMicroAppPersona }: { 
             messages: Message[], 
