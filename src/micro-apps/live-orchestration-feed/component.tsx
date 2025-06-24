@@ -1,12 +1,11 @@
 
 "use client";
-import React, { useEffect } from 'react';
+import React from 'react';
 import { CheckCircle, Warning, CaretDown } from 'phosphor-react';
 import { cn } from '@/lib/utils';
-import { ScrollArea } from '../components/ui/scroll-area';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import eventBus from '@/lib/event-bus';
 import { useNotificationStore, type Notification } from '@/stores/notification.store';
 
 const LiveOrchestrationFeedCardContent: React.FC = () => {

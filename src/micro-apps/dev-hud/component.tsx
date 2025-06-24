@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -10,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowClockwise, X } from 'phosphor-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { ALL_MICRO_APPS } from '@/config/app-registry';
 
 const DevHudCardContent: React.FC = () => {
     const { layoutItems, reloadApp, closeItem } = useLayoutStore(
@@ -21,12 +21,7 @@ const DevHudCardContent: React.FC = () => {
         shallow
     );
 
-    const { apps } = useMicroAppStore(
-        (state) => ({ apps: state.apps }),
-        shallow
-    );
-
-    const appMap = React.useMemo(() => new Map(apps.map(app => [app.id, app])), [apps]);
+    const appMap = React.useMemo(() => new Map(ALL_MICRO_APPS.map(app => [app.id, app])), []);
 
     const mountedApps = layoutItems.filter(item => item.type === 'app');
     const mountedCards = layoutItems.filter(item => item.type === 'card');

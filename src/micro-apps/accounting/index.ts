@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+
 import type { MicroAppRegistration } from '@/stores/micro-app.store';
 import { Calculator } from 'phosphor-react';
 
@@ -7,7 +7,6 @@ export const accountingAppConfig: MicroAppRegistration = {
   title: 'Accounting',
   description: 'A modular accounting suite for managing ledgers, invoices, payroll, and taxes.',
   icon: Calculator,
-  component: lazy(() => import('./component')),
   permissions: ['accounting:full-access'],
   tags: ['finance', 'accounting', 'business'],
   defaultSize: { width: 700, height: 520 },

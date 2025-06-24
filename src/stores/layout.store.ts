@@ -1,32 +1,19 @@
-
 "use client";
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { Position, Size } from 'react-rnd';
 import type { LayoutItem } from '@/types/dashboard';
-import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
-import type { MicroAppRegistration } from './micro-app.store';
+import { ALL_CARD_CONFIGS, ALL_MICRO_APPS, DEFAULT_LAYOUT_CONFIG } from '@/config/app-registry';
+import type { AppRegistration } from '@/config/app-registry';
 import eventBus from '@/lib/event-bus';
 
-const LAYOUT_STORAGE_KEY = 'dashboardLayout_v8_grid';
-
-// We must filter out the dev-hud from the default layout.
-const DEFAULT_LAYOUT_CONFIG: LayoutItem[] = ALL_CARD_CONFIGS
-    .filter(card => card.id !== 'dev-hud')
-    .map((card, index) => ({
-        id: card.id,
-        type: 'card',
-        cardId: card.id,
-        ...card.defaultLayout,
-        zIndex: index + 1
-    }));
-
+const LAYOUT_STORAGE_KEY = 'dashboardLayout_v9_stable';
 
 interface LayoutState {
   layoutItems: LayoutItem[];
   focusedItemId: string | null;
-  activeAppContext: MicroAppRegistration | null;
+  activeAppContext: AppRegistration | null;
   setFocusedItemId: (id: string | null) => void;
   updateItemLayout: (id: string, newPos: Position, newSize?: Size) => void;
   bringToFront: (id: string) => void;
@@ -34,7 +21,7 @@ interface LayoutState {
   toggleMinimizeItem: (id: string) => void;
   toggleMaximizeItem: (id: string) => void;
   addCard: (cardId: string) => string | undefined;
-  launchApp: (app: MicroAppRegistration) => string;
+  launchApp: (app: AppRegistration) => string;
   cloneApp: (appId: string) => string | undefined;
   closeAllInstancesOfApp: (appId: string) => boolean;
   focusLatestInstance: (appId: string) => boolean;
@@ -78,7 +65,7 @@ export const useLayoutStore = create<LayoutState>()(
         );
         
         const itemToFront = newItems.find(item => item.id === id);
-        let newActiveAppContext: MicroAppRegistration | null = null;
+        let newActiveAppContext: AppRegistration | null = null;
         if (itemToFront?.type === 'app' && itemToFront.appId) {
             newActiveAppContext = ALL_MICRO_APPS.find(app => app.id === itemToFront.appId) || null;
         }
@@ -100,13 +87,11 @@ export const useLayoutStore = create<LayoutState>()(
 
         if (itemToClose) {
             let itemName = "Item";
-            if (itemToClose.type === 'card') {
-                const cardConfig = ALL_CARD_CONFIGS.find(c => c.id === itemToClose.cardId);
-                if (cardConfig) itemName = cardConfig.title;
-            } else if (itemToClose.type === 'app') {
-                const appConfig = ALL_MICRO_APPS.find(a => a.id === itemToClose.appId);
-                if (appConfig) itemName = appConfig.title;
-            }
+            const config = itemToClose.type === 'card'
+                ? ALL_CARD_CONFIGS.find(c => c.id === itemToClose.cardId)
+                : ALL_MICRO_APPS.find(a => a.id === itemToClose.appId);
+            if (config) itemName = config.title;
+
             eventBus.emit('orchestration:log', { 
                 task: 'Item Closed', 
                 status: 'success', 
@@ -122,9 +107,10 @@ export const useLayoutStore = create<LayoutState>()(
             if (isNowMinimized) {
               return { ...item, isMinimized: true, isMaximized: false, lastHeight: item.height, height: 44 };
             } else {
-              const cardConfig = item.type === 'card' ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId) : null;
-              const appConfig = item.type === 'app' ? ALL_MICRO_APPS.find(a => a.id === item.appId) : null;
-              const defaultHeight = cardConfig?.minHeight ?? appConfig?.defaultSize.height ?? 200;
+              const config = item.type === 'card' 
+                ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId) 
+                : ALL_MICRO_APPS.find(a => a.id === item.appId);
+              const defaultHeight = (config && 'minHeight' in config ? config.minHeight : config?.defaultSize.height) ?? 200;
               return { ...item, isMinimized: false, height: item.lastHeight || defaultHeight, lastHeight: undefined };
             }
           }
@@ -140,30 +126,20 @@ export const useLayoutStore = create<LayoutState>()(
                       const isNowMaximized = !item.isMaximized;
                       if (isNowMaximized) {
                           return {
-                              ...item,
-                              isMaximized: true,
-                              isMinimized: false,
-                              lastX: item.x,
-                              lastY: item.y,
-                              lastWidth: item.width,
-                              lastHeight: item.isMinimized ? item.lastHeight : item.height,
-                              zIndex: maxZ + 1,
+                              ...item, isMaximized: true, isMinimized: false,
+                              lastX: item.x, lastY: item.y, lastWidth: item.width,
+                              lastHeight: item.isMinimized ? item.lastHeight : item.height, zIndex: maxZ + 1,
                           };
                       } else {
                           return {
-                              ...item,
-                              isMaximized: false,
-                              x: item.lastX ?? 50,
-                              y: item.lastY ?? 50,
-                              width: item.lastWidth ?? 500,
-                              height: item.lastHeight ?? 400,
-                              lastX: undefined,
-                              lastY: undefined,
-                              lastWidth: undefined,
-                              lastHeight: undefined,
+                              ...item, isMaximized: false,
+                              x: item.lastX ?? 50, y: item.lastY ?? 50,
+                              width: item.lastWidth ?? 500, height: item.lastHeight ?? 400,
+                              lastX: undefined, lastY: undefined, lastWidth: undefined, lastHeight: undefined,
                           };
                       }
                   }
+                  // When one item is maximized, ensure no others are
                   return { ...item, isMaximized: false };
               }),
               focusedItemId: id,
@@ -187,7 +163,7 @@ export const useLayoutStore = create<LayoutState>()(
         }
 
         const maxZ = currentItems.length > 0 ? Math.max(0, ...currentItems.map(item => item.zIndex || 0)) : 0;
-        const newCard: LayoutItem = { id: cardId, type: 'card', cardId: cardId, ...cardConfig.defaultLayout, zIndex: maxZ + 1 };
+        const newCard: LayoutItem = { id: cardId, type: 'card', cardId: cardId, x: cardConfig.defaultSize.x, y: cardConfig.defaultSize.y, width: cardConfig.defaultSize.width, height: cardConfig.defaultSize.height, zIndex: maxZ + 1 };
         set(state => ({
           layoutItems: [...state.layoutItems, newCard],
           focusedItemId: cardId
@@ -221,10 +197,8 @@ export const useLayoutStore = create<LayoutState>()(
         }));
         
         eventBus.emit('orchestration:log', {
-            task: 'App Launched',
-            status: 'success',
-            details: `A new instance of "${app.title}" has been launched.`,
-            targetId: instanceId
+            task: 'App Launched', status: 'success',
+            details: `A new instance of "${app.title}" has been launched.`, targetId: instanceId
         });
         return instanceId;
       },
@@ -246,10 +220,7 @@ export const useLayoutStore = create<LayoutState>()(
         const appConfig = ALL_MICRO_APPS.find(a => a.id === appId);
         if (appConfig) {
             eventBus.emit('orchestration:log', {
-                task: 'App Cloned',
-                status: 'success',
-                details: `Cloned instance of "${appConfig.title}".`,
-                targetId: instanceId
+                task: 'App Cloned', status: 'success', details: `Cloned instance of "${appConfig.title}".`, targetId: instanceId
             });
         }
         return instanceId;
@@ -287,71 +258,29 @@ export const useLayoutStore = create<LayoutState>()(
       
       reloadApp: (itemId: string) => set(state => {
         const itemIndex = state.layoutItems.findIndex(item => item.id === itemId);
-        if (itemIndex === -1) {
-          return state; // Item not found, do nothing
-        }
+        if (itemIndex === -1) return state;
 
         const itemToReload = state.layoutItems[itemIndex];
-        
-        // This action is primarily for apps which can have broken internal state.
-        if (itemToReload.type !== 'app' || !itemToReload.appId) {
-            return state;
-        }
-
-        const newId = `${itemToReload.appId}-${crypto.randomUUID()}`;
+        const newId = `${itemToReload.cardId || itemToReload.appId}-${crypto.randomUUID()}`;
         const maxZ = Math.max(0, ...state.layoutItems.map(item => item.zIndex || 0));
 
-        const newItem: LayoutItem = {
-          ...itemToReload,
-          id: newId, // The new key will trigger a remount in React
-          zIndex: maxZ + 1,
-          isMinimized: false,
-          isMaximized: false,
-        };
+        const newItem: LayoutItem = { ...itemToReload, id: newId, zIndex: maxZ + 1, isMinimized: false, isMaximized: false };
 
         const newLayoutItems = [...state.layoutItems];
         newLayoutItems[itemIndex] = newItem;
-
-        return {
-          layoutItems: newLayoutItems,
-          focusedItemId: newId,
-        };
+        return { layoutItems: newLayoutItems, focusedItemId: newId };
       }),
 
       resetLayout: () => {
         set({ layoutItems: DEFAULT_LAYOUT_CONFIG, focusedItemId: null, activeAppContext: null });
         eventBus.emit('orchestration:log', {
-            task: 'Layout Reset',
-            status: 'success',
-            details: `Workspace layout has been reset to default.`
+            task: 'Layout Reset', status: 'success', details: `Workspace layout has been reset to default.`
         });
       },
     }),
     {
       name: LAYOUT_STORAGE_KEY,
       storage: createJSONStorage(() => localStorage),
-      merge: (persistedState, currentState) => {
-        if (persistedState && typeof persistedState === 'object' && 'layoutItems' in persistedState) {
-          const parsedState = persistedState as Partial<LayoutState>;
-          if (Array.isArray(parsedState.layoutItems) && parsedState.layoutItems.length > 0) {
-            const validLayouts = parsedState.layoutItems.filter((item: any) => 
-              item && typeof item.id === 'string' && typeof item.type === 'string' &&
-              (item.type === 'card' 
-                ? ALL_CARD_CONFIGS.some(c => c.id === item.cardId) 
-                : ALL_MICRO_APPS.some(a => a.id === item.appId))
-            );
-
-            if (validLayouts.length > 0) {
-              const mergedState = { ...currentState, ...persistedState, layoutItems: validLayouts };
-              if (!validLayouts.some((i: any) => i.id === parsedState.focusedItemId)) {
-                  mergedState.focusedItemId = null;
-              }
-              return mergedState;
-            }
-          }
-        }
-        return currentState;
-      },
     }
   )
 );

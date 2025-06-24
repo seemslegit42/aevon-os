@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, memo } from 'react';
@@ -6,22 +5,20 @@ import { Rnd } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { X, Minus, Square, ArrowsOut, ArrowsIn } from 'phosphor-react';
 import { Button } from '@/components/ui/button';
-import type { CardConfig } from '@/types/dashboard';
-import type { MicroAppRegistration } from '@/stores/micro-app.store';
 import type { LayoutItem } from '@/types/dashboard';
 import type { Position, Size } from 'react-rnd';
 import { cn } from '@/lib/utils';
 import { WindowContent } from './dashboard-window-content';
 import { useLayoutStore } from '@/stores/layout.store';
 import { ErrorBoundary } from './error-boundary';
+import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/app-registry';
 
 interface DashboardWindowProps {
   item: LayoutItem;
-  config: CardConfig | MicroAppRegistration; // Receive the pre-fetched config
   isFocused: boolean;
 }
 
-const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, config, isFocused }) => {
+const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocused }) => {
     const { 
         updateItemLayout, 
         bringToFront, 
@@ -32,11 +29,28 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, config
 
     const [isClosing, setIsClosing] = useState(false);
 
+    // Look up the config dynamically inside the component to avoid import cycles.
+    const config = item.type === 'card'
+      ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId)
+      : ALL_MICRO_APPS.find(a => a.id === item.appId);
+
+    if (!config) {
+      // This can happen if a layout item refers to an app/card that no longer exists.
+      // Render a fallback or simply nothing.
+      return (
+         <ErrorBoundary itemId={item.id}>
+          <div className="p-4 bg-destructive text-destructive-foreground">
+            <h3 className="font-bold">Error: Component not found</h3>
+            <p className="text-xs">The component with ID "{item.cardId || item.appId}" could not be found in the registry.</p>
+            <Button variant="outline" size="sm" onClick={() => closeItem(item.id)} className="mt-2">Close</Button>
+          </div>
+        </ErrorBoundary>
+      );
+    }
+    
     // Extract props directly from the config object
     const title = config.title;
     const Icon = config.icon;
-    const ContentComponent = 'content' in config ? config.content : config.component;
-    const contentProps = 'contentProps' in config ? config.contentProps : {};
     const minWidth = 'minWidth' in config ? config.minWidth : config.defaultSize.width;
     const minHeight = 'minHeight' in config ? config.minHeight : config.defaultSize.height;
     const cardClassName = 'cardClassName' in config ? config.cardClassName : "";
@@ -126,9 +140,8 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, config
             >
               <ErrorBoundary itemId={item.id}>
                  <WindowContent 
+                      itemId={item.id}
                       isMinimized={item.isMinimized}
-                      ContentComponent={ContentComponent}
-                      contentProps={contentProps}
                  />
               </ErrorBoundary>
             </MicroAppCard>

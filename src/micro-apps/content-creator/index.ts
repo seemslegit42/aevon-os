@@ -1,5 +1,4 @@
 
-import { lazy } from 'react';
 import type { MicroAppRegistration } from '@/stores/micro-app.store';
 import { PencilSimple } from 'phosphor-react';
 
@@ -8,7 +7,6 @@ export const contentCreatorAppConfig: MicroAppRegistration = {
   title: 'Content Creator',
   description: 'AI-powered assistant to generate marketing copy, blog posts, and more.',
   icon: PencilSimple,
-  component: lazy(() => import('./component')),
   permissions: [], // No special permissions needed
   tags: ['ai', 'writing', 'marketing'],
   defaultSize: { width: 750, height: 450 },

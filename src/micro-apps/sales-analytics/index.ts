@@ -1,14 +1,12 @@
 
-import { lazy } from 'react';
 import type { MicroAppRegistration } from '@/stores/micro-app.store';
-import { ChartBar, ArrowClockwise, DownloadSimple } from 'phosphor-react';
+import { ChartBar, ArrowClockwise, Download } from 'phosphor-react';
 
 export const salesAnalyticsAppConfig: MicroAppRegistration = {
   id: 'app-analytics',
   title: 'Sales Analytics',
   description: 'Detailed sales analytics and trends.',
   icon: ChartBar,
-  component: lazy(() => import('./component')),
   permissions: ['sales:view', 'analytics:read'],
   tags: ['analytics', 'sales'],
   defaultSize: { width: 500, height: 600 },
@@ -22,7 +20,7 @@ export const salesAnalyticsAppConfig: MicroAppRegistration = {
     {
       id: 'export',
       label: 'Export',
-      icon: DownloadSimple,
+      icon: Download,
       tooltip: 'Export data as CSV'
     }
   ]

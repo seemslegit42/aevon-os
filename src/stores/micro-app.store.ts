@@ -10,7 +10,6 @@ export interface MicroAppRegistration {
   title: string;
   description: string;
   icon: ComponentType<{ className?: string }>;
-  component: LazyExoticComponent<ComponentType<any>>; // The actual React component for the app, lazy loaded
   permissions: string[]; // Permissions required to use the app
   tags: string[]; // Tags for filtering and discovery
   defaultSize: { width: number; height: number };

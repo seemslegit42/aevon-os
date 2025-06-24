@@ -1,4 +1,7 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// Datasource and Generator
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -9,141 +12,168 @@ generator client {
 }
 
 // ===================================
-// User and Organization Models
+// Core User & Auth Models
 // ===================================
 
 model User {
-  id             String        @id @default(cuid())
-  email          String        @unique
-  name           String?
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  organizationId String?
-  subscription   Subscription?
-  layouts        Layout[]
-  workflows      Workflow[]
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String?
+  avatarUrl    String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  // Relations
+  accounts     Account[]
+  subscription Subscription?
+  layouts      DashboardLayout[]
+  workflows    LoomWorkflow[]
+  transactions Transaction[]
+  invoices     Invoice[]
+  alerts       SecurityAlert[]
 }
 
-model Organization {
-  id            String         @id @default(cuid())
-  name          String
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  users         User[]
-  subscriptions Subscription[]
-  layouts       Layout[]
-  workflows     Workflow[]
-  ledgerEntries LedgerEntry[]
-  invoices      Invoice[]
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          String  // e.g., 'google', 'credentials'
+  providerAccountId String
+  
+  @@unique([provider, providerAccountId])
 }
 
 // ===================================
-// Subscription and Billing Models
+// Subscription & Billing Models
 // ===================================
 
-enum SubscriptionPlan {
-  FREE
-  PRO
-  TEAM
-  ENTERPRISE
+model Subscription {
+  id        String             @id @default(cuid())
+  userId    String             @unique
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan      PlanName
+  status    SubscriptionStatus
+  renewsOn  DateTime
+  manageUrl String
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}
+
+enum PlanName {
+  Pro
+  Team
+  Enterprise
 }
 
 enum SubscriptionStatus {
-  ACTIVE
-  TRIALING
-  CANCELED
-  PAST_DUE
-}
-
-model Subscription {
-  id             String             @id @default(cuid())
-  organizationId String
-  organization   Organization       @relation(fields: [organizationId], references: [id])
-  userId         String?            @unique // Optional if billing is per-org
-  user           User?              @relation(fields: [userId], references: [id])
-  plan           SubscriptionPlan   @default(FREE)
-  status         SubscriptionStatus @default(ACTIVE)
-  renewsOn       DateTime?
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
+  active
+  trialing
+  canceled
 }
 
 // ===================================
-// OS and App State Models
+// Dashboard & Layout Models
 // ===================================
 
-model Layout {
-  id             String       @id @default(cuid())
-  name           String       @default("Default")
-  isDefault      Boolean      @default(true)
-  userId         String
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  items          Json
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-
+model DashboardLayout {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String   @default("Default")
+  isDefault Boolean  @default(true)
+  
+  // JSON field to store the array of layout items
+  items     Json
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
   @@unique([userId, name])
 }
 
-model Workflow {
-  id             String       @id @default(cuid())
-  name           String
-  description    String?
-  userId         String
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  nodes          Json
-  connections    Json
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+// ===================================
+// Loom Workflow Models
+// ===================================
+
+model LoomWorkflow {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  
+  // Storing nodes and connections as JSON is most practical for this use case
+  nodes       Json
+  connections Json
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 // ===================================
 // Financial Micro-App Models
 // ===================================
 
-enum LedgerEntryType {
-  INCOME
-  EXPENSE
-  ASSET
-  LIABILITY
-  EQUITY
+model Transaction {
+  id          String          @id @default(cuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        DateTime
+  account     String
+  type        TransactionType
+  debit       Float?
+  credit      Float?
+  description String?
+  
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 }
 
-model LedgerEntry {
-  id             String          @id @default(cuid())
-  organizationId String
-  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  date           DateTime
-  account        String
-  type           LedgerEntryType
-  debit          Float?
-  credit         Float?
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-}
-
-enum InvoiceStatus {
-  DRAFT
-  SENT
-  PAID
-  OVERDUE
-  VOID
+enum TransactionType {
+  Income
+  Expense
+  Asset
+  Liability
+  Equity
 }
 
 model Invoice {
-  id             String        @id @default(cuid())
-  organizationId String
-  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  client         String
-  date           DateTime      @default(now())
-  dueDate        DateTime
-  amount         Float
-  status         InvoiceStatus @default(DRAFT)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  id         String        @id @default(cuid())
+  userId     String
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientName String
+  issuedDate DateTime      @default(now())
+  dueDate    DateTime
+  amount     Float
+  status     InvoiceStatus
+  
+  items      Json?
+  
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+enum InvoiceStatus {
+  Draft
+  Sent
+  Paid
+  Overdue
+}
+
+// ===================================
+// Aegis Security Models
+// ===================================
+
+model SecurityAlert {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type           String    // e.g., 'Phishing Attempt', 'Malware Detected', 'Unusual Login'
+  severity       String    // 'Low', 'Medium', 'High', 'Critical'
+  details        Json
+  status         String    @default("new") // 'new', 'analyzed', 'resolved'
+  analysisResult Json?
+  
+  timestamp      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }

@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect } from 'react';
@@ -7,7 +6,7 @@ import TopBar from './top-bar';
 import { BeepChatProvider } from '../beep-chat-provider';
 import FloatingBeepAvatar from '../floating-beep-avatar';
 import { useMicroAppStore } from '@/stores/micro-app.store';
-import { ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
+import { ALL_MICRO_APPS } from '@/config/app-registry';
 
 type MainLayoutProps = {
   children: React.ReactNode;
