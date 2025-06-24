@@ -1,4 +1,3 @@
-
 // src/app/loom/components/layout/resizable-horizontal-panes.tsx
 'use client';
 

@@ -1,4 +1,3 @@
-
 // src/app/loom/components/layout/resizable-vertical-panes.tsx
 'use client';
 

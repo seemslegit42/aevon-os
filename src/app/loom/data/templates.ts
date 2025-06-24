@@ -1,4 +1,3 @@
-
 import type { WorkflowTemplate } from '@/types/loom';
 
 export const exampleTemplates: WorkflowTemplate[] = [

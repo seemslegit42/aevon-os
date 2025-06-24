@@ -1,4 +1,3 @@
-
 // src/app/loom/components/layout/bottom-bar.tsx
 'use client';
 
