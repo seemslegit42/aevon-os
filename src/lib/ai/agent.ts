@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { generateObject } from 'ai';
 import { google } from '@/lib/ai/groq';
 import type { WorkflowNodeData, Connection } from '@/types/loom';
+import { logAction } from '@/services/action-log.service';
 
 import * as SalesDataService from '@/services/sales-data.service';
 import * as BillingService from '@/services/billing.service';
@@ -46,22 +47,41 @@ export interface AgentState extends MessagesState {
 const createTool = (input: DynamicToolInput & { isClientSide?: boolean }) => new DynamicTool({
   ...input,
   func: async (args) => {
-    // For client-side tools, we just need to signal the intent to call them.
-    // The actual execution happens on the client.
     if (input.isClientSide) {
+      await logAction({
+        toolName: input.name,
+        arguments: args,
+        status: 'success',
+        result: { message: `Client-side tool ${input.name} call initiated.` },
+      });
       return JSON.stringify({ success: true, message: `Client-side tool ${input.name} called with arguments: ${JSON.stringify(args)}` });
     }
     
+    let status: 'success' | 'failure' = 'success';
+    let resultForLogging: any;
+    let finalOutput: string;
+
     try {
-      const result = await input.func(args);
-      // Server tools should return a stringified JSON object.
-      // The client is responsible for observing these results and updating the UI.
-      return JSON.stringify(result);
+      const toolResult = await input.func(args);
+      resultForLogging = toolResult;
+      finalOutput = JSON.stringify(toolResult);
     } catch (error: any) {
+      status = 'failure';
       const errorMessage = error.message || "An unexpected error occurred in the tool.";
       console.error(`Error in tool '${input.name}':`, errorMessage);
-      return JSON.stringify({ error: true, message: errorMessage });
+      resultForLogging = { error: true, message: errorMessage };
+      finalOutput = JSON.stringify(resultForLogging);
     }
+    
+    // Unified logging at the end
+    await logAction({
+      toolName: input.name,
+      arguments: args,
+      status: status,
+      result: resultForLogging,
+    });
+
+    return finalOutput;
   }
 });
 
