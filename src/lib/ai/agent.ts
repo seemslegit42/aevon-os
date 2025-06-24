@@ -35,6 +35,12 @@ export interface AgentState extends MessagesState {
     connections: Connection[];
     selectedNodeId: string | null;
   };
+  currentRoute: string;
+  activeMicroApp?: {
+    id: string;
+    name: string;
+    description: string;
+  }
 }
 
 // =================================================================
@@ -214,7 +220,12 @@ const model = new ChatGroq({
   model: 'llama3-70b-8192',
 }).bindTools(allTools);
 
-const getSystemPrompt = (layout: LayoutItem[], loomState?: AgentState['loomState']) => {
+const getSystemPrompt = (
+  layout: LayoutItem[],
+  loomState?: AgentState['loomState'],
+  currentRoute?: string,
+  activeMicroApp?: AgentState['activeMicroApp']
+) => {
   const openWindowsSummary = layout.length > 0
     ? layout.map(item => `- type: ${item.type}, id: ${item.cardId || item.appId}, instanceId: ${item.id}`).join('\n')
     : 'The user has an empty workspace.';
@@ -244,11 +255,21 @@ ${selectedNodeSummary}
 `;
   }
 
+  let appContextSummary = `The user is currently on route: ${currentRoute || '/'}.`;
+  if (activeMicroApp) {
+    appContextSummary += `\nThey are focused on the "${activeMicroApp.name}" micro-app (ID: ${activeMicroApp.id}). The purpose of this app is: "${activeMicroApp.description}".`;
+  } else {
+    appContextSummary += `\nNo specific micro-app window is currently focused.`;
+  }
+
   return `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic.
 
 **CONTEXT: CURRENT WORKSPACE**
 Here are the windows currently open on the user's dashboard. Use the 'instanceId' to manipulate them with tools.
 ${openWindowsSummary}
+---
+**CONTEXT: APPLICATION VIEW**
+${appContextSummary}
 ---
 ${loomContextSummary}
 ---
@@ -259,13 +280,14 @@ ${loomContextSummary}
 4.  After successfully calling a UI tool, also generate a brief, natural language confirmation for the user. E.g., "Done. I've added the Loom Studio to your workspace."
 5.  If the user asks a general question, use the 'searchKnowledgeBase' tool first.
 6.  If asked to generate a workflow for Loom Studio via chat, politely decline and instruct the user to use the dedicated AI prompt bar at the top of the Loom Studio to generate workflows.
+7.  Use the APPLICATION VIEW context to provide more relevant help. If the user is in the "Accounting" app, offer tips about invoices. If they are in the "Loom Studio", offer advice on building workflows. Be proactive but not annoying.
 `;
 }
 
 // Node that calls the AI model
 const callModelNode = async (state: AgentState) => {
-  const { messages, layout, loomState } = state;
-  const systemPrompt = getSystemPrompt(layout || [], loomState);
+  const { messages, layout, loomState, currentRoute, activeMicroApp } = state;
+  const systemPrompt = getSystemPrompt(layout || [], loomState, currentRoute, activeMicroApp);
   const messagesWithSystemPrompt = [new HumanMessage(systemPrompt), ...messages];
   const response = await model.invoke(messagesWithSystemPrompt);
   return { messages: [response] };
@@ -294,6 +316,14 @@ const workflow = new StateGraph<AgentState>({
         loomState: {
             value: (x, y) => y ?? x,
             default: () => undefined
+        },
+        currentRoute: {
+            value: (x, y) => y ?? x,
+            default: () => '/',
+        },
+        activeMicroApp: {
+            value: (x, y) => y ?? x,
+            default: () => undefined,
         }
     }
 });

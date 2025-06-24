@@ -1,13 +1,15 @@
-
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useChat, type ToolCallHandler, type Message } from 'ai/react';
 import { useLayoutStore } from '@/stores/layout.store';
 import { useToast } from '@/hooks/use-toast';
 import { useBeepChatStore } from '@/stores/beep-chat.store';
 import eventBus from '@/lib/event-bus';
 import { useLoomStore } from '@/stores/loom.store';
+import { usePathname } from 'next/navigation';
+import { ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
+import { shallow } from 'zustand/shallow';
 
 /**
  * This is a non-rendering component that initializes the Vercel `useChat` hook
@@ -24,8 +26,6 @@ export function BeepChatProvider() {
     for (const toolCall of toolCalls) {
       const { toolName, args } = toolCall;
       let result: any = { success: true, message: `Tool ${toolName} executed.` };
-      let status: 'success' | 'failure' = 'success';
-      let details = result.message;
 
       // This handler only executes client-side UI manipulation tools.
       // Server-side tools are filtered out by the agent and handled on the backend.
@@ -33,36 +33,30 @@ export function BeepChatProvider() {
         switch (toolName) {
             case 'focusItem':
                 layoutActions.bringToFront(args.instanceId as string);
-                details = `Focused on item: ${args.instanceId}`;
+                result.message = `Focused on item: ${args.instanceId}`;
                 break;
             case 'addItem':
                 layoutActions.addCard(args.itemId as string);
-                details = `Adding item: ${args.itemId}`;
+                result.message = `Adding item: ${args.itemId}`;
                 break;
             case 'removeItem':
                 layoutActions.closeItem(args.instanceId as string);
-                details = `Removing item: ${args.instanceId}`;
+                result.message = `Removing item: ${args.instanceId}`;
                 break;
             case 'resetLayout':
                 layoutActions.resetLayout();
-                details = `Resetting dashboard layout.`;
+                result.message = `Resetting dashboard layout.`;
                 break;
             default:
                 // If the tool is not a known client-side tool, we skip it.
                 // It will be sent back to the server for processing in the next turn.
                 continue;
         }
-        result = { success: true, message: details };
 
       } catch (error: any) {
         result = { error: true, message: error.message };
-        status = 'failure';
-        details = error.message;
-        toast({ variant: 'destructive', title: `UI Action Failed: ${toolName}`, description: details });
+        toast({ variant: 'destructive', title: `UI Action Failed: ${toolName}`, description: result.message });
       }
-      
-      // Log the execution of the client-side tool
-      eventBus.emit('orchestration:log', { task: `BEEP UI: ${toolName}`, status, details });
       
       // Add the result of the tool call to the chat history
       chatMessages.push({
@@ -100,23 +94,45 @@ export function BeepChatProvider() {
         }
     }
   });
+
+  const pathname = usePathname();
+  const { layoutItems, focusedItemId } = useLayoutStore(state => ({
+      layoutItems: state.layoutItems,
+      focusedItemId: state.focusedItemId,
+  }), shallow);
   
-  // Create a custom 'append' function that always includes the latest layout context.
-  // This makes the agent context-aware of the UI state.
-  const appendWithContext = async (message: Message) => {
-    const currentLayout = useLayoutStore.getState().layoutItems;
+  // Create a custom 'append' function that always includes the latest layout and app context.
+  const appendWithContext = useCallback(async (message: Message) => {
+    let activeMicroApp: { id: string; name: string; description: string } | undefined = undefined;
+
+    if (focusedItemId) {
+        const focusedItem = layoutItems.find(item => item.id === focusedItemId);
+        if (focusedItem && focusedItem.type === 'app' && focusedItem.appId) {
+            const appConfig = ALL_MICRO_APPS.find(app => app.id === focusedItem.appId);
+            if (appConfig) {
+                activeMicroApp = {
+                    id: appConfig.id,
+                    name: appConfig.title,
+                    description: appConfig.description,
+                };
+            }
+        }
+    }
+
     const { nodes, connections, selectedNodeId } = useLoomStore.getState();
     const loomState = nodes.length > 0 ? { nodes, connections, selectedNodeId } : undefined;
 
     return originalAppend(message, {
       options: { 
         body: { 
-            layoutItems: currentLayout,
+            layoutItems: layoutItems,
             loomState,
+            currentRoute: pathname,
+            activeMicroApp,
         } 
       }
     });
-  };
+  }, [pathname, layoutItems, focusedItemId, originalAppend]);
 
   // Sync the hook's state with the Zustand store
   useEffect(() => {
