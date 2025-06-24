@@ -14,12 +14,12 @@ import { useToast } from '@/hooks/use-toast';
 import type { ConsoleMessage, TimelineEvent } from '@/types/loom';
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/components/ui/textarea';
-import eventBus from '@/lib/event-bus';
+import { useBeepChat } from '@/hooks/use-beep-chat';
 
 // Embedded Form for Webpage Summarizer
 const WebpageSummarizerForm = ({ addConsoleMessage, addTimelineEvent }: { addConsoleMessage: Function, addTimelineEvent: Function }) => {
   const [url, setUrl] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const { append: beepAppend, isLoading: isBeepLoading } = useBeepChat();
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -28,19 +28,12 @@ const WebpageSummarizerForm = ({ addConsoleMessage, addTimelineEvent }: { addCon
       toast({ variant: 'destructive', title: 'URL is required.' });
       return;
     }
-    setIsLoading(true);
     addConsoleMessage('info', `Manual agent task dispatched: Summarize URL - ${url}`);
     addTimelineEvent({ type: 'info', message: 'Manual web summarization task started.' });
-    // This event will be caught by the BEEP agent via the main chat hook
-    eventBus.emit('beep:submitQuery', `Summarize the content of the webpage at this URL: ${url}`);
+    beepAppend({ role: 'user', content: `Summarize the content of the webpage at this URL: ${url}` });
     
-    // The result will be handled by the event listener in `page.tsx`, which updates the node.
-    // For manual tasks like this, we just need a timeout to reset the UI.
-    setTimeout(() => {
-        setIsLoading(false);
-        setUrl('');
-        toast({title: "Task Sent", description: "Web summarizer agent has been tasked."})
-    }, 2000);
+    toast({title: "Task Sent", description: "Web summarizer agent has been tasked."})
+    setUrl('');
   };
 
   return (
@@ -50,12 +43,12 @@ const WebpageSummarizerForm = ({ addConsoleMessage, addTimelineEvent }: { addCon
         placeholder="https://example.com"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
-        disabled={isLoading}
+        disabled={isBeepLoading}
         className="bg-input/70 h-8"
       />
-      <Button type="submit" size="sm" className="w-full text-xs" disabled={isLoading}>
-        {isLoading ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : <FileText className="h-4 w-4 mr-2" />}
-        {isLoading ? 'Tasking Agent...' : 'Summarize Webpage'}
+      <Button type="submit" size="sm" className="w-full text-xs" disabled={isBeepLoading}>
+        {isBeepLoading ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : <FileText className="h-4 w-4 mr-2" />}
+        {isBeepLoading ? 'Tasking Agent...' : 'Summarize Webpage'}
       </Button>
     </form>
   );
@@ -64,7 +57,7 @@ const WebpageSummarizerForm = ({ addConsoleMessage, addTimelineEvent }: { addCon
 // Embedded Form for Prompt Executor
 const PromptExecutorForm = ({ addConsoleMessage, addTimelineEvent }: { addConsoleMessage: Function, addTimelineEvent: Function }) => {
   const [prompt, setPrompt] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const { append: beepAppend, isLoading: isBeepLoading } = useBeepChat();
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -73,16 +66,12 @@ const PromptExecutorForm = ({ addConsoleMessage, addTimelineEvent }: { addConsol
       toast({ variant: 'destructive', title: 'Prompt cannot be empty.' });
       return;
     }
-    setIsLoading(true);
     addConsoleMessage('info', `Manual agent task dispatched: Execute Prompt - "${prompt.substring(0, 50)}..."`);
     addTimelineEvent({ type: 'info', message: 'Manual prompt execution task started.' });
-    eventBus.emit('beep:submitQuery', prompt);
+    beepAppend({ role: 'user', content: prompt });
 
-    setTimeout(() => {
-        setIsLoading(false);
-        setPrompt('');
-        toast({title: "Prompt Sent", description: "Agent has been tasked with your prompt."})
-    }, 2000);
+    toast({title: "Prompt Sent", description: "Agent has been tasked with your prompt."})
+    setPrompt('');
   };
   
   return (
@@ -91,13 +80,13 @@ const PromptExecutorForm = ({ addConsoleMessage, addTimelineEvent }: { addConsol
         placeholder="Enter a prompt for an LLM agent to execute..."
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
-        disabled={isLoading}
+        disabled={isBeepLoading}
         className="bg-input/70 text-xs min-h-[60px]"
         rows={3}
       />
-      <Button type="submit" size="sm" className="w-full text-xs" disabled={isLoading}>
-         {isLoading ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : <SendHorizonal className="h-4 w-4 mr-2" />}
-         {isLoading ? 'Sending to Agent...' : 'Execute Prompt'}
+      <Button type="submit" size="sm" className="w-full text-xs" disabled={isBeepLoading}>
+         {isBeepLoading ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : <SendHorizonal className="h-4 w-4 mr-2" />}
+         {isBeepLoading ? 'Sending to Agent...' : 'Execute Prompt'}
       </Button>
     </form>
   )
