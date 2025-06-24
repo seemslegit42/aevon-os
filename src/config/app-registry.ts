@@ -25,13 +25,14 @@ export const ALL_MICRO_APPS: AppRegistration[] = [
   },
   {
     id: 'app-aegis-security',
-    title: 'Aegis Security Command',
-    description: 'Real-time security posture and threat analysis for your entire digital ecosystem.',
+    title: 'Aegis Security',
+    description: 'Real-time cybersecurity health monitoring via the Cyber Health Gauge.',
     icon: Shield,
     permissions: ['security:full-access'],
     tags: ['security', 'system', 'dashboard'],
-    defaultSize: { width: 1200, height: 800 },
-    baseRoute: '/aegis-security',
+    defaultSize: { width: 400, height: 400 },
+    minWidth: 320,
+    minHeight: 320,
   },
   {
     id: 'app-armory',
@@ -211,6 +212,16 @@ const initialApps: LayoutItem[] = [
         width: 480,
         height: 400,
         zIndex: initialCards.length + 2,
+    },
+    {
+        id: 'app-aegis-security-default',
+        type: 'app',
+        appId: 'app-aegis-security',
+        x: 420,
+        y: 290,
+        width: 400,
+        height: 400,
+        zIndex: initialCards.length + 3,
     }
 ];
 
