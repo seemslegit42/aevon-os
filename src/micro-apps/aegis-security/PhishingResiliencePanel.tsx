@@ -64,33 +64,29 @@ const PhishingResiliencePanel: React.FC = () => {
       <CardContent className="flex-grow grid grid-cols-2 gap-4">
         <div className="flex flex-col items-center justify-center">
             <h4 className="text-sm font-semibold text-muted-foreground mb-2">Click Resistance</h4>
-             <ChartContainer
-                config={{
-                    score: { label: 'Resistance', color: 'hsl(var(--chart-2))' },
-                }}
-                className="w-full h-32"
-            >
-                <RadialBarChart
-                    data={[{ name: 'score', value: phishingData.clickResistance, fill: 'hsl(var(--chart-2))' }]}
-                    startAngle={-270}
-                    endAngle={90}
-                    innerRadius="75%"
-                    outerRadius="100%"
-                    barSize={12}
-                    >
-                    <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
-                    <RadialBar dataKey="value" background={{ fill: 'hsl(var(--muted)/0.3)'}} cornerRadius={10} />
-                    <text
-                        x="50%"
-                        y="50%"
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                        className="fill-foreground text-2xl font-bold font-headline"
-                    >
+             <div className="relative w-full h-32">
+                <ChartContainer
+                    config={{ score: { label: 'Resistance', color: 'hsl(var(--chart-2))' } }}
+                    className="absolute inset-0"
+                >
+                    <RadialBarChart
+                        data={[{ name: 'score', value: phishingData.clickResistance, fill: 'hsl(var(--chart-2))' }]}
+                        startAngle={-270}
+                        endAngle={90}
+                        innerRadius="75%"
+                        outerRadius="100%"
+                        barSize={12}
+                        >
+                        <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
+                        <RadialBar dataKey="value" background={{ fill: 'hsl(var(--muted)/0.3)'}} cornerRadius={10} />
+                    </RadialBarChart>
+                </ChartContainer>
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-foreground text-2xl font-bold font-headline text-center">
                         {phishingData.clickResistance}%
-                    </text>
-                </RadialBarChart>
-            </ChartContainer>
+                    </span>
+                </div>
+            </div>
         </div>
         <div className="flex flex-col items-center">
              <h4 className="text-sm font-semibold text-muted-foreground mb-2">Emails Blocked</h4>
