@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -12,6 +11,7 @@ import eventBus from '@/lib/event-bus';
 import { type AiInsights, type Insight } from '@/lib/ai-schemas';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTTS } from '@/hooks/use-tts';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const AiInsightsCardContent: React.FC = () => {
   const { toast } = useToast();
@@ -127,11 +127,13 @@ const AiInsightsCardContent: React.FC = () => {
   };
 
   return (
-    <div className="p-4 space-y-4">
-        <div className="min-h-[100px]">
-            <InsightsDisplay />
-        </div>
-        <div>
+    <div className="p-4 space-y-4 flex flex-col h-full">
+        <ScrollArea className="flex-grow basis-0 min-h-[120px]">
+            <div className="pr-4">
+                <InsightsDisplay />
+            </div>
+        </ScrollArea>
+        <div className="flex-shrink-0 pt-4">
             <Button onClick={handleGenerateInsights} className="w-full btn-gradient-primary-secondary" disabled={isLoading}>
                 <Sparkles />
                 {isLoading ? 'Generating...' : 'Generate Insights'}
