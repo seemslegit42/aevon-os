@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useCallback } from 'react';
@@ -157,3 +158,5 @@ export function BeepChatProvider() {
 
   return null; // This component does not render anything
 }
+
+    
