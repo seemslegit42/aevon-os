@@ -1,18 +1,31 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  directUrl    = env("DIRECT_URL")
+  relationMode = "prisma"
+}
 
 generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+/// Represents an AI agent within the system.
+model Agent {
+  id          String    @id @default(cuid())
+  name        String
+  type        AgentType
+  description String
+  status      String    @default("idle")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  logs        ActionLog[]
 }
 
+/// Logs a single action taken by an agent.
 model ActionLog {
   id        String   @id @default(cuid())
-  agent     Agent    @relation(fields: [agentId], references: [id])
+  agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
   agentId   String
   timestamp DateTime @default(now())
   toolName  String
@@ -20,17 +33,8 @@ model ActionLog {
   status    String // "success" or "failure"
   result    Json?
   tokens    Int?
-}
 
-model Agent {
-  id          String    @id @default(cuid())
-  name        String
-  type        AgentType
-  description String?
-  status      String    @default("idle")
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  logs        ActionLog[]
+  @@index([agentId])
 }
 
 enum AgentType {

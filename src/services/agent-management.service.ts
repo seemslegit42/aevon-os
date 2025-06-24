@@ -1,3 +1,4 @@
+
 'use server';
 import prisma from '@/lib/db';
 import type { Agent, AgentType } from '@prisma/client';
@@ -37,12 +38,9 @@ export async function listAgents(): Promise<Agent[]> {
 
 /**
  * Deletes an agent from the database.
+ * Cascading delete is handled by the database schema.
  */
 export async function deleteAgent(agentId: string): Promise<void> {
-    // We need to delete dependent logs first.
-    await prisma.actionLog.deleteMany({
-        where: { agentId: agentId },
-    });
     await prisma.agent.delete({
         where: { id: agentId },
     });
