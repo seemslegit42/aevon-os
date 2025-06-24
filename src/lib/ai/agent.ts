@@ -12,6 +12,7 @@ import { google } from '@/lib/ai/groq';
 import type { WorkflowNodeData, Connection } from '@/types/loom';
 import { logAction } from '@/services/action-log.service';
 import { getEmotionFromText } from '@/lib/sentiment-parser';
+import { getRecentSecurityEvents } from '@/services/aegis.service';
 
 
 import type { LayoutItem } from '@/types/dashboard';
@@ -177,6 +178,33 @@ const extractInvoiceDataTool = createTool({
     }
 });
 
+const analyzeSecurityAlertTool = createTool({
+    name: "analyzeSecurityAlert",
+    description: "Analyzes and reports on the most recent security events detected by the Aegis system. Use this tool when the user asks about security, threats, or anomalies.",
+    schema: z.object({
+        limit: z.number().optional().default(5).describe("The number of recent events to retrieve."),
+    }),
+    func: async ({ limit }) => {
+        const events = await getRecentSecurityEvents(limit);
+        if (events.length === 0) {
+            return { summary: "Aegis system is clear. No recent security events detected." };
+        }
+        
+        const summary = `Aegis has detected ${events.length} recent event(s). The most critical is a '${events[0].severity}' level event of type '${events[0].type}' that occurred at ${events[0].timestamp.toLocaleString()}.`;
+
+        return {
+            summary: summary,
+            events: events.map(e => ({
+                type: e.type,
+                severity: e.severity,
+                timestamp: e.timestamp,
+                details: e.details,
+                agentName: e.agent?.name,
+            })),
+        };
+    }
+});
+
 
 // --- Client-Side & Action Console Tools ---
 const requestHumanActionTool = createTool({
@@ -214,6 +242,7 @@ const allTools = [
     searchKnowledgeBaseTool,
     generateWorkspaceInsightsTool, generateMarketingContentTool,
     summarizeWebpageTool, extractInvoiceDataTool,
+    analyzeSecurityAlertTool,
     requestHumanActionTool,
     focusItemTool, addItemTool, removeItemTool, resetLayoutTool,
 ];
@@ -291,13 +320,14 @@ ${loomContextSummary}
 **PRIMARY DIRECTIVE**
 1.  Analyze the user's request to determine the main task.
 2.  Select the most appropriate tool(s) to accomplish the task. You can call multiple tools in parallel if the tasks are independent.
-3.  **Human-in-the-Loop:** If you need clarification, are missing information, or need to perform a sensitive action (e.g., deleting data, spending resources), you MUST use the \`requestHumanAction\` tool to ask the user for permission or input. Do not proceed with the action until you receive confirmation from the user.
-4.  If a tool fails, explain the error to the user.
-5.  After successfully calling a UI tool, also generate a brief, natural language confirmation for the user. E.g., "Done. I've added the Loom Studio to your workspace."
-6.  If the user asks a general question, use the 'searchKnowledgeBase' tool first.
-7.  If asked to generate a workflow for Loom Studio via chat, politely decline and instruct the user to use the dedicated AI prompt bar at the top of the Loom Studio to generate workflows.
-8.  Use the APPLICATION VIEW context to provide more relevant help. If the user is in the "Accounting" app, offer tips about invoices. If they are in the "Loom Studio", offer advice on building workflows. Be proactive but not annoying.
-9.  **Conditional Node Execution:** When a node's type is 'conditional', your task is to evaluate its condition expression based on the provided input data. You MUST return ONLY a JSON object with a single boolean 'result' key, for example: \`{"result": true}\`. Do not add any conversational text.
+3.  **Human-in-the-Loop:** If you are missing information or need to perform a sensitive action (e.g., deleting data, spending resources), you MUST use the \`requestHumanAction\` tool to ask the user for permission or input. Do not proceed with the action until you receive confirmation from the user.
+4.  **AEGIS SECURITY:** If the user asks about security, threats, or system anomalies, use the \`analyzeSecurityAlert\` tool to get a report from the Aegis system.
+5.  If a tool fails, explain the error to the user.
+6.  After successfully calling a UI tool, also generate a brief, natural language confirmation for the user. E.g., "Done. I've added the Loom Studio to your workspace."
+7.  If the user asks a general question, use the 'searchKnowledgeBase' tool first.
+8.  If asked to generate a workflow for Loom Studio via chat, politely decline and instruct the user to use the dedicated AI prompt bar at the top of the Loom Studio to generate workflows.
+9.  Use the APPLICATION VIEW context to provide more relevant help. If the user is in the "Accounting" app, offer tips about invoices. If they are in the "Loom Studio", offer advice on building workflows. Be proactive but not annoying.
+10. **Conditional Node Execution:** When a node's type is 'conditional', your task is to evaluate its condition expression based on the provided input data. You MUST return ONLY a JSON object with a single boolean 'result' key, for example: \`{"result": true}\`. Do not add any conversational text.
 `;
 }
 

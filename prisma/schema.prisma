@@ -1,10 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
-}
 
 datasource db {
   provider  = "postgresql"
@@ -12,20 +5,25 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// ===================================
-// Agent & Action Logging
-// ===================================
+generator client {
+  provider = "prisma-client-js"
+}
 
 model Agent {
-  id          String     @id @default(cuid())
-  createdAt   DateTime   @default(now())
-  name        String
-  type        AgentType
-  description String
-  status      String     @default("idle") // e.g., idle, active, error
-  logs        ActionLog[]
+  id            String    @id @default(cuid())
+  name          String
+  type          AgentType
+  description   String?
+  status        String    @default("idle")
+  invocations   Int       @default(0)
+  lastInvokedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  @@index([createdAt])
+  logs            ActionLog[]
+  securityEvents  SecurityEvent[]
+
+  @@index([name])
 }
 
 enum AgentType {
@@ -39,16 +37,37 @@ enum AgentType {
 
 model ActionLog {
   id        String   @id @default(cuid())
-  timestamp DateTime @default(now())
   agentId   String
+  timestamp DateTime @default(now())
   toolName  String
-  arguments Json?
+  arguments Json
   status    String // "success" or "failure"
   result    Json?
   tokens    Int?
 
   agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
 
+  @@index([agentId, timestamp])
+}
+
+model SecurityEvent {
+  id        String   @id @default(cuid())
+  agentId   String?
+  timestamp DateTime @default(now())
+  type      String
+  severity  SeverityLevel
+  details   Json
+
+  agent Agent? @relation(fields: [agentId], references: [id], onDelete: SetNull)
+
   @@index([timestamp])
-  @@index([agentId])
+  @@index([severity])
+}
+
+enum SeverityLevel {
+  INFO
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
 }

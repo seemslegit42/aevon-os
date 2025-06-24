@@ -3,6 +3,7 @@
 
 import prisma from '@/lib/db';
 import type { AgentType } from '@prisma/client';
+import { logSecurityEvent } from './aegis.service';
 
 const SYSTEM_AGENT_ID = 'system-beep';
 const SYSTEM_AGENT_NAME = 'BEEP';
@@ -45,6 +46,7 @@ interface LogActionData {
 
 /**
  * Logs a completed agent action to the database and updates agent invocation stats.
+ * Also logs a security event if the action failed.
  * @param data - The details of the action to log.
  */
 export async function logAction(data: LogActionData): Promise<void> {
@@ -81,6 +83,21 @@ export async function logAction(data: LogActionData): Promise<void> {
         },
       }),
     ]);
+
+    // AEGIS INTEGRATION: If the action failed, log a security event.
+    if (status === 'failure') {
+      await logSecurityEvent({
+        type: 'ToolExecutionFailure',
+        severity: 'MEDIUM',
+        agentId: agentId,
+        details: {
+          toolName: toolName,
+          arguments: args,
+          error: result,
+        },
+      });
+    }
+    
   } catch (error) {
     console.error(`Failed to log action for tool "${toolName}":`, error);
   }
