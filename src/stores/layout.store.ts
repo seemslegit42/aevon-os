@@ -6,7 +6,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import type { Position, Size } from 'react-rnd';
 import type { LayoutItem } from '@/types/dashboard';
 import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
-import type { MicroApp } from './micro-app.store';
+import type { MicroAppRegistration } from './micro-app.store';
 
 const LAYOUT_STORAGE_KEY = 'dashboardLayout_v8_grid';
 
@@ -32,7 +32,7 @@ interface LayoutState {
   toggleMinimizeItem: (id: string) => void;
   toggleMaximizeItem: (id: string) => void;
   addCard: (cardId: string) => string | undefined;
-  launchApp: (app: MicroApp) => string;
+  launchApp: (app: MicroAppRegistration) => string;
   cloneApp: (appId: string) => string | undefined;
   closeAllInstancesOfApp: (appId: string) => boolean;
   focusLatestInstance: (appId: string) => boolean;

@@ -16,7 +16,7 @@ import { PlusCircle, Trash, MagnifyingGlass, X, Gear, Play, Eye } from 'phosphor
 import { ALL_CARD_CONFIGS, type CardConfig } from '@/config/dashboard-cards.config';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { useMicroApps } from '@/hooks/use-micro-apps';
-import type { MicroApp } from '@/stores/micro-app.store';
+import type { MicroAppRegistration } from '@/stores/micro-app.store';
 import { useLayoutStore } from '@/stores/layout.store';
 import type { LayoutItem } from '@/types/dashboard';
 
@@ -25,8 +25,8 @@ import type { LayoutItem } from '@/types/dashboard';
 // =================================================================
 
 interface MicroAppListProps {
-  apps: MicroApp[];
-  onLaunch: (app: MicroApp) => void;
+  apps: MicroAppRegistration[];
+  onLaunch: (app: MicroAppRegistration) => void;
 }
 const MicroAppList: React.FC<MicroAppListProps> = ({ apps, onLaunch }) => (
   <>
@@ -96,7 +96,7 @@ const DashboardZoneList: React.FC<DashboardZoneListProps> = ({ cards, activeCard
 
 interface OpenWindowListProps {
     instances: LayoutItem[];
-    appMap: Map<string, MicroApp>;
+    appMap: Map<string, MicroAppRegistration>;
     onFocus: (itemId: string) => void;
     onClose: (itemId: string) => void;
 }
@@ -149,7 +149,7 @@ const CommandPalette: React.FC = () => {
 
   const { layoutItems, launchApp, addCard, closeItem, bringToFront, resetLayout } = useLayoutStore();
 
-  const handleLaunchApp = (app: MicroApp) => {
+  const handleLaunchApp = (app: MicroAppRegistration) => {
     const instanceId = launchApp(app);
     bringToFront(instanceId);
     setOpen(false);

@@ -7,7 +7,7 @@ import MicroAppCard from '@/components/micro-app-card';
 import { X, Minus, Square, ArrowsOut, ArrowsIn } from 'phosphor-react';
 import { Button } from '@/components/ui/button';
 import type { CardConfig } from '@/types/dashboard';
-import type { MicroApp } from '@/stores/micro-app.store';
+import type { MicroAppRegistration } from '@/stores/micro-app.store';
 import type { LayoutItem } from '@/types/dashboard';
 import type { Position, Size } from 'react-rnd';
 import { cn } from '@/lib/utils';
@@ -17,7 +17,7 @@ import { ErrorBoundary } from './error-boundary';
 
 interface DashboardWindowProps {
   item: LayoutItem;
-  config: CardConfig | MicroApp; // Receive the pre-fetched config
+  config: CardConfig | MicroAppRegistration; // Receive the pre-fetched config
   isFocused: boolean;
 }
 

@@ -5,7 +5,7 @@ import type { z } from 'zod';
 import type { UIControl, MicroAppRoute } from '@/types/dashboard';
 
 // Define the shape of a micro-app's metadata, now with permissions and tags
-export interface MicroApp {
+export interface MicroAppRegistration {
   id: string;
   title: string;
   description: string;
@@ -34,11 +34,9 @@ export interface MicroApp {
   configSchema?: z.ZodObject<any>;
 }
 
-export type MicroAppRegistration = MicroApp;
-
 // Define the shape of the store's state and actions
 interface MicroAppStoreState {
-  apps: MicroApp[];
+  apps: MicroAppRegistration[];
   initializeApps: (initialApps: MicroAppRegistration[]) => void;
   registerApp: (appRegistration: MicroAppRegistration) => void;
 }
@@ -57,10 +55,14 @@ export const useMicroAppStore = create<MicroAppStoreState>((set) => ({
 
   registerApp: (appRegistration) => {
     set((state) => {
-      // Avoid duplicates
+      // Prevent duplicate registrations
       if (state.apps.some(app => app.id === appRegistration.id)) {
+        console.warn(
+          `[MicroAppRegistry] Attempted to register duplicate micro-app with ID: "${appRegistration.id}". Registration ignored.`
+        );
         return state;
       }
+      console.log(`[MicroAppRegistry] Registered new micro-app: "${appRegistration.title}" (ID: ${appRegistration.id})`);
       return { apps: [...state.apps, appRegistration] };
     });
   },

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useMicroAppStore, type MicroApp } from '@/stores/micro-app.store';
+import { useMicroAppStore, type MicroAppRegistration } from '@/stores/micro-app.store';
 import { shallow } from 'zustand/shallow';
 
 // Mock user object - in a real app, this would come from an auth context
@@ -17,9 +17,9 @@ interface UseMicroAppsOptions {
 /**
  * Custom hook to get a list of micro-apps, filtered by permissions and optional tags.
  * @param {UseMicroAppsOptions} options - Filtering options for the apps.
- * @returns {MicroApp[]} A memoized array of available micro-apps.
+ * @returns {MicroAppRegistration[]} A memoized array of available micro-apps.
  */
-export function useMicroApps(options: UseMicroAppsOptions = {}): MicroApp[] {
+export function useMicroApps(options: UseMicroAppsOptions = {}): MicroAppRegistration[] {
   const { tags } = options;
   
   // In a real app, you'd get the current user's permissions from an auth hook/context

@@ -10,7 +10,7 @@ import { Play } from 'phosphor-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLayoutStore } from '@/stores/layout.store';
 import Link from 'next/link';
-import type { MicroApp } from '@/stores/micro-app.store';
+import type { MicroAppRegistration } from '@/stores/micro-app.store';
 
 export default function ArmoryPage() {
   const allApps = useMicroApps();

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Badge } from '@/components/ui/badge';
 import { Play, Eye, X, Trash, Copy } from 'phosphor-react';
-import type { MicroApp } from '@/stores/micro-app.store';
+import type { MicroAppRegistration } from '@/stores/micro-app.store';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +25,7 @@ import { useLayoutStore } from '@/stores/layout.store';
 import { shallow } from 'zustand/shallow';
 
 interface AppLauncherIconProps {
-  app: MicroApp;
+  app: MicroAppRegistration;
 }
 
 export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
