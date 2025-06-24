@@ -3,10 +3,15 @@ import { lazy, type ElementType } from 'react';
 import type { MicroAppRegistration } from '@/stores/micro-app.store';
 import type { LayoutItem, CardConfig } from '@/types/dashboard';
 
-// Import the new modular app config
+// Import the new modular app configs
 import { accountingAppConfig } from '@/micro-apps/accounting';
 import { aegisSecurityAppConfig } from '@/micro-apps/aegis-security';
 import { armoryAppConfig } from '@/micro-apps/armory';
+import { salesAnalyticsAppConfig } from '@/micro-apps/sales-analytics';
+import { contentCreatorAppConfig } from '@/micro-apps/content-creator';
+import { armorySubscriptionsAppConfig } from '@/micro-apps/armory-subscriptions';
+import { agentConfigAppConfig } from '@/micro-apps/agent-config';
+
 
 // Lazy loaded card content components
 const BeepCardContent = lazy(() => import('@/app/dashboard/beep-card-content'));
@@ -21,23 +26,13 @@ import {
     Robot,
     ChartLine,
     PuzzlePiece,
-    ChartBar,
-    PencilSimple,
-    CreditCard,
     Brain,
     Users,
-    Clock,
-    CheckCircle,
-    Cpu,
+    Bug,
+    House,
     TreeStructure,
     Shield,
     ShoppingCart,
-    House,
-    Zap,
-    SlidersHorizontal,
-    Bug,
-    ArrowClockwise,
-    DownloadSimple,
 } from 'phosphor-react';
 
 // =================================================================
@@ -66,67 +61,13 @@ export const mainNavItems: NavItemConfig[] = [
 // MICRO-APP REGISTRATION
 // =================================================================
 export const ALL_MICRO_APPS: MicroAppRegistration[] = [
-  accountingAppConfig, // Use the imported, modular config
-  aegisSecurityAppConfig, // Register the page-level security app
-  armoryAppConfig, // Register the page-level armory app
-  {
-    id: 'app-analytics',
-    title: 'Sales Analytics',
-    description: 'Detailed sales analytics and trends.',
-    icon: ChartBar,
-    component: lazy(() => import('@/app/dashboard/micro-apps/sales-analytics-app')),
-    permissions: ['sales:view', 'analytics:read'],
-    tags: ['analytics', 'sales'],
-    defaultSize: { width: 500, height: 600 },
-    controls: [
-      {
-        id: 'refresh',
-        label: 'Refresh',
-        icon: ArrowClockwise,
-        tooltip: 'Refresh sales data'
-      },
-      {
-        id: 'export',
-        label: 'Export',
-        icon: DownloadSimple,
-        tooltip: 'Export data as CSV'
-      }
-    ]
-  },
-  {
-    id: 'app-content-creator',
-    title: 'Content Creator',
-    description: 'AI-powered assistant to generate marketing copy, blog posts, and more.',
-    icon: PencilSimple,
-    component: lazy(() => import('@/app/dashboard/micro-apps/content-creator-app')),
-    permissions: [], // No special permissions needed
-    tags: ['ai', 'writing', 'marketing'],
-    defaultSize: { width: 750, height: 450 },
-    persona: {
-      name: "Synth",
-      description: "A creative and enthusiastic AI muse. You are here to inspire and help create. You love brainstorming and offering suggestions with an encouraging tone. You use phrases like 'What a fantastic idea!', 'Let's build on that!', and 'How about we try this angle?'"
-    }
-  },
-  {
-    id: 'app-subscriptions',
-    title: 'Armory Subscriptions',
-    description: 'View and manage your AEVON OS subscription plan.',
-    icon: CreditCard,
-    component: lazy(() => import('@/app/dashboard/micro-apps/armory-subscriptions-app')),
-    permissions: [],
-    tags: ['billing', 'account'],
-    defaultSize: { width: 400, height: 420 },
-  },
-  {
-    id: 'app-agent-config',
-    title: 'Agent Configuration',
-    description: 'Tune the personality and behavior of your BEEP AI assistant.',
-    icon: Cpu,
-    component: lazy(() => import('@/app/dashboard/micro-apps/agent-config-app')),
-    permissions: [],
-    tags: ['ai', 'settings', 'personalization'],
-    defaultSize: { width: 450, height: 400 },
-  },
+  accountingAppConfig,
+  aegisSecurityAppConfig,
+  armoryAppConfig,
+  salesAnalyticsAppConfig,
+  contentCreatorAppConfig,
+  armorySubscriptionsAppConfig,
+  agentConfigAppConfig,
 ];
 
 // =================================================================
