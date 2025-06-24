@@ -1,4 +1,4 @@
-
+'use client';
 // src/app/loom/components/panels/console-panel.tsx
 import { BasePanel } from './base-panel';
 import { Terminal, AlertCircle, Info, Filter, Trash2 } from 'lucide-react';

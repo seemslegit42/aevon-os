@@ -1,4 +1,4 @@
-
+'use client';
 // src/app/loom/components/canvas/canvas-zone.tsx
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { WorkflowNode } from '@/app/loom/components/workflow/workflow-node';

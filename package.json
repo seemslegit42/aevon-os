@@ -9,8 +9,7 @@
     "start": "next start",
     "lint": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit",
-    "postinstall": "patch-package"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@ai-sdk/google": "^0.0.22",

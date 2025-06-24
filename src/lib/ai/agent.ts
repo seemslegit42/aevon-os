@@ -9,7 +9,6 @@ import { DynamicTool, type DynamicToolInput } from '@langchain/core/tools';
 import { z } from 'zod';
 import { generateObject } from 'ai';
 import { google } from '@/lib/ai/groq';
-import eventBus from '../event-bus';
 
 import * as SalesDataService from '@/services/sales-data.service';
 import * as BillingService from '@/services/billing.service';
@@ -47,24 +46,12 @@ const createTool = (input: DynamicToolInput & { isClientSide?: boolean }) => new
     
     try {
       const result = await input.func(args);
-      
-      // Emit high-level results for specific UI components
-      if (input.name === 'analyzeSecurityAlert') eventBus.emit('aegis:analysis-result', result);
-      if (input.name === 'generateWorkspaceInsights') eventBus.emit('insights:result', result);
-      if (input.name === 'generateMarketingContent') eventBus.emit('content:result', result);
-      if (input.name === 'summarizeWebpage') eventBus.emit('websummarizer:result', result);
-      
+      // The tool's responsibility is just to return the result.
+      // The client is responsible for observing these results and updating the UI.
       return JSON.stringify(result);
     } catch (error: any) {
       const errorMessage = error.message || "An unexpected error occurred in the tool.";
       console.error(`Error in tool '${input.name}':`, errorMessage);
-      
-      // Emit high-level errors
-      if (input.name === 'analyzeSecurityAlert') eventBus.emit('aegis:analysis-error', errorMessage);
-      if (input.name === 'generateWorkspaceInsights') eventBus.emit('insights:error', errorMessage);
-      if (input.name === 'generateMarketingContent') eventBus.emit('content:error', errorMessage);
-      if (input.name === 'summarizeWebpage') eventBus.emit('websummarizer:error', errorMessage);
-      
       return JSON.stringify({ error: true, message: errorMessage });
     }
   }

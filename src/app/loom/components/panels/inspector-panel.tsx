@@ -1,4 +1,4 @@
-
+'use client';
 // src/app/loom/components/panels/inspector-panel.tsx
 import { BasePanel } from './base-panel';
 import { Settings2, FileText, ShieldCheck, Tags, Type, Workflow, Save, Brain, Info, Fingerprint, Globe, Play, Loader2, MessageSquare, Trash2, AlertCircle, FunctionSquare, Binary } from 'lucide-react';

@@ -1,4 +1,4 @@
-
+'use client';
 // src/app/loom/components/workflow/workflow-node.tsx
 import React, { useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';

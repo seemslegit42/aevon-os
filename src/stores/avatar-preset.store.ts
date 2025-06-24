@@ -1,4 +1,6 @@
 
+"use client";
+
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { AVATAR_PRESETS, type AvatarPreset } from '@/config/avatar-presets.config';
