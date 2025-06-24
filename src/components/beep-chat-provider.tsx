@@ -11,6 +11,7 @@ import { useLayoutStore } from '@/stores/layout.store';
 import { useLoomStore } from '@/stores/loom.store';
 import { ALL_MICRO_APPS } from '@/config/app-registry';
 import type { AvatarState } from '@/types/dashboard';
+import { useActionRequestStore } from '@/stores/action-request.store';
 
 /**
  * This is a non-rendering component that initializes the Vercel `useChat` hook
@@ -24,9 +25,8 @@ export function BeepChatProvider() {
   const handleToolCall: ToolCallHandler = async (chatMessages, toolCalls) => {
     // Dynamic import to break circular dependency
     const { useLayoutStore } = await import('@/stores/layout.store');
-    const { useLoomStore } = await import('@/stores/loom.store');
     const layoutActions = useLayoutStore.getState();
-    const loomActions = useLoomStore.getState();
+    const { addActionRequest } = useActionRequestStore.getState();
 
     for (const toolCall of toolCalls) {
       const { toolName, args } = toolCall;
@@ -53,7 +53,7 @@ export function BeepChatProvider() {
                 result.message = `Resetting dashboard layout.`;
                 break;
             case 'requestHumanAction':
-                loomActions.addActionRequest({
+                addActionRequest({
                     agentName: "BEEP", // Or dynamically get from agent context
                     requestType: args.requestType as any,
                     message: args.message as string,

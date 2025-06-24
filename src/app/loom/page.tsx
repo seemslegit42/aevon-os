@@ -22,6 +22,8 @@ import { useLoomStore } from '@/stores/loom.store';
 import { cn } from '@/lib/utils';
 import { shallow } from 'zustand/shallow';
 import { BottomBar } from './components/layout/bottom-bar';
+import { useActionRequestStore } from '@/stores/action-request.store';
+
 
 import type {
   WorkflowNodeData,
@@ -38,12 +40,17 @@ import type {
 
 export default function LoomStudioPage() {
   const {
-    nodes, connections, selectedNodeId, consoleMessages, timelineEvents, actionRequests,
+    nodes, connections, selectedNodeId, consoleMessages, timelineEvents,
     workflowName, nodeExecutionStatus,
     setWorkflow, setSelectedNodeId, updateNode, deleteNode, addNode, addConnection,
-    clearWorkflow, addConsoleMessage, addTimelineEvent, updateActionRequestStatus, clearConsole,
+    clearWorkflow, addConsoleMessage, addTimelineEvent, clearConsole,
     setNodeExecutionStatus, updateNodeStatus,
   } = useLoomStore(state => ({...state}), shallow);
+  
+  const { requests: actionRequests, resolveActionRequest } = useActionRequestStore(state => ({
+    requests: state.requests,
+    resolveActionRequest: state.resolveActionRequest,
+  }), shallow);
 
   const [connectingState, setConnectingState] = useState<ConnectingState | null>(null);
   const [panelVisibility, setPanelVisibility] = useState<PanelVisibility>({
@@ -422,7 +429,7 @@ export default function LoomStudioPage() {
   const handleAgentActionResponse = (requestId: string, responseStatus: 'approved' | 'denied' | 'responded', details?: string) => {
     addConsoleMessage('info', `User responded to action request ${requestId} with status: ${responseStatus}`);
     
-    updateActionRequestStatus(requestId, responseStatus, details);
+    resolveActionRequest(requestId, responseStatus, details);
 
     let userResponseText = `User response for request ${requestId}: ${responseStatus}.`;
     if (responseStatus === 'responded' && details) {
@@ -458,7 +465,7 @@ export default function LoomStudioPage() {
                         {panelKey === 'palette' && <PalettePanel className="h-full" onClose={() => togglePanel('palette')} isMobile />}
                         {panelKey === 'inspector' && <TooltipProvider delayDuration={300}><InspectorPanel key={selectedNode?.id || 'inspector-mobile-empty'} className="h-full overflow-y-auto" onClose={() => togglePanel('inspector')} {...{selectedNode, onNodeUpdate: handleNodeUpdate, onNodeDelete: handleDeleteNode, isMobile, onRunNode: handleRunNode, isNodeRunning}} /></TooltipProvider>}
                         {panelKey === 'agentHub' && <AgentHubPanel className="h-full" onClose={() => togglePanel('agentHub')} {...{addConsoleMessage, addTimelineEvent, isMobile}} />}
-                        {panelKey === 'actionConsole' && <ActionConsolePanel className="h-full" requests={actionRequests} onRespond={handleAgentActionResponse} onClose={() => togglePanel('actionConsole')} {...{addConsoleMessage, addTimelineEvent, isMobile}} />}
+                        {panelKey === 'actionConsole' && <ActionConsolePanel className="h-full" requests={actionRequests} onRespond={handleAgentActionResponse} onClose={() => togglePanel('actionConsole')} isMobile />}
                         {panelKey === 'timeline' && <TimelinePanel className="h-full" onClose={() => togglePanel('timeline')} events={timelineEvents} isMobile />}
                         {panelKey === 'console' && <ConsolePanel className="h-full" onClose={() => togglePanel('console')} messages={consoleMessages.filter(msg => consoleFilters[msg.type])} filters={consoleFilters} onToggleFilter={(type) => setConsoleFilters(f => ({ ...f, [type]: !f[type]}))} onClearConsole={clearConsole} isMobile />}
                        </>
@@ -491,7 +498,7 @@ export default function LoomStudioPage() {
               </ResizableVerticalPanes>
               <ResizableVerticalPanes storageKey="loom-right-v-split" initialDividerPosition={65} minPaneHeight={150}>
                  <InspectorPanel key={selectedNode?.id || 'inspector-empty'} className={cn(!panelVisibility.inspector && "hidden")} onClose={() => togglePanel('inspector')} {...{selectedNode, onNodeUpdate: handleNodeUpdate, onNodeDelete: handleDeleteNode, onRunNode: handleRunNode, isNodeRunning}} />
-                 <ActionConsolePanel className={cn(!panelVisibility.actionConsole && "hidden")} onClose={() => togglePanel('actionConsole')} requests={actionRequests} onRespond={handleAgentActionResponse} {...{addConsoleMessage, addTimelineEvent}} />
+                 <ActionConsolePanel className={cn(!panelVisibility.actionConsole && "hidden")} onClose={() => togglePanel('actionConsole')} requests={actionRequests} onRespond={handleAgentActionResponse} />
               </ResizableVerticalPanes>
             </ResizableHorizontalPanes>
           </ResizableHorizontalPanes>

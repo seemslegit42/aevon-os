@@ -2,7 +2,7 @@
 import type { ElementType } from 'react';
 import type { z } from 'zod';
 import {
-    Bot, LineChart, Puzzle, BrainCircuit, Users, Bug, Home, Network, Shield, ShoppingCart, Calculator, Pencil, CreditCard, Cpu, RotateCw, Download, Activity
+    Bot, LineChart, Puzzle, BrainCircuit, Users, Bug, Home, Network, Shield, ShoppingCart, Calculator, Pencil, CreditCard, Cpu, RotateCw, Download, Activity, ShieldQuestion
 } from 'lucide-react';
 import type { UIControl, MicroAppRoute, CardConfig, AppRegistration } from '@/types/dashboard';
 
@@ -125,6 +125,16 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     minHeight: 180,
   },
   {
+    id: 'action-console',
+    title: 'Action Console',
+    icon: ShieldQuestion,
+    isDismissible: true,
+    description: "A central hub to respond to requests for permission or input from AI agents.",
+    defaultSize: { x: 420, y: 560, width: 450, height: 400 },
+    minWidth: 320,
+    minHeight: 250,
+  },
+  {
     id: 'dev-hud',
     title: 'Developer HUD',
     icon: Bug,
@@ -160,7 +170,7 @@ export const mainNavItems: NavItemConfig[] = [
 import type { LayoutItem } from '@/types/dashboard';
 
 const initialCards = ALL_CARD_CONFIGS
-    .filter(card => card.id !== 'dev-hud') // Filter out the dev hud
+    .filter(card => !['dev-hud', 'action-console'].includes(card.id)) // Filter out dev/utility cards
     .map((card, index) => ({
     id: card.id, // For non-instanced cards, the config ID is the layout ID
     type: 'card' as const,

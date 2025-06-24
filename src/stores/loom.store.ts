@@ -2,7 +2,7 @@
 'use client';
 
 import { create } from 'zustand';
-import type { WorkflowNodeData, Connection, NodeStatus, ConsoleMessage, TimelineEvent, ActionRequest } from '@/types/loom';
+import type { WorkflowNodeData, Connection, NodeStatus, ConsoleMessage, TimelineEvent } from '@/types/loom';
 import { generateNodeId } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -12,7 +12,6 @@ interface LoomState {
   selectedNodeId: string | null;
   consoleMessages: ConsoleMessage[];
   timelineEvents: TimelineEvent[];
-  actionRequests: ActionRequest[];
   workflowName: string | undefined;
   nodeExecutionStatus: Record<string, NodeStatus>;
 
@@ -27,8 +26,6 @@ interface LoomState {
   addConsoleMessage: (type: ConsoleMessage['type'], text: string) => void;
   clearConsole: () => void;
   addTimelineEvent: (event: Omit<TimelineEvent, 'id' | 'timestamp'>) => void;
-  addActionRequest: (request: Omit<ActionRequest, 'id' | 'timestamp' | 'status'>) => void;
-  updateActionRequestStatus: (requestId: string, status: ActionRequest['status'], details?: string) => void;
   
   // New actions for centralized state
   setWorkflowName: (name: string | undefined) => void;
@@ -42,7 +39,6 @@ export const useLoomStore = create<LoomState>((set, get) => ({
   selectedNodeId: null,
   consoleMessages: [],
   timelineEvents: [],
-  actionRequests: [],
   workflowName: undefined,
   nodeExecutionStatus: {},
   
@@ -55,7 +51,6 @@ export const useLoomStore = create<LoomState>((set, get) => ({
     selectedNodeId: null,
     consoleMessages: [],
     timelineEvents: [],
-    actionRequests: [],
   }),
 
   setSelectedNodeId: (nodeId) => set({ selectedNodeId: nodeId }),
@@ -127,7 +122,6 @@ export const useLoomStore = create<LoomState>((set, get) => ({
       nodeExecutionStatus: {},
       consoleMessages: [], 
       timelineEvents: [],
-      actionRequests: [] 
     }),
 
   addConsoleMessage: (type, text) => {
@@ -144,24 +138,6 @@ export const useLoomStore = create<LoomState>((set, get) => ({
     set(state => ({ timelineEvents: [newEvent, ...state.timelineEvents.slice(0, 49)] }));
   },
   
-  addActionRequest: (request) => {
-      const newRequest: ActionRequest = {
-        ...request,
-        id: crypto.randomUUID(),
-        timestamp: new Date(),
-        status: 'pending',
-      };
-      set(state => ({ actionRequests: [newRequest, ...state.actionRequests] }));
-  },
-  
-  updateActionRequestStatus: (requestId, status, details) => {
-      // This function simply removes the request from the pending list.
-      // The actual response logic is handled by sending a new message to the agent.
-      set(state => ({
-        actionRequests: state.actionRequests.filter(req => req.id !== requestId),
-      }));
-  },
-
   // New/Updated state management functions
   setWorkflowName: (name) => set({ workflowName: name }),
   setNodeExecutionStatus: (statuses) => set({ nodeExecutionStatus: statuses }),

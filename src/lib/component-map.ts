@@ -12,6 +12,7 @@ componentMap.set('aiInsights', lazy(() => import('@/micro-apps/ai-insights/compo
 componentMap.set('agentPresence', lazy(() => import('@/micro-apps/agent-presence/component')));
 componentMap.set('dev-hud', lazy(() => import('@/micro-apps/dev-hud/component')));
 componentMap.set('microApps', lazy(() => import('@/micro-apps/micro-apps-palette/component')));
+componentMap.set('action-console', lazy(() => import('@/micro-apps/action-console/component')));
 
 // Register Micro-App Components
 componentMap.set('app-accounting', lazy(() => import('@/micro-apps/accounting/component')));
