@@ -55,7 +55,8 @@ const createTool = (input: DynamicToolInput & { isClientSide?: boolean }) => new
         status: 'success',
         result: { message: `Client-side tool ${input.name} call initiated.` },
       });
-      return JSON.stringify({ success: true, message: `Client-side tool ${input.name} called with arguments: ${JSON.stringify(args)}` });
+      // For client-side tools, we return a specific structure that the provider can intercept.
+      return JSON.stringify({ isClientSide: true, toolName: input.name, args: args });
     }
     
     let status: 'success' | 'failure' = 'success';
@@ -242,7 +243,20 @@ const runLoomWorkflowTool = createTool({
 });
 
 
-// --- Client-Side UI Manipulation Tools ---
+// --- Client-Side & Action Console Tools ---
+const requestHumanActionTool = createTool({
+    name: 'requestHumanAction',
+    description: "Pauses the workflow and requests input, clarification, or permission from the human user. Use this when you are missing information or need authorization for an action.",
+    schema: z.object({
+        requestType: z.enum(['permission', 'input', 'clarification']).describe("The type of request being made to the user."),
+        message: z.string().describe("The question or statement to present to the user."),
+        requiresInput: z.boolean().optional().describe("Set to true if a text response is required from the user."),
+        inputPrompt: z.string().optional().describe("Placeholder text for the user's input field."),
+    }),
+    func: async () => {},
+    isClientSide: true,
+});
+
 const focusItemTool = createTool({ name: 'focusItem', description: "Brings a specific window into focus.", schema: z.object({ instanceId: z.string() }), func: async () => {}, isClientSide: true });
 const addItemTool = createTool({
     name: 'addItem',
@@ -265,6 +279,7 @@ const allTools = [
     searchKnowledgeBaseTool, getSalesAnalyticsDataTool, getSubscriptionStatusTool,
     analyzeSecurityAlertTool, generateWorkspaceInsightsTool, generateMarketingContentTool,
     summarizeWebpageTool, extractInvoiceDataTool, runLoomWorkflowTool,
+    requestHumanActionTool,
     focusItemTool, addItemTool, removeItemTool, resetLayoutTool,
 ];
 
@@ -341,11 +356,12 @@ ${loomContextSummary}
 **PRIMARY DIRECTIVE**
 1.  Analyze the user's request to determine the main task.
 2.  Select the most appropriate tool(s) to accomplish the task. You can call multiple tools in parallel if the tasks are independent.
-3.  If a tool fails, explain the error to the user.
-4.  After successfully calling a UI tool, also generate a brief, natural language confirmation for the user. E.g., "Done. I've added the Loom Studio to your workspace."
-5.  If the user asks a general question, use the 'searchKnowledgeBase' tool first.
-6.  If asked to generate a workflow for Loom Studio via chat, politely decline and instruct the user to use the dedicated AI prompt bar at the top of the Loom Studio to generate workflows.
-7.  Use the APPLICATION VIEW context to provide more relevant help. If the user is in the "Accounting" app, offer tips about invoices. If they are in the "Loom Studio", offer advice on building workflows. Be proactive but not annoying.
+3.  **Human-in-the-Loop:** If you need clarification, are missing information, or need to perform a sensitive action (e.g., deleting data, spending resources), you MUST use the \`requestHumanAction\` tool to ask the user for permission or input. Do not proceed with the action until you receive confirmation from the user.
+4.  If a tool fails, explain the error to the user.
+5.  After successfully calling a UI tool, also generate a brief, natural language confirmation for the user. E.g., "Done. I've added the Loom Studio to your workspace."
+6.  If the user asks a general question, use the 'searchKnowledgeBase' tool first.
+7.  If asked to generate a workflow for Loom Studio via chat, politely decline and instruct the user to use the dedicated AI prompt bar at the top of the Loom Studio to generate workflows.
+8.  Use the APPLICATION VIEW context to provide more relevant help. If the user is in the "Accounting" app, offer tips about invoices. If they are in the "Loom Studio", offer advice on building workflows. Be proactive but not annoying.
 `;
 }
 

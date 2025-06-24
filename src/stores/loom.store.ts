@@ -151,10 +151,12 @@ export const useLoomStore = create<LoomState>((set, get) => ({
         timestamp: new Date(),
         status: 'pending',
       };
-      set(state => ({ actionRequests: [...state.actionRequests, newRequest] }));
+      set(state => ({ actionRequests: [newRequest, ...state.actionRequests] }));
   },
   
   updateActionRequestStatus: (requestId, status, details) => {
+      // This function simply removes the request from the pending list.
+      // The actual response logic is handled by sending a new message to the agent.
       set(state => ({
         actionRequests: state.actionRequests.filter(req => req.id !== requestId),
       }));

@@ -24,7 +24,9 @@ export function BeepChatProvider() {
   const handleToolCall: ToolCallHandler = async (chatMessages, toolCalls) => {
     // Dynamic import to break circular dependency
     const { useLayoutStore } = await import('@/stores/layout.store');
+    const { useLoomStore } = await import('@/stores/loom.store');
     const layoutActions = useLayoutStore.getState();
+    const loomActions = useLoomStore.getState();
 
     for (const toolCall of toolCalls) {
       const { toolName, args } = toolCall;
@@ -50,6 +52,17 @@ export function BeepChatProvider() {
                 layoutActions.resetLayout();
                 result.message = `Resetting dashboard layout.`;
                 break;
+            case 'requestHumanAction':
+                loomActions.addActionRequest({
+                    agentName: "BEEP", // Or dynamically get from agent context
+                    requestType: args.requestType as any,
+                    message: args.message as string,
+                    requiresInput: args.requiresInput as boolean | undefined,
+                    inputPrompt: args.inputPrompt as string | undefined,
+                });
+                // When asking for human input, we don't immediately add a tool result.
+                // The workflow will pause here until the user responds.
+                continue;
             default:
                 // If the tool is not a known client-side tool, we skip it.
                 // It will be sent back to the server for processing in the next turn.
@@ -167,7 +180,9 @@ export function BeepChatProvider() {
 
     try {
         const toolName = toolCall.toolName;
+        // Ignore client-side tool results for this effect
         const result = JSON.parse(lastMessage.content as string);
+        if (result.isClientSide) return;
 
         if (result.error) {
             console.error(`Tool call ${toolName} failed:`, result.message);

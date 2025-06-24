@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ShieldQuestion, HelpCircle, MessageSquare, Check, X, Edit3, SendHorizonal } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { ActionRequest, ConsoleMessage, TimelineEvent } from '@/types/loom';
+import type { ActionRequest } from '@/types/loom';
 import React, {useState} from 'react';
 
 interface ActionConsolePanelProps {
@@ -17,8 +17,6 @@ interface ActionConsolePanelProps {
   requests: ActionRequest[];
   onRespond: (requestId: string, responseStatus: 'approved' | 'denied' | 'responded', details?: string) => void;
   isMobile?: boolean;
-  addConsoleMessage: (type: ConsoleMessage['type'], text: string) => void;
-  addTimelineEvent: (event: Omit<TimelineEvent, 'id' | 'timestamp'>) => void;
 }
 
 const requestTypeIcons: Record<ActionRequest['requestType'], React.ReactNode> = {
@@ -37,8 +35,6 @@ export function ActionConsolePanel({
   requests,
   onRespond,
   isMobile,
-  addConsoleMessage, 
-  addTimelineEvent,
 }: ActionConsolePanelProps) {
   const [inputValue, setInputValue] = useState<Record<string, string>>({});
 
@@ -48,11 +44,6 @@ export function ActionConsolePanel({
 
   const handleSubmitInput = (request: ActionRequest) => {
     const details = inputValue[request.id] || '';
-    if (request.requiresInput && !details.trim()) {
-      addConsoleMessage('warn', `Input required for action request: ${request.id} from ${request.agentName}.`);
-      // Potentially show a toast or inline error here
-      return;
-    }
     onRespond(request.id, 'responded', details);
     setInputValue(prev => {
       const newState = {...prev};
@@ -91,20 +82,26 @@ export function ActionConsolePanel({
                 </div>
                 <p className="text-muted-foreground/90 mb-2 text-[0.78rem] leading-snug ml-6">{req.message}</p>
                 
-                <div className="ml-6 space-y-2">
-                  {(req.requestType === 'input' || req.requestType === 'clarification') && req.requiresInput && (
-                    <div className="flex items-center gap-2">
+                <div className="ml-6 flex items-center gap-2">
+                  {(req.requestType === 'input' || (req.requestType === 'clarification' && req.requiresInput)) && (
+                    <div className="flex items-center gap-2 w-full">
                       <Input
                         type="text"
                         placeholder={req.inputPrompt || "Provide input..."}
                         value={inputValue[req.id] || ''}
                         onChange={(e) => handleInputChange(req.id, e.target.value)}
-                        className="h-8 text-xs bg-input/70"
+                        className="h-8 text-xs bg-input/70 flex-grow"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && inputValue[req.id]?.trim()) {
+                                e.preventDefault();
+                                handleSubmitInput(req);
+                            }
+                        }}
                       />
                       <Button
-                        size="sm"
+                        size="icon"
                         variant="secondary"
-                        className="h-8 px-2.5"
+                        className="h-8 w-8 flex-shrink-0"
                         onClick={() => handleSubmitInput(req)}
                         disabled={!inputValue[req.id]?.trim()}
                       >
@@ -114,7 +111,7 @@ export function ActionConsolePanel({
                   )}
 
                   {req.requestType === 'permission' && (
-                      <>
+                      <div className="flex w-full items-center gap-2">
                         <Button
                           size="sm"
                           variant="default"
@@ -131,17 +128,7 @@ export function ActionConsolePanel({
                         >
                           <X className="h-3.5 w-3.5 mr-1" /> Deny
                         </Button>
-                      </>
-                  )}
-                   {req.requestType === 'clarification' && !req.requiresInput && ( 
-                       <Button
-                        size="sm"
-                        variant="secondary"
-                        className="flex-1 h-7 text-xs"
-                        onClick={() => handleSubmitInput(req)} 
-                      >
-                        Respond
-                      </Button>
+                      </div>
                   )}
                 </div>
               </li>

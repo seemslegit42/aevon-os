@@ -155,31 +155,6 @@ export default function LoomStudioPage() {
   }, [addConsoleMessage, nodes, nodeExecutionStatus, updateNode, addTimelineEvent, updateNodeStatus]);
 
   useEffect(() => {
-    const handleNodeResult = (result: { content: string }) => {
-        addConsoleMessage('info', `Received generic text result for running node.`);
-        const runningNode = nodes.find(n => 
-            nodeExecutionStatus[n.id] === 'running' && 
-            (n.type === 'prompt' || n.type === 'agent-call')
-        );
-        if (runningNode) {
-            updateNode(runningNode.id, {
-                status: 'completed',
-                config: { ...runningNode.config, output: { result: result.content } }
-            });
-            updateNodeStatus(runningNode.id, 'completed');
-            addTimelineEvent({
-                type: 'node_completed',
-                message: `Node finished successfully.`,
-                nodeId: runningNode.id,
-                nodeTitle: runningNode.title,
-            });
-        }
-    };
-    eventBus.on('loom:node-result', handleNodeResult);
-    return () => { eventBus.off('loom:node-result', handleNodeResult); };
-  }, [addConsoleMessage, nodes, nodeExecutionStatus, updateNode, addTimelineEvent, updateNodeStatus]);
-  
-  useEffect(() => {
     // Listen for workflow completion event from the agent
     const handleWorkflowComplete = () => {
       setIsWorkflowRunning(false);
@@ -251,6 +226,12 @@ export default function LoomStudioPage() {
       case 'agent-call':
         prompt = nodeToRun.config?.promptText || `Execute generic prompt for node ${nodeToRun.title}`;
         break;
+      case 'data-transform':
+        prompt = `Please execute a data transformation with the following logic: "${nodeToRun.config?.transformationLogic}". The input data will be provided by the preceding connected node.`;
+        break;
+      case 'conditional':
+        prompt = `Please evaluate the condition: "${nodeToRun.config?.condition}". The input data will be provided by the preceding connected node.`;
+        break;
       default:
         toast({ title: "Execution Not Implemented", description: `Backend for '${nodeToRun.type}' is not yet implemented.`});
         addConsoleMessage('warn', `Execution for node type '${nodeToRun.type}' is not implemented. Faking failure.`);
@@ -262,6 +243,28 @@ export default function LoomStudioPage() {
       beepAppend({ role: 'user', content: prompt });
     }
   }, [nodes, addConsoleMessage, addTimelineEvent, toast, beepAppend, updateNodeStatus]);
+
+  useEffect(() => {
+    const handleNodeResult = ({ content }: { content: string }) => {
+        addConsoleMessage('info', `Received generic text result for running node.`);
+        const runningNode = nodes.find(n => nodeExecutionStatus[n.id] === 'running');
+        if (runningNode) {
+            updateNode(runningNode.id, {
+                status: 'completed',
+                config: { ...runningNode.config, output: { result: content } }
+            });
+            updateNodeStatus(runningNode.id, 'completed');
+            addTimelineEvent({
+                type: 'node_completed',
+                message: `Node finished successfully.`,
+                nodeId: runningNode.id,
+                nodeTitle: runningNode.title,
+            });
+        }
+    };
+    eventBus.on('loom:node-result', handleNodeResult);
+    return () => { eventBus.off('loom:node-result', handleNodeResult); };
+  }, [addConsoleMessage, nodes, nodeExecutionStatus, updateNode, addTimelineEvent, updateNodeStatus]);
 
   const handleRunWorkflow = useCallback(() => {
     if (nodes.length === 0) {
@@ -329,9 +332,17 @@ export default function LoomStudioPage() {
 
   const handleAgentActionResponse = (requestId: string, responseStatus: 'approved' | 'denied' | 'responded', details?: string) => {
     addConsoleMessage('info', `User responded to action request ${requestId} with status: ${responseStatus}`);
+    
     updateActionRequestStatus(requestId, responseStatus, details);
-    // TODO: In a real implementation, this would send a message back to the AI agent.
-    toast({ title: 'Response Sent (Mock)', description: `Your response '${responseStatus}' has been logged.`})
+
+    let userResponseText = `User response for request ${requestId}: ${responseStatus}.`;
+    if (responseStatus === 'responded' && details) {
+        userResponseText += ` Details: "${details}"`;
+    }
+    
+    beepAppend({ role: 'user', content: userResponseText });
+    
+    toast({ title: 'Response Sent', description: `Your response '${responseStatus}' has been sent to the agent.`})
   };
 
   const anyMobilePanelOpen = isMobile && Object.values(panelVisibility).some(v => v);
