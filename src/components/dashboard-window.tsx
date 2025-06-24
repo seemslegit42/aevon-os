@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, memo } from 'react';
@@ -12,6 +13,7 @@ import type { Position, Size } from 'react-rnd';
 import { cn } from '@/lib/utils';
 import { WindowContent } from './dashboard-window-content';
 import { useLayoutStore } from '@/stores/layout.store';
+import { ErrorBoundary } from './error-boundary';
 
 interface DashboardWindowProps {
   item: LayoutItem;
@@ -36,7 +38,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, config
     const contentProps = 'contentProps' in config ? config.contentProps : {};
     const minWidth = 'minWidth' in config ? config.minWidth : config.defaultSize.width;
     const minHeight = 'minHeight' in config ? config.minHeight : config.defaultSize.height;
-    const cardClassName = 'cardClassName' in config ? config.cardClassName : "";
+    const cardClassName = 'cardClassName' in config ? cardClassName : "";
     const isDismissible = 'isDismissible' in config ? config.isDismissible : true;
 
     const handleDragStop = (e: any, d: { x: number, y: number }) => {
@@ -105,11 +107,13 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, config
                   </>
                 }
             >
-               <WindowContent 
-                    isMinimized={item.isMinimized}
-                    ContentComponent={ContentComponent}
-                    contentProps={contentProps}
-               />
+              <ErrorBoundary itemId={item.id}>
+                 <WindowContent 
+                      isMinimized={item.isMinimized}
+                      ContentComponent={ContentComponent}
+                      contentProps={contentProps}
+                 />
+              </ErrorBoundary>
             </MicroAppCard>
         </Rnd>
     );
