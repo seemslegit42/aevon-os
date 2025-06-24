@@ -9,6 +9,11 @@ export interface CreateAgentData {
     description: string;
 }
 
+export interface UpdateAgentData {
+    name?: string;
+    description?: string;
+}
+
 /**
  * Creates a new agent in the database.
  */
@@ -44,4 +49,18 @@ export async function deleteAgent(agentId: string): Promise<void> {
     await prisma.agent.delete({
         where: { id: agentId },
     });
+}
+
+/**
+ * Updates an existing agent's details.
+ */
+export async function updateAgent(agentId: string, data: UpdateAgentData): Promise<Agent> {
+    const updatedAgent = await prisma.agent.update({
+        where: { id: agentId },
+        data: {
+            name: data.name,
+            description: data.description,
+        },
+    });
+    return updatedAgent;
 }

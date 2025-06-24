@@ -1,136 +1,43 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-// ===============================================
-// Core Models for AEVON OS
-// ===============================================
-
-model User {
-  id        String          @id @default(cuid())
-  email     String          @unique
-  name      String?
-  password  String // Hashed password
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-
-  workspaces  WorkspaceUser[]
-  createdAgents Agent[]      @relation("CreatedBy")
-  createdWorkflows Workflow[] @relation("CreatedBy")
-  actionLogs  ActionLog[]
-}
-
-model Workspace {
-  id        String          @id @default(cuid())
-  name      String
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-
-  users       WorkspaceUser[]
-  agents      Agent[]
-  workflows   Workflow[]
-  actionLogs  ActionLog[]
-}
-
-// Join table for many-to-many relationship between User and Workspace
-model WorkspaceUser {
-  userId      String
-  workspaceId String
-  role        String   @default("MEMBER") // e.g., ADMIN, MEMBER
-
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  
-  createdAt   DateTime @default(now())
-
-  @@id([userId, workspaceId])
-}
-
-
-// ===============================================
-// Agent & Workflow Models (Loom Studio Core)
-// ===============================================
-
-enum AgentStatus {
-  ACTIVE
-  IDLE
-  DISABLED
+  provider = "prisma-client-js"
 }
 
 model Agent {
-  id          String      @id @default(cuid())
-  name        String
-  description String?
-  status      AgentStatus @default(IDLE)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  
-  workspace   Workspace   @relation(fields: [workspaceId], references: [id])
-  workspaceId String
-
-  creator     User        @relation("CreatedBy", fields: [creatorId], references: [id])
-  creatorId   String
-
-  actionLogs  ActionLog[]
-}
-
-enum WorkflowStatus {
-  DRAFT
-  ACTIVE
-  ARCHIVED
-}
-
-model Workflow {
-  id          String         @id @default(cuid())
-  name        String
-  description String?
-  status      WorkflowStatus @default(DRAFT)
-  definition  Json?          // Stores the nodes and connections JSON from Loom Studio
-  
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-
-  workspace   Workspace      @relation(fields: [workspaceId], references: [id])
-  workspaceId String
-
-  creator     User           @relation("CreatedBy", fields: [creatorId], references: [id])
-  creatorId   String
-}
-
-
-// ===============================================
-// Telemetry & Billing Model
-// ===============================================
-
-enum ActionStatus {
-  SUCCESS
-  FAILURE
+  id            String      @id @default(cuid())
+  name          String
+  type          AgentType
+  description   String
+  status        String      @default("idle")
+  invocations   Int         @default(0)
+  lastInvokedAt DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  logs          ActionLog[]
 }
 
 model ActionLog {
-  id          String       @id @default(cuid())
-  actionType  String       // e.g., "tool_call", "agent_chat", "workflow_execution"
-  details     Json?        // Full context of the action
-  status      ActionStatus
-  cost        Float?       // Cost associated with this action, for billing
-  timestamp   DateTime     @default(now())
+  id        String   @id @default(cuid())
+  agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agentId   String
+  timestamp DateTime @default(now())
+  toolName  String
+  arguments Json
+  status    String // "success" or "failure"
+  result    Json?
+  tokens    Int?
+}
 
-  workspace   Workspace    @relation(fields: [workspaceId], references: [id])
-  workspaceId String
-
-  // The action can be initiated by a user or an agent
-  user        User?        @relation(fields: [userId], references: [id])
-  userId      String?
-
-  agent       Agent?       @relation(fields: [agentId], references: [id])
-  agentId     String?
+enum AgentType {
+  CONVERSATIONAL
+  WEB_INTELLECT
+  TASK_ORCHESTRATOR
+  CONTENT_SYNTHESIZER
+  DATA_CRUNCHER
+  SUPPORT_RESPONDER
 }

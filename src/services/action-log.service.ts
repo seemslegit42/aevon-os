@@ -8,7 +8,6 @@ const SYSTEM_AGENT_ID = 'system-beep';
 const SYSTEM_AGENT_NAME = 'BEEP';
 const SYSTEM_AGENT_TYPE: AgentType = 'CONVERSATIONAL';
 
-// --- Lazy Initialization for System Agent ---
 let isSystemAgentInitialized = false;
 
 /**
@@ -31,13 +30,12 @@ async function ensureSystemAgent() {
     isSystemAgentInitialized = true;
   } catch (error) {
     console.error("Failed to ensure system agent exists:", error);
-    // Do not set initialized to true if it fails, so it can be retried on the next action.
   }
 }
 
 
 interface LogActionData {
-  agentId?: string; // Optional, defaults to system agent
+  agentId?: string;
   toolName: string;
   arguments: any;
   status: 'success' | 'failure';
@@ -46,11 +44,10 @@ interface LogActionData {
 }
 
 /**
- * Logs a completed agent action to the database.
+ * Logs a completed agent action to the database and updates agent invocation stats.
  * @param data - The details of the action to log.
  */
 export async function logAction(data: LogActionData): Promise<void> {
-  // Lazily ensure the system agent exists on the first call.
   await ensureSystemAgent();
 
   const {
@@ -63,19 +60,28 @@ export async function logAction(data: LogActionData): Promise<void> {
   } = data;
 
   try {
-    await prisma.actionLog.create({
-      data: {
-        agentId: agentId,
-        toolName: toolName,
-        arguments: args, // Prisma handles JSON serialization
-        status: status,
-        result: result,   // Prisma handles JSON serialization
-        tokens: tokens,
-      },
-    });
+    await prisma.$transaction([
+      prisma.actionLog.create({
+        data: {
+          agentId: agentId,
+          toolName: toolName,
+          arguments: args,
+          status: status,
+          result: result,
+          tokens: tokens,
+        },
+      }),
+      prisma.agent.update({
+        where: { id: agentId },
+        data: {
+          invocations: {
+            increment: 1,
+          },
+          lastInvokedAt: new Date(),
+        },
+      }),
+    ]);
   } catch (error) {
     console.error(`Failed to log action for tool "${toolName}":`, error);
-    // Depending on requirements, you might want to re-throw the error
-    // or handle it silently so it doesn't crash the agent turn.
   }
 }

@@ -1,8 +1,8 @@
 
 import { type NextRequest, NextResponse } from 'next/server';
-import { listAgents, createAgent, deleteAgent } from '@/services/agent-management.service';
+import { listAgents, createAgent, deleteAgent, updateAgent } from '@/services/agent-management.service';
 import { z } from 'zod';
-import type { AgentType } from '@prisma/client';
+import { AgentType } from '@prisma/client';
 
 /**
  * GET /api/agents
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
 
 const createAgentSchema = z.object({
     name: z.string().min(3, "Name must be at least 3 characters long."),
-    type: z.string(), // We'll validate against the enum on the server
+    type: z.nativeEnum(AgentType),
     description: z.string().min(10, "Description is too short."),
 });
 
@@ -36,15 +36,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Invalid input', details: validation.error.format() }, { status: 400 });
         }
         
-        const agentTypes: AgentType[] = ['CONVERSATIONAL', 'WEB_INTELLECT', 'TASK_ORCHESTRATOR', 'CONTENT_SYNTHESIZER', 'DATA_CRUNCHER', 'SUPPORT_RESPONDER'];
-        if (!agentTypes.includes(validation.data.type as any)) {
-            return NextResponse.json({ error: 'Invalid agent type' }, { status: 400 });
-        }
-
-        const newAgent = await createAgent({
-            ...validation.data,
-            type: validation.data.type as any, // Cast after validation
-        });
+        const newAgent = await createAgent(validation.data);
 
         return NextResponse.json(newAgent, { status: 201 });
     } catch (error) {
@@ -53,8 +45,46 @@ export async function POST(req: NextRequest) {
     }
 }
 
+const updateAgentSchema = z.object({
+    name: z.string().min(3, "Name must be at least 3 characters long.").optional(),
+    description: z.string().min(10, "Description is too short.").optional(),
+}).refine(data => data.name || data.description, {
+    message: "At least one field (name or description) must be provided for an update."
+});
+
 /**
- * DELETE /api/agents
+ * PUT /api/agents?id=<agentId>
+ * Updates an agent's name or description.
+ */
+export async function PUT(req: NextRequest) {
+    const { searchParams } = new URL(req.url);
+    const agentId = searchParams.get('id');
+
+    if (!agentId) {
+        return NextResponse.json({ error: 'Agent ID is required' }, { status: 400 });
+    }
+    if (agentId === 'system-beep') {
+        return NextResponse.json({ error: 'The primary system agent cannot be modified.' }, { status: 403 });
+    }
+
+    try {
+        const body = await req.json();
+        const validation = updateAgentSchema.safeParse(body);
+        if (!validation.success) {
+            return NextResponse.json({ error: 'Invalid input', details: validation.error.format() }, { status: 400 });
+        }
+
+        const updatedAgent = await updateAgent(agentId, validation.data);
+        return NextResponse.json(updatedAgent);
+    } catch (error) {
+        console.error(`Failed to update agent ${agentId}:`, error);
+        return NextResponse.json({ error: 'Failed to update agent. It may not exist.' }, { status: 500 });
+    }
+}
+
+
+/**
+ * DELETE /api/agents?id=<agentId>
  * Deletes an agent.
  */
 export async function DELETE(req: NextRequest) {
