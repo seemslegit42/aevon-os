@@ -183,17 +183,17 @@ const NewInvoiceDialog = () => {
 const LedgerTab = () => {
     const ledgerData = useAccountingStore((s) => s.ledgerData);
     return (
-        <Card className="h-full glassmorphism-panel border-none">
+        <Card className="h-full glassmorphism-panel border-none flex flex-col">
             <CardHeader>
                 <CardTitle className="font-headline text-primary">Dynamic Ledger</CardTitle>
                 <CardDescription>Real-time view of all financial transactions.</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-grow flex flex-col">
                 <div className="flex gap-2 mb-4">
                      <AddTransactionDialog />
                     <Button size="sm" variant="outline"><Upload /> Import Statement</Button>
                 </div>
-                <ScrollArea className="h-[280px]">
+                <ScrollArea className="flex-grow">
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -225,16 +225,16 @@ const LedgerTab = () => {
 const InvoicesTab = () => {
     const invoiceData = useAccountingStore((s) => s.invoiceData);
     return (
-     <Card className="h-full glassmorphism-panel border-none">
+     <Card className="h-full glassmorphism-panel border-none flex flex-col">
         <CardHeader>
             <CardTitle className="font-headline text-primary">Invoices & Payments</CardTitle>
             <CardDescription>Create, send, and track client invoices.</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-grow flex flex-col">
             <div className="mb-4">
                 <NewInvoiceDialog />
             </div>
-             <ScrollArea className="h-[280px]">
+             <ScrollArea className="flex-grow">
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -294,35 +294,37 @@ const ReportsTab = () => {
     }, [ledgerData]);
 
     return (
-        <Card className="h-full glassmorphism-panel border-none">
+        <Card className="h-full glassmorphism-panel border-none flex flex-col">
             <CardHeader>
                 <CardTitle className="font-headline text-primary">Financial Reports</CardTitle>
                 <CardDescription>Key financial reports and cash flow analysis based on your ledger data.</CardDescription>
             </CardHeader>
-            <CardContent className="h-[calc(100%-4rem)] pb-0">
+            <CardContent className="flex-grow flex flex-col">
                 <div className="flex gap-2 mb-4">
                     <Button size="sm" variant="outline"><FileText /> Profit & Loss</Button>
                     <Button size="sm" variant="outline"><FileText /> Balance Sheet</Button>
                     <Button size="sm" variant="outline"><FileText /> GST/HST Report</Button>
                 </div>
                 <h4 className="text-sm font-semibold text-muted-foreground mb-2">Monthly Cash Flow</h4>
-                <ResponsiveContainer width="100%" height={250}>
-                    {cashflowData.length > 0 ? (
-                        <BarChart data={cashflowData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border)/0.5)" />
-                            <XAxis dataKey="name" fontSize={12} />
-                            <YAxis fontSize={12} tickFormatter={(value) => `$${value/1000}k`}/>
-                            <Tooltip contentStyle={{ background: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: 'var(--radius)' }} />
-                            <Legend wrapperStyle={{fontSize: "12px"}}/>
-                            <Bar dataKey="income" fill="hsl(var(--chart-4))" radius={[4, 4, 0, 0]} />
-                            <Bar dataKey="expenses" fill="hsl(var(--chart-5))" radius={[4, 4, 0, 0]}/>
-                        </BarChart>
-                    ) : (
-                        <div className="flex items-center justify-center h-full text-muted-foreground">
-                            <p>No income or expense data to display. Add transactions in the Ledger tab.</p>
-                        </div>
-                    )}
-                </ResponsiveContainer>
+                <div className="flex-grow">
+                    <ResponsiveContainer width="100%" height="100%">
+                        {cashflowData.length > 0 ? (
+                            <BarChart data={cashflowData}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border)/0.5)" />
+                                <XAxis dataKey="name" fontSize={12} />
+                                <YAxis fontSize={12} tickFormatter={(value) => `$${value/1000}k`}/>
+                                <Tooltip contentStyle={{ background: 'hsl(var(--card))', borderColor: 'hsl(var(--border))', borderRadius: 'var(--radius)' }} />
+                                <Legend wrapperStyle={{fontSize: "12px"}}/>
+                                <Bar dataKey="income" fill="hsl(var(--chart-4))" radius={[4, 4, 0, 0]} />
+                                <Bar dataKey="expenses" fill="hsl(var(--chart-5))" radius={[4, 4, 0, 0]}/>
+                            </BarChart>
+                        ) : (
+                            <div className="flex items-center justify-center h-full text-muted-foreground">
+                                <p>No income or expense data to display. Add transactions in the Ledger tab.</p>
+                            </div>
+                        )}
+                    </ResponsiveContainer>
+                </div>
             </CardContent>
         </Card>
     );
@@ -330,7 +332,7 @@ const ReportsTab = () => {
 
 const AccountingComponent = () => {
     return (
-        <div className="h-full w-full p-4">
+        <div className="h-full w-full p-4 flex flex-col">
             <Tabs defaultValue="ledger" className="h-full w-full flex flex-col">
                 <TabsList className="flex-shrink-0">
                     <TabsTrigger value="ledger">Ledger</TabsTrigger>

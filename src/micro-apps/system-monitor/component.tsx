@@ -1,16 +1,24 @@
 
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Cpu, MemoryStick, HardDrive } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 const SystemMonitorComponent: React.FC = () => {
     // In a real app, this data would come from a backend service.
-    const cpuUsage = 28;
-    const memoryUsage = 54;
-    const diskUsage = 76;
+    const [cpuUsage, setCpuUsage] = useState(28);
+    const [memoryUsage, setMemoryUsage] = useState(54);
+    const [diskUsage, setDiskUsage] = useState(76);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCpuUsage(Math.min(100, Math.floor(Math.random() * 15 + 20)));
+            setMemoryUsage(Math.min(100, Math.floor(Math.random() * 10 + 50)));
+        }, 3000);
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <div className="p-4 h-full">

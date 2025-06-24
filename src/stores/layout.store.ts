@@ -9,7 +9,7 @@ import { ALL_CARD_CONFIGS, ALL_MICRO_APPS, DEFAULT_LAYOUT_CONFIG } from '@/confi
 import type { AppRegistration } from '@/config/app-registry';
 import eventBus from '@/lib/event-bus';
 
-const LAYOUT_STORAGE_KEY = 'dashboardLayout_v11_stable';
+const LAYOUT_STORAGE_KEY = 'dashboardLayout_v12_stable';
 
 interface LayoutState {
   layoutItems: LayoutItem[];
@@ -263,7 +263,8 @@ export const useLayoutStore = create<LayoutState>()(
         if (itemIndex === -1) return state;
 
         const itemToReload = state.layoutItems[itemIndex];
-        const newId = `${itemToReload.cardId || itemToReload.appId}-${crypto.randomUUID()}`;
+        // Create a new ID to force React to remount the component.
+        const newId = `${itemToReload.appId || itemToReload.cardId}-${crypto.randomUUID()}`;
         const maxZ = Math.max(0, ...state.layoutItems.map(item => item.zIndex || 0));
 
         const newItem: LayoutItem = { ...itemToReload, id: newId, zIndex: maxZ + 1, isMinimized: false, isMaximized: false };

@@ -30,10 +30,9 @@ export default function HomePage() {
   );
 
   useEffect(() => {
-    setHasMounted(true);
-    // On mount, check if the layout needs to be initialized.
-    // This function has internal logic to only run on the very first load.
+    // This effect now correctly handles initialization after rehydration.
     checkAndInitializeLayout();
+    setHasMounted(true);
   }, [checkAndInitializeLayout]);
 
   useEffect(() => {

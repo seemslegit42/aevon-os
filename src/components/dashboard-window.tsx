@@ -35,14 +35,21 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
       : ALL_MICRO_APPS.find(a => a.id === item.appId);
 
     if (!config) {
+      // This fallback is crucial for stability if a config is missing.
       return (
-         <ErrorBoundary itemId={item.id}>
-          <div className="p-4 bg-destructive text-destructive-foreground">
-            <h3 className="font-bold">Error: Component not found</h3>
-            <p className="text-xs">The component with ID "{item.cardId || item.appId}" could not be found in the registry.</p>
-            <Button variant="outline" size="sm" onClick={() => closeItem(item.id)} className="mt-2">Close</Button>
-          </div>
-        </ErrorBoundary>
+         <Rnd
+            default={{ x: item.x, y: item.y, width: 400, height: 200 }}
+            style={{ zIndex: item.zIndex }}
+            className={cn("react-draggable", isFocused && "is-focused")}
+         >
+             <ErrorBoundary itemId={item.id}>
+              <div className="p-4 bg-destructive text-destructive-foreground h-full w-full rounded-lg flex flex-col">
+                <h3 className="font-bold">Error: Component not found</h3>
+                <p className="text-xs">The component with ID "{item.cardId || item.appId}" could not be found in the registry.</p>
+                <Button variant="outline" size="sm" onClick={() => closeItem(item.id)} className="mt-auto">Close Window</Button>
+              </div>
+            </ErrorBoundary>
+         </Rnd>
       );
     }
     
@@ -147,5 +154,4 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
 };
 
 const DashboardWindow = memo(DashboardWindowComponent);
-
 export default DashboardWindow;
