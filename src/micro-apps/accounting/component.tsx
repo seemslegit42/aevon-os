@@ -309,7 +309,7 @@ const InvoicesTab = () => {
                             <TableCell>{invoice.client}</TableCell>
                             <TableCell>{format(invoice.dueDate, 'yyyy-MM-dd')}</TableCell>
                             <TableCell>
-                                <Badge variant={invoice.status === 'Paid' ? 'default' : invoice.status === 'Overdue' ? 'destructive' : 'secondary'} className={invoice.status === 'Paid' ? 'badge-success' : ''}>{invoice.status}</Badge>
+                                <Badge variant={invoice.status === 'Paid' ? 'default' : invoice.status === 'Overdue' ? 'destructive' : 'secondary'} className={cn(invoice.status === 'Paid' ? 'badge-success' : '')}>{invoice.status}</Badge>
                             </TableCell>
                             <TableCell className="text-right">{currencyFormatter.format(invoice.amount)}</TableCell>
                         </TableRow>
@@ -412,5 +412,3 @@ const AccountingComponent = () => {
 }
 
 export default AccountingComponent;
-
-    
