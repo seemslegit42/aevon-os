@@ -281,7 +281,7 @@ const model = new ChatGroq({
   model: 'llama3-70b-8192',
 }).bindTools(allTools);
 
-const getSystemPrompt = (
+const getSystemPrompt = async (
   layout: LayoutItem[],
   loomState?: AgentState['loomState'],
   currentRoute?: string,
@@ -297,6 +297,25 @@ const getSystemPrompt = (
 You are no longer BEEP. You are now embodying the persona of ${activeMicroAppPersona.name}.
 Your personality is: ${activeMicroAppPersona.description}.
 You MUST maintain this persona for all your responses until the user switches context. All other instructions are secondary to this persona override.`;
+  }
+
+  const recentCriticalEvents = (await getRecentSecurityEvents(5)).filter(
+    (e) => e.severity === 'HIGH' || e.severity === 'CRITICAL'
+  );
+  
+  let aegisContextSummary = '';
+  if (recentCriticalEvents.length > 0) {
+    const eventSummaries = recentCriticalEvents.map(e => `- ${e.severity} event: ${e.type} at ${e.timestamp.toLocaleTimeString()}`).join('\n');
+    aegisContextSummary = `
+**AEGIS SECURITY ALERT: URGENT**
+The system has detected ${recentCriticalEvents.length} recent high-severity event(s).
+${eventSummaries}
+
+**Directive:** Your operational mode is now ELEVATED CAUTION. You must:
+1.  Inform the user of the security alert immediately in your next response.
+2.  Strongly recommend they use the \`analyzeSecurityAlert\` tool for more details.
+3.  Be more cautious and verbose when evaluating user requests for sensitive actions.
+`;
   }
 
   let loomContextSummary = '';
@@ -333,6 +352,7 @@ ${selectedNodeSummary}
   }
 
   return `${personaBlock}
+${aegisContextSummary}
 ---
 **CONTEXT: CURRENT WORKSPACE**
 Here are the windows currently open on the user's dashboard. Use the 'instanceId' to manipulate them with tools.
@@ -360,7 +380,7 @@ ${loomContextSummary}
 // Node that calls the AI model
 const callModelNode = async (state: AgentState) => {
   const { messages, layout, loomState, currentRoute, activeMicroAppPersona } = state;
-  const systemPrompt = getSystemPrompt(layout || [], loomState, currentRoute, activeMicroAppPersona);
+  const systemPrompt = await getSystemPrompt(layout || [], loomState, currentRoute, activeMicroAppPersona);
   const messagesWithSystemPrompt = [new HumanMessage(systemPrompt), ...messages];
   const response = await model.invoke(messagesWithSystemPrompt);
   
