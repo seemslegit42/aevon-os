@@ -21,3 +21,4 @@ componentMap.set('app-analytics', lazy(() => import('@/micro-apps/sales-analytic
 componentMap.set('app-content-creator', lazy(() => import('@/micro-apps/content-creator/component')));
 componentMap.set('app-subscriptions', lazy(() => import('@/micro-apps/armory-subscriptions/component')));
 componentMap.set('app-agent-config', lazy(() => import('@/micro-apps/agent-config/component')));
+componentMap.set('app-system-monitor', lazy(() => import('@/micro-apps/system-monitor/component')));

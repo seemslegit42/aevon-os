@@ -2,7 +2,7 @@
 import type { ElementType } from 'react';
 import type { z } from 'zod';
 import {
-    Bot, LineChart, Puzzle, BrainCircuit, Users, Bug, Home, Network, Shield, ShoppingCart, Calculator, Pencil, CreditCard, Cpu, RotateCw, Download
+    Bot, LineChart, Puzzle, BrainCircuit, Users, Bug, Home, Network, Shield, ShoppingCart, Calculator, Pencil, CreditCard, Cpu, RotateCw, Download, Activity
 } from 'lucide-react';
 import type { UIControl, MicroAppRoute, CardConfig } from '@/types/dashboard';
 
@@ -111,6 +111,15 @@ export const ALL_MICRO_APPS: AppRegistration[] = [
     permissions: [],
     tags: ['ai', 'settings', 'personalization'],
     defaultSize: { width: 450, height: 400 },
+  },
+  {
+    id: 'app-system-monitor',
+    title: 'System Monitor',
+    description: 'Monitor system performance, resource usage, and running processes.',
+    icon: Activity,
+    permissions: [],
+    tags: ['system', 'performance', 'utilities'],
+    defaultSize: { width: 500, height: 400 },
   },
 ];
 
