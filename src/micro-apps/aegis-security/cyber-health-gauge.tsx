@@ -1,23 +1,21 @@
+
 "use client";
 import React, { useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import { cn } from '@/lib/utils';
 import { useSound } from '@/hooks/use-sound';
-import { useAegisStore } from './store';
 
-const CyberHealthGauge: React.FC = () => {
-    // The score is now read directly from the central Zustand store.
-    // This component is now purely presentational.
-    const score = useAegisStore((state) => state.cyberHealthScore);
+interface CyberHealthGaugeProps {
+    score: number;
+}
+
+const CyberHealthGauge: React.FC<CyberHealthGaugeProps> = ({ score }) => {
     const prevScoreRef = useRef(score);
     
-    // In a real app, the sound file would be in /public/sounds/
-    // Since we cannot add binary files, this will fail silently.
     const playSwooshSound = useSound('/sounds/swoosh.mp3');
 
     useEffect(() => {
-        // Effect to detect sudden score drops and play a sound
         if (prevScoreRef.current - score > 15) {
             playSwooshSound();
         }
@@ -55,14 +53,12 @@ const CyberHealthGauge: React.FC = () => {
                         endAngle={-270}
                     >
                         <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
-                        {/* Background track */}
                         <RadialBar
                             background={{ fill: "hsl(var(--muted) / 0.3)" }}
                             dataKey="value"
                             angleAxisId={0}
                             cornerRadius={10}
                         />
-                        {/* Animated foreground score bar */}
                         <RadialBar
                             dataKey="value"
                             angleAxisId={0}

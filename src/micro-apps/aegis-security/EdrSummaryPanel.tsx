@@ -1,38 +1,17 @@
 
 "use client"
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Laptop, BrainCircuit } from 'lucide-react';
+import type { EdrDataPoint } from '@/services/security.service';
 
-const initialEdrData = [
-  { day: 'Mon', Malware: 2, Ransomware: 0, LateralMovement: 1 },
-  { day: 'Tue', Malware: 3, Ransomware: 1, LateralMovement: 2 },
-  { day: 'Wed', Malware: 1, Ransomware: 0, LateralMovement: 0 },
-  { day: 'Thu', Malware: 4, Ransomware: 0, LateralMovement: 3 },
-  { day: 'Fri', Malware: 2, Ransomware: 1, LateralMovement: 1 },
-  { day: 'Sat', Malware: 0, Ransomware: 0, LateralMovement: 0 },
-  { day: 'Sun', Malware: 1, Ransomware: 0, LateralMovement: 1 },
-];
+interface EdrSummaryPanelProps {
+  data: EdrDataPoint[];
+}
 
-const EdrSummaryPanel: React.FC = () => {
-    const [edrData, setEdrData] = useState(initialEdrData);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-        setEdrData(prevData =>
-            prevData.map(item => ({
-            ...item,
-            Malware: Math.max(0, item.Malware + Math.floor(Math.random() * 3) - 1),
-            LateralMovement: Math.max(0, item.LateralMovement + Math.floor(Math.random() * 3) - 1),
-            Ransomware: Math.random() > 0.9 ? Math.max(0, item.Ransomware + (Math.random() > 0.6 ? 1 : -1)) : item.Ransomware,
-            }))
-        );
-        }, 7000); // Update every 7 seconds
-        return () => clearInterval(interval);
-    }, []);
-
+const EdrSummaryPanel: React.FC<EdrSummaryPanelProps> = ({ data }) => {
   return (
     <Card className="glassmorphism-panel h-full flex flex-col">
       <CardHeader>
@@ -52,7 +31,7 @@ const EdrSummaryPanel: React.FC = () => {
       </CardHeader>
       <CardContent className="flex-grow">
         <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={edrData} layout="vertical" margin={{ top: 0, right: 10, left: -20, bottom: 0 }}>
+            <BarChart data={data} layout="vertical" margin={{ top: 0, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid horizontal={false} strokeDasharray="3 3" stroke="hsl(var(--border)/0.5)" />
                 <XAxis type="number" fontSize={10} tickLine={false} axisLine={false} allowDecimals={false} />
                 <YAxis type="category" dataKey="day" fontSize={10} tickLine={false} axisLine={false} />
