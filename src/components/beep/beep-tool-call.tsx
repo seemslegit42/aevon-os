@@ -26,6 +26,7 @@ const toolIcons: Record<string, React.ElementType<IconProps>> = {
   generateMarketingContent: Settings,
   generateWorkspaceInsights: Settings,
   summarizeWebpage: FileText,
+  extractInvoiceData: Settings,
 };
 
 const toolFriendlyNames: Record<string, string> = {
@@ -42,6 +43,7 @@ const toolFriendlyNames: Record<string, string> = {
   generateMarketingContent: 'Generate Content',
   generateWorkspaceInsights: 'Generate Insights',
   summarizeWebpage: 'Summarize Webpage',
+  extractInvoiceData: 'Extract Invoice Data',
 };
 
 
