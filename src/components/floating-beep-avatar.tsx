@@ -255,10 +255,38 @@ const FloatingBeepAvatar: React.FC = () => {
   }, [isHumorEnabled, isBusy, humorFrequency, playAudio, setAndLogAvatarState]);
 
 
-  if (isMobile || !isMounted) {
+  if (!isMounted) {
       return null;
   }
 
+  // Mobile View: Fixed position, tap-and-hold to record.
+  if (isMobile) {
+      return (
+        <div className="fixed bottom-20 right-4 z-[100] w-24 h-24 flex flex-col items-center justify-center">
+            <div 
+            className="relative w-full h-full rounded-full cursor-pointer"
+            onTouchStart={startRecording}
+            onTouchEnd={stopRecording}
+            >
+            <BeepAvatar3D
+                inputNode={inputNode}
+                outputNode={outputNode}
+                avatarState={avatarState}
+                isWhisperModeEnabled={false} // Whisper mode is a desktop feature
+            />
+            </div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+            <Mic className={cn(
+                "w-8 h-8 text-white/70 transition-all",
+                isRecording ? 'text-destructive scale-125' : '',
+                isProcessing && !isRecording ? 'animate-pulse' : ''
+            )} />
+            </div>
+        </div>
+      )
+  }
+
+  // Desktop View: Draggable window with hover controls.
   return (
     <Rnd
       size={{ width: rndBounds.width, height: rndBounds.height }}
