@@ -8,7 +8,6 @@ export const componentMap = new Map<string, LazyExoticComponent<ComponentType<an
 // Register Card Content Components
 componentMap.set('beep', lazy(() => import('@/micro-apps/beep-card/component')));
 componentMap.set('liveOrchestrationFeed', lazy(() => import('@/micro-apps/live-orchestration-feed/component')));
-componentMap.set('microApps', lazy(() => import('@/micro-apps/micro-apps-palette/component')));
 componentMap.set('aiInsights', lazy(() => import('@/micro-apps/ai-insights/component')));
 componentMap.set('agentPresence', lazy(() => import('@/micro-apps/agent-presence/component')));
 componentMap.set('dev-hud', lazy(() => import('@/micro-apps/dev-hud/component')));

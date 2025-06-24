@@ -18,7 +18,7 @@ export const MobileDashboard: React.FC = () => {
 
     // On mobile, we want a curated, logical order, not the free-form z-index order.
     const sortedItems = [...layoutItems].sort((a, b) => {
-        const order = ['liveOrchestrationFeed', 'beep', 'aiInsights', 'agentPresence', 'microApps'];
+        const order = ['liveOrchestrationFeed', 'beep', 'aiInsights', 'agentPresence'];
         const indexA = a.cardId ? order.indexOf(a.cardId) : order.length;
         const indexB = b.cardId ? order.indexOf(b.cardId) : order.length;
         if(a.type === 'app') return 1; // Apps always go last

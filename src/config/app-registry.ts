@@ -134,16 +134,6 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     minHeight: 180,
   },
   {
-    id: 'microApps',
-    title: 'Micro-Apps Palette',
-    icon: Puzzle,
-    isDismissible: true,
-    description: "Launch available micro-apps into the workspace.",
-    defaultSize: { x: 420, y: 290, width: 450, height: 250 },
-    minWidth: 120,
-    minHeight: 120,
-  },
-  {
     id: 'aiInsights',
     title: 'AI Insights Engine',
     icon: BrainCircuit,
