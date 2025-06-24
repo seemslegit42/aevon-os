@@ -7,6 +7,7 @@ import type { Position, Size } from 'react-rnd';
 import type { LayoutItem } from '@/types/dashboard';
 import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
 import type { MicroAppRegistration } from './micro-app.store';
+import eventBus from '@/lib/event-bus';
 
 const LAYOUT_STORAGE_KEY = 'dashboardLayout_v8_grid';
 
@@ -81,10 +82,30 @@ export const useLayoutStore = create<LayoutState>()(
         return { layoutItems: newItems, focusedItemId: id };
       }),
 
-      closeItem: (itemId) => set(state => ({
-        layoutItems: state.layoutItems.filter(item => item.id !== itemId),
-        focusedItemId: state.focusedItemId === itemId ? null : state.focusedItemId,
-      })),
+      closeItem: (itemId) => {
+        const itemToClose = get().layoutItems.find(item => item.id === itemId);
+        
+        set(state => ({
+            layoutItems: state.layoutItems.filter(item => item.id !== itemId),
+            focusedItemId: state.focusedItemId === itemId ? null : state.focusedItemId,
+        }));
+
+        if (itemToClose) {
+            let itemName = "Item";
+            if (itemToClose.type === 'card') {
+                const cardConfig = ALL_CARD_CONFIGS.find(c => c.id === itemToClose.cardId);
+                if (cardConfig) itemName = cardConfig.title;
+            } else if (itemToClose.type === 'app') {
+                const appConfig = ALL_MICRO_APPS.find(a => a.id === itemToClose.appId);
+                if (appConfig) itemName = appConfig.title;
+            }
+            eventBus.emit('orchestration:log', { 
+                task: 'Item Closed', 
+                status: 'success', 
+                details: `"${itemName}" was removed from the workspace.`
+            });
+        }
+      },
 
       toggleMinimizeItem: (id) => set(state => ({
         layoutItems: state.layoutItems.map(item => {
@@ -143,18 +164,33 @@ export const useLayoutStore = create<LayoutState>()(
 
       addCard: (cardId) => {
         const currentItems = get().layoutItems;
-        if (currentItems.some(item => item.id === cardId)) {
-            get().bringToFront(cardId);
-            return cardId;
-        }
         const cardConfig = ALL_CARD_CONFIGS.find(c => c.id === cardId);
         if (!cardConfig) return undefined;
+        
+        if (currentItems.some(item => item.id === cardId)) {
+            get().bringToFront(cardId);
+            eventBus.emit('orchestration:log', { 
+                task: 'Item Focused', 
+                status: 'success', 
+                details: `"${cardConfig.title}" is already open and has been focused.`,
+                targetId: cardId
+            });
+            return cardId;
+        }
+
         const maxZ = currentItems.length > 0 ? Math.max(0, ...currentItems.map(item => item.zIndex || 0)) : 0;
         const newCard: LayoutItem = { id: cardId, type: 'card', cardId: cardId, ...cardConfig.defaultLayout, zIndex: maxZ + 1 };
         set(state => ({
           layoutItems: [...state.layoutItems, newCard],
           focusedItemId: cardId
         }));
+        
+        eventBus.emit('orchestration:log', { 
+            task: 'Card Added', 
+            status: 'success', 
+            details: `"${cardConfig.title}" was added to the workspace.`,
+            targetId: cardId
+        });
         return cardId;
       },
 
@@ -171,6 +207,13 @@ export const useLayoutStore = create<LayoutState>()(
           zIndex: maxZ + 1
         };
         set(state => ({ layoutItems: [...state.layoutItems, newAppWindow], focusedItemId: instanceId }));
+        
+        eventBus.emit('orchestration:log', {
+            task: 'App Launched',
+            status: 'success',
+            details: `A new instance of "${app.title}" has been launched.`,
+            targetId: instanceId
+        });
         return instanceId;
       },
       
@@ -187,6 +230,16 @@ export const useLayoutStore = create<LayoutState>()(
             width: sourceInstance.width, height: sourceInstance.height, zIndex: maxZ + 1,
         };
         set(state => ({ layoutItems: [...state.layoutItems, newAppWindow], focusedItemId: instanceId }));
+        
+        const appConfig = ALL_MICRO_APPS.find(a => a.id === appId);
+        if (appConfig) {
+            eventBus.emit('orchestration:log', {
+                task: 'App Cloned',
+                status: 'success',
+                details: `Cloned instance of "${appConfig.title}".`,
+                targetId: instanceId
+            });
+        }
         return instanceId;
       },
 
@@ -255,6 +308,11 @@ export const useLayoutStore = create<LayoutState>()(
 
       resetLayout: () => {
         set({ layoutItems: DEFAULT_LAYOUT_CONFIG, focusedItemId: null });
+        eventBus.emit('orchestration:log', {
+            task: 'Layout Reset',
+            status: 'success',
+            details: `Workspace layout has been reset to default.`
+        });
       },
     }),
     {
