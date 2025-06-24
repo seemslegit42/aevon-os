@@ -21,7 +21,7 @@ import {
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu"
 import { Button } from '@/components/ui/button';
-import { ChevronDown, User, CreditCard, Bot, Settings, LogOut } from 'lucide-react';
+import { ChevronDown, User, Bot, Settings, LogOut } from 'lucide-react';
 import { useAvatarPresetStore } from '@/stores/avatar-preset.store';
 
 const UserMenu: React.FC = () => {
@@ -47,9 +47,6 @@ const UserMenu: React.FC = () => {
               <DropdownMenuSeparator className="bg-border/30"/>
               <DropdownMenuItem className="font-body text-foreground hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">
                 <User /> Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem className="font-body text-foreground hover:!bg-accent/20 focus:bg-accent focus:text-accent-foreground">
-                <CreditCard /> Billing
               </DropdownMenuItem>
               
               <DropdownMenuSub>

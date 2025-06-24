@@ -4,11 +4,11 @@
 import React, { useEffect } from 'react';
 import type { Message, ToolCall } from 'ai';
 import { 
-    Eye, PlusCircle, Trash2, RotateCw, Settings, CheckCircle, ShieldAlert, Settings2, FileText, BarChart, CreditCard 
+    Eye, PlusCircle, Trash2, RotateCw, Settings, CheckCircle, ShieldAlert, Settings2, FileText
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { IconProps } from '@/types/icon';
-import { KnowledgeBaseSearchResultSchema, SubscriptionStatusSchema } from '@/lib/ai-schemas';
+import { KnowledgeBaseSearchResultSchema } from '@/lib/ai-schemas';
 import { useAvatarTelemetry } from '@/hooks/use-avatar-telemetry';
 
 const toolIcons: Record<string, React.ElementType<IconProps>> = {
@@ -21,8 +21,6 @@ const toolIcons: Record<string, React.ElementType<IconProps>> = {
   closeAllInstancesOfApp: Trash2,
   analyzeSecurityAlert: CheckCircle,
   searchKnowledgeBase: FileText, 
-  getSalesAnalyticsData: BarChart, 
-  getSubscriptionStatus: CreditCard,
   generateMarketingContent: Settings,
   generateWorkspaceInsights: Settings,
   summarizeWebpage: FileText,
@@ -38,8 +36,6 @@ const toolFriendlyNames: Record<string, string> = {
   closeAllInstancesOfApp: 'Close All',
   analyzeSecurityAlert: 'Analyze Security Alert',
   searchKnowledgeBase: 'Search Knowledge Base',
-  getSalesAnalyticsData: 'Get Sales Data',
-  getSubscriptionStatus: 'Get Subscription Status',
   generateMarketingContent: 'Generate Content',
   generateWorkspaceInsights: 'Generate Insights',
   summarizeWebpage: 'Summarize Webpage',
@@ -61,17 +57,6 @@ const ToolResultContent: React.FC<{ toolName: string; result: any }> = ({ toolNa
                 <p>{answer}</p>
             </div>
            );
-      }
-      case 'getSubscriptionStatus': {
-        const data = SubscriptionStatusSchema.parse(result);
-        return (
-          <div className="text-foreground font-sans text-xs space-y-1">
-              <p><strong>Plan:</strong> {data.planName}</p>
-              <p><strong>Status:</strong> <span className="capitalize">{data.status}</span></p>
-              <p><strong>Renews:</strong> {new Date(data.renewsOn).toLocaleDateString()}</p>
-              <a href={data.manageUrl} target="_blank" rel="noopener noreferrer" className="text-accent underline">Manage Billing</a>
-          </div>
-        );
       }
       default:
         // Fallback for other tools (e.g. client-side simple messages) or unknown tools

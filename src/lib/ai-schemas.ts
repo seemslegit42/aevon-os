@@ -55,19 +55,6 @@ export const KnowledgeBaseSearchResultSchema = z.object({
 });
 export type KnowledgeBaseSearchResult = z.infer<typeof KnowledgeBaseSearchResultSchema>;
 
-// Defines the structured output for the billing/subscription status tool.
-export const SubscriptionStatusSchema = z.object({
-  planName: z.enum(['Pro', 'Team', 'Enterprise']).describe("The name of the user's current subscription plan."),
-  status: z.enum(['active', 'trialing', 'canceled']).describe("The current status of the subscription."),
-  renewsOn: z.string().describe("The date the subscription renews, in YYYY-MM-DD format."),
-  manageUrl: z.string().url().describe("The URL to the customer's billing management portal."),
-  usage: z.object({
-    aiQueries: z.object({ current: z.number(), limit: z.number() }),
-    teamMembers: z.object({ current: z.number(), limit: z.number() }),
-  })
-});
-export type SubscriptionStatus = z.infer<typeof SubscriptionStatusSchema>;
-
 // Defines the structured output for the Web Summarizer tool.
 export const WebSummarizerResultSchema = z.object({
   summary: z.string().describe("The generated summary of the webpage content."),
