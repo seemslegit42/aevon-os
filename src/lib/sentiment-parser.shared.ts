@@ -1,3 +1,4 @@
+
 import type { AvatarState } from '@/types/dashboard';
 
 const keywordMap: { keywords: string[]; state: AvatarState }[] = [

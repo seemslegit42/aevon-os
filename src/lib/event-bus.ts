@@ -24,5 +24,3 @@ type AppEvents = {
 const eventBus: Emitter<AppEvents> = mitt<AppEvents>();
 
 export default eventBus;
-
-    

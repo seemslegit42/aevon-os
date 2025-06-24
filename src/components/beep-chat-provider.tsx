@@ -176,5 +176,3 @@ export function BeepChatProvider() {
 
   return null; // This component does not render anything
 }
-
-    
