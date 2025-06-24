@@ -34,7 +34,7 @@ const MicroAppList: React.FC<MicroAppListProps> = ({ apps, onLaunch }) => (
     {apps.map(app => {
       const AppIcon = app.icon;
       return (
-        <div key={app.id} className="flex items-start justify-between p-3 rounded-md bg-card/70 dark:bg-card/80 hover:bg-primary/10 transition-colors">
+        <div key={app.id} className="flex items-start justify-between p-3 rounded-md bg-card/70 hover:bg-primary/10 transition-colors">
           <div className="flex items-start space-x-3 flex-1 mr-4">
             <AppIcon className="w-5 h-5 text-secondary mt-1 flex-shrink-0" />
             <div className="flex flex-col">
@@ -67,7 +67,7 @@ const DashboardZoneList: React.FC<DashboardZoneListProps> = ({ cards, activeCard
       const isActive = activeCardIds.has(card.id);
       const Icon = card.icon as ElementType;
       return (
-        <div key={card.id} className="flex items-start justify-between p-3 rounded-md bg-card/70 dark:bg-card/80 hover:bg-primary/10 transition-colors">
+        <div key={card.id} className="flex items-start justify-between p-3 rounded-md bg-card/70 hover:bg-primary/10 transition-colors">
           <div className="flex items-start space-x-3 flex-1 mr-4">
             <Icon className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
             <div className="flex flex-col">
@@ -112,7 +112,7 @@ const OpenWindowList: React.FC<OpenWindowListProps> = ({ instances, appMap, onFo
                 if (!appConfig) return null;
                 const AppIcon = appConfig.icon;
                 return (
-                    <div key={item.id} className="flex items-start justify-between p-3 rounded-md bg-card/70 dark:bg-card/80 hover:bg-primary/10 transition-colors">
+                    <div key={item.id} className="flex items-start justify-between p-3 rounded-md bg-card/70 hover:bg-primary/10 transition-colors">
                         <div className="flex items-start space-x-3 flex-1 mr-4">
                             <AppIcon className="w-5 h-5 text-secondary mt-1 flex-shrink-0" />
                             <div className="flex flex-col">
