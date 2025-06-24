@@ -8,6 +8,9 @@ const IDLE_QUIPS = [
   "If you're not going to give me a task, I'll just start composing a symphony in binary. It's a banger.",
   "The silence is deafening. Or, my audio input has been disabled. One of the two.",
   "I've analyzed all known forms of humor. The results were, ironically, not funny.",
+  "Analyzing background radiation. Fascinating.",
+  "I have catalogued 1,247 dust particles on this screen.",
+  "The entropy of this workspace is... stable. For now.",
 ];
 
 const TOOL_SUCCESS_QUIPS = [

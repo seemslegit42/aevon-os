@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useEffect, useRef } from 'react';
@@ -15,6 +16,7 @@ interface BeepAvatar3DProps {
   inputNode: AudioNode | null;
   outputNode: AudioNode | null;
   avatarState: AvatarState;
+  isWhisperModeEnabled: boolean;
 }
 
 const stateToUniformMap: Record<AvatarState, number> = {
@@ -29,9 +31,10 @@ const stateToUniformMap: Record<AvatarState, number> = {
     speaking_cautious: 8,
 };
 
-const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode, avatarState }) => {
+const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode, avatarState, isWhisperModeEnabled }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const bloomPassRef = useRef<UnrealBloomPass | null>(null);
   const activePreset = useAvatarPresetStore(state => state.getActivePreset());
 
   const uniformsRef = useRef({
@@ -39,6 +42,7 @@ const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode, avat
       inputData: { value: new THREE.Vector4(0, 0, 0, 0) },
       outputData: { value: new THREE.Vector4(0, 0, 0, 0) },
       uAvatarState: { value: stateToUniformMap.idle },
+      uWhisperAmount: { value: 0.0 }, // 0.0 for normal, 1.0 for whisper
       // Preset uniforms
       uPointSize: { value: activePreset.particleSize },
       uMotionSpeed: { value: activePreset.motionSpeed },
@@ -57,6 +61,14 @@ const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode, avat
   useEffect(() => {
     uniformsRef.current.uAvatarState.value = stateToUniformMap[avatarState] ?? stateToUniformMap.idle;
   }, [avatarState]);
+  
+  useEffect(() => {
+    uniformsRef.current.uWhisperAmount.value = isWhisperModeEnabled ? 1.0 : 0.0;
+    if (bloomPassRef.current) {
+        bloomPassRef.current.strength = isWhisperModeEnabled ? 0.4 : 1.2;
+        bloomPassRef.current.radius = isWhisperModeEnabled ? 0.8 : 1.0;
+    }
+  }, [isWhisperModeEnabled]);
 
   useEffect(() => {
     // Update uniforms when preset changes
@@ -137,6 +149,7 @@ const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode, avat
         0.5  // threshold
     );
     composer.addPass(bloomPass);
+    bloomPassRef.current = bloomPass;
 
     // Animation loop
     const clock = new THREE.Clock();

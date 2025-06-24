@@ -7,6 +7,7 @@ export const vs = `
   uniform float uPointSize;
   uniform float uMotionSpeed;
   uniform float uNoiseStrength;
+  uniform float uWhisperAmount;
   
   varying float vDisplacement;
 
@@ -87,7 +88,8 @@ export const vs = `
     vec4 projectedPosition = projectionMatrix * viewPosition;
 
     gl_Position = projectedPosition;
-    gl_PointSize = uPointSize * (3.0 / -viewPosition.z);
+    float finalPointSize = mix(uPointSize, uPointSize * 0.6, uWhisperAmount);
+    gl_PointSize = finalPointSize * (3.0 / -viewPosition.z);
   }
 `;
 

@@ -1,8 +1,9 @@
+
 "use client";
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Rnd } from 'react-rnd';
 import { Button } from '@/components/ui/button';
-import { Mic } from 'phosphor-react';
+import { Mic, SpeakerHigh, SpeakerSimpleSlash } from 'phosphor-react';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import { useAudioRecorder } from '@/hooks/use-audio-recorder';
@@ -13,6 +14,7 @@ import { useAgentConfigStore } from '@/stores/agent-config.store';
 import { getIdleQuip, getToolSuccessQuip, getToolErrorQuip } from '@/lib/humor-module';
 import eventBus from '@/lib/event-bus';
 import type { AvatarState } from '@/types/dashboard';
+import type { Position } from 'react-rnd';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getEmotionFromText } from '@/lib/sentiment-parser';
@@ -34,10 +36,68 @@ const FloatingBeepAvatar: React.FC = () => {
   const stateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Get state and actions from the global store
   const { avatarState, setAvatarState, append, isLoading, lastMessage } = useBeepChatStore();
   const isProcessing = useBeepChatStore(state => state.isLoading);
-  const { isHumorEnabled, humorFrequency } = useAgentConfigStore();
+  const { isHumorEnabled, humorFrequency, isWhisperModeEnabled, toggleWhisperMode } = useAgentConfigStore();
+
+  const [isMounted, setIsMounted] = useState(false);
+  const [rndBounds, setRndBounds] = useState({ width: 180, height: 180, x: 5000, y: 5000 });
+  const lastNormalBounds = useRef({ width: 180, height: 180, x: 0, y: 0 });
+
+  useEffect(() => {
+    setIsMounted(true);
+    const initialBounds = {
+        width: 180,
+        height: 180,
+        x: window.innerWidth - 220,
+        y: window.innerHeight - 220,
+    };
+    setRndBounds(initialBounds);
+    lastNormalBounds.current = initialBounds;
+  }, []);
+
+  const updateBounds = (newBounds: { width: number, height: number, x: number, y: number }) => {
+    setRndBounds(newBounds);
+    if (!isWhisperModeEnabled) {
+        lastNormalBounds.current = newBounds;
+    }
+  };
+
+  const handleDragStop = (e: any, d: { x: number; y: number }) => {
+    updateBounds({ ...rndBounds, x: d.x, y: d.y });
+  };
+
+  const handleResizeStop = (e: any, dir: any, ref: HTMLElement, delta: any, pos: Position) => {
+      updateBounds({
+          width: parseInt(ref.style.width, 10),
+          height: parseInt(ref.style.height, 10),
+          ...pos,
+      });
+  };
+
+  useEffect(() => {
+    if (!isMounted) return;
+
+    if (isWhisperModeEnabled) {
+        // Entering whisper mode, shrink and move to corner
+        setRndBounds({
+            width: 100,
+            height: 100,
+            x: window.innerWidth - 120,
+            y: window.innerHeight - 120,
+        });
+    } else {
+        // Exiting whisper mode, restore last known normal position
+        setRndBounds(lastNormalBounds.current);
+    }
+  }, [isWhisperModeEnabled, isMounted]);
+
+  useEffect(() => {
+      if (outputNode) {
+          outputNode.gain.value = isWhisperModeEnabled ? 0.4 : 1.0;
+      }
+  }, [isWhisperModeEnabled, outputNode]);
+
 
   const initializeAudio = useCallback(() => {
     if (audioContext) return;
@@ -136,17 +196,18 @@ const FloatingBeepAvatar: React.FC = () => {
     }
   }, [lastMessage, isLoading, playAudio, setAndLogAvatarState]);
 
-  // --- Humor Module Integration ---
   const resetIdleTimer = useCallback(() => {
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     if (isHumorEnabled && !isBusy) {
         const idleTimeout = humorFrequency === 'high' ? 20000 : humorFrequency === 'medium' ? 45000 : 90000;
         idleTimerRef.current = setTimeout(() => {
-            const quip = getIdleQuip(humorFrequency);
-            if (quip) {
-                const emotion = getEmotionFromText(quip);
-                setAndLogAvatarState(emotion);
-                playAudio(quip);
+            if (useAgentConfigStore.getState().isWhisperModeEnabled) {
+                const quip = getIdleQuip(humorFrequency);
+                if (quip) {
+                    const emotion = getEmotionFromText(quip);
+                    setAndLogAvatarState(emotion);
+                    playAudio(quip);
+                }
             }
         }, idleTimeout);
     }
@@ -159,14 +220,11 @@ const FloatingBeepAvatar: React.FC = () => {
       }
   }, [resetIdleTimer]);
 
-
-  // Event-based quip logic
   useEffect(() => {
     const handleToolSuccess = ({ toolName }: { toolName: string }) => {
         if (isHumorEnabled && !isBusy) {
             const quip = getToolSuccessQuip(humorFrequency);
             if (quip) {
-                // Add a small delay to not talk over the agent's main response
                 setTimeout(() => {
                     const emotion = getEmotionFromText(quip);
                     setAndLogAvatarState(emotion);
@@ -197,19 +255,23 @@ const FloatingBeepAvatar: React.FC = () => {
         eventBus.off('tool:error', handleToolError);
     };
   }, [isHumorEnabled, isBusy, humorFrequency, playAudio, setAndLogAvatarState]);
-  // --- End Humor Module ---
 
+
+  if (!isMounted) {
+      return null; // Don't render on server or until mounted
+  }
 
   return (
     <Rnd
-      default={{
-        x: (typeof window !== 'undefined' ? window.innerWidth : 1024) - 220,
-        y: (typeof window !== 'undefined' ? window.innerHeight : 768) - 220,
-        width: 180,
-        height: 180,
-      }}
+      size={{ width: rndBounds.width, height: rndBounds.height }}
+      position={{ x: rndBounds.x, y: rndBounds.y }}
+      onDragStop={handleDragStop}
+      onResizeStop={handleResizeStop}
+      minWidth={100}
+      minHeight={100}
+      maxWidth={300}
+      maxHeight={300}
       bounds="window"
-      enableResizing={false}
       className="z-[100] group"
     >
       <div className="relative w-full h-full rounded-full cursor-grab active:cursor-grabbing focus:outline-none">
@@ -217,8 +279,20 @@ const FloatingBeepAvatar: React.FC = () => {
           inputNode={inputNode}
           outputNode={outputNode}
           avatarState={avatarState}
+          isWhisperModeEnabled={isWhisperModeEnabled}
         />
-        <div className="absolute bottom-[-50px] left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300">
+        <div className="absolute bottom-[-50px] left-1/2 -translate-x-1/2 flex items-center gap-3 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-300">
+           <Button
+              onClick={toggleWhisperMode}
+              variant="outline"
+              size="icon"
+              className={cn(
+                "h-10 w-10 rounded-full transition-all duration-200 ease-in-out shadow-lg bg-card/60 hover:bg-primary/10",
+                isWhisperModeEnabled && "border-accent text-accent"
+              )}
+           >
+              {isWhisperModeEnabled ? <SpeakerSimpleSlash className="w-5 h-5"/> : <SpeakerHigh className="w-5 h-5"/>}
+           </Button>
            <Button
               onMouseDown={startRecording}
               onMouseUp={stopRecording}
