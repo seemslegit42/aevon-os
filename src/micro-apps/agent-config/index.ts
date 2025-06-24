@@ -1,13 +1,3 @@
 
-import type { MicroAppRegistration } from '@/stores/micro-app.store';
-import { Cpu } from 'phosphor-react';
-
-export const agentConfigAppConfig: MicroAppRegistration = {
-  id: 'app-agent-config',
-  title: 'Agent Configuration',
-  description: 'Tune the personality and behavior of your BEEP AI assistant.',
-  icon: Cpu,
-  permissions: [],
-  tags: ['ai', 'settings', 'personalization'],
-  defaultSize: { width: 450, height: 400 },
-};
+// This file is obsolete and has been cleaned up to prevent build errors.
+// The single source of truth for app registration is /src/config/app-registry.ts

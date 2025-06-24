@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lightbulb, Sparkle, ArrowRight, Warning } from 'phosphor-react';
+import { Lightbulb, Sparkles, ArrowRight, AlertTriangle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useBeepChat } from '@/hooks/use-beep-chat';
@@ -77,7 +77,7 @@ const AiInsightsCardContent: React.FC = () => {
     if (error) {
        return (
             <div className="text-center text-destructive p-4">
-                <Warning className="mx-auto h-8 w-8 mb-2" />
+                <AlertTriangle className="mx-auto h-8 w-8 mb-2" />
                 <h4 className="font-semibold">Generation Failed</h4>
                 <p className="text-xs">{error}</p>
             </div>
@@ -133,7 +133,7 @@ const AiInsightsCardContent: React.FC = () => {
         </div>
         <div className="flex-shrink-0 pt-2">
             <Button onClick={handleGenerateInsights} className="w-full btn-gradient-primary-secondary" disabled={isLoading}>
-                <Sparkle />
+                <Sparkles />
                 {isLoading ? 'Generating...' : 'Generate Insights'}
             </Button>
         </div>

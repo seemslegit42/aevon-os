@@ -1,13 +1,3 @@
 
-import type { MicroAppRegistration } from '@/stores/micro-app.store';
-import { CreditCard } from 'phosphor-react';
-
-export const armorySubscriptionsAppConfig: MicroAppRegistration = {
-  id: 'app-subscriptions',
-  title: 'Armory Subscriptions',
-  description: 'View and manage your AEVON OS subscription plan.',
-  icon: CreditCard,
-  permissions: [],
-  tags: ['billing', 'account'],
-  defaultSize: { width: 400, height: 420 },
-};
+// This file is obsolete and has been cleaned up to prevent build errors.
+// The single source of truth for app registration is /src/config/app-registry.ts

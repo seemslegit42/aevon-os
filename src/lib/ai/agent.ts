@@ -177,31 +177,12 @@ const summarizeWebpageTool = createTool({
 });
 
 // --- Client-Side UI Manipulation Tools ---
-// CRITICAL FIX: Statically define the item IDs to prevent importing client components on the server.
-const ALL_ITEM_IDS = [
-    // Micro-Apps
-    'app-accounting',
-    'app-aegis-security',
-    'app-armory',
-    'app-analytics',
-    'app-content-creator',
-    'app-subscriptions',
-    'app-agent-config',
-    // Cards
-    'beep',
-    'liveOrchestrationFeed',
-    'agentPresence',
-    'microApps',
-    'aiInsights',
-    'dev-hud'
-];
-
 const focusItemTool = createTool({ name: 'focusItem', description: "Brings a specific window into focus.", schema: z.object({ instanceId: z.string() }), func: async () => {}, isClientSide: true });
 const addItemTool = createTool({
     name: 'addItem',
-    description: 'Adds a new Panel or launches a new Micro-App.',
+    description: "Adds a new Panel or launches a new Micro-App to the dashboard. The 'itemId' should be a valid ID from the application's registry, e.g., 'app-analytics' or 'liveOrchestrationFeed'.",
     schema: z.object({
-        itemId: z.string().enum(ALL_ITEM_IDS as [string, ...string[]]).describe("The unique ID of the card or micro-app to add to the dashboard.")
+        itemId: z.string().describe("The unique ID of the card or micro-app to add to the dashboard.")
     }),
     func: async () => {},
     isClientSide: true

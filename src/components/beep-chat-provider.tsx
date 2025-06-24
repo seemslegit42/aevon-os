@@ -7,6 +7,9 @@ import { useToast } from '@/hooks/use-toast';
 import { useBeepChatStore } from '@/stores/beep-chat.store';
 import eventBus from '@/lib/event-bus';
 import { usePathname } from 'next/navigation';
+import { useLayoutStore } from '@/stores/layout.store';
+import { useLoomStore } from '@/stores/loom.store';
+import { ALL_MICRO_APPS } from '@/config/app-registry';
 
 /**
  * This is a non-rendering component that initializes the Vercel `useChat` hook
@@ -98,22 +101,27 @@ export function BeepChatProvider() {
   
   // Create a custom 'append' function that always includes the latest layout and app context.
   const appendWithContext = useCallback(async (message: Message) => {
-    // Dynamic import to break circular dependency at module load time
-    const { useLayoutStore } = await import('@/stores/layout.store');
-    const { useLoomStore } = await import('@/stores/loom.store');
-    
-    // Get state at the time of calling, not via static import cycle
-    const { layoutItems, activeAppContext } = useLayoutStore.getState();
+    const { layoutItems, focusedItemId } = useLayoutStore.getState();
     const { nodes, connections, selectedNodeId } = useLoomStore.getState();
     const loomState = nodes.length > 0 ? { nodes, connections, selectedNodeId } : undefined;
+
+    // Determine active app persona based on focused window
+    const focusedItem = focusedItemId ? layoutItems.find(item => item.id === focusedItemId) : null;
+    let activeMicroAppPersona = null;
+    if (focusedItem?.type === 'app' && focusedItem.appId) {
+        const appConfig = ALL_MICRO_APPS.find(app => app.id === focusedItem.appId);
+        if (appConfig?.persona) {
+            activeMicroAppPersona = appConfig.persona;
+        }
+    }
 
     return originalAppend(message, {
       options: { 
         body: { 
             layoutItems: layoutItems,
-            loomState,
+            loomState: loomState,
             currentRoute: pathname,
-            activeMicroAppPersona: activeAppContext?.persona ?? null,
+            activeMicroAppPersona: activeMicroAppPersona,
         } 
       }
     });

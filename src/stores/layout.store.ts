@@ -15,7 +15,6 @@ interface LayoutState {
   layoutItems: LayoutItem[];
   isLayoutInitialized: boolean;
   focusedItemId: string | null;
-  activeAppContext: AppRegistration | null;
   initializeLayout: (items: LayoutItem[]) => void;
   setFocusedItemId: (id: string | null) => void;
   updateItemLayout: (id: string, newPos: Position, newSize?: Size) => void;
@@ -39,7 +38,6 @@ export const useLayoutStore = create<LayoutState>()(
       layoutItems: [],
       isLayoutInitialized: false,
       focusedItemId: null,
-      activeAppContext: null,
       
       initializeLayout: (items) => set({ layoutItems: items, isLayoutInitialized: true }),
       
@@ -70,13 +68,7 @@ export const useLayoutStore = create<LayoutState>()(
             : layout
         );
         
-        const itemToFront = newItems.find(item => item.id === id);
-        let newActiveAppContext: AppRegistration | null = null;
-        if (itemToFront?.type === 'app' && itemToFront.appId) {
-            newActiveAppContext = ALL_MICRO_APPS.find(app => app.id === itemToFront.appId) || null;
-        }
-
-        return { layoutItems: newItems, focusedItemId: id, activeAppContext: newActiveAppContext };
+        return { layoutItems: newItems, focusedItemId: id };
       }),
 
       closeItem: (itemId) => {
@@ -87,7 +79,6 @@ export const useLayoutStore = create<LayoutState>()(
             return {
                 layoutItems: state.layoutItems.filter(item => item.id !== itemId),
                 focusedItemId: isClosingFocused ? null : state.focusedItemId,
-                activeAppContext: isClosingFocused ? null : state.activeAppContext,
             }
         });
 
@@ -199,7 +190,6 @@ export const useLayoutStore = create<LayoutState>()(
         set(state => ({ 
             layoutItems: [...state.layoutItems, newAppWindow], 
             focusedItemId: instanceId,
-            activeAppContext: app,
         }));
         
         eventBus.emit('orchestration:log', {
@@ -278,7 +268,7 @@ export const useLayoutStore = create<LayoutState>()(
       }),
 
       resetLayout: () => {
-        set({ layoutItems: DEFAULT_LAYOUT_CONFIG, focusedItemId: null, activeAppContext: null });
+        set({ layoutItems: DEFAULT_LAYOUT_CONFIG, focusedItemId: null });
         eventBus.emit('orchestration:log', {
             task: 'Layout Reset', status: 'success', details: `Workspace layout has been reset to default.`
         });
