@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertCircle, CheckCircle, Cpu, Activity, Hash, Layers } from 'lucide-react';
-import { getRecentActionLogs, getActionLogStats, type ActionLogStats } from '@/services/system-monitor.service';
+import type { ActionLogStats } from '@/services/system-monitor.service';
 import type { ActionLog, Agent } from '@prisma/client';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -39,12 +39,20 @@ const SystemMonitorComponent: React.FC<{ itemId?: string }> = ({ itemId }) => {
 
     const fetchData = useCallback(async () => {
         try {
-            const [fetchedStats, fetchedLogs] = await Promise.all([
-                getActionLogStats(),
-                getRecentActionLogs(20)
+            const [statsResponse, logsResponse] = await Promise.all([
+                fetch('/api/system/stats'),
+                fetch('/api/system/logs?limit=20')
             ]);
+    
+            if (!statsResponse.ok || !logsResponse.ok) {
+                throw new Error('Failed to fetch system monitor data');
+            }
+    
+            const fetchedStats = await statsResponse.json();
+            const fetchedLogs = await logsResponse.json();
+            
             setStats(fetchedStats);
-            setLogs(fetchedLogs as Array<ActionLog & { agent: Agent }>);
+            setLogs(fetchedLogs);
         } catch (error) {
             console.error("Failed to fetch system monitor data:", error);
         } finally {
