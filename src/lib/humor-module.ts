@@ -1,4 +1,6 @@
 
+"use client";
+
 export type HumorFrequency = 'low' | 'medium' | 'high';
 
 const IDLE_QUIPS = [
