@@ -1,15 +1,175 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id             String        @id @default(cuid())
+  email          String        @unique
+  name           String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  layouts        Layout[]
+  workflows      Workflow[]
+}
+
+model Organization {
+  id            String        @id @default(cuid())
+  name          String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  members       User[]
+  subscription  Subscription?
+  ledgerEntries LedgerEntry[]
+  invoices      Invoice[]
+}
+
+enum SubscriptionPlan {
+  Pro
+  Team
+  Enterprise
+}
+
+enum SubscriptionStatus {
+  active
+  trialing
+  canceled
+  past_due
+}
+
+model Subscription {
+  id                 String             @id @default(cuid())
+  organizationId     String             @unique
+  organization       Organization       @relation(fields: [organizationId], references: [id])
+  plan               SubscriptionPlan
+  status             SubscriptionStatus
+  renewsOn           DateTime
+  aiQueriesCurrent   Int                @default(0)
+  aiQueriesLimit     Int
+  teamMembersCurrent Int                @default(0)
+  teamMembersLimit   Int
+  manageUrl          String
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+}
+
+model Layout {
+  id        String       @id @default(cuid())
+  name      String       @default("Default Dashboard")
+  userId    String
+  user      User         @relation(fields: [userId], references: [id])
+  items     LayoutItem[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+enum LayoutItemType {
+  card
+  app
+}
+
+model LayoutItem {
+  id          String         @id @default(cuid())
+  layoutId    String
+  layout      Layout         @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  itemId      String
+  type        LayoutItemType
+  x           Float
+  y           Float
+  width       Float
+  height      Float
+  zIndex      Int
+  isMinimized Boolean        @default(false)
+  isMaximized Boolean        @default(false)
+  configJson  String?        @map("config_json")
+}
+
+model Workflow {
+  id          String               @id @default(cuid())
+  name        String
+  description String?
+  userId      String
+  user        User                 @relation(fields: [userId], references: [id])
+  nodes       WorkflowNode[]
+  connections WorkflowConnection[]
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+}
+
+enum NodeType {
+  prompt
+  decision
+  agent_call
+  wait
+  api_call
+  trigger
+  custom
+  web_summarizer
+  data_transform
+  conditional
+}
+
+model WorkflowNode {
+  id          String   @id @default(cuid())
+  workflowId  String
+  workflow    Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  type        NodeType
+  positionX   Float    @map("position_x")
+  positionY   Float    @map("position_y")
+  configJson  String?  @map("config_json")
+}
+
+model WorkflowConnection {
+  id         String   @id @default(cuid())
+  workflowId String
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  fromNodeId String   @map("from_node_id")
+  toNodeId   String   @map("to_node_id")
+
+  @@unique([workflowId, fromNodeId, toNodeId])
+}
+
+enum LedgerEntryType {
+  Income
+  Expense
+  Asset
+  Liability
+  Equity
+}
+
+model LedgerEntry {
+  id             String          @id @default(cuid())
+  organizationId String
+  organization   Organization    @relation(fields: [organizationId], references: [id])
+  date           DateTime
+  account        String
+  type           LedgerEntryType
+  debit          Float           @default(0)
+  credit         Float           @default(0)
+  createdAt      DateTime        @default(now())
+}
+
+enum InvoiceStatus {
+  Draft
+  Sent
+  Paid
+  Overdue
+}
+
+model Invoice {
+  id             String        @id @default(cuid())
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id])
+  client         String
+  date           DateTime      @default(now())
+  dueDate        DateTime
+  amount         Float
+  status         Invoice
