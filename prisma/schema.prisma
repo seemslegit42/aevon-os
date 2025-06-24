@@ -7,21 +7,24 @@ generator client {
 }
 
 datasource db {
-  provider     = "sqlite"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
+// ================================================================
+// Agent & System Models
+// ================================================================
 model Agent {
-  id            String          @id @default(cuid())
-  name          String
-  type          AgentType
+  id            String        @id @default(cuid())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  name          String        @unique
   description   String
-  status        String          @default("idle")
-  invocations   Int             @default(0)
+  type          AgentType
+  status        String        @default("idle")
+  invocations   Int           @default(0)
   lastInvokedAt DateTime?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
   logs          ActionLog[]
   events        SecurityEvent[]
 }
@@ -37,17 +40,24 @@ enum AgentType {
 
 model ActionLog {
   id        String   @id @default(cuid())
+  timestamp DateTime @default(now())
   agentId   String
+  agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
   toolName  String
-  arguments Json
+  arguments Json?
   status    String // "success" or "failure"
   result    Json?
   tokens    Int?
-  timestamp DateTime @default(now())
+}
 
-  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
-
-  @@index([agentId])
+model SecurityEvent {
+  id        String       @id @default(cuid())
+  timestamp DateTime     @default(now())
+  type      String
+  severity  SeverityLevel
+  details   Json
+  agentId   String?
+  agent     Agent?       @relation(fields: [agentId], references: [id], onDelete: SetNull)
 }
 
 enum SeverityLevel {
@@ -57,17 +67,40 @@ enum SeverityLevel {
   CRITICAL
 }
 
-model SecurityEvent {
-  id        String        @id @default(cuid())
-  agentId   String?
-  type      String
-  severity  SeverityLevel
-  details   Json
-  timestamp DateTime      @default(now())
+// ================================================================
+// Accounting Micro-App Models
+// ================================================================
+model Invoice {
+  id         String        @id @default(cuid())
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  client     String
+  amount     Float
+  dueDate    DateTime
+  status     InvoiceStatus @default(DRAFT)
+}
 
-  agent Agent? @relation(fields: [agentId], references: [id], onDelete: SetNull)
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+}
 
-  @@index([agentId])
-  @@index([type])
-  @@index([severity])
+model Transaction {
+  id        String          @id @default(cuid())
+  createdAt DateTime        @default(now())
+  date      DateTime
+  account   String
+  type      TransactionType
+  debit     Float?
+  credit    Float?
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  ASSET
+  LIABILITY
+  EQUITY
 }

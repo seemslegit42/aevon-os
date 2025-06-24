@@ -9,7 +9,6 @@ import { format, startOfMonth } from 'date-fns';
 // Local-to-app imports
 import { useAccountingStore } from './store';
 import { transactionSchema, invoiceSchema, type TransactionFormValues, type InvoiceFormValues } from './schemas';
-import { createTransaction, createInvoice } from './logic';
 
 // UI Imports (Global)
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -33,23 +32,29 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useBeepChat } from '@/hooks/use-beep-chat';
 import type { InvoiceData } from '@/lib/ai-schemas';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
 // DIALOGS for adding new data
 const AddTransactionDialog = () => {
     const { toast } = useToast();
+    const addTransaction = useAccountingStore((s) => s.addTransaction);
     const [isOpen, setIsOpen] = useState(false);
     const form = useForm<TransactionFormValues>({
         resolver: zodResolver(transactionSchema),
         defaultValues: { date: new Date(), account: '', debit: 0, credit: 0, type: 'Expense' },
     });
 
-    const onSubmit = (values: TransactionFormValues) => {
-        createTransaction(values);
-        toast({ title: "Transaction Added", description: `Added ${values.account} transaction.` });
-        form.reset();
-        setIsOpen(false);
+    const onSubmit = async (values: TransactionFormValues) => {
+        try {
+            await addTransaction(values);
+            toast({ title: "Transaction Added", description: `Added ${values.account} transaction.` });
+            form.reset();
+            setIsOpen(false);
+        } catch (error) {
+             toast({ variant: 'destructive', title: "Failed to Add Transaction", description: "Could not save the new transaction." });
+        }
     };
 
     return (
@@ -93,18 +98,21 @@ const AddTransactionDialog = () => {
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl><SelectTrigger><SelectValue placeholder="Select type..." /></SelectTrigger></FormControl>
                                     <SelectContent>
-                                        <SelectItem value="Income">Income</SelectItem>
-                                        <SelectItem value="Expense">Expense</SelectItem>
-                                        <SelectItem value="Asset">Asset</SelectItem>
-                                        <SelectItem value="Liability">Liability</SelectItem>
-                                        <SelectItem value="Equity">Equity</SelectItem>
+                                        <SelectItem value="INCOME">Income</SelectItem>
+                                        <SelectItem value="EXPENSE">Expense</SelectItem>
+                                        <SelectItem value="ASSET">Asset</SelectItem>
+                                        <SelectItem value="LIABILITY">Liability</SelectItem>
+                                        <SelectItem value="EQUITY">Equity</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />
                             </FormItem>
                         )}/>
                          <DialogFooter>
-                            <Button type="submit" className="btn-gradient-primary-accent">Save Transaction</Button>
+                            <Button type="submit" className="btn-gradient-primary-accent" disabled={form.formState.isSubmitting}>
+                                {form.formState.isSubmitting && <Loader2 className="animate-spin" />}
+                                Save Transaction
+                            </Button>
                         </DialogFooter>
                     </form>
                 </Form>
@@ -115,6 +123,7 @@ const AddTransactionDialog = () => {
 
 const NewInvoiceDialog = () => {
     const { toast } = useToast();
+    const addInvoice = useAccountingStore((s) => s.addInvoice);
     const [isOpen, setIsOpen] = useState(false);
     const [rawInvoiceText, setRawInvoiceText] = useState('');
     const { append: beepAppend, messages: beepMessages, isLoading: isBeepLoading } = useBeepChat();
@@ -122,7 +131,7 @@ const NewInvoiceDialog = () => {
 
     const form = useForm<InvoiceFormValues>({
         resolver: zodResolver(invoiceSchema),
-        defaultValues: { client: '', amount: 0, dueDate: new Date(), status: 'Draft' },
+        defaultValues: { client: '', amount: 0, dueDate: new Date(), status: 'DRAFT' },
     });
     
     useEffect(() => {
@@ -147,12 +156,16 @@ const NewInvoiceDialog = () => {
     }, [isBeepLoading, isWaitingForExtraction, beepMessages, form, toast]);
 
 
-    const onSubmit = (values: InvoiceFormValues) => {
-        createInvoice(values);
-        toast({ title: "Invoice Created", description: `New invoice for ${values.client} has been saved as a draft.` });
-        form.reset();
-        setRawInvoiceText('');
-        setIsOpen(false);
+    const onSubmit = async (values: InvoiceFormValues) => {
+        try {
+            await addInvoice(values);
+            toast({ title: "Invoice Created", description: `New invoice for ${values.client} has been saved as a draft.` });
+            form.reset();
+            setRawInvoiceText('');
+            setIsOpen(false);
+        } catch (error) {
+             toast({ variant: 'destructive', title: "Failed to Create Invoice", description: "Could not save the new invoice." });
+        }
     };
 
     const handleExtract = () => {
@@ -212,7 +225,10 @@ const NewInvoiceDialog = () => {
                             </FormItem>
                         )}/>
                          <DialogFooter>
-                            <Button type="submit" className="btn-gradient-primary-accent">Create Invoice</Button>
+                            <Button type="submit" className="btn-gradient-primary-accent" disabled={form.formState.isSubmitting}>
+                                 {form.formState.isSubmitting && <Loader2 className="animate-spin" />}
+                                Create Invoice
+                            </Button>
                         </DialogFooter>
                     </form>
                 </Form>
@@ -239,6 +255,7 @@ const NewInvoiceDialog = () => {
 // TABS
 const LedgerTab = () => {
     const ledgerData = useAccountingStore((s) => s.ledgerData);
+    const isLoading = useAccountingStore((s) => s.isLoading);
     return (
         <Card className="h-full glassmorphism-panel border-none flex flex-col">
             <CardHeader>
@@ -251,28 +268,30 @@ const LedgerTab = () => {
                     <Button size="sm" variant="outline"><Upload /> Import Statement</Button>
                 </div>
                 <ScrollArea className="flex-grow">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Date</TableHead>
-                            <TableHead>Account</TableHead>
-                            <TableHead>Type</TableHead>
-                            <TableHead className="text-right">Debit</TableHead>
-                            <TableHead className="text-right">Credit</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {ledgerData.map((tx) => (
-                            <TableRow key={tx.id}>
-                                <TableCell>{format(tx.date, 'yyyy-MM-dd')}</TableCell>
-                                <TableCell>{tx.account}</TableCell>
-                                <TableCell><Badge variant="outline">{tx.type}</Badge></TableCell>
-                                <TableCell className="text-right text-destructive">{tx.debit ? currencyFormatter.format(tx.debit) : '-'}</TableCell>
-                                <TableCell className="text-right text-chart-4">{tx.credit ? currencyFormatter.format(tx.credit) : '-'}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                    {isLoading ? <Skeleton className="h-full w-full" /> : (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Date</TableHead>
+                                    <TableHead>Account</TableHead>
+                                    <TableHead>Type</TableHead>
+                                    <TableHead className="text-right">Debit</TableHead>
+                                    <TableHead className="text-right">Credit</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {ledgerData.map((tx) => (
+                                    <TableRow key={tx.id}>
+                                        <TableCell>{format(new Date(tx.date), 'yyyy-MM-dd')}</TableCell>
+                                        <TableCell>{tx.account}</TableCell>
+                                        <TableCell><Badge variant="outline">{tx.type}</Badge></TableCell>
+                                        <TableCell className="text-right text-destructive">{tx.debit ? currencyFormatter.format(tx.debit) : '-'}</TableCell>
+                                        <TableCell className="text-right text-chart-4">{tx.credit ? currencyFormatter.format(tx.credit) : '-'}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    )}
                 </ScrollArea>
             </CardContent>
         </Card>
@@ -281,6 +300,7 @@ const LedgerTab = () => {
 
 const InvoicesTab = () => {
     const invoiceData = useAccountingStore((s) => s.invoiceData);
+    const isLoading = useAccountingStore((s) => s.isLoading);
     return (
      <Card className="h-full glassmorphism-panel border-none flex flex-col">
         <CardHeader>
@@ -292,30 +312,32 @@ const InvoicesTab = () => {
                 <NewInvoiceDialog />
             </div>
              <ScrollArea className="flex-grow">
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Invoice ID</TableHead>
-                        <TableHead>Client</TableHead>
-                        <TableHead>Due Date</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Amount</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {invoiceData.map((invoice) => (
-                        <TableRow key={invoice.id}>
-                            <TableCell>{invoice.id}</TableCell>
-                            <TableCell>{invoice.client}</TableCell>
-                            <TableCell>{format(invoice.dueDate, 'yyyy-MM-dd')}</TableCell>
-                            <TableCell>
-                                <Badge variant={invoice.status === 'Paid' ? 'default' : invoice.status === 'Overdue' ? 'destructive' : 'secondary'} className={cn(invoice.status === 'Paid' ? 'badge-success' : '')}>{invoice.status}</Badge>
-                            </TableCell>
-                            <TableCell className="text-right">{currencyFormatter.format(invoice.amount)}</TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                 {isLoading ? <Skeleton className="h-full w-full" /> : (
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Invoice ID</TableHead>
+                                <TableHead>Client</TableHead>
+                                <TableHead>Due Date</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-right">Amount</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {invoiceData.map((invoice) => (
+                                <TableRow key={invoice.id}>
+                                    <TableCell>{invoice.id.slice(-6).toUpperCase()}</TableCell>
+                                    <TableCell>{invoice.client}</TableCell>
+                                    <TableCell>{format(new Date(invoice.dueDate), 'yyyy-MM-dd')}</TableCell>
+                                    <TableCell>
+                                        <Badge variant={invoice.status === 'PAID' ? 'default' : invoice.status === 'OVERDUE' ? 'destructive' : 'secondary'} className={cn(invoice.status === 'PAID' ? 'badge-success' : '')}>{invoice.status}</Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">{currencyFormatter.format(invoice.amount)}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                )}
              </ScrollArea>
         </CardContent>
     </Card>
@@ -328,13 +350,14 @@ const ReportsTab = () => {
         const monthlyData: { [key: string]: { income: number; expenses: number } } = {};
 
         ledgerData.forEach(tx => {
-            const monthKey = format(startOfMonth(tx.date), 'yyyy-MM');
+            const date = new Date(tx.date);
+            const monthKey = format(startOfMonth(date), 'yyyy-MM');
             if (!monthlyData[monthKey]) {
                 monthlyData[monthKey] = { income: 0, expenses: 0 };
             }
-            if (tx.type === 'Income') {
+            if (tx.type === 'INCOME') {
                 monthlyData[monthKey].income += tx.credit || 0;
-            } else if (tx.type === 'Expense') {
+            } else if (tx.type === 'EXPENSE') {
                 monthlyData[monthKey].expenses += tx.debit || 0;
             }
         });
@@ -388,6 +411,12 @@ const ReportsTab = () => {
 };
 
 const AccountingComponent = () => {
+    const fetchInitialData = useAccountingStore((s) => s.fetchInitialData);
+
+    useEffect(() => {
+        fetchInitialData();
+    }, [fetchInitialData]);
+
     return (
         <div className="h-full w-full p-4 flex flex-col">
             <Tabs defaultValue="ledger" className="h-full w-full flex flex-col">

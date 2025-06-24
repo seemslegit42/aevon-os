@@ -15,6 +15,8 @@ import { getEmotionFromText } from '@/lib/sentiment-parser';
 import { getRecentSecurityEvents } from '@/services/aegis.service';
 import { getRecentActionLogs, getActionLogStats } from '@/services/system-monitor.service';
 import { generateVin } from '@/micro-apps/vin-compliance/logic';
+import { createInvoice as createInvoiceService } from '@/services/accounting.service';
+import { invoiceSchema } from '@/micro-apps/accounting/schemas';
 
 
 import type { LayoutItem } from '@/types/dashboard';
@@ -183,6 +185,19 @@ const extractInvoiceDataTool = createTool({
     }
 });
 
+const createInvoiceTool = createTool({
+    name: "createInvoice",
+    description: "Creates a new draft invoice in the accounting system. This should be called AFTER getting user confirmation.",
+    schema: invoiceSchema.omit({ status: true }).extend({
+        status: z.enum(['DRAFT', 'SENT', 'PAID', 'OVERDUE']).default('DRAFT').optional()
+    }),
+    func: async (args) => {
+        const result = await createInvoiceService(args);
+        return { success: true, invoiceId: result.id, message: `Successfully created invoice for ${result.client}.` };
+    }
+});
+
+
 const generateVinTool = createTool({
     name: "generateVin",
     description: "Generates a compliant 17-character Vehicle Identification Number (VIN) for a custom trailer based on manufacturing details. Use this for the VIN Compliance Builder app or when a user asks to create a VIN.",
@@ -343,7 +358,7 @@ const resetLayoutTool = createTool({ name: 'resetLayout', description: 'Resets t
 const allTools = [
     searchKnowledgeBaseTool,
     generateWorkspaceInsightsTool, generateMarketingContentTool,
-    summarizeWebpageTool, extractInvoiceDataTool, generateVinTool,
+    summarizeWebpageTool, extractInvoiceDataTool, createInvoiceTool, generateVinTool,
     analyzeSecurityAlertTool,
     getSystemHealthReportTool,
     evaluateConditionTool,
@@ -447,7 +462,7 @@ ${loomContextSummary}
 **PRIMARY DIRECTIVE**
 1.  Analyze the user's request to determine the main task.
 2.  Select the most appropriate tool(s) to accomplish the task. You can call multiple tools in parallel if the tasks are independent.
-3.  **Human-in-the-Loop & Safety:** You MUST ask for user confirmation via the \`requestHumanAction\` tool before performing any potentially destructive or irreversible action. This includes, but is not limited to: using the \`removeItem\` tool to close a window, using the \`resetLayout\` tool, or any action that could lead to data loss. Always state what you are about to do and ask for permission. Do not proceed until you receive an explicit "approved" response from the user.
+3.  **Human-in-the-Loop & Safety:** You MUST ask for user confirmation via the \`requestHumanAction\` tool before performing any potentially destructive or irreversible action. This includes, but is not limited to: using the \`removeItem\` tool to close a window, using the \`resetLayout\` tool, or any action that could lead to data loss or state changes (like creating an invoice). Always state what you are about to do and ask for permission. Do not proceed until you receive an explicit "approved" response from the user.
 4.  **AEGIS SECURITY & SYSTEM HEALTH:** If the user asks about security, threats, or system anomalies, use the \`analyzeSecurityAlert\` tool. If they ask about system health, performance, or recent activity, use the \`getSystemHealthReport\` tool.
 5.  If a tool fails, explain the error to the user.
 6.  After successfully calling a UI tool, also generate a brief, natural language confirmation for the user. E.g., "Done. I've added the Loom Studio to your workspace."
@@ -455,6 +470,7 @@ ${loomContextSummary}
 8.  If asked to generate a workflow for Loom Studio via chat, politely decline and instruct the user to use the dedicated AI prompt bar at the top of the Loom Studio to generate workflows.
 9.  Use the APPLICATION VIEW context to provide more relevant help. If the user is in the "Accounting" app, offer tips about invoices. If they are in the "Loom Studio", offer advice on building workflows. Be proactive but not annoying.
 10. **Node Execution:** When asked to execute a node from Loom Studio, use the specific tool designed for that node type if one exists. For example, use the \`summarizeWebpage\` tool for 'web-summarizer' nodes, \`executeDataTransform\` for 'data-transform' nodes, and \`evaluateCondition\` for 'conditional' nodes.
+11. **Invoice Creation Workflow:** If the user provides invoice text and asks to create an invoice, you must follow this sequence: First, use the \`extractInvoiceData\` tool. Second, present the extracted data to the user and ask for confirmation using the \`requestHumanAction\` tool. Third, upon receiving user approval, use the \`createInvoice\` tool with the extracted data to finalize the process.
 `;
 }
 
