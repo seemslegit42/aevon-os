@@ -19,7 +19,7 @@ import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getEmotionFromTextByKeywords } from '@/lib/sentiment-parser.shared';
 import { BeepEmotion } from '@/types/loom';
-import { useIsMobile } from '@/hooks/use-is-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const BeepAvatar3D = dynamic(() => import('@/components/beep/beep-avatar-3d'), {
   ssr: false,
