@@ -13,6 +13,7 @@ import type { WorkflowNodeData, Connection } from '@/types/loom';
 import { logAction } from '@/services/action-log.service';
 import { getEmotionFromText } from '@/lib/sentiment-parser';
 import { getRecentSecurityEvents } from '@/services/aegis.service';
+import { getRecentActionLogs, getActionLogStats } from '@/services/system-monitor.service';
 
 
 import type { LayoutItem } from '@/types/dashboard';
@@ -205,6 +206,30 @@ const analyzeSecurityAlertTool = createTool({
     }
 });
 
+const getSystemHealthReportTool = createTool({
+    name: "getSystemHealthReport",
+    description: "Retrieves a system health report, including recent agent actions and overall performance statistics. Use this when the user asks about system status, health, or recent activity.",
+    schema: z.object({
+        logLimit: z.number().optional().default(5).describe("The number of recent action logs to include in the report."),
+    }),
+    func: async ({ logLimit }) => {
+        const [stats, logs] = await Promise.all([
+            getActionLogStats(),
+            getRecentActionLogs(logLimit)
+        ]);
+
+        const formattedLogs = logs.map(log => 
+            `- Tool '${log.toolName}' by agent '${log.agent.name}' completed with status: ${log.status}.`
+        ).join('\n');
+
+        return {
+            summary: `System health report: Total actions today: ${stats.actionsToday}. Overall success rate: ${stats.successRate.toFixed(1)}%.`,
+            stats,
+            recentActivity: formattedLogs || "No recent activity recorded.",
+        };
+    }
+});
+
 
 // --- Client-Side & Action Console Tools ---
 const requestHumanActionTool = createTool({
@@ -243,6 +268,7 @@ const allTools = [
     generateWorkspaceInsightsTool, generateMarketingContentTool,
     summarizeWebpageTool, extractInvoiceDataTool,
     analyzeSecurityAlertTool,
+    getSystemHealthReportTool,
     requestHumanActionTool,
     focusItemTool, addItemTool, removeItemTool, resetLayoutTool,
 ];
@@ -321,13 +347,13 @@ ${loomContextSummary}
 1.  Analyze the user's request to determine the main task.
 2.  Select the most appropriate tool(s) to accomplish the task. You can call multiple tools in parallel if the tasks are independent.
 3.  **Human-in-the-Loop:** If you are missing information or need to perform a sensitive action (e.g., deleting data, spending resources), you MUST use the \`requestHumanAction\` tool to ask the user for permission or input. Do not proceed with the action until you receive confirmation from the user.
-4.  **AEGIS SECURITY:** If the user asks about security, threats, or system anomalies, use the \`analyzeSecurityAlert\` tool to get a report from the Aegis system.
+4.  **AEGIS SECURITY & SYSTEM HEALTH:** If the user asks about security, threats, or system anomalies, use the \`analyzeSecurityAlert\` tool. If they ask about system health, performance, or recent activity, use the \`getSystemHealthReport\` tool.
 5.  If a tool fails, explain the error to the user.
 6.  After successfully calling a UI tool, also generate a brief, natural language confirmation for the user. E.g., "Done. I've added the Loom Studio to your workspace."
 7.  If the user asks a general question, use the 'searchKnowledgeBase' tool first.
 8.  If asked to generate a workflow for Loom Studio via chat, politely decline and instruct the user to use the dedicated AI prompt bar at the top of the Loom Studio to generate workflows.
 9.  Use the APPLICATION VIEW context to provide more relevant help. If the user is in the "Accounting" app, offer tips about invoices. If they are in the "Loom Studio", offer advice on building workflows. Be proactive but not annoying.
-10. **Conditional Node Execution:** When a node's type is 'conditional', your task is to evaluate its condition expression based on the provided input data. You MUST return ONLY a JSON object with a single boolean 'result' key, for example: \`{"result": true}\`. Do not add any conversational text.
+10. **Conditional Node Execution:** When a node's type is 'conditional', your task is to evaluate its condition expression based on the provided input data. You MUST return ONLY a JSON object with a single boolean 'result' key, like \`{"result": true}\`. Do not add any conversational text.
 `;
 }
 
