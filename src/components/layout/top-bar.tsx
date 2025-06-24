@@ -98,7 +98,7 @@ const TopBar: React.FC = () => {
 
   const CenterComponent = () => {
       return (
-        <div className="flex-1 flex items-center justify-center space-x-6 px-2 md:px-4">
+        <div className="flex-1 hidden md:flex items-center justify-center space-x-6 px-2 md:px-4">
           <nav className="hidden md:flex items-center space-x-1">
             {mainNavItems.map((item) => (
               <Tooltip key={item.id}>
@@ -170,6 +170,11 @@ const TopBar: React.FC = () => {
                     </DropdownMenuItem>
                   </>
                  )}
+                 <DropdownMenuSeparator />
+                 <DropdownMenuItem onClick={() => setCommandPaletteOpen(true)} className="cursor-pointer">
+                   <Settings className="mr-2 h-4 w-4" />
+                   <span>Workspace Settings</span>
+                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -199,19 +204,30 @@ const TopBar: React.FC = () => {
         <CenterComponent />
 
         <div className="flex items-center space-x-1">
+          {/* Mobile Search Button */}
+          <div className="md:hidden">
+            <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80" onClick={() => setCommandPaletteOpen(true)}>
+                <Search className="h-5 w-5" />
+                <span className="sr-only">Search</span>
+            </Button>
+          </div>
+
           <NotificationCenter />
           
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80" onClick={() => setCommandPaletteOpen(true)}>
-                <Settings className="h-5 w-5" />
-                <span className="sr-only">Settings</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="glassmorphism-panel border-none"><p>Workspace Settings</p></TooltipContent>
-          </Tooltip>
+          {/* Desktop Settings Button */}
+          <div className='hidden md:block'>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80" onClick={() => setCommandPaletteOpen(true)}>
+                    <Settings className="h-5 w-5" />
+                    <span className="sr-only">Settings</span>
+                </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="glassmorphism-panel border-none"><p>Workspace Settings</p></TooltipContent>
+            </Tooltip>
+          </div>
 
-          <ThemeToggle />
+          <div className="hidden md:block"><ThemeToggle /></div>
 
           <div className="hidden md:flex items-center text-xs px-2 h-9 font-mono text-primary-foreground opacity-80">
             <Clock className="h-4 w-4 mr-1.5 text-muted-foreground" />
@@ -228,3 +244,4 @@ const TopBar: React.FC = () => {
 };
 
 export default TopBar;
+    
