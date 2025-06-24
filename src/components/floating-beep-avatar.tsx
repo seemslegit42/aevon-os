@@ -279,7 +279,7 @@ const FloatingBeepAvatar: React.FC = () => {
       return (
         <div className="fixed bottom-20 right-4 z-[100] w-24 h-24 flex flex-col items-center justify-center">
             <div 
-            className="relative w-full h-full rounded-full cursor-pointer"
+            className="relative w-full h-full rounded-full cursor-pointer overflow-hidden"
             onTouchStart={handleStartRecording}
             onTouchEnd={stopRecording}
             >

@@ -10,12 +10,20 @@ export async function POST(req: NextRequest) {
   const rateLimitResponse = await rateLimiter(req);
   if (rateLimitResponse) return rateLimitResponse;
 
+  if (!process.env.GROQ_API_KEY) {
+    console.error('Transcription Error: GROQ_API_KEY is not set in the environment variables.');
+    return new Response(JSON.stringify({ error: "Server configuration error: The transcription service is not configured." }), { 
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   try {
     const formData = await req.formData();
     const file = formData.get('file') as File;
 
     if (!file) {
-      return new Response(JSON.stringify({ error: "No file uploaded." }), { status: 400 });
+      return new Response(JSON.stringify({ error: "No file uploaded." }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
     
     // Groq SDK requires the file to be passed along with the model name
