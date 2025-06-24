@@ -1,4 +1,3 @@
-
 'use server';
 
 import { StateGraph, END, START, type MessagesState } from '@langchain/langgraph';
@@ -52,7 +51,7 @@ const createTool = (input: DynamicToolInput & { isClientSide?: boolean }) => new
     
     try {
       const result = await input.func(args);
-      // The tool's responsibility is just to return the result.
+      // Server tools should return a stringified JSON object.
       // The client is responsible for observing these results and updating the UI.
       return JSON.stringify(result);
     } catch (error: any) {

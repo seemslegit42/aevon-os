@@ -1,4 +1,3 @@
-
 'use client';
 // src/app/loom/components/panels/console-panel.tsx
 import { BasePanel } from './base-panel';

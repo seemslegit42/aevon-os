@@ -1,4 +1,3 @@
-
 export type NodeStatus = 'queued' | 'running' | 'failed' | 'completed' | 'unknown' | 'pending';
 export type NodeType = 'prompt' | 'decision' | 'agent-call' | 'wait' | 'api-call' | 'trigger' | 'custom' | 'web-summarizer' | 'data-transform' | 'conditional'; 
 export type BeepEmotion = 'neutral' | 'helpful' | 'insightful' | 'cautious' | 'alert';
