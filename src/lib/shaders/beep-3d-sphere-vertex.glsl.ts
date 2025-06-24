@@ -99,20 +99,27 @@ export const fs = `
   // Preset Uniforms
   uniform vec3 uColorIdle;
   uniform vec3 uColorListening;
-  uniform vec3 uColorSpeaking;
   uniform vec3 uColorThinking;
   uniform vec3 uColorToolCall;
   uniform vec3 uColorSecurity;
+  uniform vec3 uColorSpeakingNeutral;
+  uniform vec3 uColorSpeakingHelpful;
+  uniform vec3 uColorSpeakingInsightful;
+  uniform vec3 uColorSpeakingCautious;
 
   varying float vDisplacement;
 
   // State mapping (must match BeepAvatar3D component)
   const int STATE_IDLE = 0;
   const int STATE_LISTENING = 1;
-  const int STATE_SPEAKING = 2;
+  const int STATE_SPEAKING_NEUTRAL = 2;
   const int STATE_THINKING = 3;
   const int STATE_TOOL_CALL = 4;
   const int STATE_SECURITY_ALERT = 5;
+  const int STATE_SPEAKING_HELPFUL = 6;
+  const int STATE_SPEAKING_INSIGHTFUL = 7;
+  const int STATE_SPEAKING_CAUTIOUS = 8;
+
 
   // IQ's color palette function for aurora effect
   vec3 palette( float t, vec3 a, vec3 b, vec3 c, vec3 d ) {
@@ -125,15 +132,21 @@ export const fs = `
     strength = 1.0 - smoothstep(0.0, 0.5, strength);
 
     vec3 stateColor;
+    float speakingPulse = 0.5 + 0.5 * cos(time * 8.0 + vDisplacement * 25.0);
 
     if (uAvatarState == STATE_IDLE) {
         stateColor = palette(vDisplacement * 2.0 + time * 0.1, uColorIdle, uColorIdle * 0.5, vec3(1.0), vec3(0.0, 0.1, 0.2));
     } else if (uAvatarState == STATE_LISTENING) {
         float pulse = 0.5 + 0.5 * sin(time * 5.0 + vDisplacement * 20.0);
         stateColor = uColorListening * (0.8 + 0.4 * pulse);
-    } else if (uAvatarState == STATE_SPEAKING) {
-        float pulse = 0.5 + 0.5 * cos(time * 8.0 + vDisplacement * 25.0);
-        stateColor = uColorSpeaking * (0.8 + 0.4 * pulse);
+    } else if (uAvatarState == STATE_SPEAKING_NEUTRAL) {
+        stateColor = uColorSpeakingNeutral * (0.8 + 0.4 * speakingPulse);
+    } else if (uAvatarState == STATE_SPEAKING_HELPFUL) {
+        stateColor = uColorSpeakingHelpful * (0.8 + 0.4 * speakingPulse);
+    } else if (uAvatarState == STATE_SPEAKING_INSIGHTFUL) {
+        stateColor = uColorSpeakingInsightful * (0.8 + 0.4 * speakingPulse);
+    } else if (uAvatarState == STATE_SPEAKING_CAUTIOUS) {
+        stateColor = uColorSpeakingCautious * (0.8 + 0.4 * speakingPulse);
     } else if (uAvatarState == STATE_THINKING) {
         float pulse = 0.7 + 0.3 * sin(time * 1.5);
         stateColor = uColorThinking * pulse;

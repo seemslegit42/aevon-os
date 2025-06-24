@@ -28,4 +28,13 @@ export type LayoutItem = {
     appId?: string; // The ID from ALL_MICRO_APPS
 };
 
-export type AvatarState = 'idle' | 'listening' | 'speaking' | 'thinking' | 'tool_call' | 'security_alert';
+export type AvatarState =
+  | 'idle'
+  | 'listening'
+  | 'speaking_neutral'
+  | 'speaking_helpful'
+  | 'speaking_insightful'
+  | 'speaking_cautious'
+  | 'thinking'
+  | 'tool_call'
+  | 'security_alert';

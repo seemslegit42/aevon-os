@@ -4,17 +4,18 @@ import { rateLimiter } from '@/lib/rate-limiter';
 import { google } from '@/lib/ai/groq';
 import { generate } from 'ai';
 import wav from 'wav';
+import type { AvatarState } from '@/types/dashboard';
 
 export const maxDuration = 60;
 
 // This type mirrors the `avatarState` from the frontend for mapping emotions.
-type EmotionState = 'idle' | 'listening' | 'speaking' | 'thinking' | 'tool_call' | 'security_alert';
+type EmotionTone = 'neutral' | 'thinking' | 'tool_call' | 'security_alert';
 
 /**
  * Determines the emotional state from the text content.
  * This allows the TTS to have an expressive tone matching the message.
  */
-function getEmotionFromText(text: string): EmotionState {
+function getToneFromText(text: string): EmotionTone {
     const lowerText = text.toLowerCase();
     if (lowerText.includes('security alert') || lowerText.includes('threat detected')) {
         return 'security_alert';
@@ -25,18 +26,18 @@ function getEmotionFromText(text: string): EmotionState {
     if (lowerText.startsWith('done.') || lowerText.startsWith('okay, i have') || lowerText.startsWith('alright,')) {
         return 'tool_call';
     }
-    return 'speaking'; // Neutral/default state
+    return 'neutral'; // Neutral/default state for all speaking variations
 }
 
 /**
  * Wraps text with SSML tags based on the derived emotional state.
  */
-function wrapWithSSML(text: string, state: EmotionState): string {
+function wrapWithSSML(text: string, tone: EmotionTone): string {
   // Sanitize text to prevent SSML injection issues
   const sanitizedText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   
   let content = sanitizedText;
-  switch (state) {
+  switch (tone) {
     case 'thinking':
       // Slower, lower-pitched speech for a thoughtful tone
       content = `<prosody rate="slow" pitch="-1st">${sanitizedText}</prosody>`;
@@ -50,7 +51,7 @@ function wrapWithSSML(text: string, state: EmotionState): string {
       content = `<emphasis level="strong"><prosody rate="medium" pitch="-3st">${sanitizedText}</prosody></emphasis>`;
       break;
     default:
-      // No change for idle, listening, speaking (neutral tone)
+      // No change for neutral speaking tones
       break;
   }
   return `<speak>${content}</speak>`;
@@ -97,8 +98,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const emotion = getEmotionFromText(text);
-    const ssmlText = wrapWithSSML(text, emotion);
+    const tone = getToneFromText(text);
+    const ssmlText = wrapWithSSML(text, tone);
 
     const { speech } = await generate({
       model: google('gemini-2.5-flash-preview-tts'),

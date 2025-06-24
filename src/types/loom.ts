@@ -1,6 +1,7 @@
 
 export type NodeStatus = 'queued' | 'running' | 'failed' | 'completed' | 'unknown' | 'pending';
 export type NodeType = 'prompt' | 'decision' | 'agent-call' | 'wait' | 'api-call' | 'trigger' | 'custom' | 'web-summarizer' | 'data-transform' | 'conditional'; 
+export type BeepEmotion = 'neutral' | 'helpful' | 'insightful' | 'cautious' | 'alert';
 
 export interface WebSummarizerResult {
   summary: string;
@@ -23,6 +24,7 @@ export interface WorkflowNodeData {
     modelName?: string;
     transformationLogic?: string;
     condition?: string;
+    beepEmotion?: BeepEmotion;
     output?: WebSummarizerResult | Record<string, any>; 
     [key: string]: any;
   };

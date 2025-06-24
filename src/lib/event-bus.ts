@@ -1,11 +1,14 @@
 
 import mitt, { type Emitter } from 'mitt';
 import type { AegisSecurityAnalysis, AiInsights, ContentGeneration, WebSummarizerResult } from './ai-schemas';
+import type { AvatarState } from '@/types/dashboard';
+import type { BeepEmotion } from '@/types/loom';
 
 type AppEvents = {
   // BEEP Agent Communication
   'beep:submitQuery': string;
   'beep:response': string; 
+  'beep:setEmotion': BeepEmotion;
 
   // Aegis Security Events
   'aegis:new-alert': string;

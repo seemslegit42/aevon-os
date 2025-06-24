@@ -20,10 +20,13 @@ interface BeepAvatar3DProps {
 const stateToUniformMap: Record<AvatarState, number> = {
     idle: 0,
     listening: 1,
-    speaking: 2,
+    speaking_neutral: 2,
     thinking: 3,
     tool_call: 4,
     security_alert: 5,
+    speaking_helpful: 6,
+    speaking_insightful: 7,
+    speaking_cautious: 8,
 };
 
 const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode, avatarState }) => {
@@ -42,14 +45,17 @@ const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode, avat
       uNoiseStrength: { value: activePreset.noiseStrength },
       uColorIdle: { value: new THREE.Color(...activePreset.colors.idle) },
       uColorListening: { value: new THREE.Color(...activePreset.colors.listening) },
-      uColorSpeaking: { value: new THREE.Color(...activePreset.colors.speaking) },
       uColorThinking: { value: new THREE.Color(...activePreset.colors.thinking) },
       uColorToolCall: { value: new THREE.Color(...activePreset.colors.tool_call) },
       uColorSecurity: { value: new THREE.Color(...activePreset.colors.security_alert) },
+      uColorSpeakingNeutral: { value: new THREE.Color(...activePreset.colors.speaking_neutral) },
+      uColorSpeakingHelpful: { value: new THREE.Color(...activePreset.colors.speaking_helpful) },
+      uColorSpeakingInsightful: { value: new THREE.Color(...activePreset.colors.speaking_insightful) },
+      uColorSpeakingCautious: { value: new THREE.Color(...activePreset.colors.speaking_cautious) },
   });
 
   useEffect(() => {
-    uniformsRef.current.uAvatarState.value = stateToUniformMap[avatarState];
+    uniformsRef.current.uAvatarState.value = stateToUniformMap[avatarState] ?? stateToUniformMap.idle;
   }, [avatarState]);
 
   useEffect(() => {
@@ -59,10 +65,13 @@ const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode, avat
     uniformsRef.current.uNoiseStrength.value = activePreset.noiseStrength;
     uniformsRef.current.uColorIdle.value.setRGB(...activePreset.colors.idle);
     uniformsRef.current.uColorListening.value.setRGB(...activePreset.colors.listening);
-    uniformsRef.current.uColorSpeaking.value.setRGB(...activePreset.colors.speaking);
     uniformsRef.current.uColorThinking.value.setRGB(...activePreset.colors.thinking);
     uniformsRef.current.uColorToolCall.value.setRGB(...activePreset.colors.tool_call);
     uniformsRef.current.uColorSecurity.value.setRGB(...activePreset.colors.security_alert);
+    uniformsRef.current.uColorSpeakingNeutral.value.setRGB(...activePreset.colors.speaking_neutral);
+    uniformsRef.current.uColorSpeakingHelpful.value.setRGB(...activePreset.colors.speaking_helpful);
+    uniformsRef.current.uColorSpeakingInsightful.value.setRGB(...activePreset.colors.speaking_insightful);
+    uniformsRef.current.uColorSpeakingCautious.value.setRGB(...activePreset.colors.speaking_cautious);
   }, [activePreset]);
 
   useEffect(() => {

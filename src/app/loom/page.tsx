@@ -302,6 +302,10 @@ export default function LoomStudioPage() {
       return;
     }
 
+    if (nodeToRun.config?.beepEmotion) {
+        eventBus.emit('beep:setEmotion', nodeToRun.config.beepEmotion);
+    }
+
     setNodeExecutionStatus(prev => ({ ...prev, [nodeId]: 'running' }));
     addTimelineEvent({ type: 'node_running', message: `Executing node: ${nodeToRun.title}`, nodeId, nodeTitle: nodeToRun.title });
     

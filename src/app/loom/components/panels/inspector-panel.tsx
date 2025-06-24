@@ -1,7 +1,7 @@
 'use client';
 // src/app/loom/components/panels/inspector-panel.tsx
 import { BasePanel } from './base-panel';
-import { Settings2, FileText, ShieldCheck, Tags, Type, Workflow, Save, Brain, Info, Fingerprint, Globe, Play, Loader2, MessageSquare, Trash2, AlertCircle, FunctionSquare, Binary } from 'lucide-react';
+import { Settings2, FileText, ShieldCheck, Tags, Type, Workflow, Save, Brain, Info, Fingerprint, Globe, Play, Loader2, MessageSquare, Trash2, AlertCircle, FunctionSquare, Binary, Sparkle } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
-import type { WorkflowNodeData, NodeStatus, WebSummarizerResult } from '@/types/loom';
+import type { WorkflowNodeData, NodeStatus, WebSummarizerResult, BeepEmotion } from '@/types/loom';
 import { useState, useEffect } from 'react';
 
 
@@ -34,6 +34,8 @@ interface InspectorPanelProps {
 }
 
 const allNodeStatuses: NodeStatus[] = ['pending', 'queued', 'running', 'completed', 'failed', 'unknown'];
+const allBeepEmotions: BeepEmotion[] = ['neutral', 'helpful', 'insightful', 'cautious', 'alert'];
+
 
 export function InspectorPanel({
   className,
@@ -84,7 +86,7 @@ export function InspectorPanel({
     }
   };
 
-  const handleConfigChange = (field: keyof NonNullable<WorkflowNodeData['config']>, value: string) => {
+  const handleConfigChange = (field: keyof NonNullable<WorkflowNodeData['config']>, value: string | BeepEmotion) => {
     setEditableConfig(prev => ({ ...prev, [field]: value }));
   };
 
@@ -225,10 +227,10 @@ export function InspectorPanel({
             </div>
           )}
 
-          {selectedNode.type === 'prompt' && (
+          {(selectedNode.type === 'prompt' || selectedNode.type === 'agent-call') && (
              <div className="space-y-3 p-3 border border-dashed border-border/50 rounded-md bg-card/50">
               <h4 className="text-xs font-medium flex items-center gap-1.5 text-primary">
-                <MessageSquare className="h-4 w-4" /> Prompt Node Config
+                <MessageSquare className="h-4 w-4" /> Prompt & Agent Config
               </h4>
               <div className="space-y-1">
                 <Label htmlFor={`${panelKey}-promptText`} className="text-xs">Prompt Text</Label>
@@ -251,6 +253,26 @@ export function InspectorPanel({
                   className="bg-input/70 backdrop-blur-sm border-input/70 focus:ring-ring"
                 />
                  <p className="text-xs text-muted-foreground">The backend will determine its use.</p>
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor={`${panelKey}-beepEmotion`} className="text-xs flex items-center gap-1.5">
+                    <Sparkle className="h-3.5 w-3.5 text-primary/80"/> BEEP Response Tone
+                </Label>
+                <Select
+                  value={editableConfig?.beepEmotion}
+                  onValueChange={(value: BeepEmotion) => handleConfigChange('beepEmotion', value)}
+                >
+                  <SelectTrigger id={`${panelKey}-beepEmotion`} className="bg-input/70 backdrop-blur-sm border-input/70 focus:ring-ring">
+                    <SelectValue placeholder="Default (Auto-detect)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="neutral">{formatDisplayValue('neutral')}</SelectItem>
+                    <SelectItem value="helpful">{formatDisplayValue('helpful')}</SelectItem>
+                    <SelectItem value="insightful">{formatDisplayValue('insightful')}</SelectItem>
+                    <SelectItem value="cautious">{formatDisplayValue('cautious')}</SelectItem>
+                    <SelectItem value="alert">{formatDisplayValue('alert')}</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           )}
@@ -295,7 +317,7 @@ export function InspectorPanel({
             </div>
           )}
 
-          {(selectedNode.type !== 'prompt' && selectedNode.type !== 'web-summarizer' && selectedNode.type !== 'data-transform' && selectedNode.type !== 'conditional') && (
+          {(!['prompt', 'agent-call', 'web-summarizer', 'data-transform', 'conditional'].includes(selectedNode.type)) && (
             <div className="space-y-1 p-3 border border-dashed border-border/50 rounded-md bg-card/50">
               <h4 className="text-xs font-medium flex items-center gap-1.5 text-primary">
                  Generic Node Configuration

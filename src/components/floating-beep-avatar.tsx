@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Rnd } from 'react-rnd';
@@ -16,6 +15,8 @@ import eventBus from '@/lib/event-bus';
 import type { AvatarState } from '@/types/dashboard';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getEmotionFromText } from '@/lib/sentiment-parser';
+import { BeepEmotion } from '@/types/loom';
 
 const BeepAvatar3D = dynamic(() => import('@/app/dashboard/beep-avatar-3d'), {
   ssr: false,
@@ -86,11 +87,19 @@ const FloatingBeepAvatar: React.FC = () => {
   useEffect(() => {
     if (stateTimeoutRef.current) return;
     let newState: AvatarState;
-    if (isRecording) newState = 'listening';
-    else if (isSpeaking) newState = 'speaking';
-    else if (isLoading || isTranscribing) newState = 'thinking';
-    else newState = 'idle';
-    if (avatarState !== newState) setAndLogAvatarState(newState);
+    if (isRecording) {
+      newState = 'listening';
+    } else if (isSpeaking) {
+      if (avatarState.startsWith('speaking_')) return;
+      newState = 'speaking_neutral';
+    } else if (isLoading || isTranscribing) {
+      newState = 'thinking';
+    } else {
+      newState = 'idle';
+    }
+    if (avatarState !== newState) {
+      setAndLogAvatarState(newState);
+    }
   }, [isRecording, isSpeaking, isLoading, isTranscribing, setAndLogAvatarState, avatarState]);
 
   useEffect(() => {
@@ -104,8 +113,16 @@ const FloatingBeepAvatar: React.FC = () => {
         setTemporaryState('security_alert', 5000, { details });
     };
     eventBus.on('aegis:new-alert', handleSecurityAlert);
+    
+    const handleSetEmotion = (emotion: BeepEmotion) => {
+      const state: AvatarState = `speaking_${emotion}`;
+      setTemporaryState(state, 5000, { reason: 'Loom node override' });
+    }
+    eventBus.on('beep:setEmotion', handleSetEmotion);
+
     return () => {
         eventBus.off('aegis:new-alert', handleSecurityAlert);
+        eventBus.off('beep:setEmotion', handleSetEmotion);
         if (stateTimeoutRef.current) clearTimeout(stateTimeoutRef.current);
     };
   }, [setTemporaryState]);
@@ -113,9 +130,11 @@ const FloatingBeepAvatar: React.FC = () => {
   useEffect(() => {
     if (lastMessage?.role === 'assistant' && lastMessage.content && !isLoading && !lastMessage.tool_calls) {
       const plainTextContent = lastMessage.content.replace(/`+/g, '');
+      const emotion = getEmotionFromText(plainTextContent);
+      setAndLogAvatarState(emotion);
       playAudio(plainTextContent);
     }
-  }, [lastMessage, isLoading, playAudio]);
+  }, [lastMessage, isLoading, playAudio, setAndLogAvatarState]);
 
   // --- Humor Module Integration ---
   const resetIdleTimer = useCallback(() => {
@@ -125,11 +144,13 @@ const FloatingBeepAvatar: React.FC = () => {
         idleTimerRef.current = setTimeout(() => {
             const quip = getIdleQuip(humorFrequency);
             if (quip) {
+                const emotion = getEmotionFromText(quip);
+                setAndLogAvatarState(emotion);
                 playAudio(quip);
             }
         }, idleTimeout);
     }
-  }, [isHumorEnabled, isBusy, humorFrequency, playAudio]);
+  }, [isHumorEnabled, isBusy, humorFrequency, playAudio, setAndLogAvatarState]);
 
   useEffect(() => {
       resetIdleTimer();
@@ -146,7 +167,11 @@ const FloatingBeepAvatar: React.FC = () => {
             const quip = getToolSuccessQuip(humorFrequency);
             if (quip) {
                 // Add a small delay to not talk over the agent's main response
-                setTimeout(() => playAudio(quip), 750);
+                setTimeout(() => {
+                    const emotion = getEmotionFromText(quip);
+                    setAndLogAvatarState(emotion);
+                    playAudio(quip);
+                }, 750);
             }
         }
     };
@@ -155,7 +180,11 @@ const FloatingBeepAvatar: React.FC = () => {
         if (isHumorEnabled && !isBusy) {
             const quip = getToolErrorQuip(humorFrequency);
             if (quip) {
-                setTimeout(() => playAudio(quip), 750);
+                setTimeout(() => {
+                    const emotion = getEmotionFromText(quip);
+                    setAndLogAvatarState(emotion);
+                    playAudio(quip)
+                }, 750);
             }
         }
     };
@@ -167,7 +196,7 @@ const FloatingBeepAvatar: React.FC = () => {
         eventBus.off('tool:success', handleToolSuccess);
         eventBus.off('tool:error', handleToolError);
     };
-  }, [isHumorEnabled, isBusy, humorFrequency, playAudio]);
+  }, [isHumorEnabled, isBusy, humorFrequency, playAudio, setAndLogAvatarState]);
   // --- End Humor Module ---
 
 
@@ -211,5 +240,3 @@ const FloatingBeepAvatar: React.FC = () => {
 };
 
 export default FloatingBeepAvatar;
-
-    
