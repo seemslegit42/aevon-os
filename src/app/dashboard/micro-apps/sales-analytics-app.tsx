@@ -1,6 +1,7 @@
+
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Bar, BarChart, Line, LineChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import {
   ChartContainer,
@@ -13,6 +14,8 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getMonthlySales, getSalesTrend, type MonthlySales, type SalesTrend } from '@/services/sales-data.service';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
+import eventBus from '@/lib/event-bus';
 
 const barChartConfig = {
   desktop: { label: "Desktop", color: "hsl(var(--chart-1))" },
@@ -26,17 +29,39 @@ const lineChartConfig = {
 const SalesAnalyticsApp: React.FC = () => {
     const [monthlySalesData, setMonthlySalesData] = useState<MonthlySales[] | null>(null);
     const [salesTrendData, setSalesTrendData] = useState<SalesTrend[] | null>(null);
+    const { toast } = useToast();
+    
+    const fetchData = useCallback(async () => {
+        setMonthlySalesData(null);
+        setSalesTrendData(null);
+        const monthly = await getMonthlySales();
+        const trend = await getSalesTrend();
+        setMonthlySalesData(monthly);
+        setSalesTrendData(trend);
+    }, []);
     
     useEffect(() => {
-        // Fetch data from the service on component mount
-        const fetchData = async () => {
-            const monthly = await getMonthlySales();
-            const trend = await getSalesTrend();
-            setMonthlySalesData(monthly);
-            setSalesTrendData(trend);
-        };
         fetchData();
-    }, []);
+    }, [fetchData]);
+
+    useEffect(() => {
+      const handleRefresh = () => {
+          toast({ title: 'Refreshing Data...', description: 'Fetching the latest sales analytics.' });
+          fetchData();
+      };
+  
+      const handleExport = () => {
+          toast({ title: 'Export Action', description: 'This functionality is for demonstration purposes.' });
+      };
+  
+      eventBus.on('control:click:refresh', handleRefresh);
+      eventBus.on('control:click:export', handleExport);
+  
+      return () => {
+          eventBus.off('control:click:refresh', handleRefresh);
+          eventBus.off('control:click:export', handleExport);
+      };
+    }, [toast, fetchData]);
 
   return (
     <div className="space-y-4 h-full flex flex-col">

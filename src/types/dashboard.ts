@@ -6,6 +6,7 @@ export interface UIControl {
   id: string;
   label: string;
   icon: ElementType;
+  tooltip?: string;
   // Note: The action for this control is handled by the micro-app's internal logic,
   // typically by listening for a namespaced event (e.g., `control:click:${appInstanceId}:${controlId}`).
 }

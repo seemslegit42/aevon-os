@@ -41,6 +41,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, config
     const minHeight = 'minHeight' in config ? config.minHeight : config.defaultSize.height;
     const cardClassName = 'cardClassName' in config ? cardClassName : "";
     const isDismissible = 'isDismissible' in config ? config.isDismissible : true;
+    const controls = 'controls' in config ? config.controls : undefined;
 
     const handleDragStop = (e: any, d: { x: number, y: number }) => {
         updateItemLayout(item.id, { x: d.x, y: d.y });
@@ -106,6 +107,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, config
                 title={title || 'Aevon Window'}
                 icon={Icon}
                 className={cardClassName}
+                controls={controls}
                 actions={
                   <>
                     <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => toggleMinimizeItem(item.id)}>

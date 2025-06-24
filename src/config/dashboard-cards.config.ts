@@ -36,6 +36,8 @@ import {
     Zap,
     SlidersHorizontal,
     Bug,
+    ArrowClockwise,
+    DownloadSimple,
 } from 'phosphor-react';
 
 // =================================================================
@@ -76,6 +78,20 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     permissions: ['sales:view', 'analytics:read'],
     tags: ['analytics', 'sales'],
     defaultSize: { width: 500, height: 600 },
+    controls: [
+      {
+        id: 'refresh',
+        label: 'Refresh',
+        icon: ArrowClockwise,
+        tooltip: 'Refresh sales data'
+      },
+      {
+        id: 'export',
+        label: 'Export',
+        icon: DownloadSimple,
+        tooltip: 'Export data as CSV'
+      }
+    ]
   },
   {
     id: 'app-content-creator',
