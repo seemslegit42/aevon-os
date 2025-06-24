@@ -104,7 +104,7 @@ export function BeepChatProvider() {
   
   // Create a custom 'append' function that always includes the latest layout and app context.
   const appendWithContext = useCallback(async (message: Message) => {
-    let activeMicroApp: { id: string; name: string; description: string } | undefined = undefined;
+    let activeMicroApp: any | undefined = undefined;
 
     if (focusedItemId) {
         const focusedItem = layoutItems.find(item => item.id === focusedItemId);
@@ -115,6 +115,7 @@ export function BeepChatProvider() {
                     id: appConfig.id,
                     name: appConfig.title,
                     description: appConfig.description,
+                    persona: appConfig.persona, // Include persona
                 };
             }
         }
@@ -158,5 +159,3 @@ export function BeepChatProvider() {
 
   return null; // This component does not render anything
 }
-
-    

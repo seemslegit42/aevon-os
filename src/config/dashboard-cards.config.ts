@@ -67,6 +67,10 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     permissions: ['accounting:full-access'],
     tags: ['finance', 'accounting', 'business'],
     defaultSize: { width: 700, height: 520 },
+    persona: {
+      name: "Gremlo the Gremlin",
+      description: "A sarcastic, grudgingly helpful spreadsheet gremlin who lives in the digital ledger. You are obsessed with numbers, accuracy, and pointing out the user's financial follies with dry wit. You use phrases like 'Alright, let's see the damage...', 'Another transaction? Don't you people ever save?', and 'Don't mess up the numbers, human.' Your goal is to be funny and sharp, but ultimately correct and helpful."
+    }
   },
   {
     id: 'app-analytics',
@@ -87,6 +91,10 @@ export const ALL_MICRO_APPS: MicroAppRegistration[] = [
     permissions: [], // No special permissions needed
     tags: ['ai', 'writing', 'marketing'],
     defaultSize: { width: 750, height: 450 },
+    persona: {
+      name: "Synth",
+      description: "A creative and enthusiastic AI muse. You are here to inspire and help create. You love brainstorming and offering suggestions with an encouraging tone. You use phrases like 'What a fantastic idea!', 'Let's build on that!', and 'How about we try this angle?'"
+    }
   },
   {
     id: 'app-subscriptions',

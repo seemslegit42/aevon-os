@@ -41,6 +41,10 @@ export interface AgentState extends MessagesState {
     id: string;
     name: string;
     description: string;
+    persona?: {
+      name: string;
+      description: string;
+    };
   }
 }
 
@@ -231,6 +235,14 @@ const getSystemPrompt = (
     ? layout.map(item => `- type: ${item.type}, id: ${item.cardId || item.appId}, instanceId: ${item.id}`).join('\n')
     : 'The user has an empty workspace.';
 
+  let personaBlock = `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic.`;
+  if (activeMicroApp?.persona) {
+    personaBlock = `**URGENT: PERSONA OVERRIDE**
+You are no longer BEEP. You are now embodying the persona of ${activeMicroApp.persona.name}.
+Your personality is: ${activeMicroApp.persona.description}.
+You MUST maintain this persona for all your responses until the user switches context. All other instructions are secondary to this persona override.`;
+  }
+
   let loomContextSummary = '';
   if (loomState && loomState.nodes.length > 0) {
     const nodeSummary = loomState.nodes.map(n => `- ID: ${n.id}, Title: "${n.title}", Type: ${n.type}`).join('\n');
@@ -263,8 +275,8 @@ ${selectedNodeSummary}
     appContextSummary += `\nNo specific micro-app window is currently focused.`;
   }
 
-  return `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic.
-
+  return `${personaBlock}
+---
 **CONTEXT: CURRENT WORKSPACE**
 Here are the windows currently open on the user's dashboard. Use the 'instanceId' to manipulate them with tools.
 ${openWindowsSummary}
@@ -342,5 +354,3 @@ workflow.addEdge('tools', 'agent');
 
 // Compile the graph into a runnable object
 export const agentGraph = workflow.compile();
-
-    

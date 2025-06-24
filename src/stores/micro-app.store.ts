@@ -12,6 +12,10 @@ export interface MicroApp {
   permissions: string[]; // Permissions required to use the app
   tags: string[]; // Tags for filtering and discovery
   defaultSize: { width: number; height: number };
+  persona?: {
+    name: string;
+    description: string;
+  };
 }
 
 export type MicroAppRegistration = MicroApp;
