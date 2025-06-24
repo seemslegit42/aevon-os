@@ -19,6 +19,7 @@ import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getEmotionFromTextByKeywords } from '@/lib/sentiment-parser.shared';
 import { BeepEmotion } from '@/types/loom';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const BeepAvatar3D = dynamic(() => import('@/components/beep/beep-avatar-3d'), {
   ssr: false,
@@ -43,6 +44,7 @@ const FloatingBeepAvatar: React.FC = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [rndBounds, setRndBounds] = useState({ width: 180, height: 180, x: 5000, y: 5000 });
   const lastNormalBounds = useRef({ width: 180, height: 180, x: 0, y: 0 });
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     setIsMounted(true);
@@ -253,8 +255,8 @@ const FloatingBeepAvatar: React.FC = () => {
   }, [isHumorEnabled, isBusy, humorFrequency, playAudio, setAndLogAvatarState]);
 
 
-  if (!isMounted) {
-      return null; // Don't render on server or until mounted
+  if (isMobile || !isMounted) {
+      return null;
   }
 
   return (

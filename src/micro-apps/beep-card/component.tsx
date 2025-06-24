@@ -1,3 +1,4 @@
+
 "use client";
 import React, { useEffect, useRef } from 'react';
 import { useBeepChatStore } from '@/stores/beep-chat.store';
@@ -28,7 +29,7 @@ const BeepCardContent: React.FC = () => {
   }, [messages, isLoading]);
 
   return (
-    <div className="flex flex-col bg-background/20 h-full">
+    <div className="flex flex-col bg-background/20">
       <BeepChatHistory
         scrollAreaRef={scrollAreaRef}
         messages={messages}
