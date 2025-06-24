@@ -12,6 +12,7 @@ import { google } from '@/lib/ai/groq';
 import type { WorkflowNodeData, Connection } from '@/types/loom';
 import { logAction } from '@/services/action-log.service';
 import eventBus from '@/lib/event-bus';
+import { getEmotionFromText } from '@/lib/sentiment-parser';
 
 import * as SalesDataService from '@/services/sales-data.service';
 import * as BillingService from '@/services/billing.service';
@@ -371,6 +372,13 @@ const callModelNode = async (state: AgentState) => {
   const systemPrompt = getSystemPrompt(layout || [], loomState, currentRoute, activeMicroAppPersona);
   const messagesWithSystemPrompt = [new HumanMessage(systemPrompt), ...messages];
   const response = await model.invoke(messagesWithSystemPrompt);
+  
+  // After getting the response, analyze its emotion and attach it.
+  if (typeof response.content === 'string' && response.content) {
+      const emotion = await getEmotionFromText(response.content);
+      response.additional_kwargs = { ...response.additional_kwargs, emotion };
+  }
+
   return { messages: [response] };
 };
 

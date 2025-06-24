@@ -17,7 +17,7 @@ import type { AvatarState } from '@/types/dashboard';
 import type { Position } from 'react-rnd';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getEmotionFromText } from '@/lib/sentiment-parser';
+import { getEmotionFromTextByKeywords } from '@/lib/sentiment-parser';
 import { BeepEmotion } from '@/types/loom';
 
 const BeepAvatar3D = dynamic(() => import('@/components/beep/beep-avatar-3d'), {
@@ -36,7 +36,7 @@ const FloatingBeepAvatar: React.FC = () => {
   const stateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { avatarState, setAvatarState, append, isLoading, lastMessage } = useBeepChatStore();
+  const { avatarState, setAvatarState, append, isLoading } = useBeepChatStore();
   const isProcessing = useBeepChatStore(state => state.isLoading);
   const { isHumorEnabled, humorFrequency, isWhisperModeEnabled, toggleWhisperMode } = useAgentConfigStore();
 
@@ -150,8 +150,10 @@ const FloatingBeepAvatar: React.FC = () => {
     if (isRecording) {
       newState = 'listening';
     } else if (isSpeaking) {
+      // The speaking state is now set by the provider, so we don't need to default it here.
+      // If we are speaking, we just maintain the current speaking_* state.
       if (avatarState.startsWith('speaking_')) return;
-      newState = 'speaking_neutral';
+      newState = 'speaking_neutral'; // Fallback if somehow isSpeaking is true but state is not.
     } else if (isLoading || isTranscribing) {
       newState = 'thinking';
     } else {
@@ -163,10 +165,11 @@ const FloatingBeepAvatar: React.FC = () => {
   }, [isRecording, isSpeaking, isLoading, isTranscribing, setAndLogAvatarState, avatarState]);
 
   useEffect(() => {
-      if (lastMessage?.role === 'assistant' && lastMessage.tool_calls) {
-          setTemporaryState('tool_call', 1500, { messageId: lastMessage.id });
-      }
-  }, [lastMessage, setTemporaryState]);
+    const lastMessage = useBeepChatStore.getState().messages.slice(-1)[0];
+    if (lastMessage?.role === 'assistant' && lastMessage.tool_calls) {
+        setTemporaryState('tool_call', 1500, { messageId: lastMessage.id });
+    }
+  }, [useBeepChatStore.getState().messages, setTemporaryState]);
   
    useEffect(() => {
     const handleSecurityAlert = (details: string) => {
@@ -188,13 +191,16 @@ const FloatingBeepAvatar: React.FC = () => {
   }, [setTemporaryState]);
 
   useEffect(() => {
-    if (lastMessage?.role === 'assistant' && lastMessage.content && !isLoading && !lastMessage.tool_calls) {
-      const plainTextContent = lastMessage.content.replace(/`+/g, '');
-      const emotion = getEmotionFromText(plainTextContent);
-      setAndLogAvatarState(emotion);
-      playAudio(plainTextContent);
-    }
-  }, [lastMessage, isLoading, playAudio, setAndLogAvatarState]);
+    // This effect now ONLY listens for the signal to play audio.
+    // The emotional state is set by the BeepChatProvider via the store.
+    const handlePlayResponse = (text: string) => {
+      playAudio(text);
+    };
+    eventBus.on('beep:response', handlePlayResponse);
+    return () => {
+      eventBus.off('beep:response', handlePlayResponse);
+    };
+  }, [playAudio]);
 
   const resetIdleTimer = useCallback(() => {
     if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
@@ -204,7 +210,7 @@ const FloatingBeepAvatar: React.FC = () => {
             if (useAgentConfigStore.getState().isWhisperModeEnabled) {
                 const quip = getIdleQuip(humorFrequency);
                 if (quip) {
-                    const emotion = getEmotionFromText(quip);
+                    const emotion = getEmotionFromTextByKeywords(quip);
                     setAndLogAvatarState(emotion);
                     playAudio(quip);
                 }
@@ -226,7 +232,7 @@ const FloatingBeepAvatar: React.FC = () => {
             const quip = getToolSuccessQuip(humorFrequency);
             if (quip) {
                 setTimeout(() => {
-                    const emotion = getEmotionFromText(quip);
+                    const emotion = getEmotionFromTextByKeywords(quip);
                     setAndLogAvatarState(emotion);
                     playAudio(quip);
                 }, 750);
@@ -239,7 +245,7 @@ const FloatingBeepAvatar: React.FC = () => {
             const quip = getToolErrorQuip(humorFrequency);
             if (quip) {
                 setTimeout(() => {
-                    const emotion = getEmotionFromText(quip);
+                    const emotion = getEmotionFromTextByKeywords(quip);
                     setAndLogAvatarState(emotion);
                     playAudio(quip)
                 }, 750);

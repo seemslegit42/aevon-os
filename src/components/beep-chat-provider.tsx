@@ -11,6 +11,7 @@ import { useLayoutStore } from '@/stores/layout.store';
 import { useLoomStore } from '@/stores/loom.store';
 import { ALL_MICRO_APPS } from '@/config/app-registry';
 import { type InvoiceData } from '@/lib/ai-schemas';
+import type { AvatarState } from '@/types/dashboard';
 
 /**
  * This is a non-rendering component that initializes the Vercel `useChat` hook
@@ -102,12 +103,20 @@ export function BeepChatProvider() {
     api: '/api/ai/chat',
     experimental_onToolCall: handleToolCall,
     onFinish: (message) => {
-        // When the AI finishes generating a response, if it's a simple text response
-        // (not a tool call), emit an event for the TTS hook to pick up.
-        if (message.role === 'assistant' && message.content && !message.tool_calls?.length) {
-            const plainTextContent = message.content.replace(/`+/g, '');
-            eventBus.emit('beep:response', plainTextContent);
-            eventBus.emit('loom:node-result', { content: plainTextContent });
+        if (message.role === 'assistant') {
+            // Set avatar emotion based on AI's decision from metadata
+            const emotion = message.additional_kwargs?.emotion as AvatarState | undefined;
+            if (emotion && emotion.startsWith('speaking_')) {
+                useBeepChatStore.getState().setAvatarState(emotion);
+            }
+
+            // When the AI finishes generating a response, if it's a simple text response
+            // (not a tool call), emit an event for the TTS hook to pick up.
+            if (message.content && !message.tool_calls?.length) {
+                const plainTextContent = message.content.replace(/`+/g, '');
+                eventBus.emit('beep:response', plainTextContent);
+                eventBus.emit('loom:node-result', { content: plainTextContent });
+            }
         }
     }
   });
