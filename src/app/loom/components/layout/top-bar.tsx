@@ -1,8 +1,7 @@
-
 'use client';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { generateLoomWorkflow } from '@/lib/ai/loom-flow';
@@ -45,7 +44,7 @@ const AiFlowGeneratorForm = ({ onFlowGenerated, addConsoleMessage }: AiFlowGener
         defaultValues: { prompt: "" },
     });
 
-    const onSubmit = async (values: z.infer<typeof FormSchema>>) => {
+    const onSubmit = async (values: z.infer<typeof FormSchema>) => {
         setIsLoading(true);
         addConsoleMessage('info', `Generating new workflow from prompt: "${values.prompt}"`);
 
