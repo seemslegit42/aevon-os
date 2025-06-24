@@ -3,6 +3,9 @@ import { lazy, type ElementType } from 'react';
 import type { MicroAppRegistration } from '@/stores/micro-app.store';
 import type { LayoutItem, CardConfig } from '@/types/dashboard';
 
+// Import the new modular app config
+import { accountingAppConfig } from '@/micro-apps/accounting';
+
 // Lazy loaded card content components
 const BeepCardContent = lazy(() => import('@/app/dashboard/beep-card-content'));
 const LiveOrchestrationFeedCardContent = lazy(() => import('@/app/dashboard/live-orchestration-feed-card-content'));
@@ -19,7 +22,6 @@ import {
     PencilSimple,
     CreditCard,
     Brain,
-    Calculator,
     Users,
     Clock,
     CheckCircle,
@@ -58,20 +60,7 @@ export const mainNavItems: NavItemConfig[] = [
 // MICRO-APP REGISTRATION
 // =================================================================
 export const ALL_MICRO_APPS: MicroAppRegistration[] = [
-  {
-    id: 'app-accounting',
-    title: 'Accounting',
-    description: 'A full-featured accounting suite for managing ledgers, invoices, payroll, and taxes.',
-    icon: Calculator,
-    component: lazy(() => import('@/app/dashboard/micro-apps/accounting-app')),
-    permissions: ['accounting:full-access'],
-    tags: ['finance', 'accounting', 'business'],
-    defaultSize: { width: 700, height: 520 },
-    persona: {
-      name: "Gremlo the Gremlin",
-      description: "A sarcastic, grudgingly helpful spreadsheet gremlin who lives in the digital ledger. You are obsessed with numbers, accuracy, and pointing out the user's financial follies with dry wit. You use phrases like 'Alright, let's see the damage...', 'Another transaction? Don't you people ever save?', and 'Don't mess up the numbers, human.' Your goal is to be funny and sharp, but ultimately correct and helpful."
-    }
-  },
+  accountingAppConfig, // Use the imported, modular config
   {
     id: 'app-analytics',
     title: 'Sales Analytics',
