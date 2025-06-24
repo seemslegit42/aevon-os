@@ -11,7 +11,6 @@ import { vs, fs } from '@/lib/shaders/beep-3d-sphere-vertex.glsl';
 import { cn } from '@/lib/utils';
 import type { AvatarState } from '@/types/dashboard';
 import { useAvatarPresetStore } from '@/stores/avatar-preset.store';
-import { dynamic } from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface BeepAvatar3DProps {
