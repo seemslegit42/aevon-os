@@ -1,4 +1,3 @@
-
 'use server';
 
 import { StateGraph, END, START, type MessagesState } from '@langchain/langgraph';
@@ -23,6 +22,8 @@ import {
     KnowledgeBaseSearchResultSchema, 
     WebSummarizerResultSchema,
     InvoiceDataSchema,
+    ConditionalResultSchema,
+    DataTransformResultSchema,
 } from '../ai-schemas';
 
 // =================================================================
@@ -230,6 +231,52 @@ const getSystemHealthReportTool = createTool({
     }
 });
 
+const evaluateConditionTool = createTool({
+    name: "evaluateCondition",
+    description: "Evaluates a logical condition based on provided input data. Use this for nodes of type 'conditional'.",
+    schema: z.object({
+        condition: z.string().describe("The condition to evaluate, e.g., \"{{input.value}} > 10\"."),
+        inputData: z.any().describe("The JSON object data to use for evaluating the condition."),
+    }),
+    func: async ({ condition, inputData }) => {
+        const { object: conditionResult } = await generateObject({
+            model: google('gemini-1.5-flash-latest'),
+            schema: ConditionalResultSchema,
+            prompt: `Evaluate the following condition expression based on the provided JSON data. The expression uses Handlebars-like syntax to access input data. Return ONLY the boolean result.
+            
+            Condition: "${condition}"
+            
+            Input Data:
+            ${JSON.stringify(inputData, null, 2)}`
+        });
+        return conditionResult;
+    }
+});
+
+const executeDataTransformTool = createTool({
+    name: "executeDataTransform",
+    description: "Transforms input data based on a given set of rules or logic. Use this for nodes of type 'data-transform'.",
+    schema: z.object({
+        transformationLogic: z.string().describe("The description of the transformation to perform."),
+        inputData: z.any().describe("The JSON object data to be transformed."),
+    }),
+    func: async ({ transformationLogic, inputData }) => {
+        const { object: transformResult } = await generateObject({
+            model: google('gemini-1.5-flash-latest'),
+            schema: DataTransformResultSchema,
+            prompt: `Perform a data transformation on the following JSON data based on the provided logic.
+            
+            Transformation Logic: "${transformationLogic}"
+            
+            Input Data:
+            ${JSON.stringify(inputData, null, 2)}
+            
+            Return ONLY the transformed data as a JSON object.`
+        });
+        return transformResult;
+    }
+});
+
 
 // --- Client-Side & Action Console Tools ---
 const requestHumanActionTool = createTool({
@@ -269,6 +316,8 @@ const allTools = [
     summarizeWebpageTool, extractInvoiceDataTool,
     analyzeSecurityAlertTool,
     getSystemHealthReportTool,
+    evaluateConditionTool,
+    executeDataTransformTool,
     requestHumanActionTool,
     focusItemTool, addItemTool, removeItemTool, resetLayoutTool,
 ];
@@ -338,6 +387,8 @@ ${selectedNodeSummary}
 
 **Loom Instructions:**
 - When asked to execute a node, you might be provided with input data from a previous node. Use this data as the primary context for your current task.
+- For nodes of type 'data-transform', use the \`executeDataTransform\` tool.
+- For nodes of type 'conditional', use the \`evaluateCondition\` tool to determine the outcome.
 - When asked to "explain this", "explain the selected node", or a similar query, use the 'Selected Node' context to provide a clear, concise explanation of its purpose and function.
 - When asked "what should I do next?" or to "suggest a node", analyze the graph (especially nodes without outgoing connections) and suggest a logical next step (e.g., "After a 'Web Summarizer' node, you could add a 'Prompt' node to reformat the summary.").
 - Do NOT offer to create connections or modify the graph directly. Instead, guide the user on how they can do it.
@@ -373,7 +424,7 @@ ${loomContextSummary}
 7.  If the user asks a general question, use the 'searchKnowledgeBase' tool first.
 8.  If asked to generate a workflow for Loom Studio via chat, politely decline and instruct the user to use the dedicated AI prompt bar at the top of the Loom Studio to generate workflows.
 9.  Use the APPLICATION VIEW context to provide more relevant help. If the user is in the "Accounting" app, offer tips about invoices. If they are in the "Loom Studio", offer advice on building workflows. Be proactive but not annoying.
-10. **Conditional Node Execution:** When a node's type is 'conditional', your task is to evaluate its condition expression based on the provided input data. You MUST return ONLY a JSON object with a single boolean 'result' key, like \`{"result": true}\`. Do not add any conversational text.
+10. **Node Execution:** When asked to execute a node from Loom Studio, use the specific tool designed for that node type if one exists. For example, use the \`summarizeWebpage\` tool for 'web-summarizer' nodes, \`executeDataTransform\` for 'data-transform' nodes, and \`evaluateCondition\` for 'conditional' nodes.
 `;
 }
 

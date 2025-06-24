@@ -1,4 +1,3 @@
-
 /**
  * @fileOverview Defines Zod schemas and TypeScript types for AI interactions.
  * This file centralizes all data structures used for AI interactions,
@@ -62,6 +61,18 @@ export const WebSummarizerResultSchema = z.object({
   originalUrl: z.string().url().describe("The original URL that was summarized."),
 });
 export type WebSummarizerResult = z.infer<typeof WebSummarizerResultSchema>;
+
+// Defines the structured output for a conditional logic evaluation.
+export const ConditionalResultSchema = z.object({
+    result: z.boolean().describe("The boolean result of the condition evaluation."),
+});
+export type ConditionalResult = z.infer<typeof ConditionalResultSchema>;
+
+// Defines the structured output for a data transformation operation.
+export const DataTransformResultSchema = z.object({
+    transformedData: z.any().describe("The data after the transformation has been applied."),
+});
+export type DataTransformResult = z.infer<typeof DataTransformResultSchema>;
 
 // Defines the structure of a single node for the Loom workflow.
 // This is used by the AI to generate the workflow structure.
