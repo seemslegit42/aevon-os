@@ -1,40 +1,31 @@
-
-datasource db {
-  provider     = "postgresql"
-  url          = env("DATABASE_URL")
-  directUrl    = env("DIRECT_URL")
-  relationMode = "prisma"
-}
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
-/// Represents an AI agent within the system.
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ===================================
+// Agent & Action Logging
+// ===================================
+
 model Agent {
-  id          String    @id @default(cuid())
+  id          String     @id @default(cuid())
+  createdAt   DateTime   @default(now())
   name        String
   type        AgentType
   description String
-  status      String    @default("idle")
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  status      String     @default("idle") // e.g., idle, active, error
   logs        ActionLog[]
-}
 
-/// Logs a single action taken by an agent.
-model ActionLog {
-  id        String   @id @default(cuid())
-  agent     Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  agentId   String
-  timestamp DateTime @default(now())
-  toolName  String
-  arguments Json
-  status    String // "success" or "failure"
-  result    Json?
-  tokens    Int?
-
-  @@index([agentId])
+  @@index([createdAt])
 }
 
 enum AgentType {
@@ -44,4 +35,20 @@ enum AgentType {
   CONTENT_SYNTHESIZER
   DATA_CRUNCHER
   SUPPORT_RESPONDER
+}
+
+model ActionLog {
+  id        String   @id @default(cuid())
+  timestamp DateTime @default(now())
+  agentId   String
+  toolName  String
+  arguments Json?
+  status    String // "success" or "failure"
+  result    Json?
+  tokens    Int?
+
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([timestamp])
+  @@index([agentId])
 }
