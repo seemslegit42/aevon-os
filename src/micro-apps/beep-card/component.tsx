@@ -14,7 +14,8 @@ const BeepCardContent: React.FC = () => {
   const isTranscribing = false; // This logic is now in the floating avatar
 
   useEffect(() => {
-    // Auto-scroll logic remains to keep the chat view up-to-date.
+    // This auto-scroll logic now only applies to the desktop's ScrollArea.
+    // On mobile, the main page scrolls.
     if (scrollAreaRef.current) {
       const viewport = scrollAreaRef.current.querySelector('div');
       if (viewport) {
@@ -27,7 +28,7 @@ const BeepCardContent: React.FC = () => {
   }, [messages, isLoading]);
 
   return (
-    <div className="h-80 md:h-full flex flex-col p-0 bg-background/20 overflow-hidden">
+    <div className="h-full flex flex-col p-0 bg-background/20 overflow-hidden">
       <BeepChatHistory
         scrollAreaRef={scrollAreaRef}
         messages={messages}

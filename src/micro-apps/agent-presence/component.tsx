@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -6,7 +5,6 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 interface Agent {
@@ -56,38 +54,36 @@ const AgentPresenceCardContent: React.FC = () => {
 
   return (
     <TooltipProvider>
-      <ScrollArea className="max-h-80">
-        <div className="space-y-3 p-4">
-          {agents.map((agent) => (
-            <Tooltip key={agent.id}>
-              <TooltipTrigger asChild>
-                <Card className="p-3 bg-card/50 hover:bg-muted/30 transition-colors">
-                  <div className="flex items-center gap-3">
-                    <Avatar>
-                      <AvatarImage src={agent.avatar} alt={agent.name} data-ai-hint={agent.avatarHint} />
-                      <AvatarFallback>{agent.name.substring(0, 2)}</AvatarFallback>
-                       <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full ring-2 ring-card" >
-                          <span className={cn('absolute inline-flex h-full w-full rounded-full opacity-75', statusPing[agent.status])} />
-                          <span className={cn('relative inline-flex rounded-full h-2.5 w-2.5', statusPing[agent.status].replace('animate-ping ', ''))} />
-                      </span>
-                    </Avatar>
-                    <div className="flex-1 overflow-hidden">
-                      <p className="text-sm font-semibold truncate">{agent.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{agent.task}</p>
-                    </div>
-                    <Badge variant="outline" className={cn('text-xs capitalize', statusStyles[agent.status])}>
-                      {agent.status}
-                    </Badge>
+      <div className="space-y-3 p-4">
+        {agents.map((agent) => (
+          <Tooltip key={agent.id}>
+            <TooltipTrigger asChild>
+              <Card className="p-3 bg-card/50 hover:bg-muted/30 transition-colors">
+                <div className="flex items-center gap-3">
+                  <Avatar>
+                    <AvatarImage src={agent.avatar} alt={agent.name} data-ai-hint={agent.avatarHint} />
+                    <AvatarFallback>{agent.name.substring(0, 2)}</AvatarFallback>
+                     <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full ring-2 ring-card" >
+                        <span className={cn('absolute inline-flex h-full w-full rounded-full opacity-75', statusPing[agent.status])} />
+                        <span className={cn('relative inline-flex rounded-full h-2.5 w-2.5', statusPing[agent.status].replace('animate-ping ', ''))} />
+                    </span>
+                  </Avatar>
+                  <div className="flex-1 overflow-hidden">
+                    <p className="text-sm font-semibold truncate">{agent.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{agent.task}</p>
                   </div>
-                </Card>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="glassmorphism-panel">
-                <p>Task: {agent.task}</p>
-              </TooltipContent>
-            </Tooltip>
-          ))}
-        </div>
-      </ScrollArea>
+                  <Badge variant="outline" className={cn('text-xs capitalize', statusStyles[agent.status])}>
+                    {agent.status}
+                  </Badge>
+                </div>
+              </Card>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="glassmorphism-panel">
+              <p>Task: {agent.task}</p>
+            </TooltipContent>
+          </Tooltip>
+        ))}
+      </div>
     </TooltipProvider>
   );
 };
