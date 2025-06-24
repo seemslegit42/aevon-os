@@ -127,7 +127,7 @@ const AiInsightsCardContent: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col p-4">
         <div className="flex-grow">
             <InsightsDisplay />
         </div>

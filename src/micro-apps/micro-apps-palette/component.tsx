@@ -12,8 +12,8 @@ const MicroAppsCardContent: React.FC = () => {
   
   return (
     <TooltipProvider delayDuration={300}>
-      <ScrollArea className="h-full pr-2">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <ScrollArea className="h-full">
+        <div className="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {apps.map((app) => (
             <AppLauncherIcon key={app.id} app={app} />
           ))}

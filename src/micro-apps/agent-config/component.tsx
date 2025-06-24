@@ -21,7 +21,7 @@ const AgentConfigComponent: React.FC = () => {
     );
 
     return (
-        <div className="p-2 space-y-4 h-full">
+        <div className="p-4 space-y-4 h-full">
             <Card className="glassmorphism-panel h-full">
                 <CardHeader>
                     <CardTitle className="font-headline text-primary">BEEP Configuration</CardTitle>

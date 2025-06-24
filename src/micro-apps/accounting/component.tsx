@@ -330,7 +330,7 @@ const ReportsTab = () => {
 
 const AccountingComponent = () => {
     return (
-        <div className="h-full w-full p-1">
+        <div className="h-full w-full p-4">
             <Tabs defaultValue="ledger" className="h-full w-full flex flex-col">
                 <TabsList className="flex-shrink-0">
                     <TabsTrigger value="ledger">Ledger</TabsTrigger>

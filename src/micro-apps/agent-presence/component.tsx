@@ -56,8 +56,8 @@ const AgentPresenceCardContent: React.FC = () => {
 
   return (
     <TooltipProvider>
-      <ScrollArea className="h-full pr-3">
-        <div className="space-y-3">
+      <ScrollArea className="h-full">
+        <div className="space-y-3 p-4">
           {agents.map((agent) => (
             <Tooltip key={agent.id}>
               <TooltipTrigger asChild>

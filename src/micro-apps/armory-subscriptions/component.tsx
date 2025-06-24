@@ -90,7 +90,7 @@ const ArmorySubscriptionsComponent: React.FC = () => {
     
     if (error || !subscription) {
         return (
-             <Alert variant="destructive">
+             <Alert variant="destructive" className="m-4">
                 <ShieldAlert className="h-4 w-4" />
                 <AlertTitle>Error</AlertTitle>
                 <AlertDescription>{error || "Could not load subscription information."}</AlertDescription>
@@ -99,7 +99,7 @@ const ArmorySubscriptionsComponent: React.FC = () => {
     }
 
     return (
-        <div className="p-2 space-y-4">
+        <div className="p-4 space-y-4">
             <Alert className={cn(
                 subscription.status === 'active' && 'border-chart-4/50',
                 subscription.status === 'trialing' && 'border-accent/50',

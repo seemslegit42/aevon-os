@@ -122,7 +122,7 @@ const ContentCreatorComponent: React.FC = () => {
   }
 
   return (
-    <div className="h-full flex flex-col md:flex-row gap-4 p-1">
+    <div className="h-full flex flex-col md:flex-row gap-4 p-4">
       <div className="w-full md:w-1/3 md:border-r border-border/30 pr-4">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -194,7 +194,9 @@ const ContentCreatorComponent: React.FC = () => {
 
       <div className="flex-grow md:w-2/3">
         <ScrollArea className="h-full">
-            <ResultDisplay />
+            <div className="p-4">
+              <ResultDisplay />
+            </div>
         </ScrollArea>
       </div>
     </div>

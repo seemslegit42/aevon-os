@@ -58,7 +58,7 @@ const MicroAppCardComponent: React.FC<MicroAppCardProps> = ({ title, icon: Icon,
           {actions}
         </div>
       </CardHeader>
-      <CardContent className={cn("p-4 flex-grow overflow-auto text-foreground")}>
+      <CardContent className={cn("p-0 flex-grow overflow-hidden text-foreground")}>
         {children}
       </CardContent>
     </Card>

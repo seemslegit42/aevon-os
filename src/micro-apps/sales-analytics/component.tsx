@@ -77,7 +77,7 @@ const SalesAnalyticsComponent: React.FC = () => {
     }, [toast, fetchData]);
 
   return (
-    <div className="space-y-4 h-full flex flex-col p-2">
+    <div className="space-y-4 h-full flex flex-col p-4">
         <div className="flex-1">
             <Card className="h-full glassmorphism-panel border-none shadow-none">
                 <CardHeader>

@@ -32,8 +32,8 @@ const LiveOrchestrationFeedCardContent: React.FC = () => {
   };
 
   return (
-    <ScrollArea className="h-full pr-3">
-        <div className="space-y-3">
+    <ScrollArea className="h-full">
+        <div className="space-y-3 p-4">
         {notifications.map((item, index) => (
             <div key={index} className="flex items-start space-x-3 text-xs">
             <div className="flex-shrink-0 pt-0.5">
@@ -43,12 +43,12 @@ const LiveOrchestrationFeedCardContent: React.FC = () => {
                 <AlertTriangle className="w-4 h-4 text-chart-5" />
                 )}
             </div>
-            <div className="flex-1">
+            <div className="flex-1 overflow-hidden">
                 <div className="flex justify-between items-baseline">
-                    <p className="font-semibold text-foreground">{item.task}</p>
+                    <p className="font-semibold text-foreground truncate">{item.task}</p>
                     <p className="text-muted-foreground">{item.time}</p>
                 </div>
-                <p className="text-muted-foreground mt-0.5">{item.details}</p>
+                <p className="text-muted-foreground mt-0.5 break-words">{item.details}</p>
                  <button onClick={() => handleViewDetails(item)} className={cn("inline-flex items-center text-xs mt-1 hover:underline", item.status === 'success' ? 'details-link-success' : 'details-link-failure')}>
                      View Details <ChevronRight className="w-3 h-3 ml-1" />
                 </button>

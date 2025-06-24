@@ -28,7 +28,7 @@ const DevHudCardContent: React.FC = () => {
     const mountedCards = layoutItems.filter(item => item.type === 'card');
 
     return (
-        <div className="h-full flex flex-col p-2 space-y-2">
+        <div className="h-full flex flex-col p-4 space-y-2">
             <ScrollArea className="flex-grow pr-2">
                 <div className="space-y-4">
                     {/* Mounted Micro-Apps Section */}
