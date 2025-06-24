@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Gear, Clock } from 'phosphor-react';
+import { Settings, Clock } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -16,7 +16,7 @@ import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import NotificationCenter from './notification-center';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
-import { mainNavItems } from '@/config/dashboard-cards.config';
+import { mainNavItems } from '@/config/app-registry';
 import CommandBar from './command-bar';
 import UserMenu from './user-menu';
 import { ThemeToggle } from './theme-toggle';
@@ -124,7 +124,7 @@ const TopBar: React.FC = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80" onClick={() => setCommandPaletteOpen(true)}>
-                <Gear className="h-5 w-5 aevos-icon-styling-override" />
+                <Settings className="h-5 w-5 aevos-icon-styling-override" />
                 <span className="sr-only">Settings</span>
               </Button>
             </TooltipTrigger>

@@ -26,7 +26,7 @@ const MicroAppCardComponent: React.FC<MicroAppCardProps> = ({ title, icon: Icon,
 
   return (
     <Card className={cn("h-full w-full glassmorphism-panel overflow-hidden flex flex-col", className)}>
-      <CardHeader className="drag-handle flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b border-border/10 dark:border-white/5 bg-foreground/[.02] dark:bg-card/80 cursor-grab active:cursor-grabbing">
+      <CardHeader className="drag-handle flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b border-border/10 dark:border-white/5 bg-card/[.03] dark:bg-card/80 cursor-grab active:cursor-grabbing">
         <div className="flex items-center">
           {Icon && <Icon className="h-5 w-5 text-primary mr-3" />}
           <CardTitle className="text-base font-headline text-foreground">{title}</CardTitle>
@@ -58,7 +58,7 @@ const MicroAppCardComponent: React.FC<MicroAppCardProps> = ({ title, icon: Icon,
           {actions}
         </div>
       </CardHeader>
-      <CardContent className={cn("pt-4 px-4 pb-4 flex-grow overflow-y-auto text-foreground")}>
+      <CardContent className={cn("p-4 flex-grow overflow-auto text-foreground")}>
         {children}
       </CardContent>
     </Card>

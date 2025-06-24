@@ -9,6 +9,7 @@ import DashboardWindow from '@/components/dashboard-window';
 import { shallow } from 'zustand/shallow';
 import eventBus from '@/lib/event-bus';
 import { WelcomeModal } from '@/components/welcome-modal';
+import CommandPalette from '@/components/command-palette';
 
 export default function HomePage() {
   const [hasMounted, setHasMounted] = useState(false);
@@ -79,6 +80,7 @@ export default function HomePage() {
   return (
     <div className="h-full w-full relative" onClick={handleCanvasClick}>
       <WelcomeModal />
+      <CommandPalette />
       {layoutItems.map(item => (
         <DashboardWindow
           key={item.id}

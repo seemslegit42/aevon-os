@@ -64,7 +64,7 @@ const SalesAnalyticsComponent: React.FC = () => {
     }, [toast, fetchData]);
 
   return (
-    <div className="space-y-4 h-full flex flex-col">
+    <div className="space-y-4 h-full flex flex-col p-2">
         <div className="flex-1">
             <Card className="h-full glassmorphism-panel border-none shadow-none">
                 <CardHeader>
@@ -83,7 +83,7 @@ const SalesAnalyticsComponent: React.FC = () => {
                                     axisLine={false}
                                     tickFormatter={(value) => value.slice(0, 3)}
                                 />
-                                <YAxis />
+                                <YAxis tickFormatter={(value) => `$${value/1000}k`} />
                                 <ChartTooltip content={<ChartTooltipContent />} />
                                 <ChartLegend content={<ChartLegendContent />} />
                                 <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />

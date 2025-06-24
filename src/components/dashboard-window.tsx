@@ -4,7 +4,7 @@
 import React, { useState, memo } from 'react';
 import { Rnd } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
-import { X, Minus, Square, ArrowsOut, ArrowsIn } from 'phosphor-react';
+import { X, Minus, Square, Maximize, Minimize } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { LayoutItem } from '@/types/dashboard';
 import type { Position, Size } from 'react-rnd';
@@ -30,14 +30,11 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
 
     const [isClosing, setIsClosing] = useState(false);
 
-    // Look up the config dynamically inside the component to avoid import cycles.
     const config = item.type === 'card'
       ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId)
       : ALL_MICRO_APPS.find(a => a.id === item.appId);
 
     if (!config) {
-      // This can happen if a layout item refers to an app/card that no longer exists.
-      // Render a fallback or simply nothing.
       return (
          <ErrorBoundary itemId={item.id}>
           <div className="p-4 bg-destructive text-destructive-foreground">
@@ -49,7 +46,6 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
       );
     }
     
-    // Extract props directly from the config object
     const title = config.title;
     const Icon = config.icon;
     const minWidth = 'minWidth' in config ? config.minWidth : config.defaultSize.width;
@@ -75,7 +71,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
         setIsClosing(true);
         setTimeout(() => {
             closeItem(item.id);
-        }, 200); // Corresponds to animation duration
+        }, 200);
     };
 
     const isMaximized = !!item.isMaximized;
@@ -116,7 +112,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
             resizeGrid={[20, 20]}
             enableResizing={resizeHandles}
             disableDragging={isMaximized}
-            bounds="parent" // Constrain to canvas
+            bounds="parent"
         >
             <MicroAppCard
                 title={title || 'Aevon Window'}
@@ -129,7 +125,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
                         {item.isMinimized ? <Square /> : <Minus />}
                     </Button>
                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => toggleMaximizeItem(item.id)}>
-                        {isMaximized ? <ArrowsIn /> : <ArrowsOut />}
+                        {isMaximized ? <Minimize /> : <Maximize />}
                     </Button>
                     {isDismissible && (
                       <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCloseClick}>

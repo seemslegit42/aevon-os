@@ -1,7 +1,7 @@
 
 "use client";
 import React from 'react';
-import { CheckCircle, Warning, CaretDown } from 'phosphor-react';
+import { CheckCircle, AlertTriangle, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from "@/hooks/use-toast";
@@ -14,12 +14,13 @@ const LiveOrchestrationFeedCardContent: React.FC = () => {
 
   const handleViewDetails = (item: Notification) => {
     toast({
+      variant: item.status === 'success' ? 'default' : 'destructive',
       title: `Feed Event: ${item.task}`,
       description: (
         <div className="mt-2 w-full text-foreground space-y-2 text-sm">
           <div className="flex items-center gap-2">
             <strong>Status:</strong>
-            <Badge variant={item.status === 'success' ? "default" : "destructive"} className={cn("border-none", item.status === 'success' ? 'badge-success' : 'badge-failure')}>
+            <Badge variant={item.status === 'success' ? 'default' : 'destructive'} className={cn("border-none", item.status === 'success' ? 'badge-success' : 'badge-failure')}>
               {item.status}
             </Badge>
           </div>
@@ -39,7 +40,7 @@ const LiveOrchestrationFeedCardContent: React.FC = () => {
                 {item.status === 'success' ? (
                 <CheckCircle className="w-4 h-4 text-chart-4" />
                 ) : (
-                <Warning className="w-4 h-4 text-chart-5" />
+                <AlertTriangle className="w-4 h-4 text-chart-5" />
                 )}
             </div>
             <div className="flex-1">
@@ -49,7 +50,7 @@ const LiveOrchestrationFeedCardContent: React.FC = () => {
                 </div>
                 <p className="text-muted-foreground mt-0.5">{item.details}</p>
                  <button onClick={() => handleViewDetails(item)} className={cn("inline-flex items-center text-xs mt-1 hover:underline", item.status === 'success' ? 'details-link-success' : 'details-link-failure')}>
-                     View Details <CaretDown className="w-3 h-3 ml-1 -rotate-90" />
+                     View Details <ChevronRight className="w-3 h-3 ml-1" />
                 </button>
             </div>
             </div>

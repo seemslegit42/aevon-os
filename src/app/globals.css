@@ -21,7 +21,7 @@
     --secondary: 177 69% 35%; /* #20B2AA */
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 223 20% 94%; /* #8C94A8 */
+    --muted: 223 20% 94%;
     --muted-foreground: 223 12% 45%;
 
     --accent: 51 100% 50%; /* #FFD700 */
@@ -38,8 +38,8 @@
     --chart-1: 275 85% 45%;
     --chart-2: 177 69% 41%;
     --chart-3: 51 100% 50%;
-    --chart-4: 158 50% 53%; /* #3EB991 */
-    --chart-5: 0 75% 55%;
+    --chart-4: 158 50% 53%; /* Patina Green */
+    --chart-5: 0 75% 55%; /* Same as destructive */
 
     --radius: 0.75rem;
   }
@@ -55,16 +55,16 @@
     --popover: 275 15% 10%;
     --popover-foreground: 223 15% 95%;
 
-    --primary: 275 85% 65%; /* #6A0DAD */
+    --primary: 275 85% 65%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 177 80% 50%; /* #20B2AA */
+    --secondary: 177 80% 50%;
     --secondary-foreground: 177 95% 10%;
 
-    --muted: 275 15% 20%; /* #8C94A8 */
+    --muted: 275 15% 20%;
     --muted-foreground: 223 12% 65%;
 
-    --accent: 51 100% 55%; /* #FFD700 */
+    --accent: 51 100% 55%;
     --accent-foreground: 51 95% 10%;
 
     --destructive: 0 70% 50%;
@@ -78,8 +78,8 @@
     --chart-1: 275 85% 65%;
     --chart-2: 177 80% 50%;
     --chart-3: 51 100% 55%;
-    --chart-4: 158 60% 60%; /* #3EB991 */
-    --chart-5: 0 70% 50%;
+    --chart-4: 158 60% 60%; /* Patina Green */
+    --chart-5: 0 70% 50%; /* Same as destructive */
   }
 }
 
@@ -174,22 +174,6 @@
   @apply opacity-60 cursor-not-allowed filter-none transform-none shadow-none;
 }
 
-/* Special Button Style */
-.btn-wabi-sabi {
-  @apply px-4 py-2 rounded-md text-sm font-medium flex items-center justify-center transition-colors duration-150 ease-in-out;
-  background-color: hsl(var(--secondary) / 0.15);
-  color: hsl(var(--secondary-foreground));
-  border: 1px solid hsl(var(--secondary) / 0.3);
-  text-shadow: 0 1px 2px hsl(var(--background) / 0.1);
-}
-.btn-wabi-sabi:hover {
-  background-color: hsl(var(--secondary) / 0.25);
-  border-color: hsl(var(--secondary) / 0.5);
-}
-.dark .btn-wabi-sabi {
-  color: hsl(var(--foreground));
-}
-
 /* =================================================================
    COMPONENT-SPECIFIC STYLES & OVERRIDES
    ================================================================= */
@@ -232,14 +216,20 @@
     transition: opacity 0.5s ease-in-out;
 }
 .topbar-aevos-glass-override[data-avatar-state="listening"]::before,
-.topbar-aevos-glass-override[data-avatar-state="speaking"]::before,
+.topbar-aevos-glass-override[data-avatar-state="speaking_neutral"]::before,
+.topbar-aevos-glass-override[data-avatar-state="speaking_helpful"]::before,
+.topbar-aevos-glass-override[data-avatar-state="speaking_insightful"]::before,
+.topbar-aevos-glass-override[data-avatar-state="speaking_cautious"]::before,
 .topbar-aevos-glass-override[data-avatar-state="thinking"]::before,
 .topbar-aevos-glass-override[data-avatar-state="tool_call"]::before,
 .topbar-aevos-glass-override[data-avatar-state="security_alert"]::before {
     opacity: 0.15;
 }
 .topbar-aevos-glass-override[data-avatar-state="listening"] { --state-color: hsl(var(--chart-4)); }
-.topbar-aevos-glass-override[data-avatar-state="speaking"] { --state-color: hsl(var(--chart-2)); }
+.topbar-aevos-glass-override[data-avatar-state="speaking_neutral"] { --state-color: hsl(var(--chart-2)); }
+.topbar-aevos-glass-override[data-avatar-state="speaking_helpful"] { --state-color: hsl(var(--chart-4)); }
+.topbar-aevos-glass-override[data-avatar-state="speaking_insightful"] { --state-color: hsl(var(--primary)); }
+.topbar-aevos-glass-override[data-avatar-state="speaking_cautious"] { --state-color: hsl(var(--accent)); }
 .topbar-aevos-glass-override[data-avatar-state="thinking"] { --state-color: hsl(var(--primary)); }
 .topbar-aevos-glass-override[data-avatar-state="tool_call"] { --state-color: hsl(var(--accent)); }
 .topbar-aevos-glass-override[data-avatar-state="security_alert"] { --state-color: hsl(var(--destructive)); }
@@ -303,6 +293,42 @@
 /* Progress Bar Override */
 .progress-custom {
   background-color: hsl(var(--chart-2)) !important;
+}
+
+/* Loom Studio Specific Styles */
+.grid-background {
+  background-image:
+    linear-gradient(to right, hsl(var(--border) / 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(var(--border) / 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: -1px -1px;
+}
+.iridescent-aurora-bg {
+  position: relative;
+  overflow: hidden;
+}
+.iridescent-aurora-bg::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: 
+    radial-gradient(ellipse at 5% 15%, hsl(var(--primary) / 0.15), transparent 50%),
+    radial-gradient(ellipse at 95% 85%, hsl(var(--secondary) / 0.15), transparent 50%);
+  z-index: 0;
+  animation: aurora-glow-subtle 40s ease-in-out infinite alternate;
+}
+.animate-pulse-accent {
+  animation: pulse-accent 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes pulse-accent {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
 }
 
 /* =================================================================
@@ -471,7 +497,10 @@
 }
 
 .command-bar-glow-listening { --glow-color: hsl(var(--chart-4) / 0.5); animation: command-bar-pulse 2s infinite; }
-.command-bar-glow-speaking { --glow-color: hsl(var(--chart-2) / 0.5); animation: command-bar-pulse 2s infinite; }
+.command-bar-glow-speaking_neutral { --glow-color: hsl(var(--chart-2) / 0.5); animation: command-bar-pulse 2s infinite; }
+.command-bar-glow-speaking_helpful { --glow-color: hsl(var(--chart-4) / 0.5); animation: command-bar-pulse 2s infinite; }
+.command-bar-glow-speaking_insightful { --glow-color: hsl(var(--primary) / 0.5); animation: command-bar-pulse 2s infinite; }
+.command-bar-glow-speaking_cautious { --glow-color: hsl(var(--accent) / 0.5); animation: command-bar-pulse 2s infinite; }
 .command-bar-glow-thinking { --glow-color: hsl(var(--primary) / 0.5); animation: command-bar-pulse 2s infinite; }
 .command-bar-glow-tool_call { --glow-color: hsl(var(--accent) / 0.6); animation: command-bar-pulse 1s 1; }
 .command-bar-glow-security_alert { --glow-color: hsl(var(--destructive) / 0.6); animation: command-bar-pulse 1.5s infinite; }

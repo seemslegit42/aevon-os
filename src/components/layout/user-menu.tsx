@@ -21,7 +21,7 @@ import {
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu"
 import { Button } from '@/components/ui/button';
-import { CaretDown } from 'phosphor-react';
+import { ChevronDown } from 'lucide-react';
 import { useAvatarPresetStore } from '@/stores/avatar-preset.store';
 
 const UserMenu: React.FC = () => {
@@ -39,7 +39,7 @@ const UserMenu: React.FC = () => {
                         <span className="text-xs font-semibold text-foreground">Admin User</span>
                         <span className="text-xs text-muted-foreground">Pro Plan</span>
                     </div>
-                    <CaretDown className="h-4 w-4 opacity-80 text-muted-foreground" />
+                    <ChevronDown className="h-4 w-4 opacity-80 text-muted-foreground" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 glassmorphism-panel mt-2">

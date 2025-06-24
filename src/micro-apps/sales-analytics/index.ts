@@ -1,12 +1,12 @@
 
 import type { MicroAppRegistration } from '@/stores/micro-app.store';
-import { ChartBar, ArrowClockwise, Download } from 'phosphor-react';
+import { LineChart, RotateCw, Download } from 'lucide-react';
 
 export const salesAnalyticsAppConfig: MicroAppRegistration = {
   id: 'app-analytics',
   title: 'Sales Analytics',
   description: 'Detailed sales analytics and trends.',
-  icon: ChartBar,
+  icon: LineChart,
   permissions: ['sales:view', 'analytics:read'],
   tags: ['analytics', 'sales'],
   defaultSize: { width: 500, height: 600 },
@@ -14,7 +14,7 @@ export const salesAnalyticsAppConfig: MicroAppRegistration = {
     {
       id: 'refresh',
       label: 'Refresh',
-      icon: ArrowClockwise,
+      icon: RotateCw,
       tooltip: 'Refresh sales data'
     },
     {

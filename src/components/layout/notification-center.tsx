@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Bell, CheckCircle, Warning, Trash } from 'phosphor-react';
+import { Bell, CheckCircle, AlertTriangle, Trash2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,7 +57,7 @@ const NotificationCenter: React.FC = () => {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80 md:w-96 glassmorphism-panel mt-2 p-0">
-                <DropdownMenuLabel className="flex items-center justify-between p-2 font-headline text-primary-foreground">
+                <DropdownMenuLabel className="flex items-center justify-between p-2 font-headline text-foreground">
                 Notifications
                 {notifications.length > 0 && <Button variant="link" size="sm" className="h-auto p-0 text-xs text-muted-foreground" onClick={markAllAsRead}>Mark all as read</Button>}
                 </DropdownMenuLabel>
@@ -78,7 +78,7 @@ const NotificationCenter: React.FC = () => {
                         {n.status === 'success' ? (
                             <CheckCircle className="w-4 h-4 text-chart-4" />
                         ) : (
-                            <Warning className="w-4 h-4 text-chart-5" />
+                            <AlertTriangle className="w-4 h-4 text-chart-5" />
                         )}
                         </div>
                         <div className="flex-1 text-xs">
@@ -104,7 +104,7 @@ const NotificationCenter: React.FC = () => {
                     className="flex items-center justify-center gap-2 !p-2 cursor-pointer text-muted-foreground hover:!text-destructive hover:!bg-destructive/10"
                     onClick={clearAll}
                     >
-                    <Trash /> Clear all notifications
+                    <Trash2 /> Clear all notifications
                     </DropdownMenuItem>
                 </>
                 )}
