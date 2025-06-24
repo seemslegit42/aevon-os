@@ -3,11 +3,9 @@
 
 import { useEffect, useCallback } from 'react';
 import { useChat, type ToolCallHandler, type Message } from 'ai/react';
-import { useLayoutStore } from '@/stores/layout.store';
 import { useToast } from '@/hooks/use-toast';
 import { useBeepChatStore } from '@/stores/beep-chat.store';
 import eventBus from '@/lib/event-bus';
-import { useLoomStore } from '@/stores/loom.store';
 import { usePathname } from 'next/navigation';
 
 /**
@@ -20,6 +18,8 @@ export function BeepChatProvider() {
   const { toast } = useToast();
 
   const handleToolCall: ToolCallHandler = async (chatMessages, toolCalls) => {
+    // Dynamic import to break circular dependency
+    const { useLayoutStore } = await import('@/stores/layout.store');
     const layoutActions = useLayoutStore.getState();
 
     for (const toolCall of toolCalls) {
@@ -98,6 +98,10 @@ export function BeepChatProvider() {
   
   // Create a custom 'append' function that always includes the latest layout and app context.
   const appendWithContext = useCallback(async (message: Message) => {
+    // Dynamic import to break circular dependency at module load time
+    const { useLayoutStore } = await import('@/stores/layout.store');
+    const { useLoomStore } = await import('@/stores/loom.store');
+    
     // Get state at the time of calling, not via static import cycle
     const { layoutItems, activeAppContext } = useLayoutStore.getState();
     const { nodes, connections, selectedNodeId } = useLoomStore.getState();
