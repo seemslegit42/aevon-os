@@ -2,7 +2,7 @@
   "name": "aevon-os",
   "version": "0.1.0",
   "private": true,
-  "description": "ΛΞVON OS: An AI-first intelligent operating system designed to revolutionize business operations.",
+  "description": "ΛΞVON OS: An AI-first intelligent operating system designed to revolutionize business operations for SMBs.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -58,6 +58,7 @@
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.166.1",
+    "wav": "^1.0.2",
     "zod": "^3.23.8",
     "zustand": "^4.5.4"
   },
