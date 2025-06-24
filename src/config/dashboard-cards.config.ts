@@ -5,6 +5,8 @@ import type { LayoutItem, CardConfig } from '@/types/dashboard';
 
 // Import the new modular app config
 import { accountingAppConfig } from '@/micro-apps/accounting';
+import { aegisSecurityAppConfig } from '@/micro-apps/aegis-security';
+import { armoryAppConfig } from '@/micro-apps/armory';
 
 // Lazy loaded card content components
 const BeepCardContent = lazy(() => import('@/app/dashboard/beep-card-content'));
@@ -63,6 +65,8 @@ export const mainNavItems: NavItemConfig[] = [
 // =================================================================
 export const ALL_MICRO_APPS: MicroAppRegistration[] = [
   accountingAppConfig, // Use the imported, modular config
+  aegisSecurityAppConfig, // Register the page-level security app
+  armoryAppConfig, // Register the page-level armory app
   {
     id: 'app-analytics',
     title: 'Sales Analytics',
