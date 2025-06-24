@@ -8,7 +8,6 @@ import { type NextRequest } from 'next/server';
 import { rateLimiter } from '@/lib/rate-limiter';
 import { type Message } from 'ai';
 import type { LayoutItem } from '@/types/dashboard';
-import type { AppRegistration } from '@/config/app-registry';
 
 
 export const maxDuration = 60;
@@ -47,12 +46,12 @@ export async function POST(req: NextRequest) {
     if (rateLimitResponse) return rateLimitResponse;
 
     try {
-        const { messages, layoutItems, loomState, currentRoute, activeMicroApp }: { 
+        const { messages, layoutItems, loomState, currentRoute, activeMicroAppPersona }: { 
             messages: Message[], 
             layoutItems?: LayoutItem[], 
             loomState?: any,
             currentRoute?: string;
-            activeMicroApp?: AppRegistration | null;
+            activeMicroAppPersona?: { name: string; description: string } | null;
         } = await req.json();
         
         // Invoke the LangGraph agent with the current chat history and layout context.
@@ -61,7 +60,7 @@ export async function POST(req: NextRequest) {
             layout: layoutItems ?? [],
             loomState: loomState,
             currentRoute: currentRoute,
-            activeMicroApp: activeMicroApp,
+            activeMicroAppPersona: activeMicroAppPersona,
         });
 
         // The LangChainAdapter gracefully handles converting the LangGraph stream,

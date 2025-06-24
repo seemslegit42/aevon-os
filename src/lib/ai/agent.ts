@@ -14,7 +14,6 @@ import type { WorkflowNodeData, Connection } from '@/types/loom';
 import * as SalesDataService from '@/services/sales-data.service';
 import * as BillingService from '@/services/billing.service';
 
-import type { AppRegistration } from '@/config/app-registry';
 import type { LayoutItem } from '@/types/dashboard';
 import { 
     AegisSecurityAnalysisSchema, 
@@ -37,7 +36,7 @@ export interface AgentState extends MessagesState {
     selectedNodeId: string | null;
   };
   currentRoute: string;
-  activeMicroApp: AppRegistration | null;
+  activeMicroAppPersona: { name: string; description: string; } | null;
 }
 
 // =================================================================
@@ -234,17 +233,17 @@ const getSystemPrompt = (
   layout: LayoutItem[],
   loomState?: AgentState['loomState'],
   currentRoute?: string,
-  activeMicroApp?: AgentState['activeMicroApp']
+  activeMicroAppPersona?: AgentState['activeMicroAppPersona']
 ) => {
   const openWindowsSummary = layout.length > 0
     ? layout.map(item => `- type: ${item.type}, id: ${item.cardId || item.appId}, instanceId: ${item.id}`).join('\n')
     : 'The user has an empty workspace.';
 
   let personaBlock = `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic.`;
-  if (activeMicroApp?.persona) {
+  if (activeMicroAppPersona) {
     personaBlock = `**URGENT: PERSONA OVERRIDE**
-You are no longer BEEP. You are now embodying the persona of ${activeMicroApp.persona.name}.
-Your personality is: ${activeMicroApp.persona.description}.
+You are no longer BEEP. You are now embodying the persona of ${activeMicroAppPersona.name}.
+Your personality is: ${activeMicroAppPersona.description}.
 You MUST maintain this persona for all your responses until the user switches context. All other instructions are secondary to this persona override.`;
   }
 
@@ -274,8 +273,8 @@ ${selectedNodeSummary}
   }
 
   let appContextSummary = `The user is currently on route: ${currentRoute || '/'}.`;
-  if (activeMicroApp) {
-    appContextSummary += `\nThe user is focused on the "${activeMicroApp.title}" micro-app (ID: ${activeMicroApp.id}). The purpose of this app is: "${activeMicroApp.description}".`;
+  if (activeMicroAppPersona) {
+    appContextSummary += `\nThe user is focused on a micro-app with the persona "${activeMicroAppPersona.name}".`;
   } else {
     appContextSummary += `\nNo specific micro-app window is currently focused.`;
   }
@@ -304,8 +303,8 @@ ${loomContextSummary}
 
 // Node that calls the AI model
 const callModelNode = async (state: AgentState) => {
-  const { messages, layout, loomState, currentRoute, activeMicroApp } = state;
-  const systemPrompt = getSystemPrompt(layout || [], loomState, currentRoute, activeMicroApp);
+  const { messages, layout, loomState, currentRoute, activeMicroAppPersona } = state;
+  const systemPrompt = getSystemPrompt(layout || [], loomState, currentRoute, activeMicroAppPersona);
   const messagesWithSystemPrompt = [new HumanMessage(systemPrompt), ...messages];
   const response = await model.invoke(messagesWithSystemPrompt);
   return { messages: [response] };
@@ -339,7 +338,7 @@ const workflow = new StateGraph<AgentState>({
             value: (x, y) => y ?? x,
             default: () => '/',
         },
-        activeMicroApp: {
+        activeMicroAppPersona: {
             value: (x, y) => y ?? x,
             default: () => null,
         }

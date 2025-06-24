@@ -113,7 +113,7 @@ export function BeepChatProvider() {
             layoutItems: layoutItems,
             loomState,
             currentRoute: pathname,
-            activeMicroApp: activeAppContext,
+            activeMicroAppPersona: activeAppContext?.persona ?? null,
         } 
       }
     });
