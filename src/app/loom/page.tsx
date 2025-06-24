@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -32,12 +33,10 @@ import type {
   TimelineEvent,
   WorkflowTemplate,
   Connection,
-  WebSummarizerResult,
 } from '@/types/loom';
 
 
 export default function LoomStudioPage() {
-  // Centralized state from Zustand store
   const {
     nodes, connections, selectedNodeId, consoleMessages, timelineEvents, actionRequests,
     workflowName, nodeExecutionStatus,
@@ -46,7 +45,6 @@ export default function LoomStudioPage() {
     setNodeExecutionStatus, updateNodeStatus,
   } = useLoomStore(state => ({...state}), shallow);
 
-  // Local UI state
   const [connectingState, setConnectingState] = useState<ConnectingState | null>(null);
   const [panelVisibility, setPanelVisibility] = useState<PanelVisibility>({
     palette: true,
@@ -65,7 +63,7 @@ export default function LoomStudioPage() {
   const [isTemplateSelectorOpen, setIsTemplateSelectorOpen] = useState(false);
   const [isWorkflowRunning, setIsWorkflowRunning] = useState(false);
 
-  const { append: beepAppend, error: beepError } = useBeepChat();
+  const { append: beepAppend, messages: beepMessages, isLoading: isBeepLoading, error: beepError } = useBeepChat();
   const isMobile = useIsMobile();
   const { toast } = useToast();
   
@@ -114,28 +112,6 @@ export default function LoomStudioPage() {
     };
   }, [handleFlowGenerated]);
   
-  useEffect(() => {
-    const handleSummarizerResult = (result: WebSummarizerResult) => {
-        addConsoleMessage('info', `Web summarizer finished for URL: ${result.originalUrl}`);
-        const runningNode = nodes.find(n => nodeExecutionStatus[n.id] === 'running' && n.type === 'web-summarizer');
-        if (runningNode) {
-            updateNode(runningNode.id, {
-                status: 'completed',
-                config: { ...runningNode.config, output: result }
-            });
-            updateNodeStatus(runningNode.id, 'completed');
-            addTimelineEvent({
-                type: 'node_completed',
-                message: `Web summarization successful.`,
-                nodeId: runningNode.id,
-                nodeTitle: runningNode.title,
-            });
-        }
-    };
-    eventBus.on('websummarizer:result', handleSummarizerResult);
-    return () => { eventBus.off('websummarizer:result', handleSummarizerResult); };
-  }, [addConsoleMessage, nodes, nodeExecutionStatus, updateNode, addTimelineEvent, updateNodeStatus]);
-
   const runningNodeId = Object.keys(nodeExecutionStatus).find(
     (id) => nodeExecutionStatus[id] === 'running'
   );
@@ -199,8 +175,59 @@ export default function LoomStudioPage() {
     }
   }, [nodes, addConsoleMessage, addTimelineEvent, toast, beepAppend, updateNodeStatus]);
 
+  // Centralized hook for processing agent results and updating node state
+  useEffect(() => {
+    if (isBeepLoading || !runningNodeId) {
+        return;
+    }
+    
+    const lastMessage = beepMessages[beepMessages.length - 1];
+    if (!lastMessage) return;
 
-  // Effect for orchestrating the workflow execution
+    const runningNode = nodes.find(n => n.id === runningNodeId);
+    if (!runningNode) return;
+
+    let resultOutput: any = null;
+    let nodeSucceeded = false;
+
+    // Case 1: The last message is a tool result for a server-side tool.
+    if (lastMessage.role === 'tool') {
+        try {
+            resultOutput = JSON.parse(lastMessage.content as string);
+            if(resultOutput.isClientSide) {
+                // This was a client-side tool call, not the end of a server node execution.
+                resultOutput = null; 
+            } else {
+               nodeSucceeded = resultOutput?.error ? false : true;
+            }
+        } catch (e) {
+            resultOutput = { error: "Failed to parse tool result." };
+            nodeSucceeded = false;
+        }
+    }
+    // Case 2: The last message is a simple text response from the assistant, meaning the node is done.
+    else if (lastMessage.role === 'assistant' && !lastMessage.tool_calls?.length) {
+        resultOutput = { result: lastMessage.content };
+        nodeSucceeded = true;
+    }
+    
+    // If we have a conclusive result for the running node, update its state.
+    if (resultOutput) {
+        const newStatus = nodeSucceeded ? 'completed' : 'failed';
+        updateNode(runningNode.id, {
+            status: newStatus,
+            config: { ...runningNode.config, output: resultOutput }
+        });
+        updateNodeStatus(runningNode.id, newStatus);
+        addTimelineEvent({
+            type: nodeSucceeded ? 'node_completed' : 'node_failed',
+            message: nodeSucceeded ? `Node finished successfully.` : `Node failed: ${resultOutput.error || 'Unknown error'}`,
+            nodeId: runningNode.id,
+            nodeTitle: runningNode.title,
+        });
+    }
+  }, [beepMessages, isBeepLoading, runningNodeId, nodeExecutionStatus, nodes, updateNode, updateNodeStatus, addTimelineEvent, addConsoleMessage]);
+
   useEffect(() => {
     if (!isWorkflowRunning) {
       prevNodeStatusRef.current = {};
@@ -215,6 +242,8 @@ export default function LoomStudioPage() {
     if (newlyCompletedNodes.length > 0) {
       newlyCompletedNodes.forEach(completedNode => {
         const nextConnections = connections.filter(c => c.from === completedNode.id);
+        if (nextConnections.length === 0) return;
+        
         nextConnections.forEach(conn => {
           const nextNode = nodes.find(n => n.id === conn.to);
           if (nextNode) {
@@ -231,7 +260,6 @@ export default function LoomStudioPage() {
       status => status === 'running' || status === 'queued'
     );
     
-    // Check if any nodes have run at all
     const hasStarted = Object.keys(nodeExecutionStatus).length > 0;
 
     if (hasStarted && isFinished) {
@@ -272,28 +300,6 @@ export default function LoomStudioPage() {
     setNodeExecutionStatus(initialStatuses);
 
   }, [nodes, connections, workflowName, addConsoleMessage, addTimelineEvent, toast, handleRunNode, setNodeExecutionStatus]);
-
-  useEffect(() => {
-    const handleNodeResult = ({ content }: { content: string }) => {
-        addConsoleMessage('info', `Received generic text result for running node.`);
-        const runningNode = nodes.find(n => nodeExecutionStatus[n.id] === 'running');
-        if (runningNode) {
-            updateNode(runningNode.id, {
-                status: 'completed',
-                config: { ...runningNode.config, output: { result: content } }
-            });
-            updateNodeStatus(runningNode.id, 'completed');
-            addTimelineEvent({
-                type: 'node_completed',
-                message: `Node finished successfully.`,
-                nodeId: runningNode.id,
-                nodeTitle: runningNode.title,
-            });
-        }
-    };
-    eventBus.on('loom:node-result', handleNodeResult);
-    return () => { eventBus.off('loom:node-result', handleNodeResult); };
-  }, [addConsoleMessage, nodes, nodeExecutionStatus, updateNode, addTimelineEvent, updateNodeStatus]);
 
   const handleNodeDropped = (newNodeData: Omit<WorkflowNodeData, 'id' | 'status'> & { status?: NodeStatus }) => {
     const newNode = addNode(newNodeData);
@@ -464,3 +470,5 @@ export default function LoomStudioPage() {
     </div>
   );
 }
+
+    

@@ -8,7 +8,6 @@ import { Lightbulb, Sparkles, ArrowRight, AlertTriangle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { useBeepChat } from '@/hooks/use-beep-chat';
-import eventBus from '@/lib/event-bus';
 import { type AiInsights, type Insight } from '@/lib/ai-schemas';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTTS } from '@/hooks/use-tts';
@@ -16,46 +15,40 @@ import { useTTS } from '@/hooks/use-tts';
 const AiInsightsCardContent: React.FC = () => {
   const { toast } = useToast();
   const [insights, setInsights] = useState<AiInsights | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isWaitingForInsights, setIsWaitingForInsights] = useState(false);
   
-  const { append: beepAppend, isLoading: isBeepLoading } = useBeepChat();
+  const { append: beepAppend, messages: beepMessages, isLoading: isBeepLoading } = useBeepChat();
   const { playAudio } = useTTS({});
 
   const handleGenerateInsights = useCallback(() => {
-    setIsLoading(true);
     setError(null);
     setInsights(null);
-
+    setIsWaitingForInsights(true);
     beepAppend({ role: 'user', content: "Generate new workspace insights based on my current layout." });
   }, [beepAppend]);
   
   useEffect(() => {
-    setIsLoading(isBeepLoading);
-  }, [isBeepLoading]);
-
-  useEffect(() => {
-    const handleInsightsResult = (result: AiInsights) => {
-        setInsights(result);
-        setIsLoading(false);
-        const insightsText = result.insights.map(i => i.text).join(' ');
-        playAudio(`I have found some new insights for you. ${insightsText}`);
-    };
+    if (isBeepLoading || !isWaitingForInsights) return;
     
-    const handleInsightsError = (errorMessage: string) => {
-        setError(errorMessage);
-        setIsLoading(false);
-        toast({ variant: 'destructive', title: 'Insight Generation Failed', description: errorMessage });
-    };
-
-    eventBus.on('insights:result', handleInsightsResult);
-    eventBus.on('insights:error', handleInsightsError);
-
-    return () => {
-      eventBus.off('insights:result', handleInsightsResult);
-      eventBus.off('insights:error', handleInsightsError);
-    };
-  }, [toast, playAudio]);
+    const lastMessage = beepMessages[beepMessages.length - 1];
+    if (lastMessage?.role === 'tool' && lastMessage.name === 'generateWorkspaceInsights') {
+        try {
+            const result = JSON.parse(lastMessage.content) as AiInsights;
+            if (result.insights) {
+                setInsights(result);
+                const insightsText = result.insights.map(i => i.text).join(' ');
+                playAudio(`I have found some new insights for you. ${insightsText}`);
+            } else {
+                 setError('The AI returned an unexpected format for insights.');
+            }
+        } catch (e) {
+            setError('Failed to parse insights from the AI response.');
+        } finally {
+            setIsWaitingForInsights(false);
+        }
+    }
+  }, [isBeepLoading, isWaitingForInsights, beepMessages, playAudio]);
   
   const handleInsightAction = (insight: Insight) => {
     if (!insight.action) return;
@@ -65,6 +58,8 @@ const AiInsightsCardContent: React.FC = () => {
     toast({ title: "Action Sent", description: `Sent command to BEEP: "${prompt}"` });
   };
   
+  const isLoading = isBeepLoading && isWaitingForInsights;
+
   const InsightsDisplay = () => {
     if (isLoading) {
       return (
@@ -142,3 +137,5 @@ const AiInsightsCardContent: React.FC = () => {
 };
 
 export default AiInsightsCardContent;
+
+    

@@ -1,11 +1,10 @@
 
 "use client"
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format, startOfMonth } from 'date-fns';
-import { shallow } from 'zustand/shallow';
 
 // Local-to-app imports
 import { useAccountingStore } from './store';
@@ -33,7 +32,6 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useBeepChat } from '@/hooks/use-beep-chat';
-import eventBus from '@/lib/event-bus';
 import type { InvoiceData } from '@/lib/ai-schemas';
 
 const currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
@@ -119,7 +117,8 @@ const NewInvoiceDialog = () => {
     const { toast } = useToast();
     const [isOpen, setIsOpen] = useState(false);
     const [rawInvoiceText, setRawInvoiceText] = useState('');
-    const { append: beepAppend, isLoading: isBeepLoading } = useBeepChat();
+    const { append: beepAppend, messages: beepMessages, isLoading: isBeepLoading } = useBeepChat();
+    const [isWaitingForExtraction, setIsWaitingForExtraction] = useState(false);
 
     const form = useForm<InvoiceFormValues>({
         resolver: zodResolver(invoiceSchema),
@@ -127,23 +126,25 @@ const NewInvoiceDialog = () => {
     });
     
     useEffect(() => {
-        if (!isOpen) return;
+        if (isBeepLoading || !isWaitingForExtraction) return;
 
-        const handleInvoiceData = (data: InvoiceData) => {
-            if (data.client) form.setValue('client', data.client);
-            if (data.amount) form.setValue('amount', data.amount);
-            if (data.dueDate) {
-                // Add T00:00:00 to avoid timezone issues when parsing YYYY-MM-DD
-                form.setValue('dueDate', new Date(data.dueDate + 'T00:00:00'));
+        const lastMessage = beepMessages[beepMessages.length - 1];
+        if (lastMessage?.role === 'tool' && lastMessage.name === 'extractInvoiceData') {
+             try {
+                const result = JSON.parse(lastMessage.content) as InvoiceData;
+                if (result.client) form.setValue('client', result.client);
+                if (result.amount) form.setValue('amount', result.amount);
+                if (result.dueDate) {
+                    form.setValue('dueDate', new Date(result.dueDate + 'T00:00:00'));
+                }
+                toast({ title: "Invoice Data Extracted", description: "The form has been populated with the extracted data." });
+            } catch (e) {
+                toast({ variant: 'destructive', title: 'Extraction Failed', description: 'Could not parse the data from the AI.' });
+            } finally {
+                setIsWaitingForExtraction(false);
             }
-            toast({ title: "Invoice Data Extracted", description: "The form has been populated with the extracted data." });
-        };
-        
-        eventBus.on('accounting:invoice-extracted', handleInvoiceData);
-        return () => {
-            eventBus.off('accounting:invoice-extracted', handleInvoiceData);
         }
-    }, [isOpen, form, toast]);
+    }, [isBeepLoading, isWaitingForExtraction, beepMessages, form, toast]);
 
 
     const onSubmit = (values: InvoiceFormValues) => {
@@ -159,8 +160,11 @@ const NewInvoiceDialog = () => {
             toast({ variant: 'destructive', title: 'Text is empty', description: 'Please paste the invoice text to extract.' });
             return;
         }
+        setIsWaitingForExtraction(true);
         beepAppend({ role: 'user', content: `Extract invoice data from the following text: \n\n${rawInvoiceText}` });
     };
+    
+    const isLoading = isBeepLoading && isWaitingForExtraction;
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -219,12 +223,12 @@ const NewInvoiceDialog = () => {
                         placeholder="Paste raw text from an email or document here..."
                         value={rawInvoiceText}
                         onChange={(e) => setRawInvoiceText(e.target.value)}
-                        disabled={isBeepLoading}
+                        disabled={isLoading}
                         className="min-h-[100px] bg-background/50"
                     />
-                    <Button onClick={handleExtract} disabled={isBeepLoading} variant="secondary" className="w-full">
-                        {isBeepLoading ? <Loader2 className="animate-spin" /> : <BrainCircuit />}
-                         Extract Details with AI
+                    <Button onClick={handleExtract} disabled={isLoading} variant="secondary" className="w-full">
+                        {isLoading ? <Loader2 className="animate-spin" /> : <BrainCircuit />}
+                         {isLoading ? 'Extracting...' : 'Extract Details with AI'}
                     </Button>
                 </div>
             </DialogContent>
@@ -408,3 +412,5 @@ const AccountingComponent = () => {
 }
 
 export default AccountingComponent;
+
+    

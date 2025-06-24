@@ -1,7 +1,7 @@
 
 "use client"
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { formSchema, type FormData } from './schemas';
@@ -15,15 +15,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { type ContentGeneration } from '@/lib/ai-schemas';
 import { Zap, Copy, FileText, ShieldAlert } from 'lucide-react';
-import eventBus from '@/lib/event-bus';
 import { useBeepChat } from '@/hooks/use-beep-chat';
 
 const ContentCreatorComponent: React.FC = () => {
   const { toast } = useToast();
   const [generatedContent, setGeneratedContent] = useState<ContentGeneration | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { append: beepAppend, isLoading: isBeepLoading } = useBeepChat();
+  const [isWaitingForContent, setIsWaitingForContent] = useState(false);
+  const { append: beepAppend, messages: beepMessages, isLoading: isBeepLoading } = useBeepChat();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -37,40 +36,38 @@ const ContentCreatorComponent: React.FC = () => {
   const onSubmit = async (values: FormData) => {
     setError(null);
     setGeneratedContent(null);
+    setIsWaitingForContent(true);
     
     const prompt = `Generate a ${values.contentType} about "${values.topic}" with a ${values.tone} tone.`;
     beepAppend({ role: 'user', content: prompt });
   };
   
   useEffect(() => {
-    setIsLoading(isBeepLoading);
-  }, [isBeepLoading]);
+    if (isBeepLoading || !isWaitingForContent) return;
 
-  useEffect(() => {
-    const handleContentResult = (result: ContentGeneration) => {
-        setGeneratedContent(result);
-        setIsLoading(false);
-    };
-
-    const handleContentError = (errorMessage: string) => {
-        setError(errorMessage);
-        setIsLoading(false);
-        toast({ variant: 'destructive', title: 'Generation Failed', description: errorMessage });
-    };
-
-    eventBus.on('content:result', handleContentResult);
-    eventBus.on('content:error', handleContentError);
-
-    return () => {
-        eventBus.off('content:result', handleContentResult);
-        eventBus.off('content:error', handleContentError);
+    const lastMessage = beepMessages[beepMessages.length - 1];
+    if (lastMessage?.role === 'tool' && lastMessage.name === 'generateMarketingContent') {
+      try {
+        const result = JSON.parse(lastMessage.content) as ContentGeneration;
+        if (result.body && result.title) {
+          setGeneratedContent(result);
+        } else {
+          setError('The AI returned an unexpected format for the content.');
+        }
+      } catch(e) {
+        setError('Failed to parse content from the AI response.');
+      } finally {
+        setIsWaitingForContent(false);
+      }
     }
-  }, [toast]);
+  }, [isBeepLoading, isWaitingForContent, beepMessages]);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({ title: 'Copied to Clipboard' });
   };
+
+  const isLoading = isBeepLoading && isWaitingForContent;
 
   const ResultDisplay = () => {
       if (isLoading) {
@@ -204,3 +201,5 @@ const ContentCreatorComponent: React.FC = () => {
 };
 
 export default ContentCreatorComponent;
+
+    
