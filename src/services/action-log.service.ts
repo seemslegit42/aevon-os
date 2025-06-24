@@ -8,11 +8,15 @@ const SYSTEM_AGENT_ID = 'system-beep';
 const SYSTEM_AGENT_NAME = 'BEEP';
 const SYSTEM_AGENT_TYPE: AgentType = 'CONVERSATIONAL';
 
+// --- Lazy Initialization for System Agent ---
+let isSystemAgentInitialized = false;
+
 /**
  * Ensures the default system agent exists in the database.
- * Uses upsert to create it if it's not there, avoiding race conditions.
+ * This is now called lazily to avoid issues during build time.
  */
 async function ensureSystemAgent() {
+  if (isSystemAgentInitialized) return;
   try {
     await prisma.agent.upsert({
       where: { id: SYSTEM_AGENT_ID },
@@ -22,18 +26,15 @@ async function ensureSystemAgent() {
         name: SYSTEM_AGENT_NAME,
         type: SYSTEM_AGENT_TYPE,
         description: 'The primary conversational AI assistant for AEVON OS.',
-        // This agent is not tied to a specific user or workspace in this context
-        // In a multi-tenant app, you might link this to a system-wide workspace
       },
     });
+    isSystemAgentInitialized = true;
   } catch (error) {
     console.error("Failed to ensure system agent exists:", error);
-    // In a real app, you might want to throw this error or handle it more gracefully
+    // Do not set initialized to true if it fails, so it can be retried on the next action.
   }
 }
 
-// Call this once when the module loads to ensure the agent is ready.
-ensureSystemAgent();
 
 interface LogActionData {
   agentId?: string; // Optional, defaults to system agent
@@ -49,6 +50,9 @@ interface LogActionData {
  * @param data - The details of the action to log.
  */
 export async function logAction(data: LogActionData): Promise<void> {
+  // Lazily ensure the system agent exists on the first call.
+  await ensureSystemAgent();
+
   const {
     agentId = SYSTEM_AGENT_ID,
     toolName,

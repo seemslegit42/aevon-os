@@ -1,27 +1,14 @@
+
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
-
-interface Agent {
-  id: string;
-  name: string;
-  status: 'active' | 'idle' | 'error';
-  task: string;
-  avatar: string;
-  avatarHint: string;
-}
-
-const initialAgents: Agent[] = [
-  { id: 'agent-001', name: 'OrchestratorAlpha', status: 'active', task: 'Analyzing sales data for Q2 report...', avatar: 'https://placehold.co/40x40.png', avatarHint: 'abstract purple' },
-  { id: 'agent-002', name: 'WebIntellectX', status: 'idle', task: 'Awaiting new web summarization tasks.', avatar: 'https://placehold.co/40x40.png', avatarHint: 'abstract green' },
-  { id: 'agent-003', name: 'SynthWeaver', status: 'active', task: 'Generating marketing copy for new campaign.', avatar: 'https://placehold.co/40x40.png', avatarHint: 'abstract blue' },
-  { id: 'agent-004', name: 'DataCruncherZeta', status: 'error', task: 'Failed to connect to primary database.', avatar: 'https://placehold.co/40x40.png', avatarHint: 'abstract red' },
-];
+import { getAgentsWithStatus, type AgentWithStatus } from '@/services/agent.service';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const statusStyles = {
   active: 'bg-chart-4/20 text-chart-4 border-chart-4/30',
@@ -36,21 +23,34 @@ const statusPing = {
 }
 
 const AgentPresenceCardContent: React.FC = () => {
-  const [agents, setAgents] = useState(initialAgents);
+  const [agents, setAgents] = useState<AgentWithStatus[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Simulate status changes for a more dynamic feel
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setAgents(prevAgents => prevAgents.map(agent => {
-        if (agent.status !== 'error' && Math.random() > 0.7) {
-          return { ...agent, status: agent.status === 'idle' ? 'active' : 'idle' };
-        }
-        return agent;
-      }));
-    }, 7000);
-
-    return () => clearInterval(interval);
+  const fetchAgents = useCallback(async () => {
+      try {
+          // No need to set loading to true on refetch
+          const fetchedAgents = await getAgentsWithStatus();
+          setAgents(fetchedAgents);
+      } catch (error) {
+          console.error("Failed to fetch agent presence:", error);
+      } finally {
+          setIsLoading(false);
+      }
   }, []);
+
+  useEffect(() => {
+    fetchAgents();
+    const interval = setInterval(fetchAgents, 15000); // Refresh every 15 seconds
+    return () => clearInterval(interval);
+  }, [fetchAgents]);
+  
+  if (isLoading) {
+      return (
+          <div className="space-y-3 p-4">
+              {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-16 w-full" />)}
+          </div>
+      );
+  }
 
   return (
     <TooltipProvider>
@@ -61,7 +61,7 @@ const AgentPresenceCardContent: React.FC = () => {
               <Card className="p-3 bg-card/50 hover:bg-muted/30 transition-colors">
                 <div className="flex items-center gap-3">
                   <Avatar>
-                    <AvatarImage src={agent.avatar} alt={agent.name} data-ai-hint={agent.avatarHint} />
+                    <AvatarImage src={`https://placehold.co/40x40.png`} alt={agent.name} data-ai-hint="abstract geometric" />
                     <AvatarFallback>{agent.name.substring(0, 2)}</AvatarFallback>
                      <span className="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full ring-2 ring-card" >
                         <span className={cn('absolute inline-flex h-full w-full rounded-full opacity-75', statusPing[agent.status])} />
@@ -70,7 +70,7 @@ const AgentPresenceCardContent: React.FC = () => {
                   </Avatar>
                   <div className="flex-1 overflow-hidden">
                     <p className="text-sm font-semibold truncate">{agent.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{agent.task}</p>
+                    <p className="text-xs text-muted-foreground truncate">{agent.lastTask}</p>
                   </div>
                   <Badge variant="outline" className={cn('text-xs capitalize', statusStyles[agent.status])}>
                     {agent.status}
@@ -79,10 +79,16 @@ const AgentPresenceCardContent: React.FC = () => {
               </Card>
             </TooltipTrigger>
             <TooltipContent side="top" className="glassmorphism-panel">
-              <p>Task: {agent.task}</p>
+              <p>Last Task: {agent.lastTask}</p>
             </TooltipContent>
           </Tooltip>
         ))}
+         {agents.length === 0 && (
+          <div className="text-center py-4">
+            <p className="text-sm text-muted-foreground">No agents found or registered.</p>
+            <p className="text-xs text-muted-foreground">The 'BEEP' system agent should appear here automatically after an action.</p>
+          </div>
+        )}
       </div>
     </TooltipProvider>
   );
