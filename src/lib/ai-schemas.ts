@@ -22,8 +22,9 @@ export const TextCategorySchema = z.object({
 });
 export type TextCategory = z.infer<typeof TextCategorySchema>;
 
-// Defines the structured output for invoice data extraction in Loom Studio.
+// Defines the structured output for invoice data extraction.
 export const InvoiceDataSchema = z.object({
+    client: z.string().optional().describe("The name of the client or customer being invoiced."),
     invoiceNumber: z.string().optional().describe("The invoice number or ID."),
     amount: z.number().optional().describe("The total amount due on the invoice."),
     dueDate: z.string().optional().describe("The due date of the invoice in YYYY-MM-DD format."),

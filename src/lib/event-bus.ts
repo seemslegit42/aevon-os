@@ -1,6 +1,6 @@
 
 import mitt, { type Emitter } from 'mitt';
-import type { AegisSecurityAnalysis, AiInsights, ContentGeneration, WebSummarizerResult, AiGeneratedFlowData } from './ai-schemas';
+import type { AegisSecurityAnalysis, AiInsights, ContentGeneration, WebSummarizerResult, AiGeneratedFlowData, InvoiceData } from './ai-schemas';
 import type { AvatarState } from '@/types/dashboard';
 import type { BeepEmotion } from '@/types/loom';
 import type { MonthlySales, SalesTrend } from '@/services/sales-data.service';
@@ -39,6 +39,7 @@ type AppEvents = {
 
   // Data update events
   'sales-analytics:update': { monthlySales: MonthlySales[], salesTrend: SalesTrend[] };
+  'accounting:invoice-extracted': InvoiceData;
 
   // System-level Events
   'orchestration:log': { task: string; status: 'success' | 'failure'; details: string; targetId?: string; };

@@ -10,6 +10,7 @@ import { usePathname } from 'next/navigation';
 import { useLayoutStore } from '@/stores/layout.store';
 import { useLoomStore } from '@/stores/loom.store';
 import { ALL_MICRO_APPS } from '@/config/app-registry';
+import { type InvoiceData } from '@/lib/ai-schemas';
 
 /**
  * This is a non-rendering component that initializes the Vercel `useChat` hook
@@ -186,6 +187,9 @@ export function BeepChatProvider() {
                 break;
             case 'generateMarketingContent':
                 eventBus.emit('content:result', result);
+                break;
+            case 'extractInvoiceData':
+                eventBus.emit('accounting:invoice-extracted', result as InvoiceData);
                 break;
             // Add more cases here for other tools that need to update the UI
         }

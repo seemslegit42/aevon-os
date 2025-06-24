@@ -1,7 +1,7 @@
 
 "use client"
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format, startOfMonth } from 'date-fns';
@@ -19,7 +19,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { PlusCircle, Upload, FileText, CalendarIcon } from 'lucide-react';
+import { PlusCircle, Upload, FileText, CalendarIcon, BrainCircuit, Loader2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -27,8 +27,14 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { Textarea } from '@/components/ui/textarea';
+import { Separator } from '@/components/ui/separator';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { useBeepChat } from '@/hooks/use-beep-chat';
+import eventBus from '@/lib/event-bus';
+import type { InvoiceData } from '@/lib/ai-schemas';
 
 const currencyFormatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
@@ -112,16 +118,48 @@ const AddTransactionDialog = () => {
 const NewInvoiceDialog = () => {
     const { toast } = useToast();
     const [isOpen, setIsOpen] = useState(false);
+    const [rawInvoiceText, setRawInvoiceText] = useState('');
+    const { append: beepAppend, isLoading: isBeepLoading } = useBeepChat();
+
     const form = useForm<InvoiceFormValues>({
         resolver: zodResolver(invoiceSchema),
         defaultValues: { client: '', amount: 0, dueDate: new Date(), status: 'Draft' },
     });
     
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handleInvoiceData = (data: InvoiceData) => {
+            if (data.client) form.setValue('client', data.client);
+            if (data.amount) form.setValue('amount', data.amount);
+            if (data.dueDate) {
+                // Add T00:00:00 to avoid timezone issues when parsing YYYY-MM-DD
+                form.setValue('dueDate', new Date(data.dueDate + 'T00:00:00'));
+            }
+            toast({ title: "Invoice Data Extracted", description: "The form has been populated with the extracted data." });
+        };
+        
+        eventBus.on('accounting:invoice-extracted', handleInvoiceData);
+        return () => {
+            eventBus.off('accounting:invoice-extracted', handleInvoiceData);
+        }
+    }, [isOpen, form, toast]);
+
+
     const onSubmit = (values: InvoiceFormValues) => {
         createInvoice(values);
         toast({ title: "Invoice Created", description: `New invoice for ${values.client} has been saved as a draft.` });
         form.reset();
+        setRawInvoiceText('');
         setIsOpen(false);
+    };
+
+    const handleExtract = () => {
+        if (!rawInvoiceText.trim()) {
+            toast({ variant: 'destructive', title: 'Text is empty', description: 'Please paste the invoice text to extract.' });
+            return;
+        }
+        beepAppend({ role: 'user', content: `Extract invoice data from the following text: \n\n${rawInvoiceText}` });
     };
 
     return (
@@ -132,7 +170,7 @@ const NewInvoiceDialog = () => {
             <DialogContent className="sm:max-w-md glassmorphism-panel">
                 <DialogHeader>
                     <DialogTitle className="font-headline text-primary">New Invoice</DialogTitle>
-                    <DialogDescription>Create and send a new invoice to a client.</DialogDescription>
+                    <DialogDescription>Create an invoice manually or paste text to have AI extract the details.</DialogDescription>
                 </DialogHeader>
                  <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -174,6 +212,21 @@ const NewInvoiceDialog = () => {
                         </DialogFooter>
                     </form>
                 </Form>
+                 <Separator className="my-4" />
+                <div className="space-y-2">
+                    <Label className="text-muted-foreground">Or Paste Invoice Text to Extract with AI</Label>
+                    <Textarea
+                        placeholder="Paste raw text from an email or document here..."
+                        value={rawInvoiceText}
+                        onChange={(e) => setRawInvoiceText(e.target.value)}
+                        disabled={isBeepLoading}
+                        className="min-h-[100px] bg-background/50"
+                    />
+                    <Button onClick={handleExtract} disabled={isBeepLoading} variant="secondary" className="w-full">
+                        {isBeepLoading ? <Loader2 className="animate-spin" /> : <BrainCircuit />}
+                         Extract Details with AI
+                    </Button>
+                </div>
             </DialogContent>
         </Dialog>
     );

@@ -22,6 +22,7 @@ import {
     KnowledgeBaseSearchResultSchema, 
     SubscriptionStatusSchema,
     WebSummarizerResultSchema,
+    InvoiceDataSchema,
 } from '../ai-schemas';
 
 // =================================================================
@@ -176,6 +177,21 @@ const summarizeWebpageTool = createTool({
     }
 });
 
+const extractInvoiceDataTool = createTool({
+    name: "extractInvoiceData",
+    description: "Extracts structured data (client name, invoice number, amount, due date) from raw invoice text. Use this when the user asks to parse or extract details from an invoice.",
+    schema: z.object({ rawText: z.string().describe("The raw text content of the invoice to be parsed.") }),
+    func: async ({ rawText }) => {
+        const { object: invoiceData } = await generateObject({
+            model: google('gemini-1.5-flash-latest'),
+            schema: InvoiceDataSchema,
+            prompt: `You are an expert accounting assistant. Extract the key details from the following invoice text: \n\n${rawText}\n\nIf a value is not present, omit it. Format the due date as YYYY-MM-DD.`
+        });
+        return invoiceData;
+    }
+});
+
+
 // --- Client-Side UI Manipulation Tools ---
 const focusItemTool = createTool({ name: 'focusItem', description: "Brings a specific window into focus.", schema: z.object({ instanceId: z.string() }), func: async () => {}, isClientSide: true });
 const addItemTool = createTool({
@@ -198,7 +214,7 @@ const resetLayoutTool = createTool({ name: 'resetLayout', description: 'Resets t
 const allTools = [
     searchKnowledgeBaseTool, getSalesAnalyticsDataTool, getSubscriptionStatusTool,
     analyzeSecurityAlertTool, generateWorkspaceInsightsTool, generateMarketingContentTool,
-    summarizeWebpageTool,
+    summarizeWebpageTool, extractInvoiceDataTool,
     focusItemTool, addItemTool, removeItemTool, resetLayoutTool,
 ];
 
