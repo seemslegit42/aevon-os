@@ -1,5 +1,5 @@
 
-import { type NextRequest, NextResponse } from 'next/server';
+import { type NextRequest } from 'next/server';
 import { rateLimiter } from '@/lib/rate-limiter';
 import { groqSdk } from '@/lib/ai/groq';
 
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
     if (!process.env.GROQ_API_KEY) {
       console.error('Transcription Error: GROQ_API_KEY is not set in the environment variables.');
-      return NextResponse.json(
+      return Response.json(
         { error: "Server configuration error: The transcription service is not configured." },
         { status: 500 }
       );
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     const file = formData.get('file') as File;
 
     if (!file) {
-      return NextResponse.json({ error: "No file uploaded." }, { status: 400 });
+      return Response.json({ error: "No file uploaded." }, { status: 400 });
     }
     
     const transcription = await groqSdk.audio.transcriptions.create({
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       model: "whisper-large-v3",
     });
 
-    return NextResponse.json({ text: transcription.text });
+    return Response.json({ text: transcription.text });
 
   } catch (error) {
     console.error('Error in transcribe API:', error);
@@ -39,6 +39,6 @@ export async function POST(req: NextRequest) {
     if (error instanceof Error) {
         errorMessage = error.message;
     }
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return Response.json({ error: errorMessage }, { status: 500 });
   }
 }
