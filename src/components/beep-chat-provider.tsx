@@ -9,7 +9,6 @@ import { useBeepChatStore } from '@/stores/beep-chat.store';
 import eventBus from '@/lib/event-bus';
 import { useLoomStore } from '@/stores/loom.store';
 import { usePathname } from 'next/navigation';
-import { shallow } from 'zustand/shallow';
 
 /**
  * This is a non-rendering component that initializes the Vercel `useChat` hook
@@ -96,15 +95,11 @@ export function BeepChatProvider() {
   });
 
   const pathname = usePathname();
-  // Subscribe to the full context from the layout store
-  const { layoutItems, activeAppContext } = useLayoutStore(state => ({
-      layoutItems: state.layoutItems,
-      activeAppContext: state.activeAppContext,
-  }), shallow);
   
   // Create a custom 'append' function that always includes the latest layout and app context.
   const appendWithContext = useCallback(async (message: Message) => {
-    // The active micro-app context is now sourced directly from the layout store.
+    // Get state at the time of calling, not via static import cycle
+    const { layoutItems, activeAppContext } = useLayoutStore.getState();
     const { nodes, connections, selectedNodeId } = useLoomStore.getState();
     const loomState = nodes.length > 0 ? { nodes, connections, selectedNodeId } : undefined;
 
@@ -114,11 +109,11 @@ export function BeepChatProvider() {
             layoutItems: layoutItems,
             loomState,
             currentRoute: pathname,
-            activeMicroApp: activeAppContext, // Pass the centrally-managed context
+            activeMicroApp: activeAppContext,
         } 
       }
     });
-  }, [pathname, layoutItems, activeAppContext, originalAppend]);
+  }, [pathname, originalAppend]);
 
   // Sync the hook's state with the Zustand store
   useEffect(() => {
