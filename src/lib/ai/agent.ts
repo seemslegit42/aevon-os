@@ -18,7 +18,6 @@ import * as BillingService from '@/services/billing.service';
 
 import type { LayoutItem } from '@/types/dashboard';
 import { 
-    AegisSecurityAnalysisSchema, 
     AiInsightsSchema, 
     ContentGenerationSchema, 
     KnowledgeBaseSearchResultSchema, 
@@ -133,20 +132,6 @@ const getSubscriptionStatusTool = createTool({
     description: "Retrieves the user's current subscription plan, status, and renewal date.",
     schema: z.object({}),
     func: async () => await BillingService.getSubscriptionStatus()
-});
-
-const analyzeSecurityAlertTool = createTool({
-    name: "analyzeSecurityAlert",
-    description: "Performs a security analysis on a given alert, providing a structured response.",
-    schema: z.object({ alertDetails: z.string().describe("The stringified JSON of the security alert.") }),
-    func: async ({ alertDetails }) => {
-        const { object: analysis } = await generateObject({
-            model: google('gemini-1.5-flash-latest'),
-            schema: AegisSecurityAnalysisSchema,
-            prompt: `You are a senior security analyst for the Aegis defense system. Analyze the following security alert data: ${alertDetails}`
-        });
-        return analysis;
-    }
 });
 
 const generateWorkspaceInsightsTool = createTool({
@@ -286,7 +271,7 @@ const resetLayoutTool = createTool({ name: 'resetLayout', description: 'Resets t
 
 const allTools = [
     searchKnowledgeBaseTool, getSalesAnalyticsDataTool, getSubscriptionStatusTool,
-    analyzeSecurityAlertTool, generateWorkspaceInsightsTool, generateMarketingContentTool,
+    generateWorkspaceInsightsTool, generateMarketingContentTool,
     summarizeWebpageTool, extractInvoiceDataTool, runLoomWorkflowTool,
     requestHumanActionTool,
     focusItemTool, addItemTool, removeItemTool, resetLayoutTool,

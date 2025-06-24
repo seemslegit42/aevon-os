@@ -1,6 +1,6 @@
 
 import mitt, { type Emitter } from 'mitt';
-import type { AegisSecurityAnalysis, AiInsights, ContentGeneration, WebSummarizerResult, AiGeneratedFlowData, InvoiceData } from './ai-schemas';
+import type { AiInsights, ContentGeneration, WebSummarizerResult, AiGeneratedFlowData, InvoiceData } from './ai-schemas';
 import type { AvatarState } from '@/types/dashboard';
 import type { BeepEmotion, TimelineEvent } from '@/types/loom';
 import type { MonthlySales, SalesTrend } from '@/services/sales-data.service';
@@ -10,11 +10,6 @@ type AppEvents = {
   'beep:submitQuery': string;
   'beep:response': string; 
   'beep:setEmotion': BeepEmotion;
-
-  // Aegis Security Events
-  'aegis:new-alert': string;
-  'aegis:analysis-result': AegisSecurityAnalysis;
-  'aegis:analysis-error': string;
 
   // AI Insights Events
   'insights:result': AiInsights;

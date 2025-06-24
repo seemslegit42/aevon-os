@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Rnd } from 'react-rnd';
@@ -17,7 +16,7 @@ import type { AvatarState } from '@/types/dashboard';
 import type { Position } from 'react-rnd';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getEmotionFromTextByKeywords } from '@/lib/sentiment-parser';
+import { getEmotionFromTextByKeywords } from '@/lib/sentiment-parser.shared';
 import { BeepEmotion } from '@/types/loom';
 
 const BeepAvatar3D = dynamic(() => import('@/components/beep/beep-avatar-3d'), {
@@ -172,11 +171,6 @@ const FloatingBeepAvatar: React.FC = () => {
   }, [useBeepChatStore.getState().messages, setTemporaryState]);
   
    useEffect(() => {
-    const handleSecurityAlert = (details: string) => {
-        setTemporaryState('security_alert', 5000, { details });
-    };
-    eventBus.on('aegis:new-alert', handleSecurityAlert);
-    
     const handleSetEmotion = (emotion: BeepEmotion) => {
       const state: AvatarState = `speaking_${emotion}`;
       setTemporaryState(state, 5000, { reason: 'Loom node override' });
@@ -184,7 +178,6 @@ const FloatingBeepAvatar: React.FC = () => {
     eventBus.on('beep:setEmotion', handleSetEmotion);
 
     return () => {
-        eventBus.off('aegis:new-alert', handleSecurityAlert);
         eventBus.off('beep:setEmotion', handleSetEmotion);
         if (stateTimeoutRef.current) clearTimeout(stateTimeoutRef.current);
     };

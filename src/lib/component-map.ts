@@ -15,7 +15,6 @@ componentMap.set('microApps', lazy(() => import('@/micro-apps/micro-apps-palette
 
 // Register Micro-App Components
 componentMap.set('app-accounting', lazy(() => import('@/micro-apps/accounting/component')));
-componentMap.set('app-aegis-security', lazy(() => import('@/micro-apps/aegis-security/component')));
 componentMap.set('app-armory', lazy(() => import('@/micro-apps/armory/component')));
 componentMap.set('app-analytics', lazy(() => import('@/micro-apps/sales-analytics/component')));
 componentMap.set('app-content-creator', lazy(() => import('@/micro-apps/content-creator/component')));

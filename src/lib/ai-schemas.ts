@@ -5,15 +5,6 @@
  */
 import { z } from 'zod';
 
-// Defines the structured output for the Aegis security analysis feature.
-export const AegisSecurityAnalysisSchema = z.object({
-  summary: z.string().describe("A concise, one-sentence summary of the security alert analysis."),
-  severity: z.enum(['Low', 'Medium', 'High', 'Critical']).describe("The assessed severity level of the alert."),
-  identifiedThreats: z.array(z.string()).describe("A list of specific threats or vulnerabilities identified from the data."),
-  suggestedActions: z.array(z.string()).describe("A list of concrete, actionable steps to mitigate the identified threats."),
-});
-export type AegisSecurityAnalysis = z.infer<typeof AegisSecurityAnalysisSchema>;
-
 // Defines the output for the text categorization feature in Loom Studio.
 export const TextCategorySchema = z.object({
     isMatch: z.boolean().describe("Set to true if the text matches the category, otherwise false."),

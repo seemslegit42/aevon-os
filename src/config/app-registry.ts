@@ -24,17 +24,6 @@ export const ALL_MICRO_APPS: AppRegistration[] = [
     }
   },
   {
-    id: 'app-aegis-security',
-    title: 'Aegis Security',
-    description: 'Real-time cybersecurity health monitoring and threat analysis.',
-    icon: Shield,
-    permissions: ['security:full-access'],
-    tags: ['security', 'system', 'dashboard'],
-    defaultSize: { width: 450, height: 650 },
-    minWidth: 400,
-    minHeight: 600,
-  },
-  {
     id: 'app-armory',
     title: 'ΛEVON Λrmory',
     description: 'Discover and launch powerful micro-apps to extend your OS capabilities.',
@@ -204,16 +193,6 @@ const initialCards = ALL_CARD_CONFIGS
 
 const initialApps: LayoutItem[] = [
     {
-        id: 'app-aegis-security-default',
-        type: 'app',
-        appId: 'app-aegis-security',
-        x: 420,
-        y: 560,
-        width: 450,
-        height: 650,
-        zIndex: initialCards.length + 1,
-    },
-    {
         id: 'app-analytics-default',
         type: 'app',
         appId: 'app-analytics',
@@ -221,7 +200,7 @@ const initialApps: LayoutItem[] = [
         y: 560,
         width: 480,
         height: 400,
-        zIndex: initialCards.length + 2,
+        zIndex: initialCards.length + 1,
     },
 ];
 
