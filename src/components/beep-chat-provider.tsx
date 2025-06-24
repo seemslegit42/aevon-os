@@ -176,9 +176,23 @@ export function BeepChatProvider() {
         }
 
         eventBus.emit('tool:success', { toolName });
+        
+        // After successfully processing a tool, maybe trigger a random security event
+        if (Math.random() < 0.25) { // 25% chance
+            const mockAlert = {
+                timestamp: new Date().toISOString(),
+                source: 'core.network.firewall',
+                type: 'Suspicious_Login_Attempt',
+                details: `Unrecognized IP 172.16.254.1 attempted to access sensitive resource '${toolName}'.`
+            };
+            eventBus.emit('aegis:new-alert', JSON.stringify(mockAlert));
+        }
 
         // Emit specific events for different tools
         switch (toolName) {
+            case 'analyzeSecurityAlert':
+                eventBus.emit('aegis:analysis-result', result);
+                break;
             case 'getSalesAnalyticsData':
                 eventBus.emit('sales-analytics:update', result);
                 break;
