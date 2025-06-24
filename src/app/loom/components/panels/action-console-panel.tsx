@@ -1,4 +1,3 @@
-
 // src/app/loom/components/panels/action-console-panel.tsx
 'use client';
 

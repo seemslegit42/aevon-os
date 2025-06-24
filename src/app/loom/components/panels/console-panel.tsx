@@ -1,6 +1,5 @@
-
-'use client';
 // src/app/loom/components/panels/console-panel.tsx
+'use client';
 import { BasePanel } from './base-panel';
 import { Terminal, AlertCircle, Info, Filter, Trash2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
