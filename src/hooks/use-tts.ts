@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useRef, useCallback, useEffect, useState } from 'react';
+import { useRef, useCallback, useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useAvatarTelemetry } from '@/hooks/use-avatar-telemetry';
 import type { AvatarState } from '@/types/dashboard';
@@ -32,41 +32,15 @@ export function useTTS({ outputNode }: UseTTSProps) {
   const { logEvent } = useAvatarTelemetry();
   const [isSpeaking, setIsSpeaking] = useState(false);
   const ttsSourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
-  const localAudioContextRef = useRef<AudioContext | null>(null);
-  const localOutputNodeRef = useRef<GainNode | null>(null);
-
-  const initializeLocalAudio = useCallback(() => {
-    if (typeof window !== 'undefined' && !outputNode && !localAudioContextRef.current) {
-        try {
-            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-            const context = new AudioContext();
-            localAudioContextRef.current = context;
-            const gainNode = context.createGain();
-            gainNode.connect(context.destination);
-            localOutputNodeRef.current = gainNode;
-        } catch (e) {
-            console.error("Failed to create local AudioContext for TTS", e);
-        }
-    }
-  }, [outputNode]);
-
-  useEffect(() => {
-    initializeLocalAudio();
-  }, [initializeLocalAudio]);
 
   const playAudio = useCallback(async (text: string) => {
-    if (!outputNode && !localAudioContextRef.current) {
-        initializeLocalAudio();
-    }
-    
-    const targetOutputNode = outputNode || localOutputNodeRef.current;
-    
-    if (!targetOutputNode) {
-        toast({ variant: "destructive", title: "Audio Error", description: "TTS audio context is not available." });
+    if (!outputNode) {
+        console.warn("TTS playback attempted without an available audio output node.");
+        toast({ variant: "destructive", title: "Audio Error", description: "TTS audio context is not available. Please interact with the microphone first." });
         return;
     }
-
-    const audioContext = targetOutputNode.context as AudioContext;
+    
+    const audioContext = outputNode.context as AudioContext;
     if (audioContext.state === 'suspended') {
       await audioContext.resume();
     }
@@ -100,7 +74,7 @@ export function useTTS({ outputNode }: UseTTSProps) {
 
       const source = audioContext.createBufferSource();
       source.buffer = audioBuffer;
-      source.connect(targetOutputNode);
+      source.connect(outputNode);
       source.start(0);
       source.onended = () => {
         setIsSpeaking(false);
@@ -114,7 +88,7 @@ export function useTTS({ outputNode }: UseTTSProps) {
       toast({ variant: "destructive", title: "Audio Error", description: errorMessage });
       setIsSpeaking(false);
     }
-  }, [outputNode, toast, initializeLocalAudio, logEvent]);
+  }, [outputNode, toast, logEvent]);
 
   return { playAudio, isSpeaking };
 }

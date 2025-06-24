@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useBeepChat } from '@/hooks/use-beep-chat';
 import { type AiInsights, type Insight } from '@/lib/ai-schemas';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTTS } from '@/hooks/use-tts';
+import eventBus from '@/lib/event-bus';
 
 const AiInsightsCardContent: React.FC = () => {
   const { toast } = useToast();
@@ -19,7 +19,6 @@ const AiInsightsCardContent: React.FC = () => {
   const [isWaitingForInsights, setIsWaitingForInsights] = useState(false);
   
   const { append: beepAppend, messages: beepMessages, isLoading: isBeepLoading } = useBeepChat();
-  const { playAudio } = useTTS({});
 
   const handleGenerateInsights = useCallback(() => {
     setError(null);
@@ -38,7 +37,7 @@ const AiInsightsCardContent: React.FC = () => {
             if (result.insights) {
                 setInsights(result);
                 const insightsText = result.insights.map(i => i.text).join(' ');
-                playAudio(`I have found some new insights for you. ${insightsText}`);
+                eventBus.emit('beep:response', `I have found some new insights for you. ${insightsText}`);
             } else {
                  setError('The AI returned an unexpected format for insights.');
             }
@@ -48,7 +47,7 @@ const AiInsightsCardContent: React.FC = () => {
             setIsWaitingForInsights(false);
         }
     }
-  }, [isBeepLoading, isWaitingForInsights, beepMessages, playAudio]);
+  }, [isBeepLoading, isWaitingForInsights, beepMessages]);
   
   const handleInsightAction = (insight: Insight) => {
     if (!insight.action) return;
@@ -137,5 +136,3 @@ const AiInsightsCardContent: React.FC = () => {
 };
 
 export default AiInsightsCardContent;
-
-    
