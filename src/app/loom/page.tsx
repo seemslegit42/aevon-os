@@ -455,12 +455,12 @@ export default function LoomStudioPage() {
                 })}>
                     {isVisible && (
                        <>
-                        {panelKey === 'palette' && <PalettePanel className="h-full" onClose={() => togglePanel('palette')} />}
+                        {panelKey === 'palette' && <PalettePanel className="h-full" onClose={() => togglePanel('palette')} isMobile />}
                         {panelKey === 'inspector' && <TooltipProvider delayDuration={300}><InspectorPanel key={selectedNode?.id || 'inspector-mobile-empty'} className="h-full overflow-y-auto" onClose={() => togglePanel('inspector')} {...{selectedNode, onNodeUpdate: handleNodeUpdate, onNodeDelete: handleDeleteNode, isMobile, onRunNode: handleRunNode, isNodeRunning}} /></TooltipProvider>}
-                        {panelKey === 'agentHub' && <AgentHubPanel className="h-full" onClose={() => togglePanel('agentHub')} {...{addConsoleMessage, addTimelineEvent}} />}
-                        {panelKey === 'actionConsole' && <ActionConsolePanel className="h-full" requests={actionRequests} onRespond={handleAgentActionResponse} onClose={() => togglePanel('actionConsole')} {...{addConsoleMessage, addTimelineEvent}} />}
-                        {panelKey === 'timeline' && <TimelinePanel className="h-full" onClose={() => togglePanel('timeline')} events={timelineEvents} />}
-                        {panelKey === 'console' && <ConsolePanel className="h-full" onClose={() => togglePanel('console')} messages={consoleMessages.filter(msg => consoleFilters[msg.type])} filters={consoleFilters} onToggleFilter={(type) => setConsoleFilters(f => ({ ...f, [type]: !f[type]}))} onClearConsole={clearConsole} />}
+                        {panelKey === 'agentHub' && <AgentHubPanel className="h-full" onClose={() => togglePanel('agentHub')} {...{addConsoleMessage, addTimelineEvent, isMobile}} />}
+                        {panelKey === 'actionConsole' && <ActionConsolePanel className="h-full" requests={actionRequests} onRespond={handleAgentActionResponse} onClose={() => togglePanel('actionConsole')} {...{addConsoleMessage, addTimelineEvent, isMobile}} />}
+                        {panelKey === 'timeline' && <TimelinePanel className="h-full" onClose={() => togglePanel('timeline')} events={timelineEvents} isMobile />}
+                        {panelKey === 'console' && <ConsolePanel className="h-full" onClose={() => togglePanel('console')} messages={consoleMessages.filter(msg => consoleFilters[msg.type])} filters={consoleFilters} onToggleFilter={(type) => setConsoleFilters(f => ({ ...f, [type]: !f[type]}))} onClearConsole={clearConsole} isMobile />}
                        </>
                     )}
                 </div>
