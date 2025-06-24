@@ -1,13 +1,15 @@
-
 "use client";
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer } from 'recharts';
 import { cn } from '@/lib/utils';
 import { useSound } from '@/hooks/use-sound';
+import { useAegisStore } from './store';
 
 const CyberHealthGauge: React.FC = () => {
-    const [score, setScore] = useState(0);
+    // The score is now read directly from the central Zustand store.
+    // This component is now purely presentational.
+    const score = useAegisStore((state) => state.cyberHealthScore);
     const prevScoreRef = useRef(score);
     
     // In a real app, the sound file would be in /public/sounds/
@@ -15,31 +17,11 @@ const CyberHealthGauge: React.FC = () => {
     const playSwooshSound = useSound('/sounds/swoosh.mp3');
 
     useEffect(() => {
-        // Initial animation from 0 to a starting score
-        const initialScore = Math.floor(Math.random() * 21) + 75; // Start between 75-95
-        setTimeout(() => {
-            setScore(initialScore);
-            prevScoreRef.current = initialScore;
-        }, 500);
-
-        const interval = setInterval(() => {
-            setScore(prevScore => {
-                prevScoreRef.current = prevScore;
-                // Simulate score fluctuation
-                const change = (Math.random() - 0.45) * 15;
-                const newScore = Math.max(0, Math.min(100, Math.round(prevScore + change)));
-                return newScore;
-            });
-        }, 30000); // Refresh every 30 seconds
-
-        return () => clearInterval(interval);
-    }, []);
-
-    useEffect(() => {
-        // Effect to detect sudden score drops
+        // Effect to detect sudden score drops and play a sound
         if (prevScoreRef.current - score > 15) {
             playSwooshSound();
         }
+        prevScoreRef.current = score;
     }, [score, playSwooshSound]);
 
     const getFillColor = (value: number) => {
@@ -79,7 +61,6 @@ const CyberHealthGauge: React.FC = () => {
                             dataKey="value"
                             angleAxisId={0}
                             cornerRadius={10}
-                            // This is a dummy data bar that will be overridden by the animated one
                         />
                         {/* Animated foreground score bar */}
                         <RadialBar
