@@ -4,32 +4,7 @@ import type { z } from 'zod';
 import {
     Bot, LineChart, Puzzle, BrainCircuit, Users, Bug, Home, Network, Shield, ShoppingCart, Calculator, Pencil, CreditCard, Cpu, RotateCw, Download, Activity
 } from 'lucide-react';
-import type { UIControl, MicroAppRoute, CardConfig } from '@/types/dashboard';
-
-// This is a new, simplified registration type that ONLY contains serializable data.
-// No components are imported here, breaking the dependency cycles.
-export interface AppRegistration {
-  id: string;
-  title: string;
-  description: string;
-  icon: ElementType;
-  permissions: string[];
-  tags: string[];
-  defaultSize: { width: number; height: number };
-  baseRoute?: string;
-  routes?: MicroAppRoute[];
-  controls?: UIControl[];
-  configSchema?: z.ZodObject<any>;
-  persona?: {
-    name: string;
-    description: string;
-  };
-  contentProps?: any; // For cards
-  minWidth?: number; // For cards
-  minHeight?: number; // For cards
-  isDismissible?: boolean; // For cards
-  cardClassName?: string; // For cards
-}
+import type { UIControl, MicroAppRoute, CardConfig, AppRegistration } from '@/types/dashboard';
 
 // =================================================================
 // APP REGISTRY

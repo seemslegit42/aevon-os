@@ -4,7 +4,7 @@
 import React from 'react';
 import { useLayoutStore } from '@/stores/layout.store';
 import { useMicroAppStore } from '@/stores/micro-app.store';
-import { shallow } from 'zustand/middleware';
+import { shallow } from 'zustand/shallow';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
