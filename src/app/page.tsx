@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -9,18 +10,26 @@ import eventBus from '@/lib/event-bus';
 import { WelcomeModal } from '@/components/welcome-modal';
 import CommandPalette from '@/components/command-palette';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { DesktopDashboard } from '@/components/desktop-dashboard';
-import { MobileDashboard } from '@/components/mobile-dashboard';
 import { cn } from '@/lib/utils';
+import DashboardWindow from '@/components/dashboard-window';
+import MicroAppCard from '@/components/micro-app-card';
+import { WindowContent } from '@/components/dashboard-window-content';
+import { Card } from '@/components/ui/card';
+import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/app-registry';
+
 
 export default function HomePage() {
   const isMobile = useIsMobile();
 
   const {
+    layoutItems,
+    focusedItemId,
     setFocusedItemId,
     checkAndInitializeLayout,
   } = useLayoutStore(
     (state) => ({
+      layoutItems: state.layoutItems,
+      focusedItemId: state.focusedItemId,
       setFocusedItemId: state.setFocusedItemId,
       checkAndInitializeLayout: state.checkAndInitializeLayout,
     }),
@@ -78,11 +87,65 @@ export default function HomePage() {
     );
   }
 
+  // Mobile View
+  if (isMobile) {
+    const sortedItems = [...layoutItems].sort((a, b) => {
+        const order = ['liveOrchestrationFeed', 'beep', 'aiInsights', 'agentPresence'];
+        const indexA = a.cardId ? order.indexOf(a.cardId) : order.length;
+        const indexB = b.cardId ? order.indexOf(b.cardId) : order.length;
+        if (a.type === 'app') return 1;
+        if (b.type === 'app') return -1;
+        return indexA - indexB;
+    });
+
+    return (
+        <div className="p-4 space-y-4">
+            <WelcomeModal />
+            <CommandPalette />
+            {sortedItems.map(item => {
+                if (item.isMinimized) return null;
+                
+                const config = item.type === 'card'
+                    ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId)
+                    : ALL_MICRO_APPS.find(a => a.id === item.appId);
+
+                if (!config) {
+                    return (
+                        <Card key={item.id} className="p-4 bg-destructive text-destructive-foreground">
+                            <p>Error: Component config not found for "{item.cardId || item.appId}".</p>
+                        </Card>
+                    );
+                }
+
+                return (
+                    <div key={item.id}>
+                        <MicroAppCard
+                            title={config.title}
+                            icon={config.icon}
+                            actions={null}
+                            controls={undefined}
+                        >
+                            <WindowContent itemId={item.id} />
+                        </MicroAppCard>
+                    </div>
+                );
+            })}
+        </div>
+    );
+  }
+
+  // Desktop View
   return (
-    <div className={cn("w-full relative", !isMobile && "h-full")} onClick={handleCanvasClick}>
+    <div className={cn("w-full relative h-full")} onClick={handleCanvasClick}>
       <WelcomeModal />
       <CommandPalette />
-      {isMobile ? <MobileDashboard /> : <DesktopDashboard />}
+      {layoutItems.map(item => (
+        <DashboardWindow
+            key={item.id}
+            item={item}
+            isFocused={item.id === focusedItemId}
+        />
+      ))}
     </div>
   );
 };

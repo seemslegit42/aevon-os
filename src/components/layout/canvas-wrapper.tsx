@@ -26,8 +26,9 @@ const CanvasWrapper: React.FC<CanvasWrapperProps> = ({ children }) => {
       <div className="canvas-aurora-background-dark-container"></div>
       
       {/* 
-        The main content (Dashboard) is also positioned absolutely to fill the container.
-        This ensures it sits on top of the background layers and occupies the full space.
+        The main content (Dashboard) is also positioned to fill the container.
+        On desktop, it's absolute to allow free-form windows. On mobile, it's relative
+        to allow the page to scroll naturally.
       */}
       <div className={cn("z-10 w-full", isMobile ? "h-auto" : "absolute inset-0 h-full")}>
         {children}
