@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Settings, Clock, Menu, Search, Bot, Eye, BookMarked, FileText } from 'lucide-react';
+import { Settings, Clock, Menu, Search, BookMarked, FileText } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -19,7 +19,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
   DropdownMenuLabel,
-  DropdownMenuCheckboxItem
 } from "@/components/ui/dropdown-menu";
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import NotificationCenter from './notification-center';
