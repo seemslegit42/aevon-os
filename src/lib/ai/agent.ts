@@ -25,22 +25,11 @@ import {
     SubscriptionStatusSchema,
     WebSummarizerResultSchema,
 } from '../ai-schemas';
+import type { AppRegistration } from '@/config/app-registry';
 
 // =================================================================
 // Agent State Definition
 // =================================================================
-
-// This defines the structure of the active micro-app context passed to the agent.
-// It's a subset of the full MicroAppRegistration type to keep it server-safe.
-interface ActiveMicroAppContext {
-  id: string;
-  title: string;
-  description: string;
-  persona?: {
-    name: string;
-    description: string;
-  };
-}
 
 export interface AgentState extends MessagesState {
   layout: LayoutItem[];
@@ -50,7 +39,7 @@ export interface AgentState extends MessagesState {
     selectedNodeId: string | null;
   };
   currentRoute: string;
-  activeMicroApp: ActiveMicroAppContext | null;
+  activeMicroApp: AppRegistration | null;
 }
 
 // =================================================================

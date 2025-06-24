@@ -13,10 +13,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PlusCircle, Trash, MagnifyingGlass, X, Gear, Play, Eye } from 'phosphor-react';
-import { ALL_CARD_CONFIGS, type CardConfig } from '@/config/dashboard-cards.config';
+import { ALL_CARD_CONFIGS, type AppRegistration } from '@/config/app-registry';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { useMicroApps } from '@/hooks/use-micro-apps';
-import type { MicroAppRegistration } from '@/stores/micro-app.store';
 import { useLayoutStore } from '@/stores/layout.store';
 import type { LayoutItem } from '@/types/dashboard';
 import { useRouter } from 'next/navigation';
@@ -26,8 +25,8 @@ import { useRouter } from 'next/navigation';
 // =================================================================
 
 interface MicroAppListProps {
-  apps: MicroAppRegistration[];
-  onLaunch: (app: MicroAppRegistration) => void;
+  apps: AppRegistration[];
+  onLaunch: (app: AppRegistration) => void;
 }
 const MicroAppList: React.FC<MicroAppListProps> = ({ apps, onLaunch }) => (
   <>
@@ -56,7 +55,7 @@ const MicroAppList: React.FC<MicroAppListProps> = ({ apps, onLaunch }) => (
 );
 
 interface DashboardZoneListProps {
-  cards: CardConfig[];
+  cards: typeof ALL_CARD_CONFIGS;
   activeCardIds: Set<string>;
   onAdd: (cardId: string) => void;
   onRemove: (cardId: string) => void;
@@ -97,7 +96,7 @@ const DashboardZoneList: React.FC<DashboardZoneListProps> = ({ cards, activeCard
 
 interface OpenWindowListProps {
     instances: LayoutItem[];
-    appMap: Map<string, MicroAppRegistration>;
+    appMap: Map<string, AppRegistration>;
     onFocus: (itemId: string) => void;
     onClose: (itemId: string) => void;
 }
@@ -151,7 +150,7 @@ const CommandPalette: React.FC = () => {
 
   const { layoutItems, launchApp, addCard, closeItem, bringToFront, resetLayout } = useLayoutStore();
 
-  const handleLaunchApp = (app: MicroAppRegistration) => {
+  const handleLaunchApp = (app: AppRegistration) => {
     if (app.baseRoute) {
       router.push(app.baseRoute);
     } else {
@@ -190,7 +189,7 @@ const CommandPalette: React.FC = () => {
     return () => document.removeEventListener("keydown", down);
   }, [isOpen, setOpen]);
 
-  const activeCardIds = new Set(layoutItems.filter(i => i.type === 'card' && i.cardId).map(i => i.cardId));
+  const activeCardIds = new Set(layoutItems.filter(i => i.type === 'card' && i.cardId).map(i => i.cardId!));
 
   const filteredCards = ALL_CARD_CONFIGS.filter(card =>
     !searchTerm ||
@@ -242,7 +241,7 @@ const CommandPalette: React.FC = () => {
              <MicroAppList apps={filteredApps} onLaunch={handleLaunchApp} />
              {filteredApps.length === 0 && searchTerm && <p className="text-sm text-muted-foreground text-center py-2">No micro-apps match your search.</p>}
             
-             <DashboardZoneList cards={filteredCards} activeCardIds={activeCardIds} onAdd={handleAddCard} onRemove={handleCloseItem}/>
+             <DashboardZoneList cards={ALL_CARD_CONFIGS} activeCardIds={activeCardIds} onAdd={handleAddCard} onRemove={handleCloseItem}/>
              {filteredCards.length === 0 && searchTerm && <p className="text-sm text-muted-foreground text-center py-2">No zones match your search.</p>}
 
              <OpenWindowList instances={openAppInstances} appMap={appMap} onFocus={handleFocusItem} onClose={handleCloseItem} />
