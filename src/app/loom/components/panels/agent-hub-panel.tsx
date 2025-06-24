@@ -142,8 +142,6 @@ interface AgentHubPanelProps {
   isMobile?: boolean;
   addConsoleMessage: (type: ConsoleMessage['type'], text: string) => void;
   addTimelineEvent: (event: Omit<TimelineEvent, 'id' | 'timestamp'>) => void;
-  isResizable?: boolean;
-  initialSize?: {width?: string; height?: string};
 }
 
 export function AgentHubPanel({
@@ -152,8 +150,6 @@ export function AgentHubPanel({
   isMobile,
   addConsoleMessage,
   addTimelineEvent,
-  isResizable,
-  initialSize
 }: AgentHubPanelProps) {
   const { toast } = useToast();
   const [agents, setAgents] = useState<Agent[]>(initialAgents);
@@ -230,9 +226,6 @@ export function AgentHubPanel({
       icon={<Bot className="h-4 w-4" />}
       className={className}
       onClose={onClose}
-      isMobile={isMobile}
-      isResizable={isResizable}
-      initialSize={initialSize}
       contentClassName="space-y-3 flex flex-col"
     >
         <div className="flex items-center justify-between">

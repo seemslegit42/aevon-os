@@ -1,3 +1,4 @@
+
 'use client';
 // src/app/loom/components/panels/console-panel.tsx
 import { BasePanel } from './base-panel';
@@ -15,8 +16,6 @@ interface ConsolePanelProps {
   onToggleFilter: (type: ConsoleMessage['type']) => void;
   onClearConsole?: () => void;
   isMobile?: boolean;
-  isResizable?: boolean;
-  initialSize?: {width?: string; height?: string};
 }
 
 const getIconForType = (type: ConsoleMessage['type']) => {
@@ -49,8 +48,6 @@ export function ConsolePanel({
   onToggleFilter, 
   onClearConsole, 
   isMobile,
-  isResizable,
-  initialSize
 }: ConsolePanelProps) {
   const allFiltersEnabled = Object.values(filters).every(Boolean);
   
@@ -60,9 +57,6 @@ export function ConsolePanel({
       icon={<Terminal className="h-4 w-4" />}
       className={className}
       onClose={onClose}
-      isMobile={isMobile}
-      isResizable={isResizable}
-      initialSize={initialSize}
       contentClassName="font-code text-xs p-0 flex flex-col"
     >
       <div className="p-2 border-b border-border/30 flex items-center justify-between gap-1">

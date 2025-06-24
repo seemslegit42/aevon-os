@@ -1,3 +1,4 @@
+
 // src/app/loom/components/panels/action-console-panel.tsx
 'use client';
 
@@ -18,8 +19,6 @@ interface ActionConsolePanelProps {
   isMobile?: boolean;
   addConsoleMessage: (type: ConsoleMessage['type'], text: string) => void;
   addTimelineEvent: (event: Omit<TimelineEvent, 'id' | 'timestamp'>) => void;
-  isResizable?: boolean;
-  initialSize?: {width?: string; height?: string};
 }
 
 const requestTypeIcons: Record<ActionRequest['requestType'], React.ReactNode> = {
@@ -40,8 +39,6 @@ export function ActionConsolePanel({
   isMobile,
   addConsoleMessage, 
   addTimelineEvent,
-  isResizable,
-  initialSize,  
 }: ActionConsolePanelProps) {
   const [inputValue, setInputValue] = useState<Record<string, string>>({});
 
@@ -73,9 +70,6 @@ export function ActionConsolePanel({
       icon={<ShieldQuestion className="h-4 w-4" />}
       className={className}
       onClose={onClose}
-      isMobile={isMobile}
-      isResizable={isResizable}
-      initialSize={initialSize}
       contentClassName="flex flex-col"
     >
       <ScrollArea className="flex-grow pr-1">

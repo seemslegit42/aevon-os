@@ -1,3 +1,4 @@
+
 'use client';
 // src/app/loom/components/panels/inspector-panel.tsx
 import { BasePanel } from './base-panel';
@@ -29,8 +30,6 @@ interface InspectorPanelProps {
   isMobile?: boolean;
   onRunNode?: (nodeId: string) => void;
   isNodeRunning?: (nodeId: string) => boolean;
-  isResizable?: boolean;
-  initialSize?: {width?: string; height?: string};
 }
 
 const allNodeStatuses: NodeStatus[] = ['pending', 'queued', 'running', 'completed', 'failed', 'unknown'];
@@ -46,8 +45,6 @@ export function InspectorPanel({
   isMobile,
   onRunNode,
   isNodeRunning,
-  isResizable,
-  initialSize
 }: InspectorPanelProps) {
   const [editableTitle, setEditableTitle] = useState('');
   const [editableDescription, setEditableDescription] = useState('');
@@ -133,9 +130,6 @@ export function InspectorPanel({
       icon={<Settings2 className="h-4 w-4" />}
       className={className}
       onClose={onClose}
-      isMobile={isMobile}
-      isResizable={isResizable}
-      initialSize={initialSize}
       contentClassName="space-y-3"
     >
       {selectedNode ? (

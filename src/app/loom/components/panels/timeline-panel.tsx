@@ -15,8 +15,6 @@ interface TimelinePanelProps {
   onClose?: () => void;
   events: TimelineEvent[];
   isMobile?: boolean;
-  isResizable?: boolean;
-  initialSize?: {width?: string; height?: string};
 }
 
 const getIconForEventType = (type: TimelineEvent['type']) => {
@@ -59,8 +57,6 @@ export function TimelinePanel({
   onClose, 
   events, 
   isMobile,
-  isResizable,
-  initialSize 
 }: TimelinePanelProps) {
   const { toast } = useToast();
 
@@ -78,9 +74,6 @@ export function TimelinePanel({
       icon={<ListOrdered className="h-4 w-4" />}
       className={className}
       onClose={onClose}
-      isMobile={isMobile}
-      isResizable={isResizable}
-      initialSize={initialSize}
     >
       <div className="flex gap-2 mb-2 border-b pb-2 border-border/30">
         <Button variant="ghost" size="sm" className="text-xs" onClick={handleTokenUsage}><BarChart3 className="mr-1 h-3 w-3"/>Token Usage</Button>

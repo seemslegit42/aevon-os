@@ -11,6 +11,8 @@ import { vs, fs } from '@/lib/shaders/beep-3d-sphere-vertex.glsl';
 import { cn } from '@/lib/utils';
 import type { AvatarState } from '@/types/dashboard';
 import { useAvatarPresetStore } from '@/stores/avatar-preset.store';
+import { dynamic } from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface BeepAvatar3DProps {
   inputNode: AudioNode | null;
@@ -121,8 +123,8 @@ const BeepAvatar3D: React.FC<BeepAvatar3DProps> = ({ inputNode, outputNode, avat
       transparent: true,
     });
 
-    // Points geometry
-    const pointsGeometry = new THREE.IcosahedronGeometry(1.5, 128);
+    // Points geometry - OPTIMIZED: Subdivision reduced from 128 to 48
+    const pointsGeometry = new THREE.IcosahedronGeometry(1.5, 48);
     const points = new THREE.Points(pointsGeometry, pointsMaterial);
     scene.add(points);
 

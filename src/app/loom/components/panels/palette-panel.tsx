@@ -1,3 +1,4 @@
+
 'use client';
 // src/app/loom/components/panels/palette-panel.tsx
 import { BasePanel } from './base-panel';
@@ -30,9 +31,6 @@ export function PalettePanel({ className, onClose, isMobile }: PalettePanelProps
       icon={<LayoutGrid className="h-4 w-4" />}
       className={className}
       onClose={onClose}
-      isMobile={isMobile}
-      isResizable={true}
-      initialSize={{ width: '280px', height: 'auto' }}
       contentClassName="space-y-2"
     >
       <p className="text-xs text-muted-foreground px-1">Drag blocks to the canvas:</p>

@@ -1,3 +1,4 @@
+
 // src/app/loom/page.tsx
 'use client';
 
@@ -22,6 +23,7 @@ import { useBeepChat } from '@/hooks/use-beep-chat';
 import eventBus from '@/lib/event-bus';
 import { exampleTemplates } from '@/app/loom/data/templates';
 import { useLoomStore } from '@/stores/loom.store';
+import { cn } from '@/lib/utils';
 
 import type {
   WorkflowNodeData,
@@ -441,112 +443,35 @@ export default function LoomStudioPage() {
 
   const anyMobilePanelOpen = isMobile && Object.values(panelVisibility).some(v => v);
 
-  return (
-    <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
-      <TopBar
-        onFlowGenerated={handleFlowGenerated}
-        addConsoleMessage={addConsoleMessage}
-        panelVisibility={panelVisibility}
-        togglePanel={togglePanel}
-        isMobile={isMobile}
-        anyMobilePanelOpen={anyMobilePanelOpen}
-        onOpenTemplateSelector={handleOpenTemplateSelector}
-      />
-      <main className={`flex-1 relative flex overflow-hidden ${isMobile ? 'p-0' : 'p-4 gap-4'} ${isMobile ? 'pb-16' : ''}`}>
-        <div className={`flex-1 h-full transition-opacity duration-300 ${anyMobilePanelOpen ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
-          <CanvasZone
-            workflowName={generatedFlow?.workflowName}
-            nodes={generatedFlow?.nodes || []}
-            connections={connections}
-            onNodeDropped={handleNodeDropped}
-            selectedNode={selectedNode}
-            onNodeSelected={handleNodeSelected}
-            nodeExecutionStatus={nodeExecutionStatus}
-            onInputPortClick={handleInputPortClick}
-            onOutputPortClick={handleOutputPortClick}
-            connectingState={connectingState}
-          />
-        </div>
-
-        {!isMobile ? (
-          <>
-            {panelVisibility.palette && (
-              <PalettePanel className="absolute top-4 left-4 z-10" onClose={() => togglePanel('palette')} isMobile={isMobile} />
-            )}
-            <div className="absolute top-4 right-4 bottom-4 w-[360px] z-10 flex flex-col gap-4">
-               <ResizableVerticalPanes storageKey="right-panels-split-v1" initialDividerPosition={60} minPaneHeight={150}>
-                  {panelVisibility.inspector && (
-                    <TooltipProvider delayDuration={300}>
-                      <InspectorPanel
-                        key={selectedNode?.id || 'inspector-empty'}
-                        className="h-full"
-                        onClose={() => togglePanel('inspector')}
-                        selectedNode={selectedNode}
-                        onNodeUpdate={handleNodeUpdate}
-                        onNodeDelete={handleDeleteNode}
-                        isMobile={isMobile}
-                        onRunNode={handleRunNode}
-                        isNodeRunning={isNodeRunning}
-                        isResizable={true}
-                        initialSize={{ width: '100%', height: '100%' }}
-                      />
-                    </TooltipProvider>
-                  )}
-                  <div className="flex flex-col gap-4 h-full overflow-hidden">
-                    {panelVisibility.agentHub && (
-                       <AgentHubPanel
-                        className="flex-1 min-h-0"
-                        onClose={() => togglePanel('agentHub')}
-                        isMobile={isMobile}
-                        addConsoleMessage={addConsoleMessage}
-                        addTimelineEvent={addTimelineEvent}
-                        isResizable={true}
-                      />
-                    )}
-                    {panelVisibility.actionConsole && (
-                       <ActionConsolePanel
-                        className="flex-1 min-h-0"
-                        onClose={() => togglePanel('actionConsole')}
-                        requests={actionRequests}
-                        onRespond={handleAgentActionResponse}
-                        isMobile={isMobile}
-                        addConsoleMessage={addConsoleMessage}
-                        addTimelineEvent={addTimelineEvent}
-                        isResizable={true}
-                      />
-                    )}
-                  </div>
-              </ResizableVerticalPanes>
+  if (isMobile) {
+    return (
+      <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
+        <TopBar
+          onFlowGenerated={handleFlowGenerated}
+          addConsoleMessage={addConsoleMessage}
+          panelVisibility={panelVisibility}
+          togglePanel={togglePanel}
+          isMobile={isMobile}
+          anyMobilePanelOpen={anyMobilePanelOpen}
+          onOpenTemplateSelector={handleOpenTemplateSelector}
+        />
+        <main className={`flex-1 relative flex overflow-hidden p-0 pb-16`}>
+           <div className={`flex-1 h-full transition-opacity duration-300 ${anyMobilePanelOpen ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
+              <CanvasZone
+                workflowName={generatedFlow?.workflowName}
+                nodes={generatedFlow?.nodes || []}
+                connections={connections}
+                onNodeDropped={handleNodeDropped}
+                selectedNode={selectedNode}
+                onNodeSelected={handleNodeSelected}
+                nodeExecutionStatus={nodeExecutionStatus}
+                onInputPortClick={handleInputPortClick}
+                onOutputPortClick={handleOutputPortClick}
+                connectingState={connectingState}
+              />
             </div>
 
-            <div className="absolute bottom-4 left-4 right-[calc(360px+2rem)] h-[240px] z-10">
-              <ResizableHorizontalPanes storageKey="bottom-panels-split-v1" minPaneWidth={200}>
-                {panelVisibility.timeline && (
-                  <TimelinePanel
-                    onClose={() => togglePanel('timeline')}
-                    events={timelineEvents}
-                    isMobile={isMobile}
-                    isResizable={true}
-                    className="h-full w-full"
-                  />
-                )}
-                {panelVisibility.console && (
-                  <ConsolePanel
-                    onClose={() => togglePanel('console')}
-                    messages={consoleMessages.filter(msg => consoleFilters[msg.type])}
-                    filters={consoleFilters}
-                    onToggleFilter={toggleConsoleFilter}
-                    onClearConsole={handleClearConsole}
-                    isMobile={isMobile}
-                    isResizable={true}
-                    className="h-full w-full"
-                  />
-                )}
-              </ResizableHorizontalPanes>
-            </div>
-          </>
-        ) : (
-          <>
+            {/* Mobile Panels */}
             <div className={`fixed inset-y-0 left-0 z-40 w-4/5 max-w-sm bg-card/90 backdrop-blur-lg shadow-2xl transform transition-transform duration-300 ease-in-out ${panelVisibility.palette ? 'translate-x-0' : '-translate-x-full'}`}>
               {panelVisibility.palette && <PalettePanel className="h-full" onClose={() => togglePanel('palette')} isMobile={isMobile} />}
             </div>
@@ -567,10 +492,10 @@ export default function LoomStudioPage() {
                 </TooltipProvider>
               }
             </div>
-             <div className={`fixed inset-y-0 right-0 z-40 w-4/5 max-w-sm bg-card/90 backdrop-blur-lg shadow-2xl transform transition-transform duration-300 ease-in-out ${panelVisibility.agentHub ? 'translate-x-0' : 'translate-x-full'}`}>
+            <div className={`fixed inset-y-0 right-0 z-40 w-4/5 max-w-sm bg-card/90 backdrop-blur-lg shadow-2xl transform transition-transform duration-300 ease-in-out ${panelVisibility.agentHub ? 'translate-x-0' : 'translate-x-full'}`}>
               {panelVisibility.agentHub && <AgentHubPanel className="h-full" onClose={() => togglePanel('agentHub')} isMobile={isMobile} addConsoleMessage={addConsoleMessage} addTimelineEvent={addTimelineEvent} />}
             </div>
-             <div className={`fixed inset-y-0 right-0 z-40 w-4/5 max-w-sm bg-card/90 backdrop-blur-lg shadow-2xl transform transition-transform duration-300 ease-in-out ${panelVisibility.actionConsole ? 'translate-x-0' : 'translate-x-full'}`}>
+            <div className={`fixed inset-y-0 right-0 z-40 w-4/5 max-w-sm bg-card/90 backdrop-blur-lg shadow-2xl transform transition-transform duration-300 ease-in-out ${panelVisibility.actionConsole ? 'translate-x-0' : 'translate-x-full'}`}>
               {panelVisibility.actionConsole && <ActionConsolePanel className="h-full" requests={actionRequests} onRespond={handleAgentActionResponse} onClose={() => togglePanel('actionConsole')} isMobile={isMobile} addConsoleMessage={addConsoleMessage} addTimelineEvent={addTimelineEvent} />}
             </div>
             <div className={`fixed inset-x-0 bottom-0 z-40 h-3/5 bg-card/90 backdrop-blur-lg shadow-2xl transform transition-transform duration-300 ease-in-out ${panelVisibility.timeline ? 'translate-y-0' : 'translate-y-full'} mb-14`}>
@@ -582,8 +507,96 @@ export default function LoomStudioPage() {
             {anyMobilePanelOpen && (
               <div className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm" onClick={closeAllMobilePanels} aria-label="Close panel" role="button" />
             )}
-          </>
-        )}
+        </main>
+        <BottomBar panelVisibility={panelVisibility} togglePanel={togglePanel} />
+        <TemplateSelectorDialog
+          isOpen={isTemplateSelectorOpen}
+          onClose={handleCloseTemplateSelector}
+          templates={exampleTemplates}
+          onLoadTemplate={handleLoadTemplate}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
+      <TopBar
+        onFlowGenerated={handleFlowGenerated}
+        addConsoleMessage={addConsoleMessage}
+        panelVisibility={panelVisibility}
+        togglePanel={togglePanel}
+        isMobile={isMobile}
+        anyMobilePanelOpen={anyMobilePanelOpen}
+        onOpenTemplateSelector={handleOpenTemplateSelector}
+      />
+      <main className="flex-1 p-2 flex gap-2 overflow-hidden">
+        <TooltipProvider delayDuration={300}>
+          <ResizableHorizontalPanes storageKey="loom-main-h-split" initialDividerPosition={20}>
+
+            {/* Left Column */}
+            <ResizableVerticalPanes storageKey="loom-left-v-split" initialDividerPosition={50} minPaneHeight={150}>
+              <PalettePanel className={cn(!panelVisibility.palette && "hidden")} onClose={() => togglePanel('palette')} />
+              <AgentHubPanel className={cn(!panelVisibility.agentHub && "hidden")} onClose={() => togglePanel('agentHub')} addConsoleMessage={addConsoleMessage} addTimelineEvent={addTimelineEvent} />
+            </ResizableVerticalPanes>
+            
+            {/* Center & Right Column */}
+            <ResizableHorizontalPanes storageKey="loom-center-right-h-split" initialDividerPosition={75}>
+
+              {/* Center Column */}
+              <ResizableVerticalPanes storageKey="loom-center-v-split" initialDividerPosition={70} minPaneHeight={100}>
+                <CanvasZone
+                  workflowName={generatedFlow?.workflowName}
+                  nodes={generatedFlow?.nodes || []}
+                  connections={connections}
+                  onNodeDropped={handleNodeDropped}
+                  selectedNode={selectedNode}
+                  onNodeSelected={handleNodeSelected}
+                  nodeExecutionStatus={nodeExecutionStatus}
+                  onInputPortClick={handleInputPortClick}
+                  onOutputPortClick={handleOutputPortClick}
+                  connectingState={connectingState}
+                />
+                
+                <ResizableHorizontalPanes storageKey="loom-bottom-h-split" minPaneWidth={200}>
+                    <TimelinePanel className={cn(!panelVisibility.timeline && "hidden")} onClose={() => togglePanel('timeline')} events={timelineEvents} />
+                    <ConsolePanel className={cn(!panelVisibility.console && "hidden")}
+                        onClose={() => togglePanel('console')}
+                        messages={consoleMessages.filter(msg => consoleFilters[msg.type])}
+                        filters={consoleFilters}
+                        onToggleFilter={toggleConsoleFilter}
+                        onClearConsole={handleClearConsole}
+                    />
+                </ResizableHorizontalPanes>
+
+              </ResizableVerticalPanes>
+              
+              {/* Right Column */}
+              <ResizableVerticalPanes storageKey="loom-right-v-split" initialDividerPosition={65} minPaneHeight={150}>
+                 <InspectorPanel
+                    key={selectedNode?.id || 'inspector-empty'}
+                    className={cn(!panelVisibility.inspector && "hidden")}
+                    onClose={() => togglePanel('inspector')}
+                    selectedNode={selectedNode}
+                    onNodeUpdate={handleNodeUpdate}
+                    onNodeDelete={handleDeleteNode}
+                    onRunNode={handleRunNode}
+                    isNodeRunning={isNodeRunning}
+                  />
+                  <ActionConsolePanel className={cn(!panelVisibility.actionConsole && "hidden")}
+                    onClose={() => togglePanel('actionConsole')}
+                    requests={actionRequests}
+                    onRespond={handleAgentActionResponse}
+                    addConsoleMessage={addConsoleMessage}
+                    addTimelineEvent={addTimelineEvent}
+                  />
+              </ResizableVerticalPanes>
+
+            </ResizableHorizontalPanes>
+
+          </ResizableHorizontalPanes>
+        </TooltipProvider>
+
         <TemplateSelectorDialog
           isOpen={isTemplateSelectorOpen}
           onClose={handleCloseTemplateSelector}
@@ -591,7 +604,6 @@ export default function LoomStudioPage() {
           onLoadTemplate={handleLoadTemplate}
         />
       </main>
-      {isMobile && <BottomBar panelVisibility={panelVisibility} togglePanel={togglePanel} />}
     </div>
   );
 }
