@@ -47,8 +47,15 @@ const TopBar: React.FC = () => {
     return () => clearInterval(timerId);
   }, []);
   
+  const isNavItemActive = (navItemId: string) => {
+    if (navItemId === '/') {
+        return pathname === '/';
+    }
+    return pathname.startsWith(navItemId);
+  };
+
   const ContextualActions: React.FC = () => {
-    const activeNavItem = mainNavItems.find(item => item.id === pathname);
+    const activeNavItem = mainNavItems.find(item => isNavItemActive(item.id));
 
     if (!activeNavItem || !activeNavItem.contextualActions) {
       return null;
@@ -93,7 +100,7 @@ const TopBar: React.FC = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="glassmorphism-panel mt-2">
                 {mainNavItems.map((item) => (
-                  <DropdownMenuItem key={item.id} asChild>
+                  <DropdownMenuItem key={item.id} asChild className={cn(isNavItemActive(item.id) && "bg-accent/20")}>
                     <Link href={item.id}>
                       <item.icon className="mr-2 h-4 w-4" />
                       <span>{item.label}</span>
@@ -128,7 +135,7 @@ const TopBar: React.FC = () => {
                         size="sm"
                         className={cn(
                           "font-body text-primary-foreground opacity-70 hover:text-primary-foreground hover:opacity-100",
-                          pathname === item.id && "opacity-100 bg-primary/10"
+                          isNavItemActive(item.id) && "opacity-100 bg-primary/10"
                         )}
                     >
                       <Link href={item.id}>
