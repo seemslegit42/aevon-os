@@ -11,10 +11,13 @@ import { useBeepChatStore } from '@/stores/beep-chat.store';
 
 const CommandBar: React.FC = () => {
     const [commandValue, setCommandValue] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [agentResponse, setAgentResponse] = useState<string | null>(null);
 
-    const { avatarState, append } = useBeepChatStore(state => ({ avatarState: state.avatarState, append: state.append }));
+    const { avatarState, append, isLoading } = useBeepChatStore(state => ({ 
+        avatarState: state.avatarState, 
+        append: state.append,
+        isLoading: state.isLoading
+    }));
 
     useEffect(() => {
         const handleAgentResponse = (response: string) => {
@@ -33,7 +36,7 @@ const CommandBar: React.FC = () => {
 
     const handleCommandSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (commandValue.trim() && !isSubmitting) {
+        if (commandValue.trim() && !isLoading) {
             append({ role: 'user', content: commandValue });
             setCommandValue('');
         }
@@ -73,12 +76,12 @@ const CommandBar: React.FC = () => {
                                 placeholder="Search or ask BEEP..."
                                 className={cn(
                                     "command-bar-input-aevos-override w-full h-9 pl-10 pr-4 text-sm",
-                                    isSubmitting && "opacity-50 cursor-not-allowed"
+                                    isLoading && "opacity-50 cursor-not-allowed"
                                 )}
                                 aria-label="Command or search input"
                                 value={commandValue}
                                 onChange={(e) => setCommandValue(e.target.value)}
-                                disabled={isSubmitting}
+                                disabled={isLoading}
                             />
                         </form>
                     </motion.div>
