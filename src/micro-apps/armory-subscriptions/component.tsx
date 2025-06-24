@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowSquareOut, Warning, CheckCircle, Brain, Users, UploadSimple } from 'phosphor-react';
+import { ExternalLink, ShieldAlert, CheckCircle, BrainCircuit, Users, Upload } from 'lucide-react';
 import { type SubscriptionStatus, getSubscriptionStatus, getCheckoutURL } from '@/services/billing.service';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -91,7 +91,7 @@ const ArmorySubscriptionsComponent: React.FC = () => {
     if (error || !subscription) {
         return (
              <Alert variant="destructive">
-                <Warning className="h-4 w-4" />
+                <ShieldAlert className="h-4 w-4" />
                 <AlertTitle>Error</AlertTitle>
                 <AlertDescription>{error || "Could not load subscription information."}</AlertDescription>
             </Alert>
@@ -104,7 +104,7 @@ const ArmorySubscriptionsComponent: React.FC = () => {
                 subscription.status === 'active' && 'border-chart-4/50',
                 subscription.status === 'trialing' && 'border-accent/50',
             )}>
-                 {subscription.status === 'active' ? <CheckCircle /> : <Warning />}
+                 {subscription.status === 'active' ? <CheckCircle /> : <ShieldAlert />}
                  <AlertTitle className="font-headline">
                     You are on the <span className="text-primary">{subscription.planName}</span> plan.
                  </AlertTitle>
@@ -114,14 +114,14 @@ const ArmorySubscriptionsComponent: React.FC = () => {
             </Alert>
             
             <div className="space-y-4">
-                 <UsageBar label="AI Queries" icon={Brain} {...subscription.usage.aiQueries} />
+                 <UsageBar label="AI Queries" icon={BrainCircuit} {...subscription.usage.aiQueries} />
                  <UsageBar label="Team Members" icon={Users} {...subscription.usage.teamMembers} />
             </div>
 
             <Button asChild className="w-full btn-gradient-primary-accent mt-4">
                 <a href={subscription.manageUrl} target="_blank" rel="noopener noreferrer">
                     Manage Billing
-                    <ArrowSquareOut />
+                    <ExternalLink />
                 </a>
             </Button>
 
@@ -133,7 +133,7 @@ const ArmorySubscriptionsComponent: React.FC = () => {
                     </CardHeader>
                     <CardContent>
                         <Button onClick={handleUpgrade} disabled={isUpgradeLoading} className="w-full">
-                            <UploadSimple className="mr-2" />
+                            <Upload className="mr-2" />
                             {isUpgradeLoading ? 'Getting Link...' : 'View Upgrade Options'}
                         </Button>
                     </CardContent>

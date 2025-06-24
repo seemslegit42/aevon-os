@@ -14,7 +14,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { type ContentGeneration } from '@/lib/ai-schemas';
-import { Zap, Copy, File, Warning } from 'phosphor-react';
+import { Zap, Copy, FileText, ShieldAlert } from 'lucide-react';
 import eventBus from '@/lib/event-bus';
 import { useBeepChat } from '@/hooks/use-beep-chat';
 
@@ -87,7 +87,7 @@ const ContentCreatorComponent: React.FC = () => {
       if (error) {
           return (
               <div className="text-center text-destructive p-4">
-                  <Warning className="mx-auto h-8 w-8 mb-2" />
+                  <ShieldAlert className="mx-auto h-8 w-8 mb-2" />
                   <h4 className="font-semibold">Generation Failed</h4>
                   <p className="text-xs">{error}</p>
               </div>
@@ -115,7 +115,7 @@ const ContentCreatorComponent: React.FC = () => {
 
       return (
           <div className="text-center text-muted-foreground p-8">
-              <File className="mx-auto h-12 w-12 opacity-50" />
+              <FileText className="mx-auto h-12 w-12 opacity-50" />
               <p className="mt-4">Your generated content will appear here.</p>
           </div>
       )

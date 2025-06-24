@@ -4,7 +4,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { User } from 'phosphor-react';
+import { User } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import BeepToolCallDisplay from '@/components/beep/beep-tool-call';
 import type { Message } from 'ai';

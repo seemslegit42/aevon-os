@@ -11,7 +11,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Badge } from '@/components/ui/badge';
-import { Play, Eye, X, Trash, Copy } from 'phosphor-react';
+import { Play, Eye, X, Trash2, Copy } from 'lucide-react';
 import type { MicroAppRegistration } from '@/stores/micro-app.store';
 import {
   DropdownMenu,
@@ -162,7 +162,7 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
             <span>Close All Instances</span>
           </DropdownMenuItem>
           <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" disabled>
-            <Trash />
+            <Trash2 />
             <span>Remove from Launcher</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

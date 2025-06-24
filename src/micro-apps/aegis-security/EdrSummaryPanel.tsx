@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Laptop, Brain } from 'phosphor-react';
+import { Laptop, BrainCircuit } from 'lucide-react';
 
 const initialEdrData = [
   { day: 'Mon', Malware: 2, Ransomware: 0, LateralMovement: 1 },
@@ -45,7 +45,7 @@ const EdrSummaryPanel: React.FC = () => {
                 </div>
             </div>
             <Badge className="badge-glow-animate border-none bg-chart-4/80 text-black">
-                <Brain className="w-4 h-4 mr-2" />
+                <BrainCircuit className="w-4 h-4 mr-2" />
                 AI Blocking: ON
             </Badge>
         </div>

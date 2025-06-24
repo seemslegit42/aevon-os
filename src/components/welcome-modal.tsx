@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { PuzzlePiece, Gear, ArrowClockwise, Zap } from 'phosphor-react';
+import { Puzzle, Settings, RotateCw, Zap } from 'lucide-react';
 
 const WELCOME_MODAL_KEY = 'aevon_welcome_modal_shown_v1';
 
@@ -41,21 +41,21 @@ export function WelcomeModal() {
         </DialogHeader>
         <div className="grid gap-4 py-4 text-sm">
           <div className="flex items-start gap-4">
-            <ArrowClockwise className="w-8 h-8 text-secondary flex-shrink-0 mt-1" />
+            <RotateCw className="w-8 h-8 text-secondary flex-shrink-0 mt-1" />
             <div>
               <h4 className="font-semibold text-foreground">A Dynamic Canvas</h4>
               <p className="text-muted-foreground">All panels on your dashboard are draggable and resizable. Arrange your workspace exactly how you like it.</p>
             </div>
           </div>
           <div className="flex items-start gap-4">
-            <Gear className="w-8 h-8 text-secondary flex-shrink-0 mt-1" />
+            <Settings className="w-8 h-8 text-secondary flex-shrink-0 mt-1" />
             <div>
               <h4 className="font-semibold text-foreground">Customize Your Layout</h4>
-              <p className="text-muted-foreground">Click the <span className="inline-flex items-center justify-center bg-muted/50 rounded-sm p-0.5 align-middle"><Gear className="w-3 h-3"/></span> icon in the top bar to add, remove, or launch micro-apps.</p>
+              <p className="text-muted-foreground">Click the <span className="inline-flex items-center justify-center bg-muted/50 rounded-sm p-0.5 align-middle"><Settings className="w-3 h-3"/></span> icon in the top bar to add, remove, or launch micro-apps.</p>
             </div>
           </div>
           <div className="flex items-start gap-4">
-            <PuzzlePiece className="w-8 h-8 text-secondary flex-shrink-0 mt-1" />
+            <Puzzle className="w-8 h-8 text-secondary flex-shrink-0 mt-1" />
             <div>
               <h4 className="font-semibold text-foreground">Start Fresh</h4>
               <p className="text-muted-foreground">If things get messy, you can always restore the default layout from the settings panel.</p>

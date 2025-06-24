@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { type AegisSecurityAnalysis } from '@/lib/ai-schemas';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { Warning, CheckCircle } from 'phosphor-react';
+import { ShieldAlert, CheckCircle } from 'lucide-react';
 
 interface AegisAnalysisResultProps {
   result: AegisSecurityAnalysis;
@@ -60,7 +60,7 @@ const AegisAnalysisResult: React.FC<AegisAnalysisResultProps> = ({ result }) => 
         <ul className="space-y-1.5 text-sm text-muted-foreground list-inside">
           {result.identifiedThreats.map((threat, index) => (
             <li key={index} className="flex items-start">
-              <Warning className="w-4 h-4 mr-2 mt-0.5 text-accent flex-shrink-0" />
+              <ShieldAlert className="w-4 h-4 mr-2 mt-0.5 text-accent flex-shrink-0" />
               <span>{threat}</span>
             </li>
           ))}

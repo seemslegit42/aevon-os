@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useMemo } from 'react';
@@ -18,7 +19,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { PlusCircle, Upload, File, Calendar as CalendarIcon } from 'phosphor-react';
+import { PlusCircle, Upload, FileText, CalendarIcon } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -50,7 +51,7 @@ const AddTransactionDialog = () => {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Button size="sm"><PlusCircle weight="bold"/> Add Transaction</Button>
+                <Button size="sm"><PlusCircle /> Add Transaction</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md glassmorphism-panel">
                 <DialogHeader>
@@ -126,7 +127,7 @@ const NewInvoiceDialog = () => {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                 <Button><PlusCircle weight="bold"/> New Invoice</Button>
+                 <Button><PlusCircle /> New Invoice</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md glassmorphism-panel">
                 <DialogHeader>
@@ -157,7 +158,7 @@ const NewInvoiceDialog = () => {
                                         <FormControl>
                                             <Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
                                                 {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                                <CalendarIcon weight="bold" className="ml-auto h-4 w-4 opacity-50" />
+                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                             </Button>
                                         </FormControl>
                                     </PopoverTrigger>
@@ -190,7 +191,7 @@ const LedgerTab = () => {
             <CardContent>
                 <div className="flex gap-2 mb-4">
                      <AddTransactionDialog />
-                    <Button size="sm" variant="outline"><Upload weight="bold"/> Import Statement</Button>
+                    <Button size="sm" variant="outline"><Upload /> Import Statement</Button>
                 </div>
                 <ScrollArea className="h-[280px]">
                 <Table>
@@ -300,9 +301,9 @@ const ReportsTab = () => {
             </CardHeader>
             <CardContent className="h-[calc(100%-4rem)] pb-0">
                 <div className="flex gap-2 mb-4">
-                    <Button size="sm" variant="outline"><File weight="bold" /> Profit & Loss</Button>
-                    <Button size="sm" variant="outline"><File weight="bold" /> Balance Sheet</Button>
-                    <Button size="sm" variant="outline"><File weight="bold" /> GST/HST Report</Button>
+                    <Button size="sm" variant="outline"><FileText /> Profit & Loss</Button>
+                    <Button size="sm" variant="outline"><FileText /> Balance Sheet</Button>
+                    <Button size="sm" variant="outline"><FileText /> GST/HST Report</Button>
                 </div>
                 <h4 className="text-sm font-semibold text-muted-foreground mb-2">Monthly Cash Flow</h4>
                 <ResponsiveContainer width="100%" height={250}>

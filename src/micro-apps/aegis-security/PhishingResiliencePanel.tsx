@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, RadialBarChart, RadialBar, PolarAngleAxis } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Shield } from 'phosphor-react';
+import { Shield } from 'lucide-react';
 
 const initialPhishingData = {
   clickResistance: 82,

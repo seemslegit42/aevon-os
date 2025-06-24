@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { CloudGear, Warning } from 'phosphor-react';
+import { CloudCog, ShieldAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Tooltip,
@@ -40,7 +40,7 @@ const CloudSecurityPanel: React.FC = () => {
     <TooltipProvider>
       <Card className="glassmorphism-panel h-full flex flex-col">
         <CardHeader className="flex flex-row items-center gap-2">
-          <CloudGear className="w-6 h-6 text-secondary" />
+          <CloudCog className="w-6 h-6 text-secondary" />
           <div className="flex-1">
             <CardTitle className="font-headline text-lg">Cloud Security</CardTitle>
             <CardDescription className="text-xs">Infrastructure monitoring</CardDescription>
@@ -73,7 +73,7 @@ const CloudSecurityPanel: React.FC = () => {
         <CardFooter className="justify-center">
             {totalRisks > 0 ? (
                 <p className="text-sm font-semibold text-accent flex items-center gap-2">
-                    <Warning /> {totalRisks} Risk{totalRisks > 1 ? 's' : ''} Found
+                    <ShieldAlert /> {totalRisks} Risk{totalRisks > 1 ? 's' : ''} Found
                 </p>
             ) : (
                 <p className="text-sm font-semibold text-chart-4">No outstanding risks found.</p>

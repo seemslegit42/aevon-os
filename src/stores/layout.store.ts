@@ -9,12 +9,14 @@ import { ALL_CARD_CONFIGS, ALL_MICRO_APPS, DEFAULT_LAYOUT_CONFIG } from '@/confi
 import type { AppRegistration } from '@/config/app-registry';
 import eventBus from '@/lib/event-bus';
 
-const LAYOUT_STORAGE_KEY = 'dashboardLayout_v9_stable';
+const LAYOUT_STORAGE_KEY = 'dashboardLayout_v10_stable';
 
 interface LayoutState {
   layoutItems: LayoutItem[];
+  isLayoutInitialized: boolean;
   focusedItemId: string | null;
   activeAppContext: AppRegistration | null;
+  initializeLayout: (items: LayoutItem[]) => void;
   setFocusedItemId: (id: string | null) => void;
   updateItemLayout: (id: string, newPos: Position, newSize?: Size) => void;
   bringToFront: (id: string) => void;
@@ -34,9 +36,12 @@ interface LayoutState {
 export const useLayoutStore = create<LayoutState>()(
   persist(
     (set, get) => ({
-      layoutItems: DEFAULT_LAYOUT_CONFIG,
+      layoutItems: [],
+      isLayoutInitialized: false,
       focusedItemId: null,
       activeAppContext: null,
+      
+      initializeLayout: (items) => set({ layoutItems: items, isLayoutInitialized: true }),
       
       setFocusedItemId: (id) => set({ focusedItemId: id }),
 

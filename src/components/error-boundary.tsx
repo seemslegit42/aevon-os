@@ -3,7 +3,7 @@
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
-import { Warning, ArrowClockwise } from 'phosphor-react';
+import { ShieldAlert, RotateCw } from 'lucide-react';
 import { useLayoutStore } from '@/stores/layout.store';
 
 interface Props {
@@ -19,7 +19,7 @@ interface State {
 const FallbackUI = ({ error, onReload, onClose }: { error?: Error, onReload: () => void, onClose: () => void }) => {
     return (
         <div className="flex flex-col items-center justify-center h-full p-4 text-center bg-destructive/10 text-destructive">
-            <Warning className="w-12 h-12 mb-4" />
+            <ShieldAlert className="w-12 h-12 mb-4" />
             <h3 className="text-lg font-headline text-destructive-foreground mb-2">Component Error</h3>
             <p className="text-sm text-destructive-foreground/80 mb-4">
               This window has encountered an unrecoverable error.
@@ -31,7 +31,7 @@ const FallbackUI = ({ error, onReload, onClose }: { error?: Error, onReload: () 
               </details>
             )}
             <div className="flex items-center gap-4 mt-6">
-                <Button variant="outline" onClick={onReload} className="border-destructive/50 text-destructive hover:bg-destructive/20 hover:text-destructive"><ArrowClockwise /> Reload Window</Button>
+                <Button variant="outline" onClick={onReload} className="border-destructive/50 text-destructive hover:bg-destructive/20 hover:text-destructive"><RotateCw /> Reload Window</Button>
                 <Button variant="destructive" onClick={onClose}>Close Window</Button>
             </div>
         </div>

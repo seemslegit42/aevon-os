@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { PlusCircle, Trash, MagnifyingGlass, X, Gear, Play, Eye } from 'phosphor-react';
+import { PlusCircle, Trash2, Search, X, Settings, Play, Eye } from 'lucide-react';
 import { ALL_CARD_CONFIGS, type AppRegistration } from '@/config/app-registry';
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import { useMicroApps } from '@/hooks/use-micro-apps';
@@ -78,7 +78,7 @@ const DashboardZoneList: React.FC<DashboardZoneListProps> = ({ cards, activeCard
           <div className="flex-shrink-0">
             {isActive ? (
               <Button variant="outline" size="sm" onClick={() => onRemove(card.id)} className="text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive w-[90px]">
-                <Trash />
+                <Trash2 />
                 Remove
               </Button>
             ) : (
@@ -214,13 +214,13 @@ const CommandPalette: React.FC = () => {
     <Dialog open={isOpen} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[600px] p-0 max-h-[80vh] flex flex-col">
         <DialogHeader className="p-4 border-b border-border/30">
-          <DialogTitle className="font-headline text-primary flex items-center gap-2"><Gear /> Manage Workspace</DialogTitle>
+          <DialogTitle className="font-headline text-primary flex items-center gap-2"><Settings /> Manage Workspace</DialogTitle>
           <DialogDescription>Add zones, launch micro-apps, or manage open windows.</DialogDescription>
         </DialogHeader>
 
         <div className="p-4">
           <div className="relative">
-            <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
               placeholder="Search zones, apps, or open windows..."

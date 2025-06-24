@@ -2,8 +2,8 @@
 import type { ElementType } from 'react';
 import type { z } from 'zod';
 import {
-    Robot, ChartLine, PuzzlePiece, Brain, Users, Bug, House, TreeStructure, Shield, ShoppingCart, Calculator, PencilSimple, CreditCard, Cpu, ArrowClockwise, Download
-} from 'phosphor-react';
+    Bot, LineChart, Puzzle, BrainCircuit, Users, Bug, Home, Network, Shield, ShoppingCart, Calculator, Pencil, CreditCard, Cpu, RotateCw, Download
+} from 'lucide-react';
 import type { UIControl, MicroAppRoute, CardConfig } from '@/types/dashboard';
 
 // This is a new, simplified registration type that ONLY contains serializable data.
@@ -72,12 +72,12 @@ export const ALL_MICRO_APPS: AppRegistration[] = [
     id: 'app-analytics',
     title: 'Sales Analytics',
     description: 'Detailed sales analytics and trends.',
-    icon: ChartBar,
+    icon: LineChart,
     permissions: ['sales:view', 'analytics:read'],
     tags: ['analytics', 'sales'],
     defaultSize: { width: 500, height: 600 },
     controls: [
-      { id: 'refresh', label: 'Refresh', icon: ArrowClockwise, tooltip: 'Refresh sales data' },
+      { id: 'refresh', label: 'Refresh', icon: RotateCw, tooltip: 'Refresh sales data' },
       { id: 'export', label: 'Export', icon: Download, tooltip: 'Export data as CSV' }
     ]
   },
@@ -85,7 +85,7 @@ export const ALL_MICRO_APPS: AppRegistration[] = [
     id: 'app-content-creator',
     title: 'Content Creator',
     description: 'AI-powered assistant to generate marketing copy, blog posts, and more.',
-    icon: PencilSimple,
+    icon: Pencil,
     permissions: [],
     tags: ['ai', 'writing', 'marketing'],
     defaultSize: { width: 750, height: 450 },
@@ -121,7 +121,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'beep',
     title: 'BEEP Chat Log',
-    icon: Robot,
+    icon: Bot,
     isDismissible: true,
     description: "A persistent log of your conversation history with BEEP. The interactive avatar is always available at the bottom of your screen.",
     defaultSize: { x: 20, y: 20, width: 380, height: 520 },
@@ -132,7 +132,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'liveOrchestrationFeed',
     title: 'Live Orchestration Feed',
-    icon: ChartLine,
+    icon: LineChart,
     isDismissible: true,
     description: "A real-time feed of events and actions performed by the AI agents.",
     defaultSize: { x: 420, y: 20, width: 450, height: 250 },
@@ -152,7 +152,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'microApps',
     title: 'Micro-Apps Palette',
-    icon: PuzzlePiece,
+    icon: Puzzle,
     isDismissible: true,
     description: "Launch available micro-apps into the workspace.",
     defaultSize: { x: 420, y: 290, width: 450, height: 250 },
@@ -162,7 +162,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
   {
     id: 'aiInsights',
     title: 'AI Insights Engine',
-    icon: Brain,
+    icon: BrainCircuit,
     isDismissible: true,
     description: "Provides personalized recommendations and data-driven intelligence.",
     defaultSize: { x: 890, y: 290, width: 450, height: 250 },
@@ -193,8 +193,8 @@ export interface NavItemConfig {
 }
 
 export const mainNavItems: NavItemConfig[] = [
-  { id: '/', label: 'Home', icon: House },
-  { id: '/loom', label: 'Loom', icon: TreeStructure },
+  { id: '/', label: 'Home', icon: Home },
+  { id: '/loom', label: 'Loom', icon: Network },
   { id: '/aegis-security', label: 'Aegis', icon: Shield },
   { id: '/armory', label: 'Armory', icon: ShoppingCart },
 ];

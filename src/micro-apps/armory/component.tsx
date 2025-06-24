@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -5,7 +6,7 @@ import { useMicroApps } from '@/hooks/use-micro-apps';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Play } from 'phosphor-react';
+import { Play } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLayoutStore } from '@/stores/layout.store';
 import Link from 'next/link';

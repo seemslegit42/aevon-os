@@ -4,8 +4,8 @@
 import React, { useEffect } from 'react';
 import type { Message, ToolCall } from 'ai';
 import { 
-    Eye, PlusCircle, Trash, ArrowClockwise, Gear, CheckCircle, Warning, GearSix, File, ChartBar, CreditCard 
-} from 'phosphor-react';
+    Eye, PlusCircle, Trash2, RotateCw, Settings, CheckCircle, ShieldAlert, Settings2, FileText, BarChart, CreditCard 
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { IconProps } from '@/types/icon';
 import { KnowledgeBaseSearchResultSchema, SubscriptionStatusSchema } from '@/lib/ai-schemas';
@@ -14,18 +14,18 @@ import { useAvatarTelemetry } from '@/hooks/use-avatar-telemetry';
 const toolIcons: Record<string, React.ElementType<IconProps>> = {
   focusItem: Eye,
   addItem: PlusCircle,
-  moveItem: ArrowClockwise, 
-  removeItem: Trash,
-  resetLayout: ArrowClockwise,
-  default: Gear,
-  closeAllInstancesOfApp: Trash,
+  moveItem: RotateCw, 
+  removeItem: Trash2,
+  resetLayout: RotateCw,
+  default: Settings,
+  closeAllInstancesOfApp: Trash2,
   analyzeSecurityAlert: CheckCircle,
-  searchKnowledgeBase: File, 
-  getSalesAnalyticsData: ChartBar, 
+  searchKnowledgeBase: FileText, 
+  getSalesAnalyticsData: BarChart, 
   getSubscriptionStatus: CreditCard,
-  generateMarketingContent: Gear,
-  generateWorkspaceInsights: Gear,
-  summarizeWebpage: File,
+  generateMarketingContent: Settings,
+  generateWorkspaceInsights: Settings,
+  summarizeWebpage: FileText,
 };
 
 const toolFriendlyNames: Record<string, string> = {
@@ -159,8 +159,8 @@ const BeepToolCallDisplay: React.FC<BeepToolCallDisplayProps> = ({ toolCall, all
         !isLoading && !isError && "border-chart-4/50 bg-chart-4/10",
       )}>
         <div className="flex items-center gap-3 font-semibold mb-2">
-            {isLoading ? <GearSix className="w-4 h-4 text-accent animate-spin"/> 
-             : isError ? <Warning className="w-4 h-4 text-destructive"/> 
+            {isLoading ? <Settings2 className="w-4 h-4 text-accent animate-spin"/> 
+             : isError ? <ShieldAlert className="w-4 h-4 text-destructive"/> 
              : <CheckCircle className="w-4 h-4 text-chart-4"/>
             }
             <Icon className="w-4 h-4 text-muted-foreground"/>

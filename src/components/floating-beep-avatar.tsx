@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Rnd } from 'react-rnd';
 import { Button } from '@/components/ui/button';
-import { Mic, SpeakerHigh, SpeakerSimpleSlash } from 'phosphor-react';
+import { Mic, Volume2, VolumeX } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import { useAudioRecorder } from '@/hooks/use-audio-recorder';
@@ -291,7 +291,7 @@ const FloatingBeepAvatar: React.FC = () => {
                 isWhisperModeEnabled && "border-accent text-accent"
               )}
            >
-              {isWhisperModeEnabled ? <SpeakerSimpleSlash className="w-5 h-5"/> : <SpeakerHigh className="w-5 h-5"/>}
+              {isWhisperModeEnabled ? <VolumeX className="w-5 h-5"/> : <Volume2 className="w-5 h-5"/>}
            </Button>
            <Button
               onMouseDown={startRecording}

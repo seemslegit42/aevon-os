@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -7,7 +8,7 @@ import { shallow } from 'zustand/shallow';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowClockwise, X } from 'phosphor-react';
+import { RotateCw, X } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ALL_MICRO_APPS } from '@/config/app-registry';
 
@@ -46,10 +47,10 @@ const DevHudCardContent: React.FC = () => {
                                                 </div>
                                                 <div className="flex items-center gap-1.5 ml-2">
                                                     <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => reloadApp(item.id)}>
-                                                        <ArrowClockwise weight="bold" />
+                                                        <RotateCw />
                                                     </Button>
                                                     <Button variant="destructive" size="icon" className="h-7 w-7" onClick={() => closeItem(item.id)}>
-                                                        <X weight="bold" />
+                                                        <X />
                                                     </Button>
                                                 </div>
                                             </div>

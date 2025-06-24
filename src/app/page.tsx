@@ -10,12 +10,33 @@ import { shallow } from 'zustand/shallow';
 import eventBus from '@/lib/event-bus';
 import { WelcomeModal } from '@/components/welcome-modal';
 import CommandPalette from '@/components/command-palette';
+import { DEFAULT_LAYOUT_CONFIG } from '@/config/app-registry';
 
 export default function HomePage() {
   const [hasMounted, setHasMounted] = useState(false);
 
+  const {
+    layoutItems,
+    focusedItemId,
+    setFocusedItemId,
+    isLayoutInitialized,
+    initializeLayout,
+  } = useLayoutStore(
+    (state) => ({
+      layoutItems: state.layoutItems,
+      focusedItemId: state.focusedItemId,
+      setFocusedItemId: state.setFocusedItemId,
+      isLayoutInitialized: state.isLayoutInitialized,
+      initializeLayout: state.initializeLayout,
+    }),
+    shallow
+  );
+
   useEffect(() => {
     setHasMounted(true);
+    if (!isLayoutInitialized) {
+      initializeLayout(DEFAULT_LAYOUT_CONFIG);
+    }
 
     const handleFocus = (id: string) => {
         useLayoutStore.getState().bringToFront(id);
@@ -25,7 +46,7 @@ export default function HomePage() {
     return () => {
         eventBus.off('panel:focus', handleFocus);
     }
-  }, []);
+  }, [isLayoutInitialized, initializeLayout]);
 
   useEffect(() => {
     if (hasMounted) {
@@ -41,18 +62,6 @@ export default function HomePage() {
     }
   }, [hasMounted]);
 
-  const {
-    layoutItems,
-    focusedItemId,
-    setFocusedItemId
-  } = useLayoutStore(
-    (state) => ({
-      layoutItems: state.layoutItems,
-      focusedItemId: state.focusedItemId,
-      setFocusedItemId: state.setFocusedItemId,
-    }),
-    shallow
-  );
   
   const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
     // If the click is on the direct canvas background, unfocus all items
