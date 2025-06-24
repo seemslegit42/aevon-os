@@ -31,6 +31,7 @@ type AppEvents = {
   // Loom Workflow Events
   'loom:flow-generated': AiGeneratedFlowData;
   'loom:open-templates': void;
+  'loom:node-result': { content: string };
   
   // Tool execution events
   'tool:success': { toolName: string };

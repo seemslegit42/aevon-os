@@ -93,6 +93,7 @@ export function BeepChatProvider() {
         if (message.role === 'assistant' && message.content && !message.tool_calls?.length) {
             const plainTextContent = message.content.replace(/`+/g, '');
             eventBus.emit('beep:response', plainTextContent);
+            eventBus.emit('loom:node-result', { content: plainTextContent });
         }
     }
   });
