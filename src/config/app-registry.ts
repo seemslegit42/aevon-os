@@ -145,6 +145,16 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     minHeight: 180,
   },
   {
+    id: 'microApps',
+    title: 'Micro-App Launcher',
+    icon: Puzzle,
+    isDismissible: true,
+    description: "Discover and launch available micro-apps for your workspace.",
+    defaultSize: { x: 420, y: 290, width: 450, height: 250 },
+    minWidth: 280,
+    minHeight: 180,
+  },
+  {
     id: 'dev-hud',
     title: 'Developer HUD',
     icon: Bug,
@@ -213,16 +223,6 @@ const initialApps: LayoutItem[] = [
         height: 400,
         zIndex: initialCards.length + 2,
     },
-    {
-        id: 'app-aegis-security-default',
-        type: 'app',
-        appId: 'app-aegis-security',
-        x: 420,
-        y: 290,
-        width: 400,
-        height: 400,
-        zIndex: initialCards.length + 3,
-    }
 ];
 
 // Generates the default layout by combining cards and a set of default micro-apps.
