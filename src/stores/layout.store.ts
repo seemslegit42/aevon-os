@@ -9,13 +9,12 @@ import { ALL_CARD_CONFIGS, ALL_MICRO_APPS, DEFAULT_LAYOUT_CONFIG } from '@/confi
 import type { AppRegistration } from '@/config/app-registry';
 import eventBus from '@/lib/event-bus';
 
-const LAYOUT_STORAGE_KEY = 'dashboardLayout_v10_stable';
+const LAYOUT_STORAGE_KEY = 'dashboardLayout_v11_stable';
 
 interface LayoutState {
   layoutItems: LayoutItem[];
-  isLayoutInitialized: boolean;
   focusedItemId: string | null;
-  initializeLayout: (items: LayoutItem[]) => void;
+  checkAndInitializeLayout: () => void;
   setFocusedItemId: (id: string | null) => void;
   updateItemLayout: (id: string, newPos: Position, newSize?: Size) => void;
   bringToFront: (id: string) => void;
@@ -36,10 +35,17 @@ export const useLayoutStore = create<LayoutState>()(
   persist(
     (set, get) => ({
       layoutItems: [],
-      isLayoutInitialized: false,
       focusedItemId: null,
       
-      initializeLayout: (items) => set({ layoutItems: items, isLayoutInitialized: true }),
+      checkAndInitializeLayout: () => {
+        // This function is called on the initial mount.
+        // The `persist` middleware rehydrates the state first.
+        // If the rehydrated state is empty, we populate it with the default layout.
+        // This prevents overwriting a user's saved layout.
+        if (get().layoutItems.length === 0) {
+          set({ layoutItems: DEFAULT_LAYOUT_CONFIG, focusedItemId: null });
+        }
+      },
       
       setFocusedItemId: (id) => set({ focusedItemId: id }),
 

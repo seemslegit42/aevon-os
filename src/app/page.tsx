@@ -10,7 +10,6 @@ import { shallow } from 'zustand/shallow';
 import eventBus from '@/lib/event-bus';
 import { WelcomeModal } from '@/components/welcome-modal';
 import CommandPalette from '@/components/command-palette';
-import { DEFAULT_LAYOUT_CONFIG } from '@/config/app-registry';
 
 export default function HomePage() {
   const [hasMounted, setHasMounted] = useState(false);
@@ -19,46 +18,45 @@ export default function HomePage() {
     layoutItems,
     focusedItemId,
     setFocusedItemId,
-    isLayoutInitialized,
-    initializeLayout,
+    checkAndInitializeLayout,
   } = useLayoutStore(
     (state) => ({
       layoutItems: state.layoutItems,
       focusedItemId: state.focusedItemId,
       setFocusedItemId: state.setFocusedItemId,
-      isLayoutInitialized: state.isLayoutInitialized,
-      initializeLayout: state.initializeLayout,
+      checkAndInitializeLayout: state.checkAndInitializeLayout,
     }),
     shallow
   );
 
   useEffect(() => {
     setHasMounted(true);
-    if (!isLayoutInitialized) {
-      initializeLayout(DEFAULT_LAYOUT_CONFIG);
-    }
-
-    const handleFocus = (id: string) => {
-        useLayoutStore.getState().bringToFront(id);
-    };
-    eventBus.on('panel:focus', handleFocus);
-
-    return () => {
-        eventBus.off('panel:focus', handleFocus);
-    }
-  }, [isLayoutInitialized, initializeLayout]);
+    // On mount, check if the layout needs to be initialized.
+    // This function has internal logic to only run on the very first load.
+    checkAndInitializeLayout();
+  }, [checkAndInitializeLayout]);
 
   useEffect(() => {
     if (hasMounted) {
-      const { notifications, addNotification } = useNotificationStore.getState();
-      if (notifications.length === 0) {
-          addNotification({
-              task: "System Initialized",
-              status: "success",
-              details: "Live Orchestration Feed is active. Waiting for AI events.",
-              targetId: "liveOrchestrationFeed"
-          });
-      }
+        const handleFocus = (id: string) => {
+            useLayoutStore.getState().bringToFront(id);
+        };
+        eventBus.on('panel:focus', handleFocus);
+        
+        // Add initial system notification if none exist
+        const { notifications, addNotification } = useNotificationStore.getState();
+        if (notifications.length === 0) {
+            addNotification({
+                task: "System Initialized",
+                status: "success",
+                details: "Live Orchestration Feed is active. Waiting for AI events.",
+                targetId: "liveOrchestrationFeed"
+            });
+        }
+        
+        return () => {
+            eventBus.off('panel:focus', handleFocus);
+        }
     }
   }, [hasMounted]);
 
