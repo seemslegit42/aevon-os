@@ -28,7 +28,7 @@ const BeepCardContent: React.FC = () => {
   }, [messages, isLoading]);
 
   return (
-    <div className="h-full flex flex-col p-0 bg-background/20 overflow-hidden">
+    <div className="h-96 md:h-full flex flex-col p-0 bg-background/20 overflow-hidden">
       <BeepChatHistory
         scrollAreaRef={scrollAreaRef}
         messages={messages}

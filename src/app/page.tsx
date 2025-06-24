@@ -14,7 +14,6 @@ import { DesktopDashboard } from '@/components/desktop-dashboard';
 import { MobileDashboard } from '@/components/mobile-dashboard';
 
 export default function HomePage() {
-  const [hasMounted, setHasMounted] = useState(false);
   const isMobile = useIsMobile();
 
   const {
@@ -29,48 +28,44 @@ export default function HomePage() {
   );
 
   useEffect(() => {
-    // This effect now correctly handles initialization after rehydration.
     checkAndInitializeLayout();
-    setHasMounted(true);
   }, [checkAndInitializeLayout]);
 
   useEffect(() => {
-    if (hasMounted) {
-        const handleFocus = (id: string) => {
-            useLayoutStore.getState().bringToFront(id);
-        };
-        eventBus.on('panel:focus', handleFocus);
-        
-        // Add initial system notification if none exist
-        const { notifications, addNotification } = useNotificationStore.getState();
-        if (notifications.length === 0) {
-            addNotification({
-                task: "System Initialized",
-                status: "success",
-                details: "Live Orchestration Feed is active. Waiting for AI events.",
-                targetId: "liveOrchestrationFeed"
-            });
-        }
-        
-        return () => {
-            eventBus.off('panel:focus', handleFocus);
-        }
+    // This effect only runs once on the client after checkAndInitializeLayout has run
+    const handleFocus = (id: string) => {
+        useLayoutStore.getState().bringToFront(id);
+    };
+    eventBus.on('panel:focus', handleFocus);
+    
+    const { notifications, addNotification } = useNotificationStore.getState();
+    if (notifications.length === 0) {
+        addNotification({
+            task: "System Initialized",
+            status: "success",
+            details: "Live Orchestration Feed is active. Waiting for AI events.",
+            targetId: "liveOrchestrationFeed"
+        });
     }
-  }, [hasMounted]);
+    
+    return () => {
+        eventBus.off('panel:focus', handleFocus);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   
   const handleCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // If the click is on the direct canvas background, unfocus all items
     if (e.target === e.currentTarget) {
         setFocusedItemId(null);
     }
   };
 
-  if (!hasMounted) {
-    const skeletonItems = isMobile ? 4 : 8;
+  // While waiting for the client-side check, show a generic skeleton.
+  if (isMobile === undefined) {
     return (
         <div className="p-4 md:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[...Array(skeletonItems)].map((_, i) => (
+            {[...Array(8)].map((_, i) => (
                 <div key={i} className="flex flex-col space-y-3">
                     <Skeleton className="h-[125px] w-full rounded-xl" />
                     <div className="space-y-2">

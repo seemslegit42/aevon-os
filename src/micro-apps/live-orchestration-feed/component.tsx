@@ -32,7 +32,7 @@ const LiveOrchestrationFeedCardContent: React.FC = () => {
   };
 
   return (
-    <ScrollArea className="h-full">
+    <ScrollArea className="max-h-80 md:h-full">
         <div className="space-y-3 p-4">
         {notifications.map((item, index) => (
             <div key={index} className="flex items-start space-x-3 text-xs">
