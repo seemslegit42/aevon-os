@@ -13,8 +13,10 @@ interface LoomState {
   consoleMessages: ConsoleMessage[];
   timelineEvents: TimelineEvent[];
   actionRequests: ActionRequest[];
+  workflowName: string | undefined;
+  nodeExecutionStatus: Record<string, NodeStatus>;
 
-  setWorkflow: (data: { nodes: WorkflowNodeData[], connections: Connection[] }) => void;
+  setWorkflow: (data: { nodes: WorkflowNodeData[], connections: Connection[], workflowName?: string }) => void;
   setSelectedNodeId: (nodeId: string | null) => void;
   addNode: (nodeData: Omit<WorkflowNodeData, 'id' | 'status'> & { status?: NodeStatus }) => WorkflowNodeData;
   updateNode: (nodeId: string, updates: Partial<WorkflowNodeData>) => void;
@@ -22,12 +24,16 @@ interface LoomState {
   addConnection: (fromNodeId: string, toNodeId: string) => void;
   clearWorkflow: () => void;
   
-  // New actions for centralized state
   addConsoleMessage: (type: ConsoleMessage['type'], text: string) => void;
   clearConsole: () => void;
   addTimelineEvent: (event: Omit<TimelineEvent, 'id' | 'timestamp'>) => void;
   addActionRequest: (request: Omit<ActionRequest, 'id' | 'timestamp' | 'status'>) => void;
   updateActionRequestStatus: (requestId: string, status: ActionRequest['status'], details?: string) => void;
+  
+  // New actions for centralized state
+  setWorkflowName: (name: string | undefined) => void;
+  setNodeExecutionStatus: (statuses: Record<string, NodeStatus>) => void;
+  updateNodeStatus: (nodeId: string, status: NodeStatus) => void;
 }
 
 export const useLoomStore = create<LoomState>((set, get) => ({
@@ -37,12 +43,16 @@ export const useLoomStore = create<LoomState>((set, get) => ({
   consoleMessages: [],
   timelineEvents: [],
   actionRequests: [],
+  workflowName: undefined,
+  nodeExecutionStatus: {},
   
   setWorkflow: (data) => set({ 
     nodes: data.nodes, 
-    connections: data.connections, 
+    connections: data.connections,
+    workflowName: data.workflowName || 'Untitled Flow',
+    // Reset logs and statuses when a new workflow is set
+    nodeExecutionStatus: {},
     selectedNodeId: null,
-    // Reset logs when a new workflow is set
     consoleMessages: [],
     timelineEvents: [],
     actionRequests: [],
@@ -64,7 +74,10 @@ export const useLoomStore = create<LoomState>((set, get) => ({
       config: nodeData.config || {},
     };
     
-    set(state => ({ nodes: [...state.nodes, newNode] }));
+    set(state => ({ 
+        nodes: [...state.nodes, newNode],
+        nodeExecutionStatus: { ...state.nodeExecutionStatus, [newNode.id]: 'queued' }
+    }));
     return newNode;
   },
 
@@ -77,11 +90,16 @@ export const useLoomStore = create<LoomState>((set, get) => ({
   },
   
   deleteNode: (nodeId) => {
-    set(state => ({
-      nodes: state.nodes.filter(n => n.id !== nodeId),
-      connections: state.connections.filter(c => c.from !== nodeId && c.to !== nodeId),
-      selectedNodeId: state.selectedNodeId === nodeId ? null : state.selectedNodeId,
-    }));
+    set(state => {
+        const newStatus = { ...state.nodeExecutionStatus };
+        delete newStatus[nodeId];
+        return {
+            nodes: state.nodes.filter(n => n.id !== nodeId),
+            connections: state.connections.filter(c => c.from !== nodeId && c.to !== nodeId),
+            selectedNodeId: state.selectedNodeId === nodeId ? null : state.selectedNodeId,
+            nodeExecutionStatus: newStatus,
+        };
+    });
   },
 
   addConnection: (fromNodeId, toNodeId) => {
@@ -105,12 +123,13 @@ export const useLoomStore = create<LoomState>((set, get) => ({
       nodes: [], 
       connections: [], 
       selectedNodeId: null, 
+      workflowName: 'Untitled Flow',
+      nodeExecutionStatus: {},
       consoleMessages: [], 
       timelineEvents: [],
       actionRequests: [] 
     }),
 
-  // New state management functions
   addConsoleMessage: (type, text) => {
     const newMessage: ConsoleMessage = { type, text, timestamp: new Date() };
     set(state => ({ consoleMessages: [newMessage, ...state.consoleMessages.slice(0, 199)] }));
@@ -139,5 +158,17 @@ export const useLoomStore = create<LoomState>((set, get) => ({
       set(state => ({
         actionRequests: state.actionRequests.filter(req => req.id !== requestId),
       }));
+  },
+
+  // New/Updated state management functions
+  setWorkflowName: (name) => set({ workflowName: name }),
+  setNodeExecutionStatus: (statuses) => set({ nodeExecutionStatus: statuses }),
+  updateNodeStatus: (nodeId, status) => {
+    set(state => ({
+      nodeExecutionStatus: {
+        ...state.nodeExecutionStatus,
+        [nodeId]: status,
+      },
+    }));
   },
 }));

@@ -38,12 +38,16 @@ import type {
 
 
 export default function LoomStudioPage() {
+  // Centralized state from Zustand store
   const {
     nodes, connections, selectedNodeId, consoleMessages, timelineEvents, actionRequests,
+    workflowName, nodeExecutionStatus,
     setWorkflow, setSelectedNodeId, updateNode, deleteNode, addNode, addConnection,
-    clearWorkflow, addConsoleMessage, addTimelineEvent, updateActionRequestStatus, clearConsole
+    clearWorkflow, addConsoleMessage, addTimelineEvent, updateActionRequestStatus, clearConsole,
+    setNodeExecutionStatus, updateNodeStatus,
   } = useLoomStore(state => ({...state}), shallow);
 
+  // Local UI state
   const [connectingState, setConnectingState] = useState<ConnectingState | null>(null);
   const [panelVisibility, setPanelVisibility] = useState<PanelVisibility>({
     palette: true,
@@ -53,7 +57,6 @@ export default function LoomStudioPage() {
     agentHub: true,
     actionConsole: true,
   });
-  const [nodeExecutionStatus, setNodeExecutionStatus] = useState<Record<string, NodeStatus>>({});
   const [consoleFilters, setConsoleFilters] = useState<Record<ConsoleMessage['type'], boolean>>({
     info: true,
     log: true,
@@ -61,7 +64,6 @@ export default function LoomStudioPage() {
     error: true,
   });
   const [isTemplateSelectorOpen, setIsTemplateSelectorOpen] = useState(false);
-  const [workflowName, setWorkflowName] = useState<string | undefined>('Untitled Flow');
 
   const { append: beepAppend } = useBeepChat();
   const isMobile = useIsMobile();
@@ -72,7 +74,6 @@ export default function LoomStudioPage() {
   useEffect(() => {
     addConsoleMessage('info', 'Loom Studio Initialized. AI is standing by to generate workflows.');
     
-    // Listen for template dialog requests from the unified top bar
     const openTemplateHandler = () => setIsTemplateSelectorOpen(true);
     eventBus.on('loom:open-templates', openTemplateHandler);
     
@@ -97,7 +98,7 @@ export default function LoomStudioPage() {
     });
     setNodeExecutionStatus(initialStatuses);
     addConsoleMessage('info', `Workflow "${flow.workflowName}" node statuses initialized to 'queued'.`);
-  }, [addConsoleMessage, addTimelineEvent]);
+  }, [addConsoleMessage, addTimelineEvent, setNodeExecutionStatus]);
 
   const handleFlowGenerated = useCallback((data: AiGeneratedFlowData) => {
     setSelectedNodeId(null);
@@ -118,8 +119,7 @@ export default function LoomStudioPage() {
           to: idMap[conn.toLocalId],
       })).filter(c => c.from && c.to);
       
-      setWorkflow({ nodes: newNodes, connections: newConnections });
-      setWorkflowName(data.workflowName);
+      setWorkflow({ nodes: newNodes, connections: newConnections, workflowName: data.workflowName });
       visualizeWorkflowExecution({ ...data, nodes: newNodes });
     }
   }, [addConsoleMessage, visualizeWorkflowExecution, setWorkflow, clearWorkflow, setSelectedNodeId]);
@@ -140,7 +140,7 @@ export default function LoomStudioPage() {
                 status: 'completed',
                 config: { ...runningNode.config, output: result }
             });
-            setNodeExecutionStatus(prev => ({ ...prev, [runningNode.id]: 'completed' }));
+            updateNodeStatus(runningNode.id, 'completed');
             addTimelineEvent({
                 type: 'node_completed',
                 message: `Web summarization successful.`,
@@ -151,7 +151,7 @@ export default function LoomStudioPage() {
     };
     eventBus.on('websummarizer:result', handleSummarizerResult);
     return () => { eventBus.off('websummarizer:result', handleSummarizerResult); };
-  }, [addConsoleMessage, nodes, nodeExecutionStatus, updateNode, addTimelineEvent]);
+  }, [addConsoleMessage, nodes, nodeExecutionStatus, updateNode, addTimelineEvent, updateNodeStatus]);
 
   useEffect(() => {
     const handleNodeResult = (result: { content: string }) => {
@@ -165,7 +165,7 @@ export default function LoomStudioPage() {
                 status: 'completed',
                 config: { ...runningNode.config, output: { result: result.content } }
             });
-            setNodeExecutionStatus(prev => ({ ...prev, [runningNode.id]: 'completed' }));
+            updateNodeStatus(runningNode.id, 'completed');
             addTimelineEvent({
                 type: 'node_completed',
                 message: `Node finished successfully.`,
@@ -176,18 +176,17 @@ export default function LoomStudioPage() {
     };
     eventBus.on('loom:node-result', handleNodeResult);
     return () => { eventBus.off('loom:node-result', handleNodeResult); };
-  }, [addConsoleMessage, nodes, nodeExecutionStatus, updateNode, addTimelineEvent]);
+  }, [addConsoleMessage, nodes, nodeExecutionStatus, updateNode, addTimelineEvent, updateNodeStatus]);
 
 
   const handleNodeDropped = (newNodeData: Omit<WorkflowNodeData, 'id' | 'status'> & { status?: NodeStatus }) => {
-    const newNode = addNode(newNodeData);
     if (nodes.length === 0) {
-      addConsoleMessage('info', `New custom workflow "${workflowName}" started by user adding node: "${newNode.title}".`);
+      addConsoleMessage('info', `New custom workflow "${workflowName}" started by user adding node.`);
       addTimelineEvent({ type: 'workflow_start', message: `Custom workflow "${workflowName}" started.`});
     }
+    const newNode = addNode(newNodeData);
     setSelectedNodeId(newNode.id);
     addConsoleMessage('log', `Node "${newNode.title}" (ID: ${newNode.id}) added to canvas.`);
-    setNodeExecutionStatus(prev => ({...prev, [newNode.id]: 'queued' }));
     addTimelineEvent({
       nodeId: newNode.id,
       nodeTitle: newNode.title,
@@ -229,7 +228,7 @@ export default function LoomStudioPage() {
 
     if (nodeToRun.config?.beepEmotion) eventBus.emit('beep:setEmotion', nodeToRun.config.beepEmotion);
 
-    setNodeExecutionStatus(prev => ({ ...prev, [nodeId]: 'running' }));
+    updateNodeStatus(nodeId, 'running');
     addTimelineEvent({ type: 'node_running', message: `Executing node: ${nodeToRun.title}`, nodeId, nodeTitle: nodeToRun.title });
     
     let prompt = '';
@@ -244,14 +243,14 @@ export default function LoomStudioPage() {
       default:
         toast({ title: "Execution Not Implemented", description: `Backend for '${nodeToRun.type}' is not yet implemented.`});
         addConsoleMessage('warn', `Execution for node type '${nodeToRun.type}' is not implemented. Faking failure.`);
-        setTimeout(() => setNodeExecutionStatus(prev => ({ ...prev, [nodeId]: 'failed' })), 1500);
+        setTimeout(() => updateNodeStatus(nodeId, 'failed'), 1500);
         return;
     }
     if (prompt) {
       addConsoleMessage('info', `Dispatching task to BEEP for node "${nodeToRun.title}": ${prompt}`);
       beepAppend({ role: 'user', content: prompt });
     }
-  }, [nodes, addConsoleMessage, addTimelineEvent, toast, beepAppend]);
+  }, [nodes, addConsoleMessage, addTimelineEvent, toast, beepAppend, updateNodeStatus]);
 
   const isNodeRunning = (nodeId: string): boolean => nodeExecutionStatus[nodeId] === 'running';
 
