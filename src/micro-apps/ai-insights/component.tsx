@@ -127,11 +127,11 @@ const AiInsightsCardContent: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col p-4">
-        <div className="flex-grow">
+    <div className="p-4 space-y-4">
+        <div className="min-h-[100px]">
             <InsightsDisplay />
         </div>
-        <div className="flex-shrink-0 pt-2">
+        <div>
             <Button onClick={handleGenerateInsights} className="w-full btn-gradient-primary-secondary" disabled={isLoading}>
                 <Sparkles />
                 {isLoading ? 'Generating...' : 'Generate Insights'}
