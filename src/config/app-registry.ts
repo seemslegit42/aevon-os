@@ -2,7 +2,7 @@
 import type { ElementType } from 'react';
 import type { z } from 'zod';
 import {
-    Robot, ChartLine, PuzzlePiece, Brain, Users, Bug, House, TreeStructure, Shield, ShoppingCart, Calculator, PencilSimple, CreditCard, Cpu
+    Robot, ChartLine, PuzzlePiece, Brain, Users, Bug, House, TreeStructure, Shield, ShoppingCart, Calculator, PencilSimple, CreditCard, Cpu, ArrowClockwise, Download
 } from 'phosphor-react';
 import type { UIControl, MicroAppRoute, CardConfig } from '@/types/dashboard';
 
@@ -78,7 +78,7 @@ export const ALL_MICRO_APPS: AppRegistration[] = [
     defaultSize: { width: 500, height: 600 },
     controls: [
       { id: 'refresh', label: 'Refresh', icon: ArrowClockwise, tooltip: 'Refresh sales data' },
-      { id: 'export', label: 'Export', icon: DownloadSimple, tooltip: 'Export data as CSV' }
+      { id: 'export', label: 'Export', icon: Download, tooltip: 'Export data as CSV' }
     ]
   },
   {
@@ -124,7 +124,7 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     icon: Robot,
     isDismissible: true,
     description: "A persistent log of your conversation history with BEEP. The interactive avatar is always available at the bottom of your screen.",
-    defaultSize: { width: 380, height: 520 },
+    defaultSize: { x: 20, y: 20, width: 380, height: 520 },
     minWidth: 300,
     minHeight: 480,
     cardClassName: "flex-grow flex flex-col",
@@ -185,6 +185,13 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
 // =================================================================
 // NAVIGATION REGISTRY
 // =================================================================
+export interface NavItemConfig {
+  id: string;
+  label: string;
+  icon: ElementType;
+  contextualActions?: UIControl[];
+}
+
 export const mainNavItems: NavItemConfig[] = [
   { id: '/', label: 'Home', icon: House },
   { id: '/loom', label: 'Loom', icon: TreeStructure },
@@ -192,23 +199,17 @@ export const mainNavItems: NavItemConfig[] = [
   { id: '/armory', label: 'Armory', icon: ShoppingCart },
 ];
 
-interface NavItemConfig {
-  id: string;
-  label: string;
-  icon: ElementType;
-}
 
 // =================================================================
 // DEFAULT LAYOUT
 // =================================================================
 import type { LayoutItem } from '@/types/dashboard';
 
-// Generates the default layout by mapping over the configs.
-export const DEFAULT_LAYOUT_CONFIG: LayoutItem[] = ALL_CARD_CONFIGS
-    .filter(card => card.id !== 'dev-hud') // Filter out the dev hud from default layout
+const initialCards = ALL_CARD_CONFIGS
+    .filter(card => card.id !== 'dev-hud') // Filter out the dev hud
     .map((card, index) => ({
     id: card.id, // For non-instanced cards, the config ID is the layout ID
-    type: 'card',
+    type: 'card' as const,
     cardId: card.id,
     x: card.defaultSize.x,
     y: card.defaultSize.y,
@@ -216,3 +217,29 @@ export const DEFAULT_LAYOUT_CONFIG: LayoutItem[] = ALL_CARD_CONFIGS
     height: card.defaultSize.height,
     zIndex: index + 1 // Ensure a default stacking order
 }));
+
+const initialApps: LayoutItem[] = [
+    {
+        id: 'app-accounting-default',
+        type: 'app',
+        appId: 'app-accounting',
+        x: 420,
+        y: 560,
+        width: 700,
+        height: 400,
+        zIndex: initialCards.length + 1,
+    },
+    {
+        id: 'app-analytics-default',
+        type: 'app',
+        appId: 'app-analytics',
+        x: 1140,
+        y: 560,
+        width: 480,
+        height: 400,
+        zIndex: initialCards.length + 2,
+    }
+];
+
+// Generates the default layout by combining cards and a set of default micro-apps.
+export const DEFAULT_LAYOUT_CONFIG: LayoutItem[] = [...initialCards, ...initialApps];
