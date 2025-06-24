@@ -8,6 +8,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 export const metadata: Metadata = {
   title: 'ΛΞVON OS: AI-Powered Business Revolution',
   description: 'AI-first intelligent operating system designed to revolutionize business operations for SMBs.',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
 };
 
 export default function RootLayout({
