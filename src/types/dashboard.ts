@@ -24,6 +24,10 @@ export type LayoutItem = {
     zIndex: number;
     isMinimized?: boolean;
     lastHeight?: number;
+    isMaximized?: boolean;
+    lastX?: number;
+    lastY?: number;
+    lastWidth?: number;
     cardId?: string; // The ID from ALL_CARD_CONFIGS
     appId?: string; // The ID from ALL_MICRO_APPS
 };

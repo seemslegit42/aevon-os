@@ -4,7 +4,7 @@
 import React, { useState, memo } from 'react';
 import { Rnd } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
-import { X, Minus, Square } from 'phosphor-react';
+import { X, Minus, Square, ArrowsOut, ArrowsIn } from 'phosphor-react';
 import { Button } from '@/components/ui/button';
 import type { CardConfig } from '@/types/dashboard';
 import type { MicroApp } from '@/stores/micro-app.store';
@@ -26,7 +26,8 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, config
         updateItemLayout, 
         bringToFront, 
         closeItem, 
-        toggleMinimizeItem 
+        toggleMinimizeItem,
+        toggleMaximizeItem
     } = useLayoutStore.getState();
 
     const [isClosing, setIsClosing] = useState(false);
@@ -61,16 +62,26 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, config
         }, 200); // Corresponds to animation duration
     };
 
+    const isMaximized = !!item.isMaximized;
+
+    const size = isMaximized 
+        ? { width: '100%', height: '100%' }
+        : { width: item.width, height: item.height };
+    
+    const position = isMaximized
+        ? { x: 0, y: 0 }
+        : { x: item.x, y: item.y };
+
     const resizeHandles = {
-        top: !item.isMinimized, right: !item.isMinimized, bottom: !item.isMinimized, left: !item.isMinimized,
-        topRight: !item.isMinimized, bottomRight: !item.isMinimized, bottomLeft: !item.isMinimized, topLeft: !item.isMinimized,
+        top: !item.isMinimized && !isMaximized, right: !item.isMinimized && !isMaximized, bottom: !item.isMinimized && !isMaximized, left: !item.isMinimized && !isMaximized,
+        topRight: !item.isMinimized && !isMaximized, bottomRight: !item.isMinimized && !isMaximized, bottomLeft: !item.isMinimized && !isMaximized, topLeft: !item.isMinimized && !isMaximized,
     };
 
     return (
         <Rnd
             key={item.id}
-            size={{ width: item.width, height: item.height }}
-            position={{ x: item.x, y: item.y }}
+            size={size}
+            position={position}
             onDragStart={() => bringToFront(item.id)}
             onDragStop={handleDragStop}
             onResizeStart={() => bringToFront(item.id)}
@@ -88,6 +99,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, config
             dragGrid={[20, 20]}
             resizeGrid={[20, 20]}
             enableResizing={resizeHandles}
+            disableDragging={isMaximized}
             bounds="parent" // Constrain to canvas
         >
             <MicroAppCard
@@ -98,6 +110,9 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, config
                   <>
                     <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => toggleMinimizeItem(item.id)}>
                         {item.isMinimized ? <Square /> : <Minus />}
+                    </Button>
+                     <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => toggleMaximizeItem(item.id)}>
+                        {isMaximized ? <ArrowsIn /> : <ArrowsOut />}
                     </Button>
                     {isDismissible && (
                       <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCloseClick}>

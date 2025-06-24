@@ -8,7 +8,7 @@ import type { LayoutItem } from '@/types/dashboard';
 import { ALL_CARD_CONFIGS, ALL_MICRO_APPS, DEFAULT_LAYOUT_CONFIG } from '@/config/dashboard-cards.config';
 import type { MicroApp } from './micro-app.store';
 
-const LAYOUT_STORAGE_KEY = 'dashboardLayout_v7_grid';
+const LAYOUT_STORAGE_KEY = 'dashboardLayout_v8_grid';
 
 interface LayoutState {
   layoutItems: LayoutItem[];
@@ -18,6 +18,7 @@ interface LayoutState {
   bringToFront: (id: string) => void;
   closeItem: (id: string) => void;
   toggleMinimizeItem: (id: string) => void;
+  toggleMaximizeItem: (id: string) => void;
   addCard: (cardId: string) => string | undefined;
   launchApp: (app: MicroApp) => string;
   cloneApp: (appId: string) => string | undefined;
@@ -50,6 +51,16 @@ export const useLayoutStore = create<LayoutState>()(
       })),
 
       bringToFront: (id) => set(state => {
+        const itemToFront = state.layoutItems.find(item => item.id === id);
+        // Do not bring maximized items to front if another item is clicked,
+        // unless the maximized item itself is clicked.
+        if (state.focusedItemId !== id && state.layoutItems.some(i => i.isMaximized)) {
+            const maximizedItem = state.layoutItems.find(i => i.isMaximized);
+            if (maximizedItem && maximizedItem.id !== id) {
+                 return { focusedItemId: id }; // Just focus, don't change z-index
+            }
+        }
+
         const maxZ = state.layoutItems.length > 0 ? Math.max(0, ...state.layoutItems.map(item => item.zIndex || 0)) : 0;
         const newItems = state.layoutItems.map(layout =>
           layout.id === id
@@ -69,7 +80,7 @@ export const useLayoutStore = create<LayoutState>()(
           if (item.id === id) {
             const isNowMinimized = !item.isMinimized;
             if (isNowMinimized) {
-              return { ...item, isMinimized: true, lastHeight: item.height, height: 44 };
+              return { ...item, isMinimized: true, isMaximized: false, lastHeight: item.height, height: 44 };
             } else {
               const cardConfig = item.type === 'card' ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId) : null;
               const appConfig = item.type === 'app' ? ALL_MICRO_APPS.find(a => a.id === item.appId) : null;
@@ -80,6 +91,45 @@ export const useLayoutStore = create<LayoutState>()(
           return item;
         }),
       })),
+      
+      toggleMaximizeItem: (id) => set(state => {
+          const maxZ = state.layoutItems.length > 0 ? Math.max(0, ...state.layoutItems.map(item => item.zIndex || 0)) : 0;
+          return {
+              layoutItems: state.layoutItems.map(item => {
+                  if (item.id === id) {
+                      const isNowMaximized = !item.isMaximized;
+                      if (isNowMaximized) {
+                          return {
+                              ...item,
+                              isMaximized: true,
+                              isMinimized: false, // Can't be minimized and maximized
+                              lastX: item.x,
+                              lastY: item.y,
+                              lastWidth: item.width,
+                              lastHeight: item.isMinimized ? item.lastHeight : item.height,
+                              zIndex: maxZ + 1,
+                          };
+                      } else {
+                          return {
+                              ...item,
+                              isMaximized: false,
+                              x: item.lastX ?? 50,
+                              y: item.lastY ?? 50,
+                              width: item.lastWidth ?? 500,
+                              height: item.lastHeight ?? 400,
+                              lastX: undefined,
+                              lastY: undefined,
+                              lastWidth: undefined,
+                              lastHeight: undefined,
+                          };
+                      }
+                  }
+                  // When one item is maximized, ensure all others are not.
+                  return { ...item, isMaximized: false };
+              }),
+              focusedItemId: id,
+          };
+      }),
 
       addCard: (cardId) => {
         const currentItems = get().layoutItems;
