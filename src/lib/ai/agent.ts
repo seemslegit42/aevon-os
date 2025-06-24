@@ -177,44 +177,6 @@ const extractInvoiceDataTool = createTool({
     }
 });
 
-const runLoomWorkflowTool = createTool({
-    name: "runLoomWorkflow",
-    description: "Executes a full workflow defined in Loom Studio. It simulates the flow, logging each step.",
-    schema: z.object({
-        nodes: z.array(z.any()),
-        connections: z.array(z.any()),
-    }),
-    func: async ({ nodes, connections }) => {
-        // This tool now returns a list of events for the client to process.
-        const eventsToEmit: { eventName: string, payload?: any }[] = [];
-        
-        eventsToEmit.push({ eventName: 'loom:workflow-started' });
-
-        for (const node of nodes) {
-            eventsToEmit.push({ 
-                eventName: 'timeline:event', 
-                payload: { type: 'node_running', message: `Executing ${node.title}`, nodeId: node.id, nodeTitle: node.title }
-            });
-            
-            const success = Math.random() > 0.15;
-            const status = success ? 'completed' : 'failed';
-
-            eventsToEmit.push({ 
-                eventName: 'timeline:event', 
-                payload: { type: `node_${status}`, message: `Node ${node.title} ${status}`, nodeId: node.id, nodeTitle: node.title }
-            });
-        }
-        
-        eventsToEmit.push({ eventName: 'loom:workflow-completed' });
-
-        return { 
-            success: true, 
-            message: `Workflow execution simulation completed.`,
-            events: eventsToEmit // The payload now includes events
-        };
-    }
-});
-
 
 // --- Client-Side & Action Console Tools ---
 const requestHumanActionTool = createTool({
@@ -251,7 +213,7 @@ const resetLayoutTool = createTool({ name: 'resetLayout', description: 'Resets t
 const allTools = [
     searchKnowledgeBaseTool,
     generateWorkspaceInsightsTool, generateMarketingContentTool,
-    summarizeWebpageTool, extractInvoiceDataTool, runLoomWorkflowTool,
+    summarizeWebpageTool, extractInvoiceDataTool,
     requestHumanActionTool,
     focusItemTool, addItemTool, removeItemTool, resetLayoutTool,
 ];
@@ -301,7 +263,7 @@ Selected Node:
 ${selectedNodeSummary}
 
 **Loom Instructions:**
-- If the user asks to "run the workflow", "execute the flow", or a similar command, use the 'runLoomWorkflow' tool. Pass the entire workflow (nodes and connections) to the tool.
+- When asked to execute a node, you might be provided with input data from a previous node. Use this data as the primary context for your current task.
 - When asked to "explain this", "explain the selected node", or a similar query, use the 'Selected Node' context to provide a clear, concise explanation of its purpose and function.
 - When asked "what should I do next?" or to "suggest a node", analyze the graph (especially nodes without outgoing connections) and suggest a logical next step (e.g., "After a 'Web Summarizer' node, you could add a 'Prompt' node to reformat the summary.").
 - Do NOT offer to create connections or modify the graph directly. Instead, guide the user on how they can do it.

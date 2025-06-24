@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { CanvasZone } from '@/app/loom/components/canvas/canvas-zone';
 import { PalettePanel } from '@/app/loom/components/panels/palette-panel';
 import { InspectorPanel } from '@/app/loom/components/panels/inspector-panel';
@@ -70,6 +70,7 @@ export default function LoomStudioPage() {
   const { toast } = useToast();
   
   const selectedNode = nodes.find(n => n.id === selectedNodeId) || null;
+  const prevNodeStatusRef = useRef<Record<string, NodeStatus>>({});
 
   useEffect(() => {
     addConsoleMessage('info', 'Loom Studio Initialized. AI is standing by to generate workflows.');
@@ -82,24 +83,6 @@ export default function LoomStudioPage() {
     };
   }, [addConsoleMessage]);
 
-  const visualizeWorkflowExecution = useCallback((flow: AiGeneratedFlowData) => {
-    if (!flow || flow.nodes.length === 0 || !flow.workflowName) {
-        addConsoleMessage('warn', 'No workflow or nodes available to visualize.');
-        return;
-    }
-
-    addConsoleMessage('info', `Workflow "${flow.workflowName}" initialized for display on canvas.`);
-    addTimelineEvent({ type: 'workflow_start', message: `Workflow "${flow.workflowName}" displayed.` });
-
-    const initialStatuses: Record<string, NodeStatus> = {};
-    flow.nodes.forEach(node => {
-      initialStatuses[node.id] = 'queued';
-      addTimelineEvent({ nodeId: node.id, nodeTitle: node.title, type: 'node_queued', message: `Node "${node.title}" set to 'queued'.` });
-    });
-    setNodeExecutionStatus(initialStatuses);
-    addConsoleMessage('info', `Workflow "${flow.workflowName}" node statuses initialized to 'queued'.`);
-  }, [addConsoleMessage, addTimelineEvent, setNodeExecutionStatus]);
-
   const handleFlowGenerated = useCallback((data: AiGeneratedFlowData) => {
     setSelectedNodeId(null);
     if (data.error || !data.workflowName || data.nodes.length === 0) {
@@ -111,7 +94,7 @@ export default function LoomStudioPage() {
       const newNodes: WorkflowNodeData[] = data.nodes.map((node, index) => {
           const newNodeId = `ai-${node.title.toLowerCase().replace(/ /g, '-')}-${Date.now()}-${index}`;
           idMap[node.localId!] = newNodeId;
-          return { ...node, id: newNodeId, status: 'queued' };
+          return { ...node, id: newNodeId, status: 'pending' };
       });
       const newConnections: Connection[] = (data.connections || []).map((conn, index) => ({
           id: `conn-ai-${Date.now()}-${index}`,
@@ -120,9 +103,9 @@ export default function LoomStudioPage() {
       })).filter(c => c.from && c.to);
       
       setWorkflow({ nodes: newNodes, connections: newConnections, workflowName: data.workflowName });
-      visualizeWorkflowExecution({ ...data, nodes: newNodes });
+      addTimelineEvent({ type: 'info', message: `Workflow "${data.workflowName}" loaded and ready to run.`});
     }
-  }, [addConsoleMessage, visualizeWorkflowExecution, setWorkflow, clearWorkflow, setSelectedNodeId]);
+  }, [addConsoleMessage, setWorkflow, clearWorkflow, setSelectedNodeId, addTimelineEvent]);
 
   useEffect(() => {
     eventBus.on('loom:flow-generated', handleFlowGenerated);
@@ -153,17 +136,6 @@ export default function LoomStudioPage() {
     return () => { eventBus.off('websummarizer:result', handleSummarizerResult); };
   }, [addConsoleMessage, nodes, nodeExecutionStatus, updateNode, addTimelineEvent, updateNodeStatus]);
 
-  useEffect(() => {
-    // Listen for workflow completion event from the agent
-    const handleWorkflowComplete = () => {
-      setIsWorkflowRunning(false);
-      addTimelineEvent({ type: 'workflow_completed', message: 'Workflow execution finished.' });
-    };
-    eventBus.on('loom:workflow-completed', handleWorkflowComplete);
-    return () => { eventBus.off('loom:workflow-completed', handleWorkflowComplete); };
-  }, [addTimelineEvent]);
-
-
   const runningNodeId = Object.keys(nodeExecutionStatus).find(
     (id) => nodeExecutionStatus[id] === 'running'
   );
@@ -189,19 +161,149 @@ export default function LoomStudioPage() {
     }
   }, [beepError, runningNodeId, nodes, updateNode, updateNodeStatus, addTimelineEvent, addConsoleMessage]);
 
-  const handleNodeDropped = (newNodeData: Omit<WorkflowNodeData, 'id' | 'status'> & { status?: NodeStatus }) => {
-    if (nodes.length === 0) {
-      addConsoleMessage('info', `New custom workflow "${workflowName}" started by user adding node.`);
-      addTimelineEvent({ type: 'workflow_start', message: `Custom workflow "${workflowName}" started.`});
+  const handleRunNode = useCallback(async (nodeId: string, inputData?: any) => {
+    const nodeToRun = nodes.find(n => n.id === nodeId);
+    if (!nodeToRun) return;
+
+    if (nodeToRun.config?.beepEmotion) eventBus.emit('beep:setEmotion', nodeToRun.config.beepEmotion);
+
+    updateNodeStatus(nodeId, 'running');
+    addTimelineEvent({ type: 'node_running', message: `Executing node: ${nodeToRun.title}`, nodeId, nodeTitle: nodeToRun.title });
+    
+    let prompt = '';
+    const promptInput = inputData ? `\n\nUse the following data as input for your task:\n${JSON.stringify(inputData)}` : '';
+    
+    switch (nodeToRun.type) {
+      case 'web-summarizer':
+        prompt = `Please summarize the content from this URL: ${nodeToRun.config?.url}`;
+        break;
+      case 'prompt':
+      case 'agent-call':
+        prompt = (nodeToRun.config?.promptText || `Execute generic prompt for node ${nodeToRun.title}`) + promptInput;
+        break;
+      case 'data-transform':
+        prompt = `Please execute a data transformation with the following logic: "${nodeToRun.config?.transformationLogic}".` + promptInput;
+        break;
+      case 'conditional':
+        prompt = `Please evaluate the condition: "${nodeToRun.config?.condition}".` + promptInput;
+        break;
+      default:
+        toast({ title: "Execution Not Implemented", description: `Backend for '${nodeToRun.type}' is not yet implemented.`});
+        addConsoleMessage('warn', `Execution for node type '${nodeToRun.type}' is not implemented. Faking failure.`);
+        setTimeout(() => updateNodeStatus(nodeId, 'failed'), 1500);
+        return;
     }
+    if (prompt) {
+      addConsoleMessage('info', `Dispatching task to BEEP for node "${nodeToRun.title}": ${prompt}`);
+      beepAppend({ role: 'user', content: prompt });
+    }
+  }, [nodes, addConsoleMessage, addTimelineEvent, toast, beepAppend, updateNodeStatus]);
+
+
+  // Effect for orchestrating the workflow execution
+  useEffect(() => {
+    if (!isWorkflowRunning) {
+      prevNodeStatusRef.current = {};
+      return;
+    }
+
+    const newlyCompletedNodes = nodes.filter(node => 
+      nodeExecutionStatus[node.id] === 'completed' &&
+      prevNodeStatusRef.current[node.id] !== 'completed'
+    );
+
+    if (newlyCompletedNodes.length > 0) {
+      newlyCompletedNodes.forEach(completedNode => {
+        const nextConnections = connections.filter(c => c.from === completedNode.id);
+        nextConnections.forEach(conn => {
+          const nextNode = nodes.find(n => n.id === conn.to);
+          if (nextNode) {
+            updateNodeStatus(nextNode.id, 'queued');
+            handleRunNode(nextNode.id, completedNode.config?.output);
+          }
+        });
+      });
+    }
+    
+    prevNodeStatusRef.current = { ...nodeExecutionStatus };
+
+    const isFinished = !Object.values(nodeExecutionStatus).some(
+      status => status === 'running' || status === 'queued'
+    );
+    
+    // Check if any nodes have run at all
+    const hasStarted = Object.keys(nodeExecutionStatus).length > 0;
+
+    if (hasStarted && isFinished) {
+      setIsWorkflowRunning(false);
+      toast({ title: 'Workflow Finished', description: `Execution of "${workflowName}" is complete.` });
+      addTimelineEvent({ type: 'workflow_completed', message: 'Workflow execution finished.' });
+    }
+
+  }, [nodeExecutionStatus, isWorkflowRunning, nodes, connections, updateNodeStatus, handleRunNode, addTimelineEvent, toast, workflowName]);
+
+
+  const handleRunWorkflow = useCallback(() => {
+    if (nodes.length === 0) {
+      toast({ title: "Empty Workflow", description: "Add nodes to the canvas before running.", variant: 'destructive' });
+      return;
+    }
+    setIsWorkflowRunning(true);
+    addConsoleMessage('info', `User initiated workflow execution for "${workflowName}".`);
+    addTimelineEvent({ type: 'workflow_start', message: `Workflow "${workflowName}" started.` });
+    
+    const initialStatuses: Record<string, NodeStatus> = {};
+    nodes.forEach(n => initialStatuses[n.id] = 'pending');
+    
+    const startNodes = nodes.filter(n => !connections.some(c => c.to === n.id));
+    
+    if (startNodes.length === 0 && nodes.length > 0) {
+        toast({ title: "Execution Error", description: "No starting node found. Check for circular dependencies.", variant: 'destructive' });
+        setIsWorkflowRunning(false);
+        return;
+    }
+
+    startNodes.forEach(n => {
+        initialStatuses[n.id] = 'queued';
+        addTimelineEvent({ type: 'node_queued', message: `Starting node "${n.title}" queued.`, nodeId: n.id, nodeTitle: n.title });
+        handleRunNode(n.id);
+    });
+
+    setNodeExecutionStatus(initialStatuses);
+
+  }, [nodes, connections, workflowName, addConsoleMessage, addTimelineEvent, toast, handleRunNode, setNodeExecutionStatus]);
+
+  useEffect(() => {
+    const handleNodeResult = ({ content }: { content: string }) => {
+        addConsoleMessage('info', `Received generic text result for running node.`);
+        const runningNode = nodes.find(n => nodeExecutionStatus[n.id] === 'running');
+        if (runningNode) {
+            updateNode(runningNode.id, {
+                status: 'completed',
+                config: { ...runningNode.config, output: { result: content } }
+            });
+            updateNodeStatus(runningNode.id, 'completed');
+            addTimelineEvent({
+                type: 'node_completed',
+                message: `Node finished successfully.`,
+                nodeId: runningNode.id,
+                nodeTitle: runningNode.title,
+            });
+        }
+    };
+    eventBus.on('loom:node-result', handleNodeResult);
+    return () => { eventBus.off('loom:node-result', handleNodeResult); };
+  }, [addConsoleMessage, nodes, nodeExecutionStatus, updateNode, addTimelineEvent, updateNodeStatus]);
+
+  const handleNodeDropped = (newNodeData: Omit<WorkflowNodeData, 'id' | 'status'> & { status?: NodeStatus }) => {
     const newNode = addNode(newNodeData);
     setSelectedNodeId(newNode.id);
     addConsoleMessage('log', `Node "${newNode.title}" (ID: ${newNode.id}) added to canvas.`);
     addTimelineEvent({
       nodeId: newNode.id,
       nodeTitle: newNode.title,
-      type: 'node_queued',
-      message: `Manual Node "${newNode.title}" added and queued.`
+      type: 'info',
+      message: `Node "${newNode.title}" added.`
     });
   };
 
@@ -231,80 +333,6 @@ export default function LoomStudioPage() {
       toast({ title: "Node Deleted", description: `Node "${nodeToDelete.title}" has been removed.`});
     }
   };
-
-  const handleRunNode = useCallback(async (nodeId: string) => {
-    const nodeToRun = nodes.find(n => n.id === nodeId);
-    if (!nodeToRun) return;
-
-    if (nodeToRun.config?.beepEmotion) eventBus.emit('beep:setEmotion', nodeToRun.config.beepEmotion);
-
-    updateNodeStatus(nodeId, 'running');
-    addTimelineEvent({ type: 'node_running', message: `Executing node: ${nodeToRun.title}`, nodeId, nodeTitle: nodeToRun.title });
-    
-    let prompt = '';
-    switch (nodeToRun.type) {
-      case 'web-summarizer':
-        prompt = `Please summarize the content from this URL: ${nodeToRun.config?.url}`;
-        break;
-      case 'prompt':
-      case 'agent-call':
-        prompt = nodeToRun.config?.promptText || `Execute generic prompt for node ${nodeToRun.title}`;
-        break;
-      case 'data-transform':
-        prompt = `Please execute a data transformation with the following logic: "${nodeToRun.config?.transformationLogic}". The input data will be provided by the preceding connected node.`;
-        break;
-      case 'conditional':
-        prompt = `Please evaluate the condition: "${nodeToRun.config?.condition}". The input data will be provided by the preceding connected node.`;
-        break;
-      default:
-        toast({ title: "Execution Not Implemented", description: `Backend for '${nodeToRun.type}' is not yet implemented.`});
-        addConsoleMessage('warn', `Execution for node type '${nodeToRun.type}' is not implemented. Faking failure.`);
-        setTimeout(() => updateNodeStatus(nodeId, 'failed'), 1500);
-        return;
-    }
-    if (prompt) {
-      addConsoleMessage('info', `Dispatching task to BEEP for node "${nodeToRun.title}": ${prompt}`);
-      beepAppend({ role: 'user', content: prompt });
-    }
-  }, [nodes, addConsoleMessage, addTimelineEvent, toast, beepAppend, updateNodeStatus]);
-
-  useEffect(() => {
-    const handleNodeResult = ({ content }: { content: string }) => {
-        addConsoleMessage('info', `Received generic text result for running node.`);
-        const runningNode = nodes.find(n => nodeExecutionStatus[n.id] === 'running');
-        if (runningNode) {
-            updateNode(runningNode.id, {
-                status: 'completed',
-                config: { ...runningNode.config, output: { result: content } }
-            });
-            updateNodeStatus(runningNode.id, 'completed');
-            addTimelineEvent({
-                type: 'node_completed',
-                message: `Node finished successfully.`,
-                nodeId: runningNode.id,
-                nodeTitle: runningNode.title,
-            });
-        }
-    };
-    eventBus.on('loom:node-result', handleNodeResult);
-    return () => { eventBus.off('loom:node-result', handleNodeResult); };
-  }, [addConsoleMessage, nodes, nodeExecutionStatus, updateNode, addTimelineEvent, updateNodeStatus]);
-
-  const handleRunWorkflow = useCallback(() => {
-    if (nodes.length === 0) {
-      toast({ title: "Empty Workflow", description: "Add nodes to the canvas before running.", variant: 'destructive' });
-      return;
-    }
-    setIsWorkflowRunning(true);
-    addConsoleMessage('info', `User initiated workflow execution for "${workflowName}".`);
-    // Pass a serializable version of the workflow to the agent
-    const serializableWorkflow = {
-      nodes: nodes.map(({ id, type, config }) => ({ id, type, config })),
-      connections,
-    };
-    beepAppend({ role: 'user', content: `Please run the entire Loom workflow: ${JSON.stringify(serializableWorkflow)}` });
-  }, [nodes, connections, workflowName, beepAppend, addConsoleMessage, toast]);
-
 
   const isNodeRunning = (nodeId: string): boolean => nodeExecutionStatus[nodeId] === 'running';
 

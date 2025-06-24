@@ -212,13 +212,6 @@ export function BeepChatProvider() {
             case 'extractInvoiceData':
                 eventBus.emit('accounting:invoice-extracted', result as InvoiceData);
                 break;
-            case 'runLoomWorkflow':
-                if (result.events && Array.isArray(result.events)) {
-                    result.events.forEach((event: any) => {
-                        eventBus.emit(event.eventName as any, event.payload);
-                    });
-                }
-                break;
             // Add more cases here for other tools that need to update the UI
         }
 
