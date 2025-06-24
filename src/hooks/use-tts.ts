@@ -118,5 +118,3 @@ export function useTTS({ outputNode }: UseTTSProps) {
 
   return { playAudio, isSpeaking };
 }
-
-    
