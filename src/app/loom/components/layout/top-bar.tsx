@@ -8,12 +8,18 @@ import { useToast } from '@/hooks/use-toast';
 import { generateLoomWorkflow } from '@/lib/ai/loom-flow';
 import { useBeepChatStore } from '@/stores/beep-chat.store';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
-import { BrainCircuit, Search, Settings, UserCircle, Menu, FolderKanban, FileText, BookMarked, Eye, ShieldQuestion, LayoutGrid, Settings2, Bot, ListOrdered, Terminal, Loader2 } from 'lucide-react';
+import { 
+    BrainCircuit, Search, Settings, UserCircle, Menu, FileText, BookMarked, Eye, 
+    ShieldQuestion, LayoutGrid, Settings2, Bot, ListOrdered, Terminal, Loader2,
+    Home, Network, ShoppingCart 
+} from 'lucide-react';
 import type { PanelVisibility, AiGeneratedFlowData, ConsoleMessage, AvatarState } from '@/types/loom'; 
 import {
   DropdownMenu,
@@ -45,7 +51,7 @@ const AiFlowGeneratorForm = ({ onFlowGenerated, addConsoleMessage }: AiFlowGener
         defaultValues: { prompt: "" },
     });
 
-    const onSubmit = async (values: z.infer<typeof FormSchema>) => {
+    const onSubmit = async (values: z.infer<typeof FormSchema>>) => {
         setIsLoading(true);
         addConsoleMessage('info', `Generating new workflow from prompt: "${values.prompt}"`);
 
@@ -140,6 +146,7 @@ interface TopBarProps {
 export function TopBar({ onFlowGenerated, addConsoleMessage, panelVisibility, togglePanel, isMobile, anyMobilePanelOpen, onOpenTemplateSelector }: TopBarProps) {
   const showAiForm = !isMobile || !anyMobilePanelOpen; 
   const { toast } = useToast();
+  const pathname = usePathname();
 
   const handleComingSoon = (featureName: string) => {
     toast({
@@ -158,6 +165,19 @@ export function TopBar({ onFlowGenerated, addConsoleMessage, panelVisibility, to
     { panel: 'console' as keyof PanelVisibility, label: 'Console', icon: <Terminal className="mr-2 h-4 w-4" /> },
   ];
 
+  const mainNavItems = [
+    { id: '/', label: 'Home', icon: Home },
+    { id: '/loom', label: 'Loom', icon: Network },
+    { id: '/armory', label: 'Armory', icon: ShoppingCart },
+  ];
+
+  const isNavItemActive = (navItemId: string) => {
+    if (navItemId === '/') {
+        return pathname === '/';
+    }
+    return pathname.startsWith(navItemId);
+  };
+
   return (
     <header className="sticky top-0 z-50 flex h-16 items-center justify-between border-b border-border bg-card/80 px-4 shadow-sm backdrop-blur-lg sm:px-6 lg:px-8">
       <div className="flex items-center gap-2 md:gap-4">
@@ -170,9 +190,17 @@ export function TopBar({ onFlowGenerated, addConsoleMessage, panelVisibility, to
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              <DropdownMenuItem onClick={() => handleComingSoon("Projects")} className="cursor-pointer">
-                 <FolderKanban className="mr-2 h-4 w-4" /> Projects
-              </DropdownMenuItem>
+              <DropdownMenuLabel>Navigation</DropdownMenuLabel>
+              {mainNavItems.map((item) => (
+                  <DropdownMenuItem key={item.id} asChild className="cursor-pointer">
+                      <Link href={item.id}>
+                          <item.icon className="mr-2 h-4 w-4" />
+                          <span>{item.label}</span>
+                      </Link>
+                  </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel>Loom Studio</DropdownMenuLabel>
               <DropdownMenuItem onClick={onOpenTemplateSelector} className="cursor-pointer">
                  <BookMarked className="mr-2 h-4 w-4" /> Templates
               </DropdownMenuItem>
@@ -198,9 +226,15 @@ export function TopBar({ onFlowGenerated, addConsoleMessage, panelVisibility, to
         </div>
         <Separator orientation="vertical" className={`h-8 ${isMobile ? 'hidden' : 'block'}`} />
         <nav className={`items-center gap-1 ${isMobile ? 'hidden' : 'flex md:flex'}`}>
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-accent" onClick={() => handleComingSoon("Projects")}>
-            Projects
-          </Button>
+            {mainNavItems.map((item) => (
+                <Button key={item.id} asChild variant="ghost" size="sm" className={cn("text-muted-foreground hover:text-primary", isNavItemActive(item.id) && "bg-accent/20 text-primary")}>
+                    <Link href={item.id}>
+                        <item.icon className="mr-1.5 h-4 w-4" />
+                        {item.label}
+                    </Link>
+                </Button>
+            ))}
+            <Separator orientation="vertical" className="h-6 mx-1" />
           <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-accent-foreground hover:bg-accent/20" onClick={onOpenTemplateSelector}>
             <BookMarked className="mr-1.5 h-4 w-4"/> Templates
           </Button>
