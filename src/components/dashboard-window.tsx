@@ -39,7 +39,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, config
     const contentProps = 'contentProps' in config ? config.contentProps : {};
     const minWidth = 'minWidth' in config ? config.minWidth : config.defaultSize.width;
     const minHeight = 'minHeight' in config ? config.minHeight : config.defaultSize.height;
-    const cardClassName = 'cardClassName' in config ? cardClassName : "";
+    const cardClassName = 'cardClassName' in config ? config.cardClassName : "";
     const isDismissible = 'isDismissible' in config ? config.isDismissible : true;
     const controls = 'controls' in config ? config.controls : undefined;
 
