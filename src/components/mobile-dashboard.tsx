@@ -49,13 +49,13 @@ export const MobileDashboard: React.FC = () => {
 
                     return (
                         // Render each item as a card in a single column
-                        <div key={item.id} className="h-[450px] flex flex-col">
+                        <div key={item.id}>
                             <MicroAppCard
                                 title={config.title}
                                 icon={config.icon}
                                 actions={null} // No window controls (close/min/max) on mobile
                                 controls={undefined}
-                                className="flex-grow"
+                                className=""
                             >
                                 <WindowContent itemId={item.id} />
                             </MicroAppCard>
