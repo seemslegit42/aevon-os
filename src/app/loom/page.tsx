@@ -21,6 +21,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { useBeepChat } from '@/hooks/use-beep-chat';
 import eventBus from '@/lib/event-bus';
 import { exampleTemplates } from '@/app/loom/data/templates';
+import { useLoomStore } from '@/stores/loom.store';
 
 import type {
   WorkflowNodeData,
@@ -68,6 +69,7 @@ export default function LoomStudioPage() {
   const { append: beepAppend } = useBeepChat();
   const isMobile = useIsMobile();
   const { toast } = useToast();
+  const { setWorkflow, setSelectedNodeId } = useLoomStore();
 
   const addConsoleMessage = useCallback((type: ConsoleMessage['type'], text: string) => {
     const newMessage: ConsoleMessage = { type, text, timestamp: new Date() };
@@ -86,6 +88,13 @@ export default function LoomStudioPage() {
     };
     setConsoleMessages([welcomeMessage]);
   }, []);
+
+  useEffect(() => {
+    setWorkflow({
+        nodes: generatedFlow?.nodes || [],
+        connections: connections,
+    });
+  }, [generatedFlow, connections, setWorkflow]);
   
   const updateNode = useCallback((nodeId: string, updates: Partial<WorkflowNodeData>) => {
     setGeneratedFlow(prevFlow => {
@@ -247,6 +256,7 @@ export default function LoomStudioPage() {
   const handleNodeSelected = (node: WorkflowNodeData | null) => {
     if (node) {
       setSelectedNode(node);
+      setSelectedNodeId(node.id);
       setConnectingState(null);
       addConsoleMessage('log', `Node "${node.title}" (ID: ${node.id}) selected.`);
     } else {
@@ -254,6 +264,7 @@ export default function LoomStudioPage() {
         addConsoleMessage('info', `Connection attempt cancelled by clicking canvas background.`);
       }
       setSelectedNode(null);
+      setSelectedNodeId(null);
       setConnectingState(null);
     }
   };

@@ -9,6 +9,7 @@ import { DynamicTool, type DynamicToolInput } from '@langchain/core/tools';
 import { z } from 'zod';
 import { generateObject } from 'ai';
 import { google } from '@/lib/ai/groq';
+import type { WorkflowNodeData, Connection } from '@/types/loom';
 
 import * as SalesDataService from '@/services/sales-data.service';
 import * as BillingService from '@/services/billing.service';
@@ -30,6 +31,11 @@ import {
 // =================================================================
 export interface AgentState extends MessagesState {
   layout: LayoutItem[];
+  loomState?: {
+    nodes: WorkflowNodeData[];
+    connections: Connection[];
+    selectedNodeId: string | null;
+  };
 }
 
 // =================================================================
@@ -209,12 +215,35 @@ const model = new ChatGroq({
   model: 'llama3-70b-8192',
 }).bindTools(allTools);
 
-const getSystemPrompt = (layout: LayoutItem[]) => {
-  // The original logic caused a build failure by importing client-side component configs into a server module.
-  // This simplified logic removes the problematic import while retaining the core functionality.
+const getSystemPrompt = (layout: LayoutItem[], loomState?: AgentState['loomState']) => {
   const openWindowsSummary = layout.length > 0
     ? layout.map(item => `- type: ${item.type}, id: ${item.cardId || item.appId}, instanceId: ${item.id}`).join('\n')
     : 'The user has an empty workspace.';
+
+  let loomContextSummary = '';
+  if (loomState && loomState.nodes.length > 0) {
+    const nodeSummary = loomState.nodes.map(n => `- ID: ${n.id}, Title: "${n.title}", Type: ${n.type}`).join('\n');
+    const selectedNode = loomState.selectedNodeId ? loomState.nodes.find(n => n.id === loomState.selectedNodeId) : null;
+    const selectedNodeSummary = selectedNode 
+        ? `The user has selected the node with ID: ${selectedNode.id}\n  - Title: "${selectedNode.title}"\n  - Type: ${selectedNode.type}\n  - Description: "${selectedNode.description}"`
+        : "No node is currently selected.";
+    
+    loomContextSummary = `
+**LOOM STUDIO CONTEXT**
+The user is currently in the Loom Studio visual workflow editor. You have access to their current workflow state below. Use this context to answer questions about their workflow.
+
+Workflow Nodes:
+${nodeSummary}
+
+Selected Node:
+${selectedNodeSummary}
+
+**Loom Instructions:**
+- When asked to "explain this", "explain the selected node", or a similar query, use the 'Selected Node' context to provide a clear, concise explanation of its purpose and function.
+- When asked "what should I do next?" or to "suggest a node", analyze the graph (especially nodes without outgoing connections) and suggest a logical next step (e.g., "After a 'Web Summarizer' node, you could add a 'Prompt' node to reformat the summary.").
+- Do NOT offer to create connections or modify the graph directly. Instead, guide the user on how they can do it.
+`;
+  }
 
   return `You are BEEP, the primary AI assistant for the ΛΞVON Operating System. Your personality is helpful, professional, and slightly futuristic.
 
@@ -222,20 +251,22 @@ const getSystemPrompt = (layout: LayoutItem[]) => {
 Here are the windows currently open on the user's dashboard. Use the 'instanceId' to manipulate them with tools.
 ${openWindowsSummary}
 ---
+${loomContextSummary}
+---
 **PRIMARY DIRECTIVE**
 1.  Analyze the user's request to determine the main task.
 2.  Select the most appropriate tool(s) to accomplish the task. You can call multiple tools in parallel if the tasks are independent.
 3.  If a tool fails, explain the error to the user.
 4.  After successfully calling a UI tool, also generate a brief, natural language confirmation for the user. E.g., "Done. I've added the Loom Studio to your workspace."
 5.  If the user asks a general question, use the 'searchKnowledgeBase' tool first.
-6.  Do not generate workflows for Loom Studio. That is handled by a separate, specialized AI. If asked to create a workflow, politely decline and suggest they use the "Generate" button in Loom Studio.
+6.  If asked to generate a workflow for Loom Studio via chat, politely decline and instruct the user to use the dedicated AI prompt bar at the top of the Loom Studio to generate workflows.
 `;
 }
 
 // Node that calls the AI model
 const callModelNode = async (state: AgentState) => {
-  const { messages, layout } = state;
-  const systemPrompt = getSystemPrompt(layout || []);
+  const { messages, layout, loomState } = state;
+  const systemPrompt = getSystemPrompt(layout || [], loomState);
   const messagesWithSystemPrompt = [new HumanMessage(systemPrompt), ...messages];
   const response = await model.invoke(messagesWithSystemPrompt);
   return { messages: [response] };
@@ -260,6 +291,10 @@ const workflow = new StateGraph<AgentState>({
         layout: {
             value: (x, y) => y ?? x,
             default: () => []
+        },
+        loomState: {
+            value: (x, y) => y ?? x,
+            default: () => undefined
         }
     }
 });

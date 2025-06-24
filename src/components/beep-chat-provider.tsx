@@ -7,6 +7,7 @@ import { useLayoutStore } from '@/stores/layout.store';
 import { useToast } from '@/hooks/use-toast';
 import { useBeepChatStore } from '@/stores/beep-chat.store';
 import eventBus from '@/lib/event-bus';
+import { useLoomStore } from '@/stores/loom.store';
 
 /**
  * This is a non-rendering component that initializes the Vercel `useChat` hook
@@ -104,8 +105,16 @@ export function BeepChatProvider() {
   // This makes the agent context-aware of the UI state.
   const appendWithContext = async (message: Message) => {
     const currentLayout = useLayoutStore.getState().layoutItems;
+    const { nodes, connections, selectedNodeId } = useLoomStore.getState();
+    const loomState = nodes.length > 0 ? { nodes, connections, selectedNodeId } : undefined;
+
     return originalAppend(message, {
-      options: { body: { layoutItems: currentLayout } }
+      options: { 
+        body: { 
+            layoutItems: currentLayout,
+            loomState,
+        } 
+      }
     });
   };
 

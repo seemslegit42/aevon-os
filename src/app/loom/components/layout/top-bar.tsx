@@ -6,13 +6,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { generateLoomWorkflow } from '@/lib/ai/loom-flow';
+import { useBeepChatStore } from '@/stores/beep-chat.store';
+import { cn } from '@/lib/utils';
 
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { BrainCircuit, Search, Settings, UserCircle, Menu, FolderKanban, FileText, BookMarked, Eye, ShieldQuestion, LayoutGrid, Settings2, Bot, ListOrdered, Terminal, Loader2 } from 'lucide-react';
-import type { PanelVisibility, AiGeneratedFlowData, ConsoleMessage } from '@/types/loom'; 
+import type { PanelVisibility, AiGeneratedFlowData, ConsoleMessage, AvatarState } from '@/types/loom'; 
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,7 +45,7 @@ const AiFlowGeneratorForm = ({ onFlowGenerated, addConsoleMessage }: AiFlowGener
         defaultValues: { prompt: "" },
     });
 
-    const onSubmit = async (values: z.infer<typeof FormSchema>) => {
+    const onSubmit = async (values: z.infer<typeof FormSchema>>) => {
         setIsLoading(true);
         addConsoleMessage('info', `Generating new workflow from prompt: "${values.prompt}"`);
 
@@ -95,6 +97,31 @@ const AiFlowGeneratorForm = ({ onFlowGenerated, addConsoleMessage }: AiFlowGener
                 </Button>
             </form>
         </Form>
+    );
+};
+
+const BeepStatusIndicator = () => {
+    const avatarState = useBeepChatStore(state => state.avatarState);
+
+    const statusConfig: Record<AvatarState, { text: string; color: string; }> = {
+        idle: { text: "Idle", color: "bg-muted-foreground/50" },
+        listening: { text: "Listening", color: "bg-green-500 animate-pulse" },
+        thinking: { text: "Thinking", color: "bg-purple-500 animate-pulse" },
+        tool_call: { text: "Executing", color: "bg-yellow-500" },
+        security_alert: { text: "Security Alert", color: "bg-red-500 animate-pulse" },
+        speaking_neutral: { text: "Speaking", color: "bg-blue-500" },
+        speaking_helpful: { text: "Speaking", color: "bg-green-400" },
+        speaking_insightful: { text: "Speaking", color: "bg-purple-400" },
+        speaking_cautious: { text: "Speaking", color: "bg-yellow-400" },
+    };
+    
+    const currentStatus = statusConfig[avatarState] || statusConfig.idle;
+
+    return (
+         <div className="flex items-center gap-2 text-xs text-muted-foreground border border-border/40 rounded-full px-2 py-1 bg-card/60" title={`BEEP Status: ${currentStatus.text}`}>
+            <Bot className="h-4 w-4 text-primary/80" />
+            <span className={cn("h-2 w-2 rounded-full transition-colors", currentStatus.color)}></span>
+        </div>
     );
 };
 
@@ -165,6 +192,9 @@ export function TopBar({ onFlowGenerated, addConsoleMessage, panelVisibility, to
         <h1 className="font-headline text-xl md:text-2xl font-semibold text-foreground">
           Loom Studio
         </h1>
+        <div className="hidden md:block">
+            <BeepStatusIndicator />
+        </div>
         <Separator orientation="vertical" className={`h-8 ${isMobile ? 'hidden' : 'block'}`} />
         <nav className={`items-center gap-1 ${isMobile ? 'hidden' : 'flex md:flex'}`}>
           <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-accent" onClick={() => handleComingSoon("Projects")}>

@@ -44,12 +44,13 @@ export async function POST(req: NextRequest) {
     if (rateLimitResponse) return rateLimitResponse;
 
     try {
-        const { messages, layoutItems }: { messages: Message[], layoutItems?: LayoutItem[] } = await req.json();
+        const { messages, layoutItems, loomState }: { messages: Message[], layoutItems?: LayoutItem[], loomState?: any } = await req.json();
         
         // Invoke the LangGraph agent with the current chat history and layout context.
         const stream = await agentGraph.stream({
             messages: messages.map(toLangChainMessage),
             layout: layoutItems ?? [],
+            loomState: loomState,
         });
 
         // The LangChainAdapter gracefully handles converting the LangGraph stream,
