@@ -13,15 +13,12 @@ import type { WorkflowNodeData, Connection } from '@/types/loom';
 import { logAction } from '@/services/action-log.service';
 import { getEmotionFromText } from '@/lib/sentiment-parser';
 
-import * as SalesDataService from '@/services/sales-data.service';
-import * as BillingService from '@/services/billing.service';
 
 import type { LayoutItem } from '@/types/dashboard';
 import { 
     AiInsightsSchema, 
     ContentGenerationSchema, 
     KnowledgeBaseSearchResultSchema, 
-    SubscriptionStatusSchema,
     WebSummarizerResultSchema,
     InvoiceDataSchema,
 } from '../ai-schemas';
@@ -114,24 +111,6 @@ const searchKnowledgeBaseTool = createTool({
         }
         return { found: false, answer: "I couldn't find any information on that topic in the knowledge base." };
     }
-});
-
-const getSalesAnalyticsDataTool = createTool({
-    name: "getSalesAnalyticsData",
-    description: "Retrieves the raw data needed to populate the sales analytics dashboard, including monthly platform sales and overall trends. Use this when the user asks to see or refresh sales data.",
-    schema: z.object({}),
-    func: async () => {
-        const monthlySales = await SalesDataService.getMonthlySales();
-        const salesTrend = await SalesDataService.getSalesTrend();
-        return { monthlySales, salesTrend };
-    },
-});
-
-const getSubscriptionStatusTool = createTool({
-    name: "getSubscriptionStatus",
-    description: "Retrieves the user's current subscription plan, status, and renewal date.",
-    schema: z.object({}),
-    func: async () => await BillingService.getSubscriptionStatus()
 });
 
 const generateWorkspaceInsightsTool = createTool({
@@ -240,7 +219,7 @@ const runLoomWorkflowTool = createTool({
 // --- Client-Side & Action Console Tools ---
 const requestHumanActionTool = createTool({
     name: 'requestHumanAction',
-    description: "Pauses the workflow and requests input, clarification, or permission from the human user. Use this when you are missing information or need authorization for an action.",
+    description: "Pauses the workflow and requests input, clarification, or permission from the human user. Use this when you are missing information or need to perform a sensitive action (e.g., deleting data, spending resources), you MUST use the `requestHumanAction` tool to ask the user for permission or input. Do not proceed with the action until you receive confirmation from the user.",
     schema: z.object({
         requestType: z.enum(['permission', 'input', 'clarification']).describe("The type of request being made to the user."),
         message: z.string().describe("The question or statement to present to the user."),
@@ -270,7 +249,7 @@ const resetLayoutTool = createTool({ name: 'resetLayout', description: 'Resets t
 // =================================================================
 
 const allTools = [
-    searchKnowledgeBaseTool, getSalesAnalyticsDataTool, getSubscriptionStatusTool,
+    searchKnowledgeBaseTool,
     generateWorkspaceInsightsTool, generateMarketingContentTool,
     summarizeWebpageTool, extractInvoiceDataTool, runLoomWorkflowTool,
     requestHumanActionTool,

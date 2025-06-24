@@ -16,8 +16,6 @@ componentMap.set('microApps', lazy(() => import('@/micro-apps/micro-apps-palette
 // Register Micro-App Components
 componentMap.set('app-accounting', lazy(() => import('@/micro-apps/accounting/component')));
 componentMap.set('app-armory', lazy(() => import('@/micro-apps/armory/component')));
-componentMap.set('app-analytics', lazy(() => import('@/micro-apps/sales-analytics/component')));
 componentMap.set('app-content-creator', lazy(() => import('@/micro-apps/content-creator/component')));
-componentMap.set('app-subscriptions', lazy(() => import('@/micro-apps/armory-subscriptions/component')));
 componentMap.set('app-agent-config', lazy(() => import('@/micro-apps/agent-config/component')));
 componentMap.set('app-system-monitor', lazy(() => import('@/micro-apps/system-monitor/component')));

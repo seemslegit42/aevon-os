@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useCallback } from 'react';
@@ -202,9 +203,6 @@ export function BeepChatProvider() {
         
         // Emit specific events for different tools
         switch (toolName) {
-            case 'getSalesAnalyticsData':
-                eventBus.emit('sales-analytics:update', result);
-                break;
             case 'summarizeWebpage':
                 eventBus.emit('websummarizer:result', result);
                 break;

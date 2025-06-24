@@ -3,7 +3,6 @@ import mitt, { type Emitter } from 'mitt';
 import type { AiInsights, ContentGeneration, WebSummarizerResult, AiGeneratedFlowData, InvoiceData } from './ai-schemas';
 import type { AvatarState } from '@/types/dashboard';
 import type { BeepEmotion, TimelineEvent } from '@/types/loom';
-import type { MonthlySales, SalesTrend } from '@/services/sales-data.service';
 
 type AppEvents = {
   // BEEP Agent Communication
@@ -35,7 +34,6 @@ type AppEvents = {
   'tool:error': { toolName: string };
 
   // Data update events
-  'sales-analytics:update': { monthlySales: MonthlySales[], salesTrend: SalesTrend[] };
   'accounting:invoice-extracted': InvoiceData;
 
   // System-level Events

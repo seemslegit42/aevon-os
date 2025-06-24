@@ -34,19 +34,6 @@ export const ALL_MICRO_APPS: AppRegistration[] = [
     baseRoute: '/armory',
   },
   {
-    id: 'app-analytics',
-    title: 'Sales Analytics',
-    description: 'Detailed sales analytics and trends.',
-    icon: LineChart,
-    permissions: ['sales:view', 'analytics:read'],
-    tags: ['analytics', 'sales'],
-    defaultSize: { width: 500, height: 600 },
-    controls: [
-      { id: 'refresh', label: 'Refresh', icon: RotateCw, tooltip: 'Refresh sales data' },
-      { id: 'export', label: 'Export', icon: Download, tooltip: 'Export data as CSV' }
-    ]
-  },
-  {
     id: 'app-content-creator',
     title: 'Content Creator',
     description: 'AI-powered assistant to generate marketing copy, blog posts, and more.',
@@ -58,15 +45,6 @@ export const ALL_MICRO_APPS: AppRegistration[] = [
       name: "Synth",
       description: "A creative and enthusiastic AI muse. You are here to inspire and help create. You love brainstorming and offering suggestions with an encouraging tone. You use phrases like 'What a fantastic idea!', 'Let's build on that!', and 'How about we try this angle?'"
     }
-  },
-  {
-    id: 'app-subscriptions',
-    title: 'Armory Subscriptions',
-    description: 'View and manage your AEVON OS subscription plan.',
-    icon: CreditCard,
-    permissions: [],
-    tags: ['billing', 'account'],
-    defaultSize: { width: 400, height: 420 },
   },
   {
     id: 'app-agent-config',
@@ -191,18 +169,7 @@ const initialCards = ALL_CARD_CONFIGS
     zIndex: index + 1 // Ensure a default stacking order
 }));
 
-const initialApps: LayoutItem[] = [
-    {
-        id: 'app-analytics-default',
-        type: 'app',
-        appId: 'app-analytics',
-        x: 900,
-        y: 560,
-        width: 480,
-        height: 400,
-        zIndex: initialCards.length + 1,
-    },
-];
+const initialApps: LayoutItem[] = [];
 
 // Generates the default layout by combining cards and a set of default micro-apps.
 export const DEFAULT_LAYOUT_CONFIG: LayoutItem[] = [...initialCards, ...initialApps];
