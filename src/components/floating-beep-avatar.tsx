@@ -36,6 +36,9 @@ const FloatingBeepAvatar: React.FC = () => {
   const [outputNode, setOutputNode] = useState<GainNode | null>(null);
   const stateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // New state to manage pending recording action
+  const [isRecordPending, setIsRecordPending] = useState(false);
 
   const { avatarState, setAvatarState, append, isLoading } = useBeepChatStore();
   const isProcessing = useBeepChatStore(state => state.isLoading);
@@ -100,7 +103,6 @@ const FloatingBeepAvatar: React.FC = () => {
       }
   }, [isWhisperModeEnabled, outputNode]);
 
-
   const initializeAudio = useCallback(() => {
     if (audioContext) return;
     try {
@@ -117,11 +119,6 @@ const FloatingBeepAvatar: React.FC = () => {
     }
   }, [toast, audioContext]);
 
-  useEffect(() => {
-    document.addEventListener('click', initializeAudio, { once: true });
-    return () => document.removeEventListener('click', initializeAudio);
-  }, [initializeAudio]);
-
   const { playAudio, isSpeaking } = useTTS({ outputNode });
   const { isRecording, isTranscribing, startRecording, stopRecording } = useAudioRecorder({ 
     onTranscriptionComplete: (text) => {
@@ -129,6 +126,24 @@ const FloatingBeepAvatar: React.FC = () => {
     },
     inputNode,
   });
+  
+  // New handler for the mic button
+  const handleStartRecording = () => {
+    if (!audioContext) {
+      initializeAudio();
+      setIsRecordPending(true); // Set the pending flag
+    } else {
+      startRecording();
+    }
+  };
+  
+  // New useEffect to trigger recording after context is initialized
+  useEffect(() => {
+    if (isRecordPending && inputNode) {
+      startRecording();
+      setIsRecordPending(false);
+    }
+  }, [isRecordPending, inputNode, startRecording]);
 
   const isBusy = isLoading || isSpeaking || isRecording || isTranscribing;
   
@@ -265,7 +280,7 @@ const FloatingBeepAvatar: React.FC = () => {
         <div className="fixed bottom-20 right-4 z-[100] w-24 h-24 flex flex-col items-center justify-center">
             <div 
             className="relative w-full h-full rounded-full cursor-pointer"
-            onTouchStart={startRecording}
+            onTouchStart={handleStartRecording}
             onTouchEnd={stopRecording}
             >
             <BeepAvatar3D
@@ -320,11 +335,11 @@ const FloatingBeepAvatar: React.FC = () => {
               {isWhisperModeEnabled ? <VolumeX className="w-5 h-5"/> : <Volume2 className="w-5 h-5"/>}
            </Button>
            <Button
-              onMouseDown={startRecording}
+              onMouseDown={handleStartRecording}
               onMouseUp={stopRecording}
-              onTouchStart={startRecording}
+              onTouchStart={handleStartRecording}
               onTouchEnd={stopRecording}
-              disabled={isProcessing || !inputNode}
+              disabled={isProcessing || !isMounted}
               className={cn(
                 "h-14 w-14 rounded-full transition-all duration-200 ease-in-out shadow-2xl",
                 isRecording ? "bg-destructive scale-110" : "btn-gradient-primary-accent",
