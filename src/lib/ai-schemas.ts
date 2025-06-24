@@ -90,7 +90,7 @@ export type WebSummarizerResult = z.infer<typeof WebSummarizerResultSchema>;
 export const WorkflowNodeSchema = z.object({
   localId: z.string().describe("A short, unique, workflow-specific identifier for this node, e.g., 'get-data-1'."),
   title: z.string().describe("A short, descriptive title for the node's purpose."),
-  type: z.enum(['prompt', 'decision', 'agent-call', 'wait', 'api-call', 'trigger', 'custom', 'web-summarizer', 'data-transform', 'conditional']).describe("The functional type of the node."),
+  type: z.enum(['prompt', 'agent-call', 'wait', 'api-call', 'trigger', 'custom', 'web-summarizer', 'data-transform', 'conditional']).describe("The functional type of the node."),
   description: z.string().describe("A brief one-sentence description of what this node does."),
   position: z.object({
     x: z.number().describe("The x-coordinate for the node on a 2D canvas."),

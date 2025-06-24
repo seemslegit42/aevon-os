@@ -4,7 +4,7 @@
 import React, { useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Bot, CheckCircle, AlertTriangle, Clock, HelpCircle, MessageSquare, GitMerge, Zap, Timer, Webhook, SlidersHorizontal, Cog, Globe, FunctionSquare, Binary } from 'lucide-react'; 
+import { Bot, CheckCircle, AlertTriangle, Clock, HelpCircle, MessageSquare, Zap, Timer, Webhook, SlidersHorizontal, Cog, Globe, FunctionSquare, Binary } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 import type { WorkflowNodeData, NodeStatus, NodeType, ConnectingState } from '@/types/loom';
 
@@ -30,7 +30,6 @@ const statusIcons: Record<NodeStatus, React.ReactNode> = {
 
 const typeIcons: Record<NodeType, React.ReactNode> = {
   prompt: <MessageSquare className="h-4 w-4 text-purple-400" />,
-  decision: <GitMerge className="h-4 w-4 text-orange-400" />,
   'agent-call': <Zap className="h-4 w-4 text-yellow-400" />, 
   wait: <Timer className="h-4 w-4 text-cyan-400" />,
   'api-call': <Webhook className="h-4 w-4 text-indigo-400" />, 
