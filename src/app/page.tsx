@@ -90,7 +90,7 @@ export default function HomePage() {
   // Mobile View
   if (isMobile) {
     const sortedItems = [...layoutItems].sort((a, b) => {
-        const order = ['liveOrchestrationFeed', 'beep', 'aiInsights', 'agentPresence'];
+        const order = ['microApps', 'liveOrchestrationFeed', 'beep', 'aiInsights', 'agentPresence'];
         const indexA = a.cardId ? order.indexOf(a.cardId) : order.length;
         const indexB = b.cardId ? order.indexOf(b.cardId) : order.length;
         if (a.type === 'app') return 1;
