@@ -66,7 +66,7 @@ const formatDisplayValue = (value: string = '') => {
 
 export const WorkflowNode = React.forwardRef<HTMLDivElement, WorkflowNodeProps>(
   ({ node, className, onClick, isSelected, onInputPortClick, onOutputPortClick, isConnectingFrom, connectingState }, ref) => {
-    const { id, title, type, status = 'unknown', description, agentName, position } = node;
+    const { id, title, type, status = 'unknown', description, position } = node;
     const currentTypeIcon = typeIcons[type] || typeIcons.custom;
     const currentStatusIcon = statusIcons[status] || statusIcons.unknown;
 
@@ -153,12 +153,6 @@ export const WorkflowNode = React.forwardRef<HTMLDivElement, WorkflowNodeProps>(
         </CardHeader>
         <CardContent className="px-4 pb-4 cursor-grab select-none">
           {description && <p className="text-xs text-muted-foreground mb-2 line-clamp-3">{description}</p>}
-          {agentName && (
-            <div className="flex items-center gap-1 text-xs text-primary">
-              <Bot className="h-3 w-3" />
-              <span>{agentName}</span>
-            </div>
-          )}
           <Badge variant="outline" className={`mt-2 text-xs ${badgeStyles[status] || badgeStyles.unknown}`}>
             {formatDisplayValue(status)}
           </Badge>

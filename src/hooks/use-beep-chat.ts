@@ -12,7 +12,6 @@ export function useBeepChat() {
     append: s.append,
     isLoading: s.isLoading,
     setMessages: s.setMessages,
-    lastMessage: s.messages[s.messages.length - 1],
   }), shallow);
   
   return state;

@@ -16,7 +16,6 @@ export interface WorkflowNodeData {
   type: NodeType;
   description: string;
   status?: NodeStatus;
-  agentName?: string;
   position?: { x: number; y: number };
   config?: {
     url?: string;
@@ -25,7 +24,7 @@ export interface WorkflowNodeData {
     transformationLogic?: string;
     condition?: string;
     beepEmotion?: BeepEmotion;
-    output?: WebSummarizerResult | Record<string, any>; 
+    output?: WebSummarizerResult | Record<string, any>;
     [key: string]: any;
   };
 }
