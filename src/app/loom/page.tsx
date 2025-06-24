@@ -349,8 +349,9 @@ export default function LoomStudioPage() {
     setPanelVisibility(prev => {
       const newState = { ...prev };
       if (isMobile) {
+        const wasOpen = prev[panel];
         Object.keys(newState).forEach(k => newState[k as keyof PanelVisibility] = false);
-        newState[panel] = !prev[panel];
+        newState[panel] = !wasOpen;
       } else {
         newState[panel] = !prev[panel];
       }

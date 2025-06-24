@@ -2,7 +2,7 @@
 'use client';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from 'zod';
 import * as z from 'zod';
 import { useToast } from '@/hooks/use-toast';
 import { generateLoomWorkflow } from '@/lib/ai/loom-flow';
