@@ -12,6 +12,7 @@ import CommandPalette from '@/components/command-palette';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { DesktopDashboard } from '@/components/desktop-dashboard';
 import { MobileDashboard } from '@/components/mobile-dashboard';
+import { cn } from '@/lib/utils';
 
 export default function HomePage() {
   const isMobile = useIsMobile();
@@ -79,7 +80,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="h-full w-full relative" onClick={handleCanvasClick}>
+    <div className={cn("w-full relative", !isMobile && "h-full")} onClick={handleCanvasClick}>
       <WelcomeModal />
       <CommandPalette />
       {isMobile ? <MobileDashboard /> : <DesktopDashboard />}
