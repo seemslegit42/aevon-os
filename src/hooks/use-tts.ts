@@ -1,4 +1,6 @@
 
+"use client";
+
 import { useRef, useCallback, useEffect, useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { useAvatarTelemetry } from '@/hooks/use-avatar-telemetry';
@@ -21,7 +23,7 @@ function getEmotionFromTextForLogging(text: string): AvatarState {
     if (lowerText.startsWith('done.') || lowerText.startsWith('okay, i have') || lowerText.startsWith('alright,')) {
         return 'tool_call';
     }
-    return 'speaking'; // Neutral/default state
+    return 'speaking_neutral'; // Neutral/default state
 }
 
 
