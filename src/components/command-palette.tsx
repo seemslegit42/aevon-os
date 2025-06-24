@@ -19,6 +19,7 @@ import { useMicroApps } from '@/hooks/use-micro-apps';
 import type { MicroAppRegistration } from '@/stores/micro-app.store';
 import { useLayoutStore } from '@/stores/layout.store';
 import type { LayoutItem } from '@/types/dashboard';
+import { useRouter } from 'next/navigation';
 
 // =================================================================
 // SUB-COMPONENTS for rendering lists within the palette
@@ -146,12 +147,17 @@ const CommandPalette: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const allMicroApps = useMicroApps();
   const appMap = new Map(allMicroApps.map(app => [app.id, app]));
+  const router = useRouter();
 
   const { layoutItems, launchApp, addCard, closeItem, bringToFront, resetLayout } = useLayoutStore();
 
   const handleLaunchApp = (app: MicroAppRegistration) => {
-    const instanceId = launchApp(app);
-    bringToFront(instanceId);
+    if (app.baseRoute) {
+      router.push(app.baseRoute);
+    } else {
+      const instanceId = launchApp(app);
+      bringToFront(instanceId);
+    }
     setOpen(false);
   };
 

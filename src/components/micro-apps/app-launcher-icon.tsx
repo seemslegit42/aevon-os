@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useLayoutStore } from '@/stores/layout.store';
 import { shallow } from 'zustand/shallow';
+import { useRouter } from 'next/navigation';
 
 interface AppLauncherIconProps {
   app: MicroAppRegistration;
@@ -32,9 +33,8 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
     const isLongPressTriggeredRef = useRef(false);
+    const router = useRouter();
 
-    // Get both state and actions directly from the store.
-    // This makes the component's dependencies explicit.
     const { layoutItems, launchApp, cloneApp, focusLatestInstance, closeAllInstancesOfApp } = useLayoutStore(state => ({
         layoutItems: state.layoutItems,
         launchApp: state.launchApp,
@@ -62,17 +62,29 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
       }
     };
     
-    // This will handle both click and tap, launching the app directly.
     const handleClick = () => {
       if (isLongPressTriggeredRef.current) {
         return;
       }
-      launchApp(app);
+      if (app.baseRoute) {
+        router.push(app.baseRoute);
+      } else {
+        launchApp(app);
+      }
     };
 
     const handleContextMenu = (e: React.MouseEvent) => {
         e.preventDefault();
         setMenuOpen(true);
+    };
+
+    const handleLaunchFromMenu = () => {
+        if (app.baseRoute) {
+            router.push(app.baseRoute);
+        } else {
+            launchApp(app);
+        }
+        setMenuOpen(false);
     };
 
     return (
@@ -128,15 +140,15 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
         <DropdownMenuContent className="w-56 glassmorphism-panel" onClick={(e) => e.preventDefault()}>
           <DropdownMenuLabel>{app.title}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => { launchApp(app); setMenuOpen(false); }}>
+          <DropdownMenuItem onClick={handleLaunchFromMenu}>
             <Play />
             <span>Launch New Instance</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => { cloneApp(app.id); setMenuOpen(false); }} disabled={!isActive}>
+          <DropdownMenuItem onClick={() => { cloneApp(app.id); setMenuOpen(false); }} disabled={!isActive || !!app.baseRoute}>
             <Copy />
             <span>Clone Latest Instance</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => { focusLatestInstance(app.id); setMenuOpen(false); }} disabled={!isActive}>
+          <DropdownMenuItem onClick={() => { focusLatestInstance(app.id); setMenuOpen(false); }} disabled={!isActive || !!app.baseRoute}>
               <Eye />
             <span>Focus Latest</span>
           </DropdownMenuItem>
@@ -144,7 +156,7 @@ export const AppLauncherIcon: React.FC<AppLauncherIconProps> = ({ app }) => {
           <DropdownMenuItem
             className="text-destructive focus:text-destructive focus:bg-destructive/10"
             onClick={() => { closeAllInstancesOfApp(app.id); setMenuOpen(false); }}
-            disabled={!isActive}
+            disabled={!isActive || !!app.baseRoute}
           >
             <X />
             <span>Close All Instances</span>
