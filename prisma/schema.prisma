@@ -31,6 +31,7 @@ model User {
   transactions Transaction[]
   invoices     Invoice[]
   alerts       SecurityAlert[]
+  memories     Memory[]
 }
 
 model Account {
@@ -176,4 +177,20 @@ model SecurityAlert {
   
   timestamp      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+}
+
+// ===================================
+// Agent Memory Models
+// ===================================
+
+model Memory {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // e.g., 'fact', 'observation', 'skill'
+  content   String
+  embedding Json?    // Vector embedding for similarity search
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

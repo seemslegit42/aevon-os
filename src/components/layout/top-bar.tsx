@@ -5,13 +5,19 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Settings, Clock } from 'lucide-react';
+import { Settings, Clock, Menu } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useCommandPaletteStore } from '@/stores/command-palette.store';
 import NotificationCenter from './notification-center';
 import { cn } from '@/lib/utils';
@@ -74,8 +80,30 @@ const TopBar: React.FC = () => {
         className="topbar-aevos-glass-override flex items-center justify-between h-14 px-4"
         data-avatar-state={avatarState}
       >
-        {/* Left Side: Branding */}
+        {/* Left Side: Branding & Mobile Menu */}
         <div className="flex items-center">
+          {/* Mobile Menu */}
+          <div className="md:hidden mr-1">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground">
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Open navigation menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="glassmorphism-panel mt-2">
+                {mainNavItems.map((item) => (
+                  <DropdownMenuItem key={item.id} asChild>
+                    <Link href={item.id}>
+                      <item.icon className="mr-2 h-4 w-4" />
+                      <span>{item.label}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
           <Link href="/" className="flex items-center">
             <Image
               src="/aevon-logo.png"
@@ -89,7 +117,7 @@ const TopBar: React.FC = () => {
         </div>
 
         {/* Center: Navigation & Command Bar */}
-        <div className="flex-1 flex items-center justify-center space-x-6 px-4">
+        <div className="flex-1 flex items-center justify-center space-x-6 px-2 md:px-4">
           <nav className="hidden md:flex items-center space-x-1">
             {mainNavItems.map((item) => (
               <Tooltip key={item.id}>
@@ -133,12 +161,12 @@ const TopBar: React.FC = () => {
 
           <ThemeToggle />
 
-          <div className="flex items-center text-xs px-2 h-9 font-mono text-primary-foreground opacity-80">
+          <div className="hidden md:flex items-center text-xs px-2 h-9 font-mono text-primary-foreground opacity-80">
             <Clock className="h-4 w-4 mr-1.5 text-muted-foreground" />
             {isMounted ? currentTime : "--:--"}
           </div>
 
-          <div className="h-6 border-l border-white/10 mx-1.5" />
+          <div className="h-6 border-l border-white/10 mx-1.5 hidden md:block" />
           
           <UserMenu />
         </div>
