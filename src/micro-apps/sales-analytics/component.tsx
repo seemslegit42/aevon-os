@@ -1,7 +1,7 @@
 
 "use client"
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { Bar, BarChart, Line, LineChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import {
   ChartContainer,
@@ -12,10 +12,13 @@ import {
   type ChartConfig,
 } from '@/components/ui/chart';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { getMonthlySales, getSalesTrend, type MonthlySales, type SalesTrend } from '@/services/sales-data.service';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import eventBus from '@/lib/event-bus';
+import { useSalesAnalyticsStore } from './store';
+import { shallow } from 'zustand/shallow';
+import type { MonthlySales, SalesTrend } from '@/services/sales-data.service';
+
 
 const barChartConfig = {
   desktop: { label: "Desktop", color: "hsl(var(--chart-1))" },
@@ -27,32 +30,30 @@ const lineChartConfig = {
 } satisfies ChartConfig;
 
 const SalesAnalyticsComponent: React.FC = () => {
-    const [monthlySalesData, setMonthlySalesData] = useState<MonthlySales[] | null>(null);
-    const [salesTrendData, setSalesTrendData] = useState<SalesTrend[] | null>(null);
     const { toast } = useToast();
     
-    const fetchData = useCallback(async () => {
-        setMonthlySalesData(null);
-        setSalesTrendData(null);
-        try {
-            const monthly = await getMonthlySales();
-            const trend = await getSalesTrend();
-            setMonthlySalesData(monthly);
-            setSalesTrendData(trend);
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Error Fetching Data', description: 'Could not load sales analytics.' });
-            console.error(error);
-        }
-    }, [toast]);
+    const { monthlySales, salesTrend, isLoading, error, actions } = useSalesAnalyticsStore(
+      (state) => ({
+        monthlySales: state.monthlySales,
+        salesTrend: state.salesTrend,
+        isLoading: state.isLoading,
+        error: state.error,
+        actions: state.actions,
+      }),
+      shallow
+    );
     
     useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+        // Only fetch data if it hasn't been fetched yet and isn't currently loading.
+        if (!monthlySales && !salesTrend && !isLoading) {
+            actions.fetchData();
+        }
+    }, [actions, monthlySales, salesTrend, isLoading]);
 
     useEffect(() => {
       const handleRefresh = () => {
           toast({ title: 'Refreshing Data...', description: 'Fetching the latest sales analytics.' });
-          fetchData();
+          actions.fetchData();
       };
   
       const handleExport = () => {
@@ -61,8 +62,7 @@ const SalesAnalyticsComponent: React.FC = () => {
 
       const handleDataUpdate = (data: { monthlySales: MonthlySales[], salesTrend: SalesTrend[] }) => {
         toast({ title: 'Data Updated', description: 'Sales analytics have been updated by the AI agent.' });
-        setMonthlySalesData(data.monthlySales);
-        setSalesTrendData(data.salesTrend);
+        actions.fetchData(); 
       };
   
       eventBus.on('control:click:refresh', handleRefresh);
@@ -74,7 +74,29 @@ const SalesAnalyticsComponent: React.FC = () => {
           eventBus.off('control:click:export', handleExport);
           eventBus.off('sales-analytics:update', handleDataUpdate);
       };
-    }, [toast, fetchData]);
+    }, [toast, actions]);
+
+    if (isLoading) {
+        return (
+            <div className="space-y-4 h-full flex flex-col p-4">
+                <Skeleton className="h-1/2 w-full rounded-lg" />
+                <Skeleton className="h-1/2 w-full rounded-lg" />
+            </div>
+        )
+    }
+
+    if (error) {
+        return (
+            <div className="p-4">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-destructive">Error</CardTitle>
+                        <CardDescription>{error}</CardDescription>
+                    </CardHeader>
+                </Card>
+            </div>
+        )
+    }
 
   return (
     <div className="space-y-4 h-full flex flex-col p-4">
@@ -85,9 +107,9 @@ const SalesAnalyticsComponent: React.FC = () => {
                     <CardDescription>January - June 2024</CardDescription>
                 </CardHeader>
                 <CardContent className="h-[calc(100%-4rem)] pb-0">
-                    {monthlySalesData ? (
+                    {monthlySales ? (
                          <ChartContainer config={barChartConfig} className="h-full w-full">
-                            <BarChart accessibilityLayer data={monthlySalesData}>
+                            <BarChart accessibilityLayer data={monthlySales}>
                                 <CartesianGrid vertical={false} />
                                 <XAxis
                                     dataKey="month"
@@ -103,7 +125,7 @@ const SalesAnalyticsComponent: React.FC = () => {
                                 <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
                             </BarChart>
                         </ChartContainer>
-                    ) : <Skeleton className="w-full h-full" />}
+                    ) : <p className="text-center text-muted-foreground">No monthly sales data.</p>}
                 </CardContent>
             </Card>
         </div>
@@ -114,9 +136,9 @@ const SalesAnalyticsComponent: React.FC = () => {
                     <CardDescription>Last 7 Months</CardDescription>
                 </CardHeader>
                  <CardContent className="h-[calc(100%-4rem)] pb-0">
-                    {salesTrendData ? (
+                    {salesTrend ? (
                         <ChartContainer config={lineChartConfig} className="h-full w-full">
-                            <LineChart accessibilityLayer data={salesTrendData} margin={{ top: 5, right: 20, left: -10, bottom: 0 }}>
+                            <LineChart accessibilityLayer data={salesTrend} margin={{ top: 5, right: 20, left: -10, bottom: 0 }}>
                                 <CartesianGrid vertical={false} />
                                 <XAxis
                                     dataKey="date"
@@ -131,7 +153,7 @@ const SalesAnalyticsComponent: React.FC = () => {
                                 <Line type="monotone" dataKey="sales" stroke="var(--color-sales)" strokeWidth={2} dot={true} />
                             </LineChart>
                         </ChartContainer>
-                    ) : <Skeleton className="w-full h-full" />}
+                    ) : <p className="text-center text-muted-foreground">No sales trend data.</p>}
                 </CardContent>
             </Card>
         </div>
