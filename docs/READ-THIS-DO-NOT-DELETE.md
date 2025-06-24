@@ -514,3 +514,4 @@ AI: Automation blocks - monday Support, accessed June 13, 2025, https://support.
 AI Tools for Business | Google Workspace, accessed June 13, 2025, https://workspace.google.com/solutions/ai/
 Agentic AI Orchestration: Definitions, Use Cases & Software - Warmly, accessed June 13, 2025, https://www.warmly.ai/p/blog/agentic-ai-orchestration
 What is AI Orchestration? 21+ Tools to Consider in 2025 - Akka, accessed June 13, 2025, https://akka.io/blog/ai-orchestration-tools
+what a waste of time... you could have just said you read it and will be my fucking copilot. now get it done
