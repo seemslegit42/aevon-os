@@ -1,3 +1,23 @@
 
-// This file has been intentionally emptied to resolve a build configuration conflict.
-// The active configuration is in next.config.js at the project root.
+import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
+  transpilePackages: ['three'],
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
+  experimental: {
+    allowedDevOrigins: [
+      'https://6000-firebase-studio-1750373577120.cluster-3ch54x2epbcnetrm6ivbqqebjk.cloudworkstations.dev',
+    ],
+  },
+};
+
+export default nextConfig;
