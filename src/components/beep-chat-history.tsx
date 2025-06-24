@@ -126,7 +126,7 @@ const BeepChatHistory: React.FC<BeepChatHistoryProps> = ({
 
   // Use ScrollArea on desktop, but a simple div on mobile to allow natural document flow
   if (isMobile) {
-    return <div className="p-2">{content}</div>;
+    return <div className="p-2 h-full overflow-y-auto pretty-scrollbar">{content}</div>;
   }
 
   // On desktop, we need the scroll area for the fixed-height card
