@@ -16,11 +16,13 @@ interface MicroAppCardProps {
   className?: string;
   actions?: React.ReactNode;
   controls?: UIControl[];
+  itemId?: string;
 }
 
-const MicroAppCardComponent: React.FC<MicroAppCardProps> = ({ title, icon: Icon, children, className, actions, controls }) => {
+const MicroAppCardComponent: React.FC<MicroAppCardProps> = ({ title, icon: Icon, children, className, actions, controls, itemId }) => {
   const handleControlClick = (controlId: string) => {
-    const eventName = `control:click:${controlId}`;
+    if (!itemId) return;
+    const eventName = `control:click:${itemId}:${controlId}`;
     eventBus.emit(eventName as any);
   };
 

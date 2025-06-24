@@ -116,6 +116,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
             bounds="parent"
         >
             <MicroAppCard
+                itemId={item.id}
                 title={title || 'Aevon Window'}
                 icon={Icon}
                 className={cardClassName}

@@ -18,7 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
+import eventBus from '@/lib/event-bus';
 
 const StatCard = ({ title, value, icon: Icon }: { title: string; value: string | number; icon: React.ElementType }) => (
     <Card className="bg-card/50">
@@ -32,7 +32,7 @@ const StatCard = ({ title, value, icon: Icon }: { title: string; value: string |
     </Card>
 );
 
-const SystemMonitorComponent: React.FC = () => {
+const SystemMonitorComponent: React.FC<{ itemId?: string }> = ({ itemId }) => {
     const [stats, setStats] = useState<ActionLogStats | null>(null);
     const [logs, setLogs] = useState<Array<ActionLog & { agent: Agent }> | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -57,6 +57,23 @@ const SystemMonitorComponent: React.FC = () => {
         const interval = setInterval(fetchData, 10000); // Refresh every 10 seconds
         return () => clearInterval(interval);
     }, [fetchData]);
+
+    useEffect(() => {
+        if (!itemId) return; // Only listen for events if this is an instantiated component
+
+        const eventName = `control:click:${itemId}:system-monitor-refresh`;
+        const handleRefresh = () => {
+            setIsLoading(true);
+            fetchData();
+        };
+
+        eventBus.on(eventName as any, handleRefresh);
+
+        return () => {
+            eventBus.off(eventName as any, handleRefresh);
+        };
+    }, [itemId, fetchData]);
+
 
     if (isLoading && !stats) {
         return (

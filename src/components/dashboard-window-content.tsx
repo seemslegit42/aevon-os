@@ -52,7 +52,7 @@ export const WindowContent: React.FC<WindowContentProps> = ({ isMinimized, itemI
   
   return (
     <Suspense fallback={<div className="p-4 h-full"><Skeleton className="h-full w-full" /></div>}>
-      <ContentComponent {...contentProps} />
+      <ContentComponent {...contentProps} itemId={itemId} />
     </Suspense>
   );
 };

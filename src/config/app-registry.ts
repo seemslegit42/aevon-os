@@ -63,6 +63,9 @@ export const ALL_MICRO_APPS: AppRegistration[] = [
     permissions: [],
     tags: ['system', 'performance', 'utilities'],
     defaultSize: { width: 500, height: 400 },
+    controls: [
+        { id: 'system-monitor-refresh', label: 'Refresh', icon: RotateCw, tooltip: 'Refresh Data' }
+    ]
   },
 ];
 
