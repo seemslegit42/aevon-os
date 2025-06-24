@@ -4,6 +4,7 @@ import { rateLimiter } from '@/lib/rate-limiter';
 import { groqSdk } from '@/lib/ai/groq';
 
 export const maxDuration = 60;
+export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   const rateLimitResponse = await rateLimiter(req);

@@ -1,6 +1,4 @@
 
-'use server';
-
 import { LangChainAdapter, StreamingTextResponse } from 'ai';
 import { agentGraph } from '@/lib/ai/agent';
 import { AIMessage, BaseMessage, HumanMessage, ToolMessage } from '@langchain/core/messages';
@@ -11,6 +9,7 @@ import type { LayoutItem } from '@/types/dashboard';
 
 
 export const maxDuration = 60;
+export const runtime = 'nodejs';
 
 /**
  * Converts a Vercel AI SDK message to a LangChain message.

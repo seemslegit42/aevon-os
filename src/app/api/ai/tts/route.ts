@@ -7,6 +7,7 @@ import wav from 'wav';
 import type { AvatarState } from '@/types/dashboard';
 
 export const maxDuration = 60;
+export const runtime = 'nodejs'; // Force Node.js runtime for 'wav' package compatibility
 
 // This type mirrors the `avatarState` from the frontend for mapping emotions.
 type EmotionTone = 'neutral' | 'thinking' | 'tool_call' | 'security_alert';
