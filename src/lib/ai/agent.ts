@@ -14,7 +14,7 @@ import type { WorkflowNodeData, Connection } from '@/types/loom';
 import * as SalesDataService from '@/services/sales-data.service';
 import * as BillingService from '@/services/billing.service';
 
-import { ALL_CARD_CONFIGS, ALL_MICRO_APPS, type AppRegistration } from '@/config/app-registry';
+import type { AppRegistration } from '@/config/app-registry';
 import type { LayoutItem } from '@/types/dashboard';
 import { 
     AegisSecurityAnalysisSchema, 
@@ -178,7 +178,24 @@ const summarizeWebpageTool = createTool({
 });
 
 // --- Client-Side UI Manipulation Tools ---
-const ALL_ITEM_IDS = [...ALL_MICRO_APPS.map(app => app.id), ...ALL_CARD_CONFIGS.map(card => card.id)];
+// CRITICAL FIX: Statically define the item IDs to prevent importing client components on the server.
+const ALL_ITEM_IDS = [
+    // Micro-Apps
+    'app-accounting',
+    'app-aegis-security',
+    'app-armory',
+    'app-analytics',
+    'app-content-creator',
+    'app-subscriptions',
+    'app-agent-config',
+    // Cards
+    'beep',
+    'liveOrchestrationFeed',
+    'agentPresence',
+    'microApps',
+    'aiInsights',
+    'dev-hud'
+];
 
 const focusItemTool = createTool({ name: 'focusItem', description: "Brings a specific window into focus.", schema: z.object({ instanceId: z.string() }), func: async () => {}, isClientSide: true });
 const addItemTool = createTool({
@@ -258,7 +275,7 @@ ${selectedNodeSummary}
 
   let appContextSummary = `The user is currently on route: ${currentRoute || '/'}.`;
   if (activeMicroApp) {
-    appContextSummary += `\nThey are focused on the "${activeMicroApp.title}" micro-app (ID: ${activeMicroApp.id}). The purpose of this app is: "${activeMicroApp.description}".`;
+    appContextSummary += `\nThe user is focused on the "${activeMicroApp.title}" micro-app (ID: ${activeMicroApp.id}). The purpose of this app is: "${activeMicroApp.description}".`;
   } else {
     appContextSummary += `\nNo specific micro-app window is currently focused.`;
   }
