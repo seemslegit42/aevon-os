@@ -8,16 +8,12 @@ import { BeepChatProvider } from '../beep-chat-provider';
 import FloatingBeepAvatar from '../floating-beep-avatar';
 import { useMicroAppStore } from '@/stores/micro-app.store';
 import { ALL_MICRO_APPS } from '@/config/app-registry';
-import { usePathname } from 'next/navigation';
 
 type MainLayoutProps = {
   children: React.ReactNode;
 };
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  const pathname = usePathname();
-  const isLoomPage = pathname === '/loom';
-
   // Initialize the micro-app registry when the application mounts.
   // This ensures all hooks and components have access to the app list.
   useEffect(() => {
@@ -27,7 +23,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <div className="flex flex-col h-full w-full">
       <BeepChatProvider />
-      {!isLoomPage && <TopBar />}
+      {/* The unified TopBar is now always rendered here. It adapts its content based on the route. */}
+      <TopBar />
       <CanvasWrapper>
         {children}
       </CanvasWrapper>

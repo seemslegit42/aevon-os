@@ -1,6 +1,6 @@
 
 import mitt, { type Emitter } from 'mitt';
-import type { AegisSecurityAnalysis, AiInsights, ContentGeneration, WebSummarizerResult } from './ai-schemas';
+import type { AegisSecurityAnalysis, AiInsights, ContentGeneration, WebSummarizerResult, AiGeneratedFlowData } from './ai-schemas';
 import type { AvatarState } from '@/types/dashboard';
 import type { BeepEmotion } from '@/types/loom';
 import type { MonthlySales, SalesTrend } from '@/services/sales-data.service';
@@ -28,13 +28,9 @@ type AppEvents = {
   'websummarizer:result': WebSummarizerResult;
   'websummarizer:error': string;
 
-  // Loom Workflow Events (for visualization)
-  'loom:categorizeText:success': any;
-  'loom:categorizeText:error': string;
-  'loom:extractInvoiceData:success': any;
-  'loom:extractInvoiceData:error': string;
-  'loom:logAndAlertAegis:success': any;
-  'loom:logAndAlertAegis:error': string;
+  // Loom Workflow Events
+  'loom:flow-generated': AiGeneratedFlowData;
+  'loom:open-templates': void;
   
   // Tool execution events
   'tool:success': { toolName: string };
