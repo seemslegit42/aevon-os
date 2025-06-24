@@ -17,7 +17,7 @@ import type { AvatarState } from '@/types/dashboard';
 import type { Position } from 'react-rnd';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
-import { getEmotionFromTextByKeywords } from '@/lib/sentiment-parser';
+import { getEmotionFromTextByKeywords } from '@/lib/sentiment-parser.shared';
 import { BeepEmotion } from '@/types/loom';
 
 const BeepAvatar3D = dynamic(() => import('@/components/beep/beep-avatar-3d'), {

@@ -20,14 +20,10 @@ import eventBus from '@/lib/event-bus';
 
 const NotificationCenter: React.FC = () => {
     const { notifications, unreadCount, addNotification, markAsRead, markAllAsRead, clearAll } = useNotificationStore();
-    const [isNotifying, setIsNotifying] = useState(false);
 
     useEffect(() => {
         const handleNewNotification = (logData: any) => {
-          setIsNotifying(true);
-          const timer = setTimeout(() => setIsNotifying(false), 2500); // Must match animation duration
           addNotification(logData);
-          return () => clearTimeout(timer);
         };
 
         eventBus.on('orchestration:log', handleNewNotification);
@@ -47,7 +43,7 @@ const NotificationCenter: React.FC = () => {
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="w-9 h-9 text-primary-foreground hover:text-primary-foreground/80 relative">
-                <Bell className={cn("h-5 w-5 aevos-icon-styling-override", isNotifying && "notification-glow-animate")} />
+                <Bell className={cn("h-5 w-5 aevos-icon-styling-override")} />
                 {unreadCount > 0 && (
                     <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-xs font-bold text-destructive-foreground">
                     {unreadCount > 9 ? '9+' : unreadCount}

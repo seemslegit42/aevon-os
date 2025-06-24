@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -92,7 +93,7 @@ const AiInsightsCardContent: React.FC = () => {
                     key={index}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    transition={{ duration: 0.3 }}
                 >
                     <Card className="p-3 bg-card/50">
                         <div className="flex items-start gap-3">

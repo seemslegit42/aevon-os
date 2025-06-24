@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, memo } from 'react';
+import React, { memo } from 'react';
 import { Rnd } from 'react-rnd';
 import MicroAppCard from '@/components/micro-app-card';
 import { X, Minus, Square, Maximize, Minimize } from 'lucide-react';
@@ -27,8 +27,6 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
         toggleMinimizeItem,
         toggleMaximizeItem
     } = useLayoutStore.getState();
-
-    const [isClosing, setIsClosing] = useState(false);
 
     const config = item.type === 'card'
       ? ALL_CARD_CONFIGS.find(c => c.id === item.cardId)
@@ -75,10 +73,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
 
     const handleCloseClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        setIsClosing(true);
-        setTimeout(() => {
-            closeItem(item.id);
-        }, 200);
+        closeItem(item.id);
     };
 
     const isMaximized = !!item.isMaximized;
@@ -110,8 +105,7 @@ const DashboardWindowComponent: React.FC<DashboardWindowProps> = ({ item, isFocu
             style={{ zIndex: item.zIndex }}
             className={cn(
                 "react-draggable animate-window-mount",
-                isFocused && "is-focused",
-                isClosing && "animate-window-unmount pointer-events-none"
+                isFocused && "is-focused"
             )}
             dragHandleClassName="drag-handle"
             onMouseDownCapture={() => bringToFront(item.id)}

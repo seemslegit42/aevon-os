@@ -50,21 +50,17 @@ const topProductsData: ProductSale[] = [
 
 export async function getMonthlySales(): Promise<MonthlySales[]> {
     // In a real app, this would be a DB query.
-    await new Promise(resolve => setTimeout(resolve, 250));
     return monthlySalesData;
 }
 
 export async function getSalesTrend(): Promise<SalesTrend[]> {
-    await new Promise(resolve => setTimeout(resolve, 300));
     return salesTrendData;
 }
 
 export async function getTopProducts(limit: number = 3): Promise<ProductSale[]> {
-    await new Promise(resolve => setTimeout(resolve, 150));
     return topProductsData.slice(0, limit);
 }
 
 export async function getTotalRevenue(): Promise<number> {
-    await new Promise(resolve => setTimeout(resolve, 100));
     return salesTrendData.reduce((acc, curr) => acc + curr.sales, 0);
 }

@@ -12,8 +12,6 @@ import { getActionLogStats } from './system-monitor.service';
  */
 export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
     // In a real app, you would fetch this based on the authenticated user's ID.
-    // We add a small delay to simulate network latency.
-    await new Promise(resolve => setTimeout(resolve, 350));
     
     // Fetch live action log stats to populate usage data
     const stats = await getActionLogStats();
@@ -36,7 +34,6 @@ export async function getSubscriptionStatus(): Promise<SubscriptionStatus> {
  * Simulates fetching a Lemon Squeezy checkout URL for upgrading.
  */
 export async function getCheckoutURL(planId: 'pro' | 'team' | 'enterprise'): Promise<{ url: string }> {
-     await new Promise(resolve => setTimeout(resolve, 500));
      // In a real app, this would generate a unique checkout URL.
      const planIds = {
         pro: '12345-pro',

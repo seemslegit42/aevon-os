@@ -389,23 +389,6 @@
   z-index: 2;
 }
 
-@keyframes notification-glow {
-  0% {
-    filter: drop-shadow(0 0 0px hsl(var(--accent) / 0));
-  }
-  50% {
-    filter: drop-shadow(0 0 8px hsl(var(--accent) / 0.8));
-    transform: scale(1.1);
-  }
-  100% {
-    filter: drop-shadow(0 0 0px hsl(var(--accent) / 0));
-    transform: scale(1);
-  }
-}
-.notification-glow-animate {
-  animation: notification-glow 2.5s ease-in-out;
-}
-
 @keyframes gauge-pulse {
   0%, 100% {
     transform: scale(1);
@@ -442,16 +425,9 @@
   from { opacity: 0; transform: scale(0.97) translateY(10px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
-@keyframes window-unmount {
-  from { opacity: 1; transform: scale(1) translateY(0); }
-  to { opacity: 0; transform: scale(0.97) translateY(10px); }
-}
 
 .animate-window-mount {
   animation: window-mount 200ms ease-out;
-}
-.animate-window-unmount {
-  animation: window-unmount 200ms ease-out forwards;
 }
 
 /* New animation for BEEP Avatar background */

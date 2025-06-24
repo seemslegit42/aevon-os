@@ -11,7 +11,6 @@ import { generateObject } from 'ai';
 import { google } from '@/lib/ai/groq';
 import type { WorkflowNodeData, Connection } from '@/types/loom';
 import { logAction } from '@/services/action-log.service';
-import eventBus from '@/lib/event-bus';
 import { getEmotionFromText } from '@/lib/sentiment-parser';
 
 import * as SalesDataService from '@/services/sales-data.service';
@@ -222,24 +221,33 @@ const runLoomWorkflowTool = createTool({
         connections: z.array(z.any()),
     }),
     func: async ({ nodes, connections }) => {
-        // In a real implementation, this would be a complex graph traversal.
-        // For now, we simulate it and emit events.
-        eventBus.emit('loom:workflow-started' as any); // Use 'as any' if type isn't defined
+        // This tool now returns a list of events for the client to process.
+        const eventsToEmit: { eventName: string, payload?: any }[] = [];
         
+        eventsToEmit.push({ eventName: 'loom:workflow-started' });
+
         for (const node of nodes) {
-            await new Promise(res => setTimeout(res, 750));
-            eventBus.emit('timeline:event' as any, { type: 'node_running', message: `Executing ${node.title}`, nodeId: node.id, nodeTitle: node.title });
+            eventsToEmit.push({ 
+                eventName: 'timeline:event', 
+                payload: { type: 'node_running', message: `Executing ${node.title}`, nodeId: node.id, nodeTitle: node.title }
+            });
             
-            await new Promise(res => setTimeout(res, 1500));
-            const success = Math.random() > 0.15; // 85% success rate
+            const success = Math.random() > 0.15;
             const status = success ? 'completed' : 'failed';
-            eventBus.emit('timeline:event' as any, { type: `node_${status}`, message: `Node ${node.title} ${status}`, nodeId: node.id, nodeTitle: node.title });
+
+            eventsToEmit.push({ 
+                eventName: 'timeline:event', 
+                payload: { type: `node_${status}`, message: `Node ${node.title} ${status}`, nodeId: node.id, nodeTitle: node.title }
+            });
         }
         
-        await new Promise(res => setTimeout(res, 500));
-        eventBus.emit('loom:workflow-completed' as any);
+        eventsToEmit.push({ eventName: 'loom:workflow-completed' });
 
-        return { success: true, message: `Workflow execution simulation completed.` };
+        return { 
+            success: true, 
+            message: `Workflow execution simulation completed.`,
+            events: eventsToEmit // The payload now includes events
+        };
     }
 });
 
