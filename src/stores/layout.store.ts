@@ -26,6 +26,7 @@ const DEFAULT_LAYOUT_CONFIG: LayoutItem[] = ALL_CARD_CONFIGS
 interface LayoutState {
   layoutItems: LayoutItem[];
   focusedItemId: string | null;
+  activeAppContext: MicroAppRegistration | null;
   setFocusedItemId: (id: string | null) => void;
   updateItemLayout: (id: string, newPos: Position, newSize?: Size) => void;
   bringToFront: (id: string) => void;
@@ -47,6 +48,7 @@ export const useLayoutStore = create<LayoutState>()(
     (set, get) => ({
       layoutItems: DEFAULT_LAYOUT_CONFIG,
       focusedItemId: null,
+      activeAppContext: null,
       
       setFocusedItemId: (id) => set({ focusedItemId: id }),
 
@@ -65,30 +67,36 @@ export const useLayoutStore = create<LayoutState>()(
       })),
 
       bringToFront: (id) => set(state => {
-        const itemToFront = state.layoutItems.find(item => item.id === id);
-        if (state.focusedItemId !== id && state.layoutItems.some(i => i.isMaximized)) {
-            const maximizedItem = state.layoutItems.find(i => i.isMaximized);
-            if (maximizedItem && maximizedItem.id !== id) {
-                 return { focusedItemId: id }; 
-            }
-        }
+        if (state.focusedItemId === id) return {};
 
         const maxZ = state.layoutItems.length > 0 ? Math.max(0, ...state.layoutItems.map(item => item.zIndex || 0)) : 0;
+        
         const newItems = state.layoutItems.map(layout =>
           layout.id === id
             ? { ...layout, zIndex: maxZ + 1 }
             : layout
         );
-        return { layoutItems: newItems, focusedItemId: id };
+        
+        const itemToFront = newItems.find(item => item.id === id);
+        let newActiveAppContext: MicroAppRegistration | null = null;
+        if (itemToFront?.type === 'app' && itemToFront.appId) {
+            newActiveAppContext = ALL_MICRO_APPS.find(app => app.id === itemToFront.appId) || null;
+        }
+
+        return { layoutItems: newItems, focusedItemId: id, activeAppContext: newActiveAppContext };
       }),
 
       closeItem: (itemId) => {
         const itemToClose = get().layoutItems.find(item => item.id === itemId);
         
-        set(state => ({
-            layoutItems: state.layoutItems.filter(item => item.id !== itemId),
-            focusedItemId: state.focusedItemId === itemId ? null : state.focusedItemId,
-        }));
+        set(state => {
+            const isClosingFocused = state.focusedItemId === itemId;
+            return {
+                layoutItems: state.layoutItems.filter(item => item.id !== itemId),
+                focusedItemId: isClosingFocused ? null : state.focusedItemId,
+                activeAppContext: isClosingFocused ? null : state.activeAppContext,
+            }
+        });
 
         if (itemToClose) {
             let itemName = "Item";
@@ -206,7 +214,11 @@ export const useLayoutStore = create<LayoutState>()(
           width: app.defaultSize.width, height: app.defaultSize.height,
           zIndex: maxZ + 1
         };
-        set(state => ({ layoutItems: [...state.layoutItems, newAppWindow], focusedItemId: instanceId }));
+        set(state => ({ 
+            layoutItems: [...state.layoutItems, newAppWindow], 
+            focusedItemId: instanceId,
+            activeAppContext: app,
+        }));
         
         eventBus.emit('orchestration:log', {
             task: 'App Launched',
@@ -307,7 +319,7 @@ export const useLayoutStore = create<LayoutState>()(
       }),
 
       resetLayout: () => {
-        set({ layoutItems: DEFAULT_LAYOUT_CONFIG, focusedItemId: null });
+        set({ layoutItems: DEFAULT_LAYOUT_CONFIG, focusedItemId: null, activeAppContext: null });
         eventBus.emit('orchestration:log', {
             task: 'Layout Reset',
             status: 'success',

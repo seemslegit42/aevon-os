@@ -29,6 +29,19 @@ import {
 // =================================================================
 // Agent State Definition
 // =================================================================
+
+// This defines the structure of the active micro-app context passed to the agent.
+// It's a subset of the full MicroAppRegistration type to keep it server-safe.
+interface ActiveMicroAppContext {
+  id: string;
+  title: string;
+  description: string;
+  persona?: {
+    name: string;
+    description: string;
+  };
+}
+
 export interface AgentState extends MessagesState {
   layout: LayoutItem[];
   loomState?: {
@@ -37,15 +50,7 @@ export interface AgentState extends MessagesState {
     selectedNodeId: string | null;
   };
   currentRoute: string;
-  activeMicroApp?: {
-    id: string;
-    name: string;
-    description: string;
-    persona?: {
-      name: string;
-      description: string;
-    };
-  }
+  activeMicroApp: ActiveMicroAppContext | null;
 }
 
 // =================================================================
@@ -270,7 +275,7 @@ ${selectedNodeSummary}
 
   let appContextSummary = `The user is currently on route: ${currentRoute || '/'}.`;
   if (activeMicroApp) {
-    appContextSummary += `\nThey are focused on the "${activeMicroApp.name}" micro-app (ID: ${activeMicroApp.id}). The purpose of this app is: "${activeMicroApp.description}".`;
+    appContextSummary += `\nThey are focused on the "${activeMicroApp.title}" micro-app (ID: ${activeMicroApp.id}). The purpose of this app is: "${activeMicroApp.description}".`;
   } else {
     appContextSummary += `\nNo specific micro-app window is currently focused.`;
   }
@@ -336,7 +341,7 @@ const workflow = new StateGraph<AgentState>({
         },
         activeMicroApp: {
             value: (x, y) => y ?? x,
-            default: () => undefined,
+            default: () => null,
         }
     }
 });

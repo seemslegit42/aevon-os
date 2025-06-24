@@ -9,7 +9,6 @@ import { useBeepChatStore } from '@/stores/beep-chat.store';
 import eventBus from '@/lib/event-bus';
 import { useLoomStore } from '@/stores/loom.store';
 import { usePathname } from 'next/navigation';
-import { ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
 import { shallow } from 'zustand/shallow';
 
 /**
@@ -97,30 +96,15 @@ export function BeepChatProvider() {
   });
 
   const pathname = usePathname();
-  const { layoutItems, focusedItemId } = useLayoutStore(state => ({
+  // Subscribe to the full context from the layout store
+  const { layoutItems, activeAppContext } = useLayoutStore(state => ({
       layoutItems: state.layoutItems,
-      focusedItemId: state.focusedItemId,
+      activeAppContext: state.activeAppContext,
   }), shallow);
   
   // Create a custom 'append' function that always includes the latest layout and app context.
   const appendWithContext = useCallback(async (message: Message) => {
-    let activeMicroApp: any | undefined = undefined;
-
-    if (focusedItemId) {
-        const focusedItem = layoutItems.find(item => item.id === focusedItemId);
-        if (focusedItem && focusedItem.type === 'app' && focusedItem.appId) {
-            const appConfig = ALL_MICRO_APPS.find(app => app.id === focusedItem.appId);
-            if (appConfig) {
-                activeMicroApp = {
-                    id: appConfig.id,
-                    name: appConfig.title,
-                    description: appConfig.description,
-                    persona: appConfig.persona, // Include persona
-                };
-            }
-        }
-    }
-
+    // The active micro-app context is now sourced directly from the layout store.
     const { nodes, connections, selectedNodeId } = useLoomStore.getState();
     const loomState = nodes.length > 0 ? { nodes, connections, selectedNodeId } : undefined;
 
@@ -130,11 +114,11 @@ export function BeepChatProvider() {
             layoutItems: layoutItems,
             loomState,
             currentRoute: pathname,
-            activeMicroApp,
+            activeMicroApp: activeAppContext, // Pass the centrally-managed context
         } 
       }
     });
-  }, [pathname, layoutItems, focusedItemId, originalAppend]);
+  }, [pathname, layoutItems, activeAppContext, originalAppend]);
 
   // Sync the hook's state with the Zustand store
   useEffect(() => {
