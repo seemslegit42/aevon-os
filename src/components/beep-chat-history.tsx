@@ -7,7 +7,7 @@ import { User } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import BeepToolCallDisplay from '@/components/beep/beep-tool-call';
 import type { Message } from 'ai';
-import { useIsMobile } from '@/hooks/use-is-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface BeepChatHistoryProps {
   scrollAreaRef: React.RefObject<HTMLDivElement>;
