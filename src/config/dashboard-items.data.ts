@@ -1,3 +1,4 @@
+
 // This file is server-safe and contains only data, no component imports.
 
 export const MICRO_APP_IDS = {
@@ -14,6 +15,7 @@ export const CARD_IDS = {
   PRESENCE: 'agentPresence',
   APPS: 'microApps',
   INSIGHTS: 'aiInsights',
+  DEV_HUD: 'dev-hud',
 } as const;
 
 export const ALL_ITEM_IDS = [

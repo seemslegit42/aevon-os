@@ -5,10 +5,22 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { Position, Size } from 'react-rnd';
 import type { LayoutItem } from '@/types/dashboard';
-import { ALL_CARD_CONFIGS, ALL_MICRO_APPS, DEFAULT_LAYOUT_CONFIG } from '@/config/dashboard-cards.config';
+import { ALL_CARD_CONFIGS, ALL_MICRO_APPS } from '@/config/dashboard-cards.config';
 import type { MicroApp } from './micro-app.store';
 
 const LAYOUT_STORAGE_KEY = 'dashboardLayout_v8_grid';
+
+// We must filter out the dev-hud from the default layout.
+const DEFAULT_LAYOUT_CONFIG: LayoutItem[] = ALL_CARD_CONFIGS
+    .filter(card => card.id !== 'dev-hud')
+    .map((card, index) => ({
+        id: card.id,
+        type: 'card',
+        cardId: card.id,
+        ...card.defaultLayout,
+        zIndex: index + 1
+    }));
+
 
 interface LayoutState {
   layoutItems: LayoutItem[];

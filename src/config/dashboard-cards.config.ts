@@ -12,6 +12,7 @@ const LiveOrchestrationFeedCardContent = lazy(() => import('@/app/dashboard/live
 const MicroAppsCardContent = lazy(() => import('@/app/dashboard/micro-apps-card-content'));
 const AiInsightsCardContent = lazy(() => import('@/app/dashboard/ai-insights-card-content'));
 const AgentPresenceCardContent = lazy(() => import('@/app/dashboard/agent-presence-card-content'));
+const DevHudCardContent = lazy(() => import('@/app/dashboard/dev-hud-card-content'));
 
 // Icons from Phosphor React
 import {
@@ -32,6 +33,7 @@ import {
     House,
     Zap,
     SlidersHorizontal,
+    Bug,
 } from 'phosphor-react';
 
 // =================================================================
@@ -167,10 +169,22 @@ export const ALL_CARD_CONFIGS: CardConfig[] = [
     minWidth: 250,
     minHeight: 180,
   },
+  {
+    id: 'dev-hud',
+    title: 'Developer HUD',
+    icon: Bug,
+    isDismissible: true,
+    description: "A debugging tool for developers to inspect the micro-app registry, state, and lifecycle.",
+    content: DevHudCardContent,
+    defaultLayout: { x: 900, y: 560, width: 450, height: 400 },
+    minWidth: 350,
+    minHeight: 300,
+    cardClassName: "flex-grow flex flex-col",
+  },
 ];
 
 // Generates the default layout by mapping over the configs.
-export const DEFAULT_LAYOUT_CONFIG: LayoutItem[] = ALL_CARD_CONFIGS.map((card, index) => ({
+export const DEFAULT_LAYOUT_CONFIG: LayoutItem[] = ALL_CARD_CONFIGS.filter(card => card.id !== 'dev-hud').map((card, index) => ({
     id: card.id,
     type: 'card',
     cardId: card.id,
