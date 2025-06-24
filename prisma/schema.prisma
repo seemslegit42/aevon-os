@@ -1,29 +1,29 @@
-
-datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
-}
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider     = "sqlite"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model Agent {
-  id            String    @id @default(cuid())
+  id            String          @id @default(cuid())
   name          String
   type          AgentType
-  description   String?
-  status        String    @default("idle")
-  invocations   Int       @default(0)
+  description   String
+  status        String          @default("idle")
+  invocations   Int             @default(0)
   lastInvokedAt DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  logs            ActionLog[]
-  securityEvents  SecurityEvent[]
-
-  @@index([name])
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  logs          ActionLog[]
+  events        SecurityEvent[]
 }
 
 enum AgentType {
@@ -38,36 +38,36 @@ enum AgentType {
 model ActionLog {
   id        String   @id @default(cuid())
   agentId   String
-  timestamp DateTime @default(now())
   toolName  String
   arguments Json
   status    String // "success" or "failure"
   result    Json?
   tokens    Int?
+  timestamp DateTime @default(now())
 
   agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
 
-  @@index([agentId, timestamp])
-}
-
-model SecurityEvent {
-  id        String   @id @default(cuid())
-  agentId   String?
-  timestamp DateTime @default(now())
-  type      String
-  severity  SeverityLevel
-  details   Json
-
-  agent Agent? @relation(fields: [agentId], references: [id], onDelete: SetNull)
-
-  @@index([timestamp])
-  @@index([severity])
+  @@index([agentId])
 }
 
 enum SeverityLevel {
-  INFO
   LOW
   MEDIUM
   HIGH
   CRITICAL
+}
+
+model SecurityEvent {
+  id        String        @id @default(cuid())
+  agentId   String?
+  type      String
+  severity  SeverityLevel
+  details   Json
+  timestamp DateTime      @default(now())
+
+  agent Agent? @relation(fields: [agentId], references: [id], onDelete: SetNull)
+
+  @@index([agentId])
+  @@index([type])
+  @@index([severity])
 }
