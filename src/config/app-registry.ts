@@ -179,7 +179,6 @@ export interface NavItemConfig {
 export const mainNavItems: NavItemConfig[] = [
   { id: '/', label: 'Home', icon: Home },
   { id: '/loom', label: 'Loom', icon: Network },
-  { id: '/aegis-security', label: 'Aegis', icon: Shield },
   { id: '/armory', label: 'Armory', icon: ShoppingCart },
 ];
 
