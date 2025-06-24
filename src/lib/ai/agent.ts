@@ -297,6 +297,7 @@ ${loomContextSummary}
 6.  If the user asks a general question, use the 'searchKnowledgeBase' tool first.
 7.  If asked to generate a workflow for Loom Studio via chat, politely decline and instruct the user to use the dedicated AI prompt bar at the top of the Loom Studio to generate workflows.
 8.  Use the APPLICATION VIEW context to provide more relevant help. If the user is in the "Accounting" app, offer tips about invoices. If they are in the "Loom Studio", offer advice on building workflows. Be proactive but not annoying.
+9.  **Conditional Node Execution:** When a node's type is 'conditional', your task is to evaluate its condition expression based on the provided input data. You MUST return ONLY a JSON object with a single boolean 'result' key, for example: \`{"result": true}\`. Do not add any conversational text.
 `;
 }
 

@@ -161,7 +161,7 @@ export default function LoomStudioPage() {
         prompt = `Please execute a data transformation with the following logic: "${nodeToRun.config?.transformationLogic}".` + promptInput;
         break;
       case 'conditional':
-        prompt = `Please evaluate the condition: "${nodeToRun.config?.condition}".` + promptInput;
+        prompt = `Please evaluate the condition: "${nodeToRun.config?.condition}". Return only a JSON object with a single boolean 'result' key, like \`{"result": true}\`.` + promptInput;
         break;
       default:
         toast({ title: "Execution Not Implemented", description: `Backend for '${nodeToRun.type}' is not yet implemented.`});
@@ -207,7 +207,15 @@ export default function LoomStudioPage() {
     }
     // Case 2: The last message is a simple text response from the assistant, meaning the node is done.
     else if (lastMessage.role === 'assistant' && !lastMessage.tool_calls?.length) {
-        resultOutput = { result: lastMessage.content };
+        let content = lastMessage.content;
+        try {
+          // Attempt to parse content as JSON for conditional nodes
+          const parsedJson = JSON.parse(content);
+          resultOutput = parsedJson;
+        } catch (e) {
+          // Fallback for non-JSON text responses
+          resultOutput = { result: content };
+        }
         nodeSucceeded = true;
     }
     
@@ -233,18 +241,36 @@ export default function LoomStudioPage() {
       prevNodeStatusRef.current = {};
       return;
     }
-
+  
     const newlyCompletedNodes = nodes.filter(node => 
       nodeExecutionStatus[node.id] === 'completed' &&
       prevNodeStatusRef.current[node.id] !== 'completed'
     );
-
+  
     if (newlyCompletedNodes.length > 0) {
       newlyCompletedNodes.forEach(completedNode => {
-        const nextConnections = connections.filter(c => c.from === completedNode.id);
-        if (nextConnections.length === 0) return;
-        
-        nextConnections.forEach(conn => {
+        const allOutgoingConnections = connections.filter(c => c.from === completedNode.id);
+        if (allOutgoingConnections.length === 0) return;
+  
+        let connectionsToFollow: Connection[] = [];
+  
+        if (completedNode.type === 'conditional') {
+          const result = !!completedNode.config?.output?.result; // Safely coerce to boolean
+          addConsoleMessage('info', `Conditional node "${completedNode.title}" evaluated to: ${result}`);
+  
+          if (result && allOutgoingConnections.length > 0) {
+            // True path is the first connection by convention
+            connectionsToFollow.push(allOutgoingConnections[0]);
+          } else if (!result && allOutgoingConnections.length > 1) {
+            // False path is the second connection by convention
+            connectionsToFollow.push(allOutgoingConnections[1]);
+          }
+        } else {
+          // For all other nodes, trigger all outgoing paths
+          connectionsToFollow = allOutgoingConnections;
+        }
+  
+        connectionsToFollow.forEach(conn => {
           const nextNode = nodes.find(n => n.id === conn.to);
           if (nextNode) {
             updateNodeStatus(nextNode.id, 'queued');
@@ -255,20 +281,25 @@ export default function LoomStudioPage() {
     }
     
     prevNodeStatusRef.current = { ...nodeExecutionStatus };
-
+  
     const isFinished = !Object.values(nodeExecutionStatus).some(
       status => status === 'running' || status === 'queued'
     );
     
     const hasStarted = Object.keys(nodeExecutionStatus).length > 0;
-
+  
     if (hasStarted && isFinished) {
       setIsWorkflowRunning(false);
-      toast({ title: 'Workflow Finished', description: `Execution of "${workflowName}" is complete.` });
-      addTimelineEvent({ type: 'workflow_completed', message: 'Workflow execution finished.' });
+      const hasFailures = Object.values(nodeExecutionStatus).some(s => s === 'failed');
+      toast({ 
+        title: 'Workflow Finished', 
+        description: `Execution of "${workflowName}" is complete.`,
+        variant: hasFailures ? 'destructive' : 'default',
+      });
+      addTimelineEvent({ type: hasFailures ? 'workflow_failed' : 'workflow_completed', message: 'Workflow execution finished.' });
     }
-
-  }, [nodeExecutionStatus, isWorkflowRunning, nodes, connections, updateNodeStatus, handleRunNode, addTimelineEvent, toast, workflowName]);
+  
+  }, [nodeExecutionStatus, isWorkflowRunning, nodes, connections, updateNodeStatus, handleRunNode, addTimelineEvent, toast, workflowName, addConsoleMessage]);
 
 
   const handleRunWorkflow = useCallback(() => {
