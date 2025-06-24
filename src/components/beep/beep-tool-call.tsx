@@ -8,7 +8,7 @@ import {
 } from 'phosphor-react';
 import { cn } from '@/lib/utils';
 import type { IconProps } from '@/types/icon';
-import { KnowledgeBaseSearchResultSchema, SalesMetricsSchema, SubscriptionStatusSchema } from '@/lib/ai-schemas';
+import { KnowledgeBaseSearchResultSchema, SubscriptionStatusSchema } from '@/lib/ai-schemas';
 import { useAvatarTelemetry } from '@/hooks/use-avatar-telemetry';
 
 const toolIcons: Record<string, React.ElementType<IconProps>> = {
@@ -21,7 +21,7 @@ const toolIcons: Record<string, React.ElementType<IconProps>> = {
   closeAllInstancesOfApp: Trash,
   analyzeSecurityAlert: CheckCircle,
   searchKnowledgeBase: File, 
-  getSalesMetrics: ChartBar, 
+  getSalesAnalyticsData: ChartBar, 
   getSubscriptionStatus: CreditCard,
   generateMarketingContent: Gear,
   generateWorkspaceInsights: Gear,
@@ -37,7 +37,7 @@ const toolFriendlyNames: Record<string, string> = {
   closeAllInstancesOfApp: 'Close All',
   analyzeSecurityAlert: 'Analyze Security Alert',
   searchKnowledgeBase: 'Search Knowledge Base',
-  getSalesMetrics: 'Get Sales Metrics',
+  getSalesAnalyticsData: 'Get Sales Data',
   getSubscriptionStatus: 'Get Subscription Status',
   generateMarketingContent: 'Generate Content',
   generateWorkspaceInsights: 'Generate Insights',
@@ -59,28 +59,6 @@ const ToolResultContent: React.FC<{ toolName: string; result: any }> = ({ toolNa
                 <p>{answer}</p>
             </div>
            );
-      }
-      case 'getSalesMetrics': {
-        const data = SalesMetricsSchema.parse(result);
-        return (
-          <div className="text-foreground font-sans text-xs space-y-2">
-            <p className="text-sm">
-                <strong>Total Revenue:</strong> 
-                <span className="font-bold text-chart-4"> ${data.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-            </p>
-            <div>
-              <p className="font-semibold">Top Products:</p>
-              <ul className="list-disc pl-4 text-muted-foreground">
-                {data.topProducts.map((p) => (
-                  <li key={p.name}>
-                    {p.name}: ${p.revenue.toLocaleString()}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            {data.trend && <p className="text-xs italic text-muted-foreground">{data.trend}</p>}
-          </div>
-        );
       }
       case 'getSubscriptionStatus': {
         const data = SubscriptionStatusSchema.parse(result);

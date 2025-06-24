@@ -21,7 +21,6 @@ import {
     AiInsightsSchema, 
     ContentGenerationSchema, 
     KnowledgeBaseSearchResultSchema, 
-    SalesMetricsSchema, 
     SubscriptionStatusSchema,
     WebSummarizerResultSchema,
 } from '../ai-schemas';
@@ -97,18 +96,14 @@ const searchKnowledgeBaseTool = createTool({
     }
 });
 
-const getSalesMetricsTool = createTool({
-    name: "getSalesMetrics",
-    description: "Retrieves key sales metrics, such as total revenue and top-selling products.",
+const getSalesAnalyticsDataTool = createTool({
+    name: "getSalesAnalyticsData",
+    description: "Retrieves the raw data needed to populate the sales analytics dashboard, including monthly platform sales and overall trends. Use this when the user asks to see or refresh sales data.",
     schema: z.object({}),
     func: async () => {
-        const totalRevenue = await SalesDataService.getTotalRevenue();
-        const topProducts = await SalesDataService.getTopProducts(3);
-        return {
-            totalRevenue,
-            topProducts,
-            trend: "Sales are showing a positive upward trend over the last several months.",
-        };
+        const monthlySales = await SalesDataService.getMonthlySales();
+        const salesTrend = await SalesDataService.getSalesTrend();
+        return { monthlySales, salesTrend };
     },
 });
 
@@ -205,7 +200,7 @@ const resetLayoutTool = createTool({ name: 'resetLayout', description: 'Resets t
 // =================================================================
 
 const allTools = [
-    searchKnowledgeBaseTool, getSalesMetricsTool, getSubscriptionStatusTool,
+    searchKnowledgeBaseTool, getSalesAnalyticsDataTool, getSubscriptionStatusTool,
     analyzeSecurityAlertTool, generateWorkspaceInsightsTool, generateMarketingContentTool,
     summarizeWebpageTool,
     focusItemTool, addItemTool, removeItemTool, resetLayoutTool,

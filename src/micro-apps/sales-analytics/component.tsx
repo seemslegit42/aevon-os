@@ -34,11 +34,16 @@ const SalesAnalyticsComponent: React.FC = () => {
     const fetchData = useCallback(async () => {
         setMonthlySalesData(null);
         setSalesTrendData(null);
-        const monthly = await getMonthlySales();
-        const trend = await getSalesTrend();
-        setMonthlySalesData(monthly);
-        setSalesTrendData(trend);
-    }, []);
+        try {
+            const monthly = await getMonthlySales();
+            const trend = await getSalesTrend();
+            setMonthlySalesData(monthly);
+            setSalesTrendData(trend);
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Error Fetching Data', description: 'Could not load sales analytics.' });
+            console.error(error);
+        }
+    }, [toast]);
     
     useEffect(() => {
         fetchData();
@@ -53,13 +58,21 @@ const SalesAnalyticsComponent: React.FC = () => {
       const handleExport = () => {
           toast({ title: 'Export Action', description: 'This functionality is for demonstration purposes.' });
       };
+
+      const handleDataUpdate = (data: { monthlySales: MonthlySales[], salesTrend: SalesTrend[] }) => {
+        toast({ title: 'Data Updated', description: 'Sales analytics have been updated by the AI agent.' });
+        setMonthlySalesData(data.monthlySales);
+        setSalesTrendData(data.salesTrend);
+      };
   
       eventBus.on('control:click:refresh', handleRefresh);
       eventBus.on('control:click:export', handleExport);
+      eventBus.on('sales-analytics:update', handleDataUpdate);
   
       return () => {
           eventBus.off('control:click:refresh', handleRefresh);
           eventBus.off('control:click:export', handleExport);
+          eventBus.off('sales-analytics:update', handleDataUpdate);
       };
     }, [toast, fetchData]);
 

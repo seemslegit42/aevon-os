@@ -140,5 +140,52 @@ export function BeepChatProvider() {
     reload, stop, appendWithContext
   ]);
 
+   // Effect to process server-side tool results and emit events
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage?.role !== 'tool') return;
+
+    // Find the original assistant message that triggered this tool call
+    const assistantMessage = messages.slice().reverse().find(
+        m => m.role === 'assistant' && m.tool_calls?.some(tc => tc.toolCallId === lastMessage.tool_call_id)
+    );
+
+    if (!assistantMessage || !assistantMessage.tool_calls) return;
+
+    const toolCall = assistantMessage.tool_calls.find(tc => tc.toolCallId === lastMessage.tool_call_id);
+    if (!toolCall) return;
+
+    try {
+        const toolName = toolCall.toolName;
+        const result = JSON.parse(lastMessage.content as string);
+
+        if (result.error) {
+            console.error(`Tool call ${toolName} failed:`, result.message);
+            eventBus.emit('tool:error', { toolName });
+            return;
+        }
+
+        eventBus.emit('tool:success', { toolName });
+
+        // Emit specific events for different tools
+        switch (toolName) {
+            case 'getSalesAnalyticsData':
+                eventBus.emit('sales-analytics:update', result);
+                break;
+            case 'summarizeWebpage':
+                eventBus.emit('websummarizer:result', result);
+                break;
+            case 'generateMarketingContent':
+                eventBus.emit('content:result', result);
+                break;
+            // Add more cases here for other tools that need to update the UI
+        }
+
+    } catch (e) {
+        console.error("Failed to parse or process tool result:", e);
+    }
+  }, [messages]);
+
+
   return null; // This component does not render anything
 }

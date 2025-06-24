@@ -3,6 +3,7 @@ import mitt, { type Emitter } from 'mitt';
 import type { AegisSecurityAnalysis, AiInsights, ContentGeneration, WebSummarizerResult } from './ai-schemas';
 import type { AvatarState } from '@/types/dashboard';
 import type { BeepEmotion } from '@/types/loom';
+import type { MonthlySales, SalesTrend } from '@/services/sales-data.service';
 
 type AppEvents = {
   // BEEP Agent Communication
@@ -38,6 +39,9 @@ type AppEvents = {
   // Tool execution events
   'tool:success': { toolName: string };
   'tool:error': { toolName: string };
+
+  // Data update events
+  'sales-analytics:update': { monthlySales: MonthlySales[], salesTrend: SalesTrend[] };
 
   // System-level Events
   'orchestration:log': { task: string; status: 'success' | 'failure'; details: string; targetId?: string; };
