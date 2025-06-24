@@ -31,8 +31,16 @@ export function useAudioRecorder({ onTranscriptionComplete, inputNode }: UseAudi
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Transcription failed");
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `Transcription failed with status: ${response.status}`);
+        } else {
+            // The response is not JSON, so it's likely an HTML error page from the server.
+            const errorText = await response.text();
+            console.error("Server returned non-JSON error response:", errorText);
+            throw new Error("Transcription failed due to a server error. Please check the console.");
+        }
       }
 
       const { text } = await response.json();
