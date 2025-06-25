@@ -22,8 +22,7 @@ import { cn } from '@/lib/utils';
 import { shallow } from 'zustand/shallow';
 import { BottomBar } from './components/layout/bottom-bar';
 import { useActionRequestStore } from '@/stores/action-request.store';
-import { useBeepChatStore } from '@/stores/beep-chat.store';
-import { useLoomOrchestrator } from '@/hooks/use-loom-orchestrator';
+import { useBeepChat } from '@/hooks/use-beep-chat';
 
 
 import type {
@@ -34,6 +33,7 @@ import type {
   ConsoleMessage,
   WorkflowTemplate,
   Connection,
+  NodeStatus,
 } from '@/types/loom';
 
 
@@ -50,7 +50,7 @@ export default function LoomStudioPage() {
     resolveActionRequest: state.resolveActionRequest,
   }), shallow);
 
-  const { isWorkflowRunning, handleRunWorkflow, handleRunNode } = useLoomOrchestrator();
+  const { append: beepAppend, isLoading: isBeepLoading } = useBeepChat();
 
   const [connectingState, setConnectingState] = useState<ConnectingState | null>(null);
   const [panelVisibility, setPanelVisibility] = useState<PanelVisibility>({
@@ -73,6 +73,35 @@ export default function LoomStudioPage() {
   const { toast } = useToast();
   
   const selectedNode = nodes.find(n => n.id === selectedNodeId) || null;
+  
+  const handleRunWorkflow = useCallback(() => {
+    if (nodes.length === 0) {
+      toast({ title: "Empty Workflow", description: "Add nodes to the canvas before running.", variant: 'destructive' });
+      return;
+    }
+    const workflowData = {
+      name: workflowName,
+      nodes: nodes,
+      connections: connections,
+    };
+
+    const prompt = `Please execute the following Loom workflow: ${JSON.stringify(workflowData)}`;
+    addConsoleMessage('info', `Sending workflow "${workflowName}" to BEEP agent for execution.`);
+    addTimelineEvent({ type: 'workflow_start', message: `Workflow "${workflowName}" sent to agent.` });
+    beepAppend({ role: 'user', content: prompt });
+
+  }, [nodes, connections, workflowName, addConsoleMessage, addTimelineEvent, toast, beepAppend]);
+
+  const handleRunNode = useCallback((nodeId: string) => {
+    const node = nodes.find(n => n.id === nodeId);
+    if (!node) return;
+    const prompt = `Please execute only this single node from a workflow: ${JSON.stringify(node)}`;
+    addConsoleMessage('info', `Sending single node "${node.title}" to BEEP agent for execution.`);
+    addTimelineEvent({ type: 'node_running', message: `Node "${node.title}" sent to agent.`, nodeId, nodeTitle: node.title });
+    beepAppend({ role: 'user', content: prompt });
+
+  }, [nodes, addConsoleMessage, addTimelineEvent, beepAppend]);
+
 
   useEffect(() => {
     addConsoleMessage('info', 'Loom Studio Initialized. AI is standing by to generate workflows.');
@@ -204,12 +233,9 @@ export default function LoomStudioPage() {
   }, [addConsoleMessage, clearWorkflow, handleFlowGenerated, toast]);
 
   const handleAgentActionResponse = (requestId: string, responseStatus: 'approved' | 'denied' | 'responded', details?: string) => {
-    addConsoleMessage('info', `User responded to action request ${requestId} with status: ${responseStatus}`);
-    
-    const { append: beepAppend } = useBeepChatStore.getState();
     resolveActionRequest(requestId, responseStatus, details);
-
-    let userResponseText = `User response for request ${requestId}: ${responseStatus}.`;
+    
+    let userResponseText = `User response for action request ${requestId}: ${responseStatus}.`;
     if (responseStatus === 'responded' && details) {
         userResponseText += ` Details: "${details}"`;
     }
@@ -226,7 +252,7 @@ export default function LoomStudioPage() {
       <div className="flex flex-col h-screen bg-background text-foreground overflow-hidden">
         <main className={`flex-1 relative flex overflow-hidden p-0 pb-16`}>
            <div className={`flex-1 h-full transition-opacity duration-300 ${anyMobilePanelOpen ? 'opacity-30 pointer-events-none' : 'opacity-100'}`}>
-              <CanvasZone {...{workflowName, nodes, connections, onNodeDropped: handleNodeDropped, selectedNode, onNodeSelected: handleNodeSelected, nodeExecutionStatus, onInputPortClick: handleInputPortClick, onOutputPortClick: handleOutputPortClick, connectingState, onRunWorkflow: handleRunWorkflow, isWorkflowRunning}} />
+              <CanvasZone {...{workflowName, nodes, connections, onNodeDropped: handleNodeDropped, selectedNode, onNodeSelected: handleNodeSelected, nodeExecutionStatus, onInputPortClick: handleInputPortClick, onOutputPortClick: handleOutputPortClick, connectingState, onRunWorkflow: handleRunWorkflow, isWorkflowRunning: isBeepLoading}} />
            </div>
            {Object.entries(panelVisibility).map(([panelKey, isVisible]) => (
                 <div key={panelKey} className={cn(`fixed inset-y-0 z-40 w-4/5 max-w-sm bg-card/90 backdrop-blur-lg shadow-2xl transform transition-transform duration-300 ease-in-out`, {
@@ -268,7 +294,7 @@ export default function LoomStudioPage() {
             </ResizableVerticalPanes>
             <ResizableHorizontalPanes storageKey="loom-center-right-h-split" initialDividerPosition={75}>
               <ResizableVerticalPanes storageKey="loom-center-v-split" initialDividerPosition={70} minPaneHeight={100}>
-                <CanvasZone {...{workflowName, nodes, connections, onNodeDropped: handleNodeDropped, selectedNode, onNodeSelected: handleNodeSelected, nodeExecutionStatus, onInputPortClick: handleInputPortClick, onOutputPortClick: handleOutputPortClick, connectingState, onRunWorkflow: handleRunWorkflow, isWorkflowRunning}} />
+                <CanvasZone {...{workflowName, nodes, connections, onNodeDropped: handleNodeDropped, selectedNode, onNodeSelected: handleNodeSelected, nodeExecutionStatus, onInputPortClick: handleInputPortClick, onOutputPortClick: handleOutputPortClick, connectingState, onRunWorkflow: handleRunWorkflow, isWorkflowRunning: isBeepLoading }} />
                 <ResizableHorizontalPanes storageKey="loom-bottom-h-split" minPaneWidth={200}>
                     <TimelinePanel className={cn(!panelVisibility.timeline && "hidden")} onClose={() => togglePanel('timeline')} events={timelineEvents} />
                     <ConsolePanel className={cn(!panelVisibility.console && "hidden")} onClose={() => togglePanel('console')} messages={consoleMessages.filter(msg => consoleFilters[msg.type])} filters={consoleFilters} onToggleFilter={(type) => setConsoleFilters(f => ({ ...f, [type]: !f[type]}))} onClearConsole={clearConsole} />

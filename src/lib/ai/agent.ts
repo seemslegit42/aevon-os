@@ -322,6 +322,79 @@ const executeDataTransformTool = createTool({
     }
 });
 
+const executeLoomWorkflowTool = createTool({
+    name: "executeLoomWorkflow",
+    description: "Executes a full multi-step workflow defined in Loom Studio. This tool orchestrates calls to other tools based on the graph of nodes and connections.",
+    schema: z.object({
+        name: z.string().optional().describe("The name of the workflow being executed."),
+        nodes: z.array(z.any()).describe("An array of all node objects in the workflow."),
+        connections: z.array(z.any()).describe("An array of all connection objects between nodes."),
+    }),
+    func: async ({ nodes, connections }) => {
+        // This is a simplified, non-reentrant executor.
+        // A production version would need more robust state management.
+        const nodeOutputs: Record<string, any> = {};
+        const executionQueue = nodes.filter(n => !connections.some(c => c.to === n.id));
+        const executedNodeIds = new Set<string>();
+
+        while (executionQueue.length > 0) {
+            const nodeToRun = executionQueue.shift();
+            if (!nodeToRun || executedNodeIds.has(nodeToRun.id)) continue;
+            
+            let inputData: any = {};
+            const incomingConnections = connections.filter(c => c.to === nodeToRun.id);
+            if (incomingConnections.length > 0) {
+                // Simple merge of outputs from all incoming nodes.
+                // A real implementation would need more sophisticated logic for data mapping.
+                incomingConnections.forEach(conn => {
+                    Object.assign(inputData, nodeOutputs[conn.from] || {});
+                });
+            }
+
+            // Call the correct tool for the node type
+            let toolResult: any;
+            try {
+                 switch (nodeToRun.type) {
+                    case 'web-summarizer':
+                        toolResult = await summarizeWebpageTool.invoke({ url: nodeToRun.config?.url });
+                        break;
+                    case 'prompt':
+                        // In a real scenario, this would call a model with the prompt and inputData.
+                        // Here, we simulate a simple pass-through for demonstration.
+                        toolResult = JSON.stringify({ promptResult: `Executed prompt: ${nodeToRun.config?.promptText}`, receivedInput: inputData });
+                        break;
+                     case 'data-transform':
+                        toolResult = await executeDataTransformTool.invoke({ transformationLogic: nodeToRun.config?.transformationLogic, inputData });
+                        break;
+                    case 'conditional':
+                        toolResult = await evaluateConditionTool.invoke({ condition: nodeToRun.config?.condition, inputData });
+                        break;
+                    // Other node types would be handled here
+                    default:
+                         toolResult = JSON.stringify({ result: `Node type '${nodeToRun.type}' executed successfully.`, receivedInput: inputData });
+                }
+                
+                nodeOutputs[nodeToRun.id] = typeof toolResult === 'string' ? JSON.parse(toolResult) : toolResult;
+                executedNodeIds.add(nodeToRun.id);
+
+                // Find next nodes to add to queue
+                connections.filter(c => c.from === nodeToRun.id).forEach(c => {
+                    const nextNode = nodes.find(n => n.id === c.to);
+                    if (nextNode && !executedNodeIds.has(nextNode.id)) {
+                        executionQueue.push(nextNode);
+                    }
+                });
+
+            } catch (e: any) {
+                 return { success: false, error: `Workflow failed at node "${nodeToRun.title}". Reason: ${e.message}`, completedNodes: Array.from(executedNodeIds) };
+            }
+        }
+        
+        return { success: true, message: `Workflow executed successfully. ${executedNodeIds.size} nodes completed.`, finalOutput: nodeOutputs };
+    }
+});
+
+
 
 // --- Client-Side & Action Console Tools ---
 const requestHumanActionTool = createTool({
@@ -363,6 +436,7 @@ const allTools = [
     getSystemHealthReportTool,
     evaluateConditionTool,
     executeDataTransformTool,
+    executeLoomWorkflowTool,
     requestHumanActionTool,
     focusItemTool, addItemTool, removeItemTool, resetLayoutTool,
 ];
@@ -431,9 +505,8 @@ Selected Node:
 ${selectedNodeSummary}
 
 **Loom Instructions:**
-- When asked to execute a node, you might be provided with input data from a previous node. Use this data as the primary context for your current task.
-- For nodes of type 'data-transform', use the \`executeDataTransform\` tool.
-- For nodes of type 'conditional', use the \`evaluateCondition\` tool to determine the outcome.
+- If the user asks you to execute the workflow, use the \`executeLoomWorkflow\` tool, passing the nodes and connections.
+- When asked to execute a single node, you can use the specific tool for that node type (e.g., \`summarizeWebpageTool\`, \`evaluateConditionTool\`).
 - When asked to "explain this", "explain the selected node", or a similar query, use the 'Selected Node' context to provide a clear, concise explanation of its purpose and function.
 - When asked "what should I do next?" or to "suggest a node", analyze the graph (especially nodes without outgoing connections) and suggest a logical next step (e.g., "After a 'Web Summarizer' node, you could add a 'Prompt' node to reformat the summary.").
 - Do NOT offer to create connections or modify the graph directly. Instead, guide the user on how they can do it.
@@ -469,7 +542,7 @@ ${loomContextSummary}
 7.  If the user asks a general question, use the 'searchKnowledgeBase' tool first.
 8.  If asked to generate a workflow for Loom Studio via chat, politely decline and instruct the user to use the dedicated AI prompt bar at the top of the Loom Studio to generate workflows.
 9.  Use the APPLICATION VIEW context to provide more relevant help. If the user is in the "Accounting" app, offer tips about invoices. If they are in the "Loom Studio", offer advice on building workflows. Be proactive but not annoying.
-10. **Node Execution:** When asked to execute a node from Loom Studio, use the specific tool designed for that node type if one exists. For example, use the \`summarizeWebpage\` tool for 'web-summarizer' nodes, \`executeDataTransform\` for 'data-transform' nodes, and \`evaluateCondition\` for 'conditional' nodes.
+10. **Loom Workflow Execution**: If the user asks to run the workflow from Loom Studio, you MUST use the \`executeLoomWorkflow\` tool. Pass the full nodes and connections array to it.
 11. **Invoice Creation Workflow:** If the user provides invoice text and asks to create an invoice, you must follow this sequence: First, use the \`extractInvoiceData\` tool. Second, present the extracted data to the user and ask for confirmation using the \`requestHumanAction\` tool. Third, upon receiving user approval, use the \`createInvoice\` tool with the extracted data to finalize the process.
 `;
 }

@@ -12,6 +12,7 @@ import { useLoomStore } from '@/stores/loom.store';
 import { ALL_MICRO_APPS } from '@/config/app-registry';
 import type { AvatarState } from '@/types/dashboard';
 import { useActionRequestStore } from '@/stores/action-request.store';
+import { shallow } from 'zustand/shallow';
 
 /**
  * This is a non-rendering component that initializes the Vercel `useChat` hook
@@ -21,13 +22,17 @@ import { useActionRequestStore } from '@/stores/action-request.store';
  */
 export function BeepChatProvider() {
   const { toast } = useToast();
+  const { addTimelineEvent } = useLoomStore(state => ({ addTimelineEvent: state.addTimelineEvent }), shallow);
+
 
   const handleToolCall: ToolCallHandler = async (chatMessages, toolCalls) => {
     // Dynamic import to break circular dependency
     const { useLayoutStore } = await import('@/stores/layout.store');
     const layoutActions = useLayoutStore.getState();
     const { addActionRequest } = useActionRequestStore.getState();
-
+    
+    // Server-side streaming events should handle node status updates.
+    // However, we can still add timeline events here for client-side actions.
     for (const toolCall of toolCalls) {
       const { toolName, args } = toolCall;
       let result: any = { success: true, message: `Tool ${toolName} executed.` };
@@ -60,6 +65,7 @@ export function BeepChatProvider() {
                     requiresInput: args.requiresInput as boolean | undefined,
                     inputPrompt: args.inputPrompt as string | undefined,
                 });
+                addTimelineEvent({type: 'info', message: `Agent requested user ${args.requestType}: ${args.message}`});
                 // When asking for human input, we don't immediately add a tool result.
                 // The workflow will pause here until the user responds.
                 continue;
@@ -170,9 +176,6 @@ export function BeepChatProvider() {
     reload, stop, appendWithContext
   ]);
 
-
-  // The useEffect hook for processing tool results has been removed.
-  // This logic is now centralized in components that initiate AI tasks.
 
   return null; // This component does not render anything
 }

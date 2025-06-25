@@ -6,6 +6,7 @@ import { type NextRequest } from 'next/server';
 import { rateLimiter } from '@/lib/rate-limiter';
 import { type Message } from 'ai';
 import type { LayoutItem } from '@/types/dashboard';
+import { useLoomStore } from '@/stores/loom.store';
 
 
 export const maxDuration = 60;
@@ -69,6 +70,36 @@ export async function POST(req: NextRequest) {
             loomState: loomState,
             currentRoute: currentRoute,
             activeMicroAppPersona: activeMicroAppPersona,
+        },
+        {
+          // This is a temporary stream event handler on the server side
+          // to update the Zustand store for real-time visualization.
+          // In a production multi-user environment, this would be handled via websockets.
+          async onStreamEvent(event) {
+            if (event.event === 'on_chain_end' && event.name === 'tools') {
+               const toolCall = event.data.output?.[0];
+               if (toolCall) {
+                   const toolName = toolCall.tool;
+                   const toolArgs = toolCall.args;
+                   
+                   // Find the node being executed based on the tool call
+                   const { nodes } = useLoomStore.getState();
+                   let executingNode = nodes.find(node => node.config?.promptText === toolArgs?.promptText || node.config?.url === toolArgs?.url);
+
+                   if(toolName === 'executeLoomWorkflow') {
+                      // For the orchestrator tool, we don't have a single node.
+                      // Here you might emit a different kind of event.
+                      return;
+                   }
+
+                   if (executingNode) {
+                        const status = toolCall.result?.includes('"error":true') ? 'failed' : 'completed';
+                        useLoomStore.getState().updateNodeStatus(executingNode.id, status);
+                        useLoomStore.getState().updateNode(executingNode.id, { config: {...executingNode.config, output: JSON.parse(toolCall.result)}})
+                   }
+               }
+            }
+          }
         });
 
         // The LangChainAdapter gracefully handles converting the LangGraph stream,
